@@ -3,7 +3,7 @@ import { TestSuiteMetadata } from "../test_suite_metadata.js";
 import enquirer from "enquirer";
 import chalk from "chalk";
 import { Executor } from "./executor.js";
-import { logger } from "../helpers/terminal.js";
+import { formatter, logger } from "../helpers/terminal.js";
 
 export class TestSuiteRunner {
     constructor(
@@ -33,12 +33,11 @@ export class TestSuiteRunner {
         }
         const executor = new Executor(this.config, this.metadata);
         await executor.run();
-        if (!this.config.headless) {
-            // @ts-ignore
-            await enquirer.confirm({
-                message: "Press any key to quit...",
-            });
-        }
+        // @ts-ignore
+        // TODO - only in headfull mode
+        await enquirer.confirm({
+            message: formatter.info("Press any key to quit..."),
+        });
     }
 
     private async promptSuiteOrTestId(): Promise<{ testId?: string; suiteId?: string }> {

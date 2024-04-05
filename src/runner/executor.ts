@@ -9,7 +9,7 @@ import { processExit$ } from "../index.js";
 import { ProgressBar } from "./progress_bar.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
 import { TestSuiteMetadata } from "../test_suite_metadata.js";
-import { formatter } from "../helpers/terminal.js";
+import { formatter, logger } from "../helpers/terminal.js";
 
 export type ExecutorStatistics = {
     min: number;
@@ -82,6 +82,10 @@ class ExecutorSplit {
 
     get isDonePromise() {
         return this.doneDeferred;
+    }
+
+    get failed() {
+        return Boolean(this.lastFail$.value);
     }
 }
 
@@ -167,13 +171,11 @@ export class Executor {
                     }),
                 );
             }
-            let fail = false;
             lastFail$.subscribe((r) => {
                 this.progressBar.log(formatter.warn(`[${r.id}] ${r.name} failed`));
                 if (this.config.failfast || this.config.runType === this.config.RUN_TYPE.TEST) {
                     splits.forEach((s) => s.stop());
                 }
-                fail = true;
             });
             for (const split of splits) {
                 await split.setup();
@@ -184,7 +186,8 @@ export class Executor {
                 this.progressBar.update(this.progressBar.value, { runs });
             }
             await isDonePromise;
-            if (fail) {
+            const failedSplits = splits.filter((s) => s.failed);
+            if (failedSplits.length > 0) {
                 this.progressBar.refresh();
                 break;
             }
