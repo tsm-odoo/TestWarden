@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "skipLibCheck": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "declaration": true,
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "outDir": "build",
+        "lib": ["esnext", "DOM"],
+        "types": ["node"],
+        "baseUrl": "./",
+    },
+    "exclude": ["node_modules"],
+    "include": ["/src/**/*.ts", "**/src/**/*.ts", "**/__tests__/**/*.ts",  "/src/**/*.d.ts"]
+}
