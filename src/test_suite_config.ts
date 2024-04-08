@@ -164,6 +164,7 @@ export class TestSuiteConfig {
     get baseSuiteURL() {
         const opts: [string, any][] = [
             ["debug", "tests,assets"],
+            ["timeout", "15000"],
             ["loglevel", "3"],
             ["manual", "true"],
         ];

@@ -1,5 +1,5 @@
 {
-    "name": "odoonodequnitlauncher",
+    "name": "TestWarden",
     "version": "1.0.0",
     "description": "Helper for odoo JS tests",
     "main": "build/index.js",
