@@ -42,7 +42,7 @@ class ExecutorSplit {
         // function => at least config?
         await this.adapter.accessSuite(
             this.page,
-            this.adapter.getSuiteURL(this.config.baseSuiteURL, this.testIds),
+            this.adapter.getSuiteURL(this.config, this.testIds),
         );
     }
 

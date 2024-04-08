@@ -7,6 +7,7 @@ import {
     registerAdapter,
 } from "../adapters/test_suite_adapter.js";
 import { processExit$ } from "../index.js";
+import { TestSuiteConfig } from "../test_suite_config.js";
 
 export class HootAdapter extends TestSuiteAdapter {
     static check(page: Page) {
@@ -30,9 +31,12 @@ export class HootAdapter extends TestSuiteAdapter {
         await page.click(">>> .HootButtons button[title*=Stop]");
     }
 
-    getSuiteURL(baseSuiteURL: string, testIds: string[]) {
-        const queryString = testIds.map((id) => `test=${id}`).join("&");
-        return `${baseSuiteURL}&${queryString}`;
+    getSuiteURL(config: TestSuiteConfig, testIds: string[]) {
+        const queryParams = testIds.map((id) => `test=${id}`);
+        if (config.failfast) {
+            queryParams.push("bail=1");
+        }
+        return `${config.baseSuiteURL}&${queryParams.join("&")}`;
     }
 
     async getMetadata() {

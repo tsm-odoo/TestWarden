@@ -3,6 +3,7 @@ import { oraPromise } from "ora";
 import { Page } from "puppeteer";
 import { BehaviorSubject, first, firstValueFrom } from "rxjs";
 import { StopExecution } from "../errors.js";
+import { TestSuiteConfig } from "../test_suite_config.js";
 
 export type IMetadata = {
     testById: { [id: string]: { name: string } };
@@ -39,7 +40,7 @@ export abstract class TestSuiteAdapter {
     abstract setupProgressListener(page: Page): Promise<void>;
     abstract run(page: Page): Promise<void>;
     abstract abort(page: Page): Promise<void>;
-    abstract getSuiteURL(baseSuiteURL: string, testIds: string[]): string;
+    abstract getSuiteURL(config: TestSuiteConfig, testIds: string[]): string;
 
     currentTest$ = new BehaviorSubject<Omit<Test, "pass">>(null);
     done$ = new BehaviorSubject<boolean>(false);
