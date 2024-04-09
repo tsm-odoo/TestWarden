@@ -52,15 +52,24 @@ function setupSignals() {
         try {
             await oraPromise(
                 async () => {
-                    browser = await launch({ headless: "new" });
+                    browser = await launch({ headless: false });
                     [page] = await browser.pages();
                     await setupCache(page, config);
                     await page.setCookie(config.authCookie);
                     await Promise.all([page.bringToFront(), page.goto(config.baseSuiteURL)]);
+                    await page.waitForResponse((response) => {
+                        if (response.status() === 404) {
+                            const url = new URL(config.baseSuiteURL);
+                            throw new StopExecution(
+                                `Suite not found: ${url.origin}${url.pathname}`,
+                            );
+                        }
+                        return true;
+                    });
                 },
                 {
                     text: formatter.info("Launching chrome browser"),
-                    failText: formatter.error("Could not start chrome browser"),
+                    failText: (err) => formatter.error(err instanceof StopExecution ? err.message : "Could not start chrome browser"),
                 },
             );
             const AdapterClass = await TestSuiteAdapter.getAdapter(page);
