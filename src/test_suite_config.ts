@@ -151,7 +151,7 @@ export class TestSuiteConfig {
         this.suiteIds = (rawOptions["suite-names"] ?? []).map((name) => this.generateHash(name));
         this.suite = rawOptions.suite;
         this.serverURL = rawOptions["server-url"] ?? "http://localhost:8069";
-        this.headless = !rawOptions.visible;
+        this.headless = !rawOptions.visible && !this.debug;
         this.failfast = rawOptions["fail-fast"] ?? false;
         this.onlyLastStats = rawOptions["only-last-stats"] ?? false;
         this.mobileEmulation = rawOptions.mobile ?? false;
@@ -162,6 +162,7 @@ export class TestSuiteConfig {
     }
 
     get baseSuiteURL() {
+        // TODO - specific suite parameters to adapters
         const opts: [string, any][] = [
             ["debug", "tests,assets"],
             ["timeout", "15000"],
