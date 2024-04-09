@@ -17,6 +17,7 @@ export function registerAdapter(cls: typeof TestSuiteAdapter) {
 }
 
 export abstract class TestSuiteAdapter {
+    static name: string;
     static check = async (page: Page) => false;
     static async getAdapter(page: Page): Promise<new () => TestSuiteAdapter> {
         return oraPromise(
@@ -31,7 +32,7 @@ export abstract class TestSuiteAdapter {
             {
                 text: chalk.white("Looking for test suite adapter"),
                 failText: chalk.red("No adapter were found"),
-                successText: (result) => chalk.white(`${result.name} will be used`),
+                successText: (result) => chalk.white(`${result.name} adapter will be used`),
             },
         );
     }

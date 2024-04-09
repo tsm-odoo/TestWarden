@@ -10,6 +10,8 @@ import { processExit$ } from "../index.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
 
 export class QUnitAdapter extends TestSuiteAdapter {
+    static name = "QUnit";
+
     static check(page: Page) {
         return page.evaluate(() => Boolean(window.QUnit));
     }

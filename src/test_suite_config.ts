@@ -8,22 +8,6 @@ enum RUN_TYPE {
     SUITE = "Suite",
 }
 
-export type TestSuiteConfigOptions = {
-    debug?: boolean;
-    "test-id"?: string;
-    workers?: number;
-    "tests-per-worker"?: number;
-    "suite-names"?: string[];
-    suite?: string;
-    "server-url"?: string;
-    visible?: boolean;
-    "fail-fast"?: boolean;
-    "only-last-stats"?: boolean;
-    mobile?: boolean;
-    "prompt-for-retry"?: boolean;
-    "open-fail-folder"?: boolean;
-};
-
 export class TestSuiteConfig {
     static NOT_YET_IMPLEMENTED = ["promptForRetry", "onlyLastStats", "mobileEmulation"];
     static CHECKS = [
@@ -49,8 +33,7 @@ export class TestSuiteConfig {
         {
             id: "TEST_XOR_MODULE",
             execute: (config: TestSuiteConfig) => {
-                if (config.testId && config.suiteIds.length > 0
-                ) {
+                if (config.testId && config.suiteIds.length > 0) {
                     return {
                         ok: false,
                         message:
@@ -123,6 +106,21 @@ export class TestSuiteConfig {
                 return { ok: true };
             },
         },
+        {
+            id: "RUN_FOREVER_NO_FAIL_FAST",
+            execute: (config: TestSuiteConfig) => {
+                if (config.failfast && config.runForever) {
+                    config.runForever = false;
+                    return {
+                        ok: false,
+                        message:
+                            "Cannot use `--run-forever` and `--fail-fast` at the same time. Ignoring `--run-forever`.",
+                        fatal: false,
+                    };
+                }
+                return { ok: true };
+            },
+        },
     ];
     private failedChecks = new Set();
     RUN_TYPE = RUN_TYPE;
@@ -132,6 +130,7 @@ export class TestSuiteConfig {
     onlyLastStats: boolean;
     mobileEmulation: boolean;
     promptForRetry: boolean;
+    runForever: boolean;
     testId?: string;
     suiteIds?: string[];
     suite?: string;
@@ -159,6 +158,7 @@ export class TestSuiteConfig {
         this.authCookie = authCookie;
         this.MAX_NUMBER_OF_WORKERS = rawOptions["workers"] ?? 4;
         this.MIN_TEST_PER_WORKER = rawOptions["tests-per-worker"] ?? 10;
+        this.runForever = rawOptions["run-forever"];
     }
 
     get baseSuiteURL() {

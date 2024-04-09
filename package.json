@@ -1,13 +1,15 @@
 {
-    "name": "TestWarden",
+    "name": "test-warden",
     "version": "1.0.0",
     "description": "Helper for odoo JS tests",
     "main": "build/index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "rimraf ./build && tsc",
-        "start": "node build/index.js",
-        "dev": "rimraf ./build && tsc && node build/index.js"
+        "_clear": "rimraf build/*",
+        "_tsc": "tsc",
+        "_make-bundle": "rollup --config",
+        "build": "rimraf build/* && rimraf release/* && tsc && rollup --config",
+        "start": "node release/test-warden.cjs",
+        "dev": "rimraf build/* && tsc && node build/index.js"
     },
     "author": "",
     "license": "ISC",
@@ -24,14 +26,19 @@
         "rxjs": "^7.8.1"
     },
     "devDependencies": {
+        "@rollup/plugin-json": "^6.1.0",
+        "@rollup/plugin-commonjs": "^25.0.7",
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@rollup/plugin-typescript": "^11.1.6",
         "@types/node": "^20.10.5",
         "@types/puppeteer": "^7.0.4",
         "eslint": "^8.56.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "^5.1.1",
         "prettier": "^3.1.1",
-        "typescript": "^5.3.3",
-        "webpack": "^5.90.3",
-        "webpack-cli": "^5.1.4"
+        "rollup": "^4.14.0",
+        "rollup-plugin-dts": "^6.1.0",
+        "typescript": "^5.3.3"
     }
 }

@@ -1,18 +1,18 @@
 declare interface TestSuiteConfigOptions {
-    testId?: string;
-    suiteIds?: string[];
-    numberOfTry?: number;
-    testSuite?: string;
-    serverURL: string;
-    headless: boolean;
-    failfast: boolean;
-    onlyLastStats: boolean;
-    mobileEmulation: boolean;
-    promptForRetry: boolean;
-    debug: boolean,
-    authCookie: AuthCookie;
+    debug?: boolean;
+    "test-id"?: string;
     workers?: number;
-    testsPerWorker?: number;
+    "tests-per-worker"?: number;
+    "suite-names"?: string[];
+    suite?: string;
+    "server-url"?: string;
+    visible?: boolean;
+    "fail-fast"?: boolean;
+    "only-last-stats"?: boolean;
+    mobile?: boolean;
+    "prompt-for-retry"?: boolean;
+    "open-fail-folder"?: boolean;
+    "run-forever": boolean;
 }
 
 declare type AuthCookie = {

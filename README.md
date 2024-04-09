@@ -18,6 +18,9 @@ Test Warden is a CLI launcher for unit testing that runs tests until failure, re
 
 - `--tests-per-worker <number>`: Set the minimum number of tests to run per worker. If 20 tests need to be run with 4 workers and 10 tests per worker, 2 workers will be used.
 
+- `--run-forever`: Will keep running even if a fail occurs.
+
+
 ### Additional Options (Not Yet Implemented)
 
 - `--only-last-stats`: Not yet implemented.

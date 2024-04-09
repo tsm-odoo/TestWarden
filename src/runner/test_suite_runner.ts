@@ -33,11 +33,6 @@ export class TestSuiteRunner {
         }
         const executor = new Executor(this.config, this.metadata);
         await executor.run();
-        // @ts-ignore
-        // TODO - only in headfull mode
-        await enquirer.confirm({
-            message: formatter.info("Press any key to quit..."),
-        });
     }
 
     private async promptSuiteOrTestId(): Promise<{ testId?: string; suiteId?: string }> {

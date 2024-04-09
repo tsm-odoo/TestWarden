@@ -39,6 +39,7 @@ function setupSignals() {
             { name: "server-url", type: String, defaultValue: "http://localhost:8069" },
             { name: "visible", type: Boolean, defaultValue: false },
             { name: "fail-fast", type: Boolean, defaultValue: false },
+            { name: "run-forever", type: Boolean, defaultValue: false },
             { name: "only-last-stats", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTEED
             { name: "mobile", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
             { name: "prompt-for-retry", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
@@ -52,7 +53,7 @@ function setupSignals() {
         try {
             await oraPromise(
                 async () => {
-                    browser = await launch({ headless: false });
+                    browser = await launch({ headless: "new" });
                     [page] = await browser.pages();
                     await setupCache(page, config);
                     await page.setCookie(config.authCookie);

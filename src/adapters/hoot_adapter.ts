@@ -1,5 +1,5 @@
 import { Page } from "puppeteer";
-import { BehaviorSubject, filter, first, firstValueFrom, takeUntil } from "rxjs";
+import { filter, first, firstValueFrom, takeUntil } from "rxjs";
 import {
     Test,
     TestResult,
@@ -10,16 +10,13 @@ import { processExit$ } from "../index.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
 
 export class HootAdapter extends TestSuiteAdapter {
+    static name = "Hoot";
+
     static check(page: Page) {
         return page.evaluate(() =>
             Boolean(window.odoo.loader.modules.get("@web/../lib/hoot/hoot")),
         );
     }
-
-    currentTest$ = new BehaviorSubject<Omit<Test, "pass">>(null);
-    done$ = new BehaviorSubject<boolean>(false);
-    lastFail$ = new BehaviorSubject<TestResult>(null);
-    testResults$ = new BehaviorSubject<TestResult[]>([]);
 
     async run(page: Page) {
         await page.waitForSelector(">>> .HootButtons button[title='Run']");

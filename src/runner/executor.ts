@@ -9,7 +9,8 @@ import { processExit$ } from "../index.js";
 import { ProgressBar } from "./progress_bar.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
 import { TestSuiteMetadata } from "../test_suite_metadata.js";
-import { formatter, logger } from "../helpers/terminal.js";
+import { formatter } from "../helpers/terminal.js";
+import enquirer from "enquirer";
 
 export type ExecutorStatistics = {
     min: number;
@@ -172,7 +173,7 @@ export class Executor {
                 );
             }
             lastFail$.subscribe((r) => {
-                this.progressBar.log(formatter.warn(`[${r.id}] ${r.name} failed`));
+                this.progressBar.log(formatter.warn(`[${r.id}] ${r.name}`));
                 if (this.config.failfast || this.config.runType === this.config.RUN_TYPE.TEST) {
                     splits.forEach((s) => s.stop());
                 }
@@ -186,10 +187,16 @@ export class Executor {
                 this.progressBar.update(this.progressBar.value, { runs });
             }
             await isDonePromise;
+            // TODO - clear this part, its handling --run-forever option alongside statistics
             const failedSplits = splits.filter((s) => s.failed);
             if (failedSplits.length > 0) {
+                await (enquirer as unknown as any).prompt({
+                    message: formatter.info("Press any key to continue..."),
+                });
                 this.progressBar.refresh();
-                break;
+                if (!this.config.runForever) {
+                    break;
+                }
             }
             this.progressBar.logStatistics();
             for (const split of splits) {
