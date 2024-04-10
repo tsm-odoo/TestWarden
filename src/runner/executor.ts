@@ -110,7 +110,10 @@ export class Executor {
                 .fill(0)
                 .map(() => this.metadata.testIds);
         } else {
-            const maxThreadsNeeded = Math.max(1, Math.floor(totalTests / this.config.MIN_TEST_PER_WORKER));
+            const maxThreadsNeeded = Math.max(
+                1,
+                Math.floor(totalTests / this.config.MIN_TEST_PER_WORKER),
+            );
             const numThreads = Math.min(this.config.MAX_NUMBER_OF_WORKERS, maxThreadsNeeded);
             const testsPerThread = Math.max(
                 Math.ceil(totalTests / numThreads),
@@ -191,10 +194,10 @@ export class Executor {
             // TODO - clear this part, its handling --run-forever option alongside statistics
             const failedSplits = splits.filter((s) => s.failed);
             if (failedSplits.length > 0) {
-                await (enquirer as unknown as any).prompt({
+                this.progressBar.stop();
+                await (enquirer as unknown as any).invisible({
                     message: formatter.info("Press any key to continue..."),
                 });
-                this.progressBar.refresh();
                 if (!this.config.runForever) {
                     break;
                 }

@@ -48,6 +48,7 @@ export class ProgressBar {
 
     start(total: number) {
         this.currentValue = 0;
+        this.stopped = false;
         if (!this.mainBar) {
             this.manager.log("\n");
             this.mainBar = this.manager.create(total, 0);
@@ -83,6 +84,10 @@ export class ProgressBar {
     }
 
     stop() {
+        if (this.stopped) {
+            return;
+        }
+        this.refresh();
         this.stopped = true;
         this.titleBar.update(BarSentinel.TITLE, { currentTestName: null });
         this.titleBar.stop();

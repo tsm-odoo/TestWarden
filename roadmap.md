@@ -5,3 +5,8 @@
 - screenshot
 - full support for cli options
 - tier list => run and save slow tests, failed tests, etc.
+
+
+# cleaning
+- Setup listeners of executor in a different func
+- Abstract class handles window listening instead of each subclass
