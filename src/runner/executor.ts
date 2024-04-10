@@ -9,8 +9,9 @@ import { processExit$ } from "../index.js";
 import { ProgressBar } from "./progress_bar.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
 import { TestSuiteMetadata } from "../test_suite_metadata.js";
-import { formatter } from "../helpers/terminal.js";
+import { formatter, logger } from "../helpers/terminal.js";
 import enquirer from "enquirer";
+import { StopExecution } from "../errors.js";
 
 export type ExecutorStatistics = {
     min: number;
@@ -109,7 +110,7 @@ export class Executor {
                 .fill(0)
                 .map(() => this.metadata.testIds);
         } else {
-            const maxThreadsNeeded = Math.floor(totalTests / this.config.MIN_TEST_PER_WORKER);
+            const maxThreadsNeeded = Math.max(1, Math.floor(totalTests / this.config.MIN_TEST_PER_WORKER));
             const numThreads = Math.min(this.config.MAX_NUMBER_OF_WORKERS, maxThreadsNeeded);
             const testsPerThread = Math.max(
                 Math.ceil(totalTests / numThreads),
