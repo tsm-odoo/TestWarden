@@ -10,3 +10,5 @@
 # cleaning
 - Setup listeners of executor in a different func
 - Abstract class handles window listening instead of each subclass
+- give config to adapter class?
+- catch .debug/.only

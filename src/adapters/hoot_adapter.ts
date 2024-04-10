@@ -37,9 +37,6 @@ export class HootAdapter extends TestSuiteAdapter {
     }
 
     async getMetadata() {
-        // TODO - odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__
-        // if debug is set, and the config is not set to this single test
-        // we should abort everything
         function getAllTests(suite) {
             const allTests = [];
             for (const job of suite.jobs) {
@@ -76,8 +73,6 @@ export class HootAdapter extends TestSuiteAdapter {
     }
 
     async setupProgressListener(page: Page) {
-        // NOTE - CPU USAGE investigation, removing those lines does not reduce
-        // cpu usage, 10-15% per browser in any case.
         this.testResults$
             .pipe(
                 takeUntil(processExit$.pipe(filter(Boolean))),

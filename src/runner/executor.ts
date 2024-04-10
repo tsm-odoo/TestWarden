@@ -1,17 +1,16 @@
 import chalk from "chalk";
+import enquirer from "enquirer";
 import { oraPromise } from "ora";
 import { Browser, Page } from "puppeteer";
 import { combineLatest, filter, from, map, merge, take, takeUntil } from "rxjs";
 import { TestResult, TestSuiteAdapter } from "src/adapters/test_suite_adapter.js";
 import { launch, setupCache } from "../browser.js";
 import { Deferred } from "../helpers/misc.js";
+import { formatter } from "../helpers/terminal.js";
 import { processExit$ } from "../index.js";
-import { ProgressBar } from "./progress_bar.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
 import { TestSuiteMetadata } from "../test_suite_metadata.js";
-import { formatter, logger } from "../helpers/terminal.js";
-import enquirer from "enquirer";
-import { StopExecution } from "../errors.js";
+import { ProgressBar } from "./progress_bar.js";
 
 export type ExecutorStatistics = {
     min: number;
@@ -40,8 +39,6 @@ class ExecutorSplit {
         await setupCache(this.page, this.config);
         await this.page.setCookie(this.config.authCookie);
         await this.page.bringToFront();
-        // TODO - give what the adapter needs instead of passing it to each
-        // function => at least config?
         await this.adapter.accessSuite(
             this.page,
             this.adapter.getSuiteURL(this.config, this.testIds),
@@ -61,7 +58,7 @@ class ExecutorSplit {
         this.doneDeferred.resolve(false);
         try {
             await this.adapter.abort(this.page);
-        } catch {}
+        } catch { }
     }
 
     async reload() {
@@ -135,12 +132,9 @@ export class Executor {
 
     async run() {
         const splits = await this.splitTests();
-        // NOTE - CPU USAGE investigation: usage is low before calling
-        // runOnce. Apparently, running the test suite is what consumes
-        // CPU.
-        let runs = 0;
-        while (true) {
-            // TODO - setup listener in custom method, too much logic here.
+        for (let runs = 1; true; runs++) {
+            // 1. Setup progress listeners which are taken from every split and
+            //    merges as one.
             const isDonePromise = Promise.all(splits.map((s) => s.isDonePromise));
             const done$ = from(isDonePromise);
             const testResults$ = combineLatest(splits.map((s) => s.results$)).pipe(
@@ -157,41 +151,42 @@ export class Executor {
                 takeUntil(done$),
                 filter(Boolean),
             );
+            // 2. Start the progress bar and update the state according to the
+            //    observables.
             this.progressBar.start(
-                this.config.runType === this.config.RUN_TYPE.TEST
+                this.config.testId
                     ? this.config.MAX_NUMBER_OF_WORKERS
                     : this.metadata.testIds.length,
             );
             testResults$.subscribe((r) => {
-                if (this.config.runType === this.config.RUN_TYPE.TEST && r.length > 0) {
-                    runs++;
-                }
-                this.progressBar.update(r.length, { runs, statistics: this.getStatistics(r) });
+                this.progressBar.update(r.length, {
+                    runs: this.config.testId ? r.length + runs * splits.length : runs,
+                    statistics: this.getStatistics(r)
+                });
                 this.progressBar.refresh();
             });
-            if (this.config.runType !== this.config.RUN_TYPE.TEST) {
+            lastFail$.subscribe((r) => {
+                this.progressBar.log(formatter.warn(`[${r.id}] ${r.name}`));
+                if (this.config.failfast || this.config.isSingleTest) {
+                    splits.forEach((s) => s.stop());
+                }
+            });
+            if (!this.config.isSingleTest) {
                 currentTest$.subscribe((t) =>
                     this.progressBar.update(this.progressBar.value, {
                         currentTestName: t?.name,
                     }),
                 );
             }
-            lastFail$.subscribe((r) => {
-                this.progressBar.log(formatter.warn(`[${r.id}] ${r.name}`));
-                if (this.config.failfast || this.config.runType === this.config.RUN_TYPE.TEST) {
-                    splits.forEach((s) => s.stop());
-                }
-            });
+            // 3. Run the test suite and wait for completion.
             for (const split of splits) {
                 await split.setup();
                 await split.runOnce();
             }
-            if (this.config.runType === this.config.RUN_TYPE.SUITE) {
-                runs++;
-                this.progressBar.update(this.progressBar.value, { runs });
-            }
             await isDonePromise;
-            // TODO - clear this part, its handling --run-forever option alongside statistics
+            // 4. Process results: print statistics, pause if failed. Then,
+            //    reload if there weren't any failures or if the `--run-forever`
+            //    option is set.
             const failedSplits = splits.filter((s) => s.failed);
             if (failedSplits.length > 0) {
                 this.progressBar.stop();
@@ -210,10 +205,10 @@ export class Executor {
         this.progressBar.stop();
     }
 
-    getStatistics(results: TestResult[]): ExecutorStatistics | undefined {
-        let min,
-            max,
-            sum = 0;
+    getStatistics(results: TestResult[]): ExecutorStatistics {
+        let min: number,
+            max: number,
+            sum: number = 0;
         for (const { duration } of results) {
             if (!min || min > duration) {
                 min = duration;

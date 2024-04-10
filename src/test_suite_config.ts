@@ -189,18 +189,8 @@ export class TestSuiteConfig {
         return this.testId ? this.RUN_TYPE.TEST : this.RUN_TYPE.SUITE;
     }
 
-    private generateHash(...strings: String[]) {
-        const str = strings.join("\x1C");
-
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = (hash << 5) - hash + str.charCodeAt(i);
-            hash |= 0;
-        }
-
-        // Convert the possibly negative number hash code into an 8 character
-        // hexadecimal string
-        return (hash + 16 ** 8).toString(16).slice(-8);
+    get isSingleTest() {
+        return Boolean(this.testId);
     }
 
     /**
