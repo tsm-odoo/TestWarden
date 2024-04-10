@@ -54,10 +54,9 @@ export class TestSuiteConfig {
                         fatal: false,
                     };
                 }
-                const missingSuiteNames =
-                    config.rawOptions["suite-names"]?.filter(
-                        (name) => !(config.generateHash(name) in config.metadata.suiteById),
-                    ) ?? [];
+                const missingSuiteNames = config.rawOptions["suite-names"]?.filter(
+                    (name) => !(name in config.metadata.suiteIdByName),
+                ) ?? [];
                 if (missingSuiteNames.length > 0) {
                     config.suiteIds = config.suiteIds?.filter(
                         (id) => id in config.metadata.suiteById,
@@ -147,7 +146,6 @@ export class TestSuiteConfig {
     ) {
         this.debug = rawOptions.debug ?? false;
         this.testId = rawOptions["test-id"];
-        this.suiteIds = (rawOptions["suite-names"] ?? []).map((name) => this.generateHash(name));
         this.suite = rawOptions.suite;
         this.serverURL = rawOptions["server-url"] ?? "http://localhost:8069";
         this.headless = !rawOptions.visible && !this.debug;

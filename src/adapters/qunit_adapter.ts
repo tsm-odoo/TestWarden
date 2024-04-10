@@ -35,7 +35,7 @@ export class QUnitAdapter extends TestSuiteAdapter {
             result.suiteById[suite.moduleId] = { name: suite.name, weight: null };
             for (const test of suite.tests) {
                 if (!test.skip) {
-                    result.testById[test.testId] = { id: test.testId };
+                    result.testById[test.testId] = { id: test.testId, name: test.name };
                     tests.push({ id: test.testId, name: test.name });
                 }
             }

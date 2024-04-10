@@ -5,7 +5,7 @@ import { authenticate } from "./helpers/network.js";
 import { cleanup, launch, setupCache } from "./browser.js";
 import { TestSuiteRunner } from "./runner/test_suite_runner.js";
 import { StopExecution } from "./errors.js";
-import { formatter, logger } from "./helpers/terminal.js";
+import { formatter } from "./helpers/terminal.js";
 import { TestSuiteAdapter } from "./adapters/test_suite_adapter.js";
 // TODO - how to load files automatically?
 import "./adapters/hoot_adapter.js";
@@ -70,13 +70,21 @@ function setupSignals() {
                 },
                 {
                     text: formatter.info("Launching chrome browser"),
-                    failText: (err) => formatter.error(err instanceof StopExecution ? err.message : "Could not start chrome browser"),
+                    failText: (err) =>
+                        formatter.error(
+                            err instanceof StopExecution
+                                ? err.message
+                                : "Could not start chrome browser",
+                        ),
                 },
             );
             const AdapterClass = await TestSuiteAdapter.getAdapter(page);
             config.adapterClass = AdapterClass;
             process.setMaxListeners(config.MAX_NUMBER_OF_WORKERS * 2 + 5);
             metadata = await TestSuiteMetadata.fetch(page, config);
+            config.suiteIds = (rawOptions["suite-names"] ?? [])
+                .map((name: string) => metadata.suiteIdByName[name])
+                .filter(Boolean);
         } finally {
             await browser.close();
         }
