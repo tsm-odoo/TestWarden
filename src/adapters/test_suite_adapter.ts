@@ -77,7 +77,9 @@ export abstract class TestSuiteAdapter {
      * allow to register required listeners.
      */
     async reloadSuite(page: Page) {
-        return page.reload();
+        return page.reload({
+            waitUntil: "load",
+        });
     }
 }
 
