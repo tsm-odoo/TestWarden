@@ -73,6 +73,7 @@ export class HootAdapter extends TestSuiteAdapter {
     }
 
     async setupProgressListener(page: Page) {
+        page.evaluate(() => window.gc());
         this.testResults$
             .pipe(
                 takeUntil(processExit$.pipe(filter(Boolean))),
