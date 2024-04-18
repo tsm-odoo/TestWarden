@@ -22,12 +22,12 @@
         "command-line-args": "^5.2.1",
         "enquirer": "^2.4.1",
         "ora": "^7.0.1",
-        "puppeteer": "^21.6.1",
+        "puppeteer": "22.6.5",
         "rxjs": "^7.8.1"
     },
     "devDependencies": {
-        "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-commonjs": "^25.0.7",
+        "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@rollup/plugin-typescript": "^11.1.6",

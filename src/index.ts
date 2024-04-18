@@ -53,7 +53,7 @@ function setupSignals() {
         try {
             await oraPromise(
                 async () => {
-                    browser = await launch({ headless: "new" });
+                    browser = await launch({ headless: true });
                     [page] = await browser.pages();
                     await setupCache(page, config);
                     await page.setCookie(config.authCookie);
