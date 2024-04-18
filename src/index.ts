@@ -70,12 +70,7 @@ function setupSignals() {
                 },
                 {
                     text: formatter.info("Launching chrome browser"),
-                    failText: (err) =>
-                        formatter.error(
-                            err instanceof StopExecution
-                                ? err.message
-                                : "Could not start chrome browser",
-                        ),
+                    failText: (err) => formatter.error(err.message),
                 },
             );
             const AdapterClass = await TestSuiteAdapter.getAdapter(page);
@@ -86,7 +81,7 @@ function setupSignals() {
                 .map((name: string) => metadata.suiteIdByName[name])
                 .filter(Boolean);
         } finally {
-            await browser.close();
+            await browser?.close();
         }
         config.metadata = metadata;
         config.check();
