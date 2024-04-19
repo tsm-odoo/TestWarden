@@ -24,7 +24,7 @@ export class TestSuiteRunner {
             );
         } else {
             logger.info(
-                `${this.config.adapterClass.name} Hoot test suite started for suite.s:`,
+                `${this.config.adapterClass.name} test suite started for suite.s:`,
                 this.config.suiteIds.map((id) => this.metadata.suiteById[id].name).join(", "),
             );
         }
