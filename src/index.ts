@@ -19,6 +19,7 @@ function setupSignals() {
     const onSigInt = async () => {
         process.off("SIGINT", onSigInt);
         processExit$.next(true);
+        await cleanup();
         await new Promise((res) => setTimeout(res));
         process.exit();
     };
