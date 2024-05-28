@@ -72,6 +72,28 @@ export class HootAdapter extends TestSuiteAdapter {
         return { testById, suiteById, testsBySuiteId };
     }
 
+    async accessSuite(page: Page, url: string) {
+        const prom = super.accessSuite(page, url);
+        // Register the page functions as soon as possible: hoot will take a
+        // snpashot of the initial window and clean every thing that was not in
+        // it after each suite.
+        page.once("framenavigated", async () => {
+            const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
+            if (!callbacksRegistered) {
+                page.exposeFunction("beforeEach", (test: Test) => this.currentTest$.next(test));
+                page.exposeFunction("afterEach", (result: TestResult) => {
+                    this.testResults$.next([...this.testResults$.value, result]);
+                });
+                page.exposeFunction("afterAll", async () => {
+                    // TODO - use rxjs instead, smth like testResults$.pipe(take(1)).subscribe(() => ...)
+                    await new Promise((res) => setTimeout(res, 50));
+                    this.done$.next(true);
+                });
+            }
+        });
+        return prom;
+    }
+
     async setupProgressListener(page: Page) {
         page.evaluate(() => window.gc());
         this.testResults$
@@ -81,33 +103,28 @@ export class HootAdapter extends TestSuiteAdapter {
                 filter((results) => results?.length > 0 && !results.at(-1).pass),
             )
             .subscribe((results) => this.lastFail$.next(results.at(-1)));
-        const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
-        if (!callbacksRegistered) {
-            page.exposeFunction("beforeEach", (test: Test) => this.currentTest$.next(test));
-            page.exposeFunction("afterEach", (result: TestResult) => {
-                this.testResults$.next([...this.testResults$.value, result]);
-            });
-            page.exposeFunction("afterAll", async () => {
-                // TODO - use rxjs instead, smth like testResults$.pipe(take(1)).subscribe(() => ...)
-                await new Promise((res) => setTimeout(res, 50));
-                this.done$.next(true);
-            });
-        }
         await page.evaluate(() => {
-            const { beforeEach, afterEach, afterAll } =
+            const { beforeEach, afterEach } =
                 window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
-            beforeEach((test) => {
-                window.beforeEach({ id: test.id, name: test.fullName });
-            });
-            afterEach((test) => {
-                window.afterEach({
-                    id: test.id,
-                    name: test.fullName,
-                    pass: test.results[0].pass && test.results[0].errors.length === 0,
-                    duration: (performance.now() - test.results[0].ts) / 1000,
-                });
-            });
-            afterAll(() => window.afterAll());
+            const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
+            beforeEach(
+                (test) => {
+                    window.beforeEach({ id: test.id, name: test.fullName });
+                },
+                { global: true },
+            );
+            afterEach(
+                (test) => {
+                    window.afterEach({
+                        id: test.id,
+                        name: test.fullName,
+                        pass: test.results[0].pass && test.results[0].errors.length === 0,
+                        duration: (performance.now() - test.results[0].ts) / 1000,
+                    });
+                },
+                { global: true },
+            );
+            // runner.afterAll(() => window.afterAll());
         });
     }
 
