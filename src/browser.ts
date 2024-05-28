@@ -11,12 +11,12 @@ export const CHROME_OPTIONS = [
     "--disable-default-apps",
     "--disable-device-discovery-notifications",
     "--disable-accelerated-2d-canvas",
-    '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--disable-accelerated-2d-canvas',
-    '--no-first-run',
-    '--no-zygote',
-    '--single-process',
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-accelerated-2d-canvas",
+    "--no-first-run",
+    "--no-zygote",
+    "--single-process",
     "--disable-translate",
     "--no-sandbox",
     "--js-flags=--expose-gc",
@@ -40,6 +40,10 @@ export async function cleanup() {
 }
 
 const cache = {};
+const excludedRoutes = [
+    "/ir.module.module.dependency/all_dependencies",
+];
+
 /**
  * Cache responses to speed up reload time. Ideally, the browser should use the
  * memory cache which is faster.
@@ -70,6 +74,9 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         try {
             buffer = await response.buffer();
         } catch (error) {
+            return;
+        }
+        if (excludedRoutes.some((r) => url.includes(r))) {
             return;
         }
         cache[url] = {

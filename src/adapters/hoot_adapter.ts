@@ -124,7 +124,7 @@ export class HootAdapter extends TestSuiteAdapter {
                 },
                 { global: true },
             );
-            // runner.afterAll(() => window.afterAll());
+            runner.afterAll(() => window.afterAll());
         });
     }
 
