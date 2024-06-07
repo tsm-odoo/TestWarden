@@ -19,7 +19,6 @@ export const CHROME_OPTIONS = [
     "--single-process",
     "--disable-translate",
     "--no-sandbox",
-    "--js-flags=--expose-gc",
     `--window-size=1366,768`, // Same as RunBot
 ];
 

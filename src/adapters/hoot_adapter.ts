@@ -8,7 +8,6 @@ import {
 } from "../adapters/test_suite_adapter.js";
 import { processExit$ } from "../index.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
-
 export class HootAdapter extends TestSuiteAdapter {
     static name = "Hoot";
 
@@ -95,7 +94,6 @@ export class HootAdapter extends TestSuiteAdapter {
     }
 
     async setupProgressListener(page: Page) {
-        page.evaluate(() => window.gc());
         this.testResults$
             .pipe(
                 takeUntil(processExit$.pipe(filter(Boolean))),
