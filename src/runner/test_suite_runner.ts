@@ -9,7 +9,7 @@ export class TestSuiteRunner {
     constructor(
         private config: TestSuiteConfig,
         private metadata: TestSuiteMetadata,
-    ) { }
+    ) {}
 
     async run() {
         if (!this.config.hasTarget) {
@@ -20,7 +20,9 @@ export class TestSuiteRunner {
         this.config.check();
         if (this.config.isSingleTest) {
             logger.info(
-                `${this.config.adapterClass.name} test suite started for test: [${this.config.testId}] ${this.metadata.testsById[this.config.testId].name}`,
+                `${this.config.adapterClass.name} test suite started for test: [${
+                    this.config.testId
+                }] ${this.metadata.testsById[this.config.testId].name}`,
             );
         } else {
             logger.info(

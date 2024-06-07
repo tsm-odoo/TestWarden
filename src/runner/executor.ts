@@ -189,11 +189,11 @@ export class Executor {
             //    option is set.
             const failedSplits = splits.filter((s) => s.failed);
             if (failedSplits.length > 0) {
+                this.progressBar.stop();
                 if (!this.config.runForever) {
                     await (enquirer as unknown as any).invisible({
                         message: formatter.info("Press any key to continue..."),
                     });
-                    this.progressBar.stop();
                     break;
                 }
             }
