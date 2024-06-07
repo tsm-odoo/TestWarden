@@ -40,9 +40,8 @@ export async function cleanup() {
 }
 
 const cache = {};
-const excludedRoutes = [
-    "/ir.module.module.dependency/all_dependencies",
-];
+const allDepsRoute = "/ir.module.module.dependency/all_dependencies";
+const allDepsCache = {};
 
 /**
  * Cache responses to speed up reload time. Ideally, the browser should use the
@@ -51,7 +50,7 @@ const excludedRoutes = [
 export async function setupCache(page: Page, config: TestSuiteConfig) {
     await page.setRequestInterception(true);
     page.on("request", async (request) => {
-        if (request.resourceType() === 'image') {
+        if (request.resourceType() === "image") {
             request.abort();
             return;
         }
@@ -61,6 +60,13 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         }
         if (!url.includes("file:") && url in cache) {
             await request.respond(cache[url]);
+        } else if (url.includes(allDepsRoute)) {
+            const { params } = JSON.parse(await request.fetchPostData());
+            if (JSON.stringify(params.kwargs.module_names) in allDepsCache) {
+                await request.respond(allDepsCache[JSON.stringify(params.kwargs.module_names)]);
+            } else {
+                request.continue();
+            }
         } else {
             request.continue();
         }
@@ -76,10 +82,7 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         } catch (error) {
             return;
         }
-        if (excludedRoutes.some((r) => url.includes(r))) {
-            return;
-        }
-        cache[url] = {
+        const cachedResponse = {
             status: response.status(),
             headers: {
                 ...response.headers(),
@@ -87,5 +90,11 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
             },
             body: buffer,
         };
+        if (url.includes(allDepsRoute)) {
+            const { params } = JSON.parse(await response.request().fetchPostData());
+            allDepsCache[JSON.stringify(params.kwargs.module_names)] = cachedResponse;
+            return;
+        }
+        cache[url] = cachedResponse;
     });
 }
