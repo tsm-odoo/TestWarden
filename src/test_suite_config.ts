@@ -10,6 +10,7 @@ enum RUN_TYPE {
 
 export class TestSuiteConfig {
     static NOT_YET_IMPLEMENTED = ["promptForRetry", "onlyLastStats", "mobileEmulation"];
+    // TODO, move in dedicated file
     static CHECKS = [
         {
             id: "NOT_IMPLEMENTED_YET",
@@ -54,9 +55,10 @@ export class TestSuiteConfig {
                         fatal: false,
                     };
                 }
-                const missingSuiteNames = config.rawOptions["suite-names"]?.filter(
-                    (name) => !(name in config.metadata.suiteIdByName),
-                ) ?? [];
+                const missingSuiteNames =
+                    config.rawOptions["suite-names"]?.filter(
+                        (name) => !(name in config.metadata.suiteIdByName),
+                    ) ?? [];
                 if (missingSuiteNames.length > 0) {
                     config.suiteIds = config.suiteIds?.filter(
                         (id) => id in config.metadata.suiteById,
@@ -71,7 +73,7 @@ export class TestSuiteConfig {
             },
         },
         {
-            id: "1_WORKER_IN_DEBUG",
+            id: "DEBUG_ONLY_1_WORKER",
             execute: (config: TestSuiteConfig) => {
                 if (config.debug && "workers" in config.rawOptions) {
                     config.MAX_NUMBER_OF_WORKERS = 1;
@@ -133,8 +135,26 @@ export class TestSuiteConfig {
                     };
                 }
                 return { ok: true };
-            }
-        }
+            },
+        },
+        {
+            id: "NO_DEBUG_NO_ONLY_TAG",
+            execute: (config: TestSuiteConfig) => {
+                const tags = new Set(
+                    Object.values(config.metadata.testsById)
+                        .map(({ tags }) => tags)
+                        .flat(),
+                );
+                if (tags.has("debug") || tags.has("only")) {
+                    return {
+                        ok: false,
+                        message: "Tests with `test.debug` or `test.only` are not allowed.",
+                        fatal: true,
+                    };
+                }
+                return { ok: true };
+            },
+        },
     ];
     private failedChecks = new Set();
     RUN_TYPE = RUN_TYPE;

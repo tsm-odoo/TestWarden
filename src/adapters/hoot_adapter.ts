@@ -56,10 +56,10 @@ export class HootAdapter extends TestSuiteAdapter {
         const testById = {};
         const suiteById = {};
         const testsBySuiteId = {};
-        for (const { id: testId, fullName } of odoo.loader.modules
+        for (const { id: testId, fullName, tags } of odoo.loader.modules
             .get("@web/../lib/hoot/hoot")
             .__debug__.tests.values()) {
-            testById[testId] = { name: fullName };
+            testById[testId] = { name: fullName, tags: tags.map(({ id }) => id) };
         }
         for (const suite of odoo.loader.modules
             .get("@web/../lib/hoot/hoot")
@@ -102,8 +102,7 @@ export class HootAdapter extends TestSuiteAdapter {
             )
             .subscribe((results) => this.lastFail$.next(results.at(-1)));
         await page.evaluate(() => {
-            const { beforeEach } =
-                window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
+            const { beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
             const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
             beforeEach(
                 (test) => {

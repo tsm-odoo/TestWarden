@@ -6,6 +6,7 @@ import { StopExecution } from "./errors.js";
 import { TestSuiteConfig } from "./test_suite_config.js";
 
 export class TestSuiteMetadata {
+    // TODO rename testById
     testsById: IMetadata["testById"];
     suiteById: IMetadata["suiteById"];
     testsBySuiteId: IMetadata["testsBySuiteId"];
