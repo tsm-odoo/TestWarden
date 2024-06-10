@@ -102,7 +102,7 @@ export class HootAdapter extends TestSuiteAdapter {
             )
             .subscribe((results) => this.lastFail$.next(results.at(-1)));
         await page.evaluate(() => {
-            const { beforeEach, afterEach } =
+            const { beforeEach } =
                 window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
             const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
             beforeEach(
@@ -111,12 +111,12 @@ export class HootAdapter extends TestSuiteAdapter {
                 },
                 { global: true },
             );
-            afterEach(
+            runner.afterPostTest(
                 (test) => {
                     window.afterEach({
                         id: test.id,
                         name: test.fullName,
-                        pass: test.results[0].pass && test.results[0].errors.length === 0,
+                        pass: test.results[0].pass,
                         duration: (performance.now() - test.results[0].ts) / 1000,
                     });
                 },
