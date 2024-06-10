@@ -82,7 +82,7 @@ export class QUnitAdapter extends TestSuiteAdapter {
                     "DOMContentLoaded",
                     () => {
                         window.originalQUnitStart = window.QUnit.start;
-                        window.QUnit.start = {};
+                        window.QUnit.start = () => {};
                     },
                     { capture: true, once: true },
                 );
@@ -99,7 +99,7 @@ export class QUnitAdapter extends TestSuiteAdapter {
                     "DOMContentLoaded",
                     () => {
                         window.originalQUnitStart = window.QUnit.start;
-                        window.QUnit.start = {};
+                        window.QUnit.start = () => {};
                     },
                     { capture: true, once: true },
                 );
@@ -109,7 +109,6 @@ export class QUnitAdapter extends TestSuiteAdapter {
     }
 
     async setupProgressListener(page: Page) {
-        page.evaluate(() => window.gc());
         // this could be part of the abstract class => the child just provide
         // 1. a way to listen to callback (beforeEach etc)
         // 2. a formatter for the test/results

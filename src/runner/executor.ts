@@ -58,7 +58,7 @@ class ExecutorSplit {
         this.doneDeferred.resolve(false);
         try {
             await this.adapter.abort(this.page);
-        } catch { }
+        } catch {}
     }
 
     async reload() {
@@ -161,7 +161,7 @@ export class Executor {
             testResults$.subscribe((r) => {
                 this.progressBar.update(r.length, {
                     runs: this.config.testId ? r.length + runs * splits.length : runs,
-                    statistics: this.getStatistics(r)
+                    statistics: this.getStatistics(r),
                 });
                 this.progressBar.refresh();
             });
@@ -188,7 +188,7 @@ export class Executor {
             // 4. Let the runner process the result.
             yield {
                 success: splits.filter((s) => s.failed).length === 0,
-            }
+            };
             for (const split of splits) {
                 await split.reload();
             }

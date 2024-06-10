@@ -6,7 +6,7 @@ import { StopExecution } from "../errors.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
 
 export type IMetadata = {
-    testById: { [id: string]: { name: string, tags: string[] } }; // TODO - deduce this from testBySuiteId
+    testById: { [id: string]: { name: string; tags: string[] } }; // TODO - deduce this from testBySuiteId
     suiteById: { [id: string]: { name: string; weight: number } };
     testsBySuiteId: { [id: string]: { id: string; name: string; tags: string[] } };
 };
