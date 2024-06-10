@@ -130,7 +130,7 @@ export class Executor {
         return splits;
     }
 
-    async run() {
+    async *run() {
         const splits = await this.splitTests();
         for (let runs = 1; true; runs++) {
             // 1. Setup progress listeners which are taken from every split and
@@ -184,24 +184,18 @@ export class Executor {
                 await split.runOnce();
             }
             await isDonePromise;
-            // 4. Process results: print statistics, pause if failed. Then,
-            //    reload if there weren't any failures or if the `--run-forever`
-            //    option is set.
-            const failedSplits = splits.filter((s) => s.failed);
-            if (failedSplits.length > 0) {
-                this.progressBar.stop();
-                if (!this.config.runForever) {
-                    await (enquirer as unknown as any).invisible({
-                        message: formatter.info("Press any key to continue..."),
-                    });
-                    break;
-                }
-            }
             this.progressBar.logStatistics();
+            // 4. Let the runner process the result.
+            yield {
+                success: splits.filter((s) => s.failed).length === 0,
+            }
             for (const split of splits) {
                 await split.reload();
             }
         }
+    }
+
+    stop() {
         this.progressBar.stop();
     }
 

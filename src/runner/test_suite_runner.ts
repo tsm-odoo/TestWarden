@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import enquirer from "enquirer";
-import { logger } from "../helpers/terminal.js";
+import { formatter, logger } from "../helpers/terminal.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
 import { TestSuiteMetadata } from "../test_suite_metadata.js";
 import { Executor } from "./executor.js";
@@ -31,7 +31,16 @@ export class TestSuiteRunner {
             );
         }
         const executor = new Executor(this.config, this.metadata);
-        await executor.run();
+        for await (const { success } of executor.run()) {
+            if (!success && !this.config.runForever) {
+                executor.stop();
+                await (enquirer as unknown as any).invisible({
+                    message: formatter.info("Press any key to quit..."),
+                });
+                break;
+            }
+        }
+        executor.stop();
     }
 
     private async promptSuiteOrTestId(): Promise<{ testId?: string; suiteId?: string }> {
