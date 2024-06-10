@@ -120,6 +120,21 @@ export class TestSuiteConfig {
                 return { ok: true };
             },
         },
+        {
+            id: "RUN_FOREVER_ONLY_MODULES",
+            execute: (config: TestSuiteConfig) => {
+                if (config.runForever && config.isSingleTest) {
+                    config.runForever = false;
+                    return {
+                        ok: false,
+                        message:
+                            "Cannot use `--run-forever` and `--suite-ids` at the same time. Ignoring `--run-forever`.",
+                        fatal: false,
+                    };
+                }
+                return { ok: true };
+            }
+        }
     ];
     private failedChecks = new Set();
     RUN_TYPE = RUN_TYPE;
