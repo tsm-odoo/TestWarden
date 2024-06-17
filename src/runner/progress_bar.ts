@@ -35,7 +35,6 @@ export class ProgressBar {
                 formatTime(t) {
                     return Number.isFinite(t) && Number.isInteger(t) ? t + "s" : t.toString();
                 },
-                linewrap: true,
                 barCompleteChar: "\u2588",
                 barIncompleteChar: "\u2591",
                 stopOnComplete: true,

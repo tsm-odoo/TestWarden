@@ -8,6 +8,8 @@ import {
 } from "../adapters/test_suite_adapter.js";
 import { processExit$ } from "../index.js";
 import { TestSuiteConfig } from "../test_suite_config.js";
+import { logger } from "../helpers/terminal.js";
+
 export class HootAdapter extends TestSuiteAdapter {
     static name = "Hoot";
 

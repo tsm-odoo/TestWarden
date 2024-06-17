@@ -7,7 +7,7 @@ import { TestSuiteConfig } from "./test_suite_config.js";
 
 export class TestSuiteMetadata {
     // TODO rename testById
-    testsById: IMetadata["testById"];
+    testById: IMetadata["testById"];
     suiteById: IMetadata["suiteById"];
     testsBySuiteId: IMetadata["testsBySuiteId"];
     private _testNames: string[];
@@ -20,13 +20,13 @@ export class TestSuiteMetadata {
         private config: TestSuiteConfig,
         data: IMetadata,
     ) {
-        this.testsById = data.testById;
+        this.testById = data.testById;
         this.suiteById = data.suiteById;
         this.testsBySuiteId = data.testsBySuiteId;
     }
 
     get testNames() {
-        this._testNames ??= Object.values(this.testsById).map(({ name }) => name);
+        this._testNames ??= Object.values(this.testById).map(({ name }) => name);
         return this._testNames;
     }
 
@@ -36,7 +36,7 @@ export class TestSuiteMetadata {
     }
 
     get testIdByName() {
-        this._testIdByName ??= Object.entries(this.testsById).reduce(
+        this._testIdByName ??= Object.entries(this.testById).reduce(
             (acc, [key, value]) => ((acc[value.name] = key), acc),
             {},
         );

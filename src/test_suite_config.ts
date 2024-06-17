@@ -48,7 +48,7 @@ export class TestSuiteConfig {
         {
             id: "TARGET_EXISTS",
             execute: (config: TestSuiteConfig) => {
-                if (config.testId && !(config.testId in config.metadata.testsById)) {
+                if (config.testId && !(config.testId in config.metadata.testById)) {
                     return {
                         ok: false,
                         message: `Test with id ${config.testId} does not exist.`,
@@ -141,7 +141,7 @@ export class TestSuiteConfig {
             id: "NO_DEBUG_NO_ONLY_TAG",
             execute: (config: TestSuiteConfig) => {
                 const tags = new Set(
-                    Object.values(config.metadata.testsById)
+                    Object.values(config.metadata.testById)
                         .map(({ tags }) => tags)
                         .flat(),
                 );

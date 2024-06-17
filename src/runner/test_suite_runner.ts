@@ -22,7 +22,7 @@ export class TestSuiteRunner {
             logger.info(
                 `${this.config.adapterClass.name} test suite started for test: [${
                     this.config.testId
-                }] ${this.metadata.testsById[this.config.testId].name}`,
+                }] ${this.metadata.testById[this.config.testId].name}`,
             );
         } else {
             logger.info(
@@ -34,7 +34,7 @@ export class TestSuiteRunner {
         for await (const { success } of executor.run()) {
             if (!success && !this.config.runForever) {
                 executor.stop();
-                await (enquirer as unknown as any).invisible({
+                await (enquirer as any).invisible({
                     message: formatter.info("Press any key to quit..."),
                 });
                 break;
