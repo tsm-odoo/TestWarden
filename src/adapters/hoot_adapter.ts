@@ -120,6 +120,9 @@ export class HootAdapter extends TestSuiteAdapter {
                         pass: test.results[0].pass,
                         duration: (performance.now() - test.results[0].ts) / 1000,
                     });
+                    if (runner.config.debugTest) {
+                        window.afterAll();
+                    }
                 },
                 { global: true },
             );
