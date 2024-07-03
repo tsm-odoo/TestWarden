@@ -23,10 +23,30 @@ Test Warden is a CLI launcher for unit testing that runs tests until failure, re
 
 ### Additional Options (Not Yet Implemented)
 
-- `--only-last-stats`: Not yet implemented.
-
 - `--mobile`: Not yet implemented.
 
 - `--prompt-for-retry`: Not yet implemented.
 
 - `--open-fail-folder`: Not yet implemented.
+
+
+## Configuration
+
+You can configure the test warden launcher via a `settings.json` file placed in the root of your project.
+
+- `suites`: Allow to define several suites, linked to a relative URL.
+
+e.g.
+
+```json
+{
+    "suites": {
+        "hoot": "/web/tests/next",
+        "qunit": "/web/tests",
+    },
+}
+```
+
+```
+test-warden -m @mail --suite hoot
+```

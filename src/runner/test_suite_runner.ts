@@ -1,9 +1,15 @@
+import { formatter, logger } from "@warden/helpers/terminal";
+import { TestSuiteConfig } from "@warden/test_suite_config";
+import { TestSuiteMetadata } from "@warden/test_suite_metadata";
+import { Executor } from "@warden/runner/executor";
+
 import chalk from "chalk";
 import enquirer from "enquirer";
-import { formatter, logger } from "../helpers/terminal.js";
-import { TestSuiteConfig } from "../test_suite_config.js";
-import { TestSuiteMetadata } from "../test_suite_metadata.js";
-import { Executor } from "./executor.js";
+import fs from "fs";
+import fsPromises from "fs/promises";
+import path from "path";
+import { oraPromise } from "ora";
+import { cleanup } from "@warden/browser.js";
 
 export class TestSuiteRunner {
     constructor(
@@ -12,13 +18,14 @@ export class TestSuiteRunner {
     ) {}
 
     async run() {
+        await this.cleanupFailFolder();
         if (!this.config.hasTarget) {
-            const { testId, suiteId } = await this.promptSuiteOrTestId();
+            const { testId, suiteName } = await this.promptSuiteOrTestId();
             this.config.testId = testId;
-            this.config.suiteIds = suiteId ? [suiteId] : this.config.suiteIds;
+            this.config.suiteNames = suiteName ? [suiteName] : this.config.suiteNames;
         }
         this.config.check();
-        if (this.config.isSingleTest) {
+        if (this.config.testId) {
             logger.info(
                 `${this.config.adapterClass.name} test suite started for test: [${
                     this.config.testId
@@ -31,19 +38,49 @@ export class TestSuiteRunner {
             );
         }
         const executor = new Executor(this.config, this.metadata);
-        for await (const { success } of executor.run()) {
-            if (!success && !this.config.runForever) {
-                executor.stop();
-                await (enquirer as any).invisible({
-                    message: formatter.info("Press any key to quit..."),
-                });
-                break;
+        try {
+            for await (const { success } of executor.run()) {
+                if (!success && !this.config.runForever) {
+                    executor.stop();
+                    await executor.screenshotFails();
+                    await (enquirer as any).invisible({
+                        message: formatter.info("Press any key to quit..."),
+                    });
+                    break;
+                }
             }
+        } finally {
+            cleanup();
         }
         executor.stop();
     }
 
-    private async promptSuiteOrTestId(): Promise<{ testId?: string; suiteId?: string }> {
+    private async cleanupFailFolder() {
+        if (!fs.existsSync(this.config.failFolderPath)) {
+            return;
+        }
+        const folders = fs
+            .readdirSync(this.config.failFolderPath)
+            .map((folder) => ({
+                folder,
+                birthtimeMs: fs.statSync(path.join(this.config.failFolderPath, folder)).birthtimeMs,
+            }))
+            .filter((f) => Date.now() - f.birthtimeMs > 24 * 60 * 60 * 1000);
+        const toDelete = folders.map((f) => path.join(this.config.failFolderPath, f.folder));
+        if (toDelete.length === 0) {
+            return;
+        }
+        return oraPromise(
+            async () => Promise.all(toDelete.map((f) => fsPromises.rm(f, { recursive: true }))),
+            {
+                text: formatter.info(`Cleaning up fail folder: ${this.config.failFolderPath}`),
+                successText: formatter.info(`Cleaned up ${toDelete.length} old results`),
+                failText: formatter.error("Failed to clean up fail folder"),
+            },
+        );
+    }
+
+    private async promptSuiteOrTestId(): Promise<{ testId?: string; suiteName?: string }> {
         // TODO - If there is no suite nor tests detected, display error
         // @ts-ignore
         const mode = await enquirer.select({
@@ -60,13 +97,9 @@ export class TestSuiteRunner {
                     : this.metadata.suiteNames,
             limit: 5,
         });
-        const targetId =
-            mode === this.config.RUN_TYPE.TEST
-                ? this.metadata.testIdByName[name]
-                : this.metadata.suiteIdByName[name];
         return {
-            testId: mode === this.config.RUN_TYPE.TEST ? targetId : undefined,
-            suiteId: mode === this.config.RUN_TYPE.SUITE ? targetId : undefined,
+            testId: mode === this.config.RUN_TYPE.TEST ? this.metadata.testIdByName[name] : undefined,
+            suiteName: mode === this.config.RUN_TYPE.SUITE ? name : undefined,
         };
     }
 }

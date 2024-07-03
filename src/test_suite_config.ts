@@ -1,12 +1,25 @@
-import { TestSuiteAdapter } from "./adapters/test_suite_adapter.js";
-import { StopExecution } from "./errors.js";
-import { logger } from "./helpers/terminal.js";
-import { TestSuiteMetadata } from "./test_suite_metadata.js";
+import { TestSuiteAdapter } from "@warden/adapters/test_suite_adapter";
+import { StopExecution } from "@warden/errors";
+import { formatter, logger } from "@warden/helpers/terminal";
+import { TestSuiteMetadata } from "@warden/test_suite_metadata";
+import { authenticate } from "@warden/helpers/network";
+
+import commandLineArgs from "command-line-args";
+import fs from "fs";
+import path from "path";
+import { oraPromise } from "ora";
 
 enum RUN_TYPE {
     TEST = "Test",
     SUITE = "Suite",
 }
+
+type JSONSettings = {
+    suites: { [key: string]: string };
+    workers: number;
+    minWorkerLoad: number;
+    serverURL: string;
+};
 
 export class TestSuiteConfig {
     static NOT_YET_IMPLEMENTED = ["promptForRetry", "onlyLastStats", "mobileEmulation"];
@@ -56,12 +69,11 @@ export class TestSuiteConfig {
                     };
                 }
                 const missingSuiteNames =
-                    config.rawOptions["suite-names"]?.filter(
-                        (name) => !(name in config.metadata.suiteIdByName),
-                    ) ?? [];
+                    config.suiteNames.filter((name) => !(name in config.metadata.suiteIdByName)) ??
+                    [];
                 if (missingSuiteNames.length > 0) {
-                    config.suiteIds = config.suiteIds?.filter(
-                        (id) => id in config.metadata.suiteById,
+                    config.suiteNames = config.suiteNames.filter(
+                        (name) => !missingSuiteNames.includes(name),
                     );
                     return {
                         ok: false,
@@ -73,9 +85,9 @@ export class TestSuiteConfig {
             },
         },
         {
-            id: "DEBUG_ONLY_1_WORKER",
+            id: "DEBUG_VISIBLE_ONLY_1_WORKER",
             execute: (config: TestSuiteConfig) => {
-                if (config.debug && "workers" in config.rawOptions) {
+                if (config.debug && !config.headless && "workers" in config.rawOptions) {
                     config.MAX_NUMBER_OF_WORKERS = 1;
                     delete config.rawOptions["workers"];
                     return {
@@ -84,7 +96,7 @@ export class TestSuiteConfig {
                             "Only one worker can be used in debug mode. Ignoring `--workers` argument.",
                         fatal: false,
                     };
-                } else if (config.debug) {
+                } else if (config.debug && !config.headless) {
                     config.MAX_NUMBER_OF_WORKERS = 1;
                 }
                 return { ok: true };
@@ -166,7 +178,7 @@ export class TestSuiteConfig {
     promptForRetry: boolean;
     runForever: boolean;
     testId?: string;
-    suiteIds?: string[];
+    suiteNames?: string[];
     suite?: string;
     serverURL: string;
     adapterClass: new () => TestSuiteAdapter;
@@ -174,6 +186,64 @@ export class TestSuiteConfig {
     MAX_NUMBER_OF_WORKERS: number;
     MIN_TEST_PER_WORKER: number;
     metadata: TestSuiteMetadata;
+    failFolderPath = path.join(process.cwd(), "FailedTests");
+
+    private static async parseJSONSettings(): Promise<JSONSettings> {
+        const settingsFilePath = path.resolve(process.cwd(), "settings.json");
+        let settings = {} as JSONSettings;
+        try {
+            await oraPromise(
+                async () => {
+                    const settingsFilePath = path.resolve(process.cwd(), "settings.json");
+                    await fs.promises.access(settingsFilePath, fs.constants.F_OK);
+                    const rawData = await fs.promises.readFile(settingsFilePath, "utf-8");
+                    settings = JSON.parse(rawData);
+                    return settings;
+                },
+                {
+                    text: formatter.info(`Loading settings from ${settingsFilePath}`),
+                    failText: (err: any) => {
+                        return err.code === "ENOENT"
+                            ? formatter.info("No settings found, defaults will be used")
+                            : formatter.error(
+                                  `Failed to load settings from "${settingsFilePath}"\n\t${err.message}`,
+                              );
+                    },
+                    successText: formatter.info(`Settings loaded from ${settingsFilePath}`),
+                },
+            );
+        } catch (e) {}
+        settings.suites ??= {};
+        settings.workers = Number(settings.workers ?? 4);
+        settings.minWorkerLoad = Number(settings.minWorkerLoad ?? 15);
+        settings.serverURL ??= "http://localhost:8069";
+        return settings;
+    }
+
+    static async parseCLIOptions() {
+        const settings = await TestSuiteConfig.parseJSONSettings();
+        const optionsDefinition = [
+            { name: "debug", type: Boolean },
+            { name: "test-id", alias: "t", type: String },
+            { name: "workers", type: Number, defaultValue: settings["workers"] },
+            { name: "min-worker-load", type: Number, defaultValue: settings["minWorkerLoad"] },
+            { name: "suite-names", alias: "m", multiple: true },
+            { name: "suite", type: String, defaultValue: "/web/tests/next" },
+            { name: "server-url", type: String, defaultValue: settings["serverURL"] },
+            { name: "visible", type: Boolean, defaultValue: false },
+            { name: "fail-fast", type: Boolean, defaultValue: false },
+            { name: "run-forever", type: Boolean, defaultValue: false },
+            { name: "mobile", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
+            { name: "prompt-for-retry", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
+        ];
+        const rawOptions = commandLineArgs(optionsDefinition);
+        if ("suite" in rawOptions) {
+            rawOptions["suite"] =
+                settings.suites[rawOptions["suite"] as string] ?? rawOptions["suite"];
+        }
+        const authCookie = await authenticate(rawOptions["server-url"], "admin", "admin");
+        return new TestSuiteConfig(rawOptions, authCookie);
+    }
 
     constructor(
         public rawOptions: TestSuiteConfigOptions,
@@ -182,16 +252,17 @@ export class TestSuiteConfig {
         this.debug = rawOptions.debug ?? false;
         this.testId = rawOptions["test-id"];
         this.suite = rawOptions.suite;
-        this.serverURL = rawOptions["server-url"] ?? "http://localhost:8069";
-        this.headless = !rawOptions.visible && !this.debug;
+        this.serverURL = rawOptions["server-url"];
+        this.headless = !rawOptions.visible;
         this.failfast = rawOptions["fail-fast"] ?? false;
         this.onlyLastStats = rawOptions["only-last-stats"] ?? false;
         this.mobileEmulation = rawOptions.mobile ?? false;
         this.promptForRetry = rawOptions["prompt-for-retry"] ?? false;
         this.authCookie = authCookie;
-        this.MAX_NUMBER_OF_WORKERS = rawOptions["workers"] ?? 4;
-        this.MIN_TEST_PER_WORKER = rawOptions["tests-per-worker"] ?? 10;
+        this.MAX_NUMBER_OF_WORKERS = rawOptions["workers"];
+        this.MIN_TEST_PER_WORKER = rawOptions["min-worker-load"];
         this.runForever = rawOptions["run-forever"];
+        this.suiteNames = rawOptions["suite-names"] ?? [];
     }
 
     get baseSuiteURL() {
@@ -225,11 +296,17 @@ export class TestSuiteConfig {
     }
 
     get isSingleTest() {
-        return Boolean(this.testId);
+        return this.metadata.testIds.length === 1;
+    }
+
+    get suiteIds() {
+        return this.suiteNames
+            .map((name: string) => this.metadata.suiteIdByName[name])
+            .filter(Boolean);
     }
 
     /**
-     * Checks if the config is valid. If the application can recover, adapt the
+     * Check if the config is valid. If the application can recover, adapt the
      * config and go further. If not, throw an error. This method should only be
      * called when the metadata are available.
      */

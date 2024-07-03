@@ -1,36 +1,18 @@
+import { ExecutorStatistics } from "@warden/runner/executor";
+
 import chalk from "chalk";
 import cliProgress from "cli-progress";
-import { ExecutorStatistics } from "./executor.js";
-
-enum BarSentinel {
-    TITLE = Infinity,
-}
 
 export class ProgressBar {
     private manager: cliProgress.MultiBar;
     private titleBar: cliProgress.SingleBar;
     private mainBar: cliProgress.SingleBar;
-    private currentValue = 0;
+    private statisticsBar: cliProgress.SingleBar;
     private stopped = false;
-    private statisticDelimiter = "‎";
-    private lastStatistics: string;
 
     constructor() {
         this.manager = new cliProgress.MultiBar(
             {
-                format: (options, params, payload) => {
-                    if (params.total === BarSentinel.TITLE) {
-                        options.format = chalk[this.textColor](payload.currentTestName ?? "");
-                    } else {
-                        options.format = chalk[this.barColor]("{bar} {value}/{total}");
-                        options.format += ` ${this.statisticDelimiter}[run.s: {runs} | t: {duration_formatted} | Σt: {sum} | min: {min} | med: {median} | max: {max}]`;
-                    }
-                    const format = cliProgress.Format.Formatter(options, params, payload);
-                    if (params.total !== BarSentinel.TITLE) {
-                        this.lastStatistics = format.split(this.statisticDelimiter)[1];
-                    }
-                    return format;
-                },
                 hideCursor: true,
                 formatTime(t) {
                     return Number.isFinite(t) && Number.isInteger(t) ? t + "s" : t.toString();
@@ -46,36 +28,67 @@ export class ProgressBar {
     }
 
     start(total: number) {
-        this.currentValue = 0;
         this.stopped = false;
         if (!this.mainBar) {
             this.manager.log("\n");
-            this.mainBar = this.manager.create(total, 0);
-            this.titleBar = this.manager.create(BarSentinel.TITLE, 0);
+            this.statisticsBar = this.manager.create(
+                Infinity,
+                0,
+                {},
+                {
+                    format: (options, params, payload) => {
+                        options.format = chalk[this.textColor](
+                            "[run.s: {runs} | t: {duration_formatted} | Σt: {sum} | min: {min} | med: {median} | max: {max}]",
+                        );
+                        return cliProgress.Format.Formatter(options, params, payload);
+                    },
+                },
+            );
+            this.mainBar = this.manager.create(
+                total,
+                0,
+                {},
+                {
+                    format: (options, params, payload) => {
+                        options.format = chalk[this.barColor]("{bar} {value}/{total}");
+                        return cliProgress.Format.Formatter(options, params, payload);
+                    },
+                },
+            );
+            this.titleBar = this.manager.create(
+                Infinity,
+                0,
+                {},
+                {
+                    format: (options, params, payload) => {
+                        options.format = chalk[this.textColor](payload.currentTestName ?? "");
+                        return cliProgress.Format.Formatter(options, params, payload);
+                    },
+                },
+            );
         } else {
             this.mainBar.start(total, 0);
-            this.titleBar.start(BarSentinel.TITLE, 0);
+            this.titleBar.start(Infinity, 0);
+            this.statisticsBar.start(Infinity, 0);
         }
     }
 
-    update(
-        newValue: number,
-        options: { currentTestName?: string; runs?: number; statistics?: ExecutorStatistics } = {},
-    ) {
-        this.currentValue = newValue;
-        const mainBarOptions = Object.entries(options.statistics ?? {}).reduce((o, [k, v]) => {
-            o[k] = v.toFixed(2) + "s";
-            return o;
-        }, {});
-        if (options.runs) {
-            mainBarOptions["runs"] = options.runs;
+    update(newValue: number) {
+        this.mainBar.update(newValue);
+    }
+
+    updateStatistics(statistics: ExecutorStatistics) {
+        for (const key in statistics) {
+            if (key === "runs") {
+                continue;
+            }
+            statistics[key] = statistics[key].toFixed(2) + "s";
         }
-        this.mainBar.update(newValue, mainBarOptions);
-        if (options.currentTestName) {
-            this.titleBar.update(this.mainBar.getTotal() === newValue ? BarSentinel.TITLE : 0, {
-                currentTestName: options.currentTestName,
-            });
-        }
+        this.statisticsBar.update(0, statistics);
+    }
+
+    updateTitle(title: string) {
+        this.titleBar.update(0, { currentTestName: title });
     }
 
     refresh() {
@@ -88,8 +101,10 @@ export class ProgressBar {
         }
         this.refresh();
         this.stopped = true;
-        this.titleBar.update(BarSentinel.TITLE, { currentTestName: null });
+        this.titleBar.update(Infinity, { currentTestName: null });
+        this.statisticsBar.update(Infinity);
         this.titleBar.stop();
+        this.statisticsBar.stop();
         this.manager.stop();
     }
 
@@ -97,19 +112,11 @@ export class ProgressBar {
         this.manager.log(message + "\n");
     }
 
-    logStatistics() {
-        this.log(this.lastStatistics);
-    }
-
-    get value() {
-        return this.currentValue;
-    }
-
-    private get barColor() {
-        return this.stopped ? "gray" : "cyan";
-    }
-
-    private get textColor() {
+    get textColor() {
         return this.stopped ? "gray" : "white";
+    }
+
+    get barColor() {
+        return this.stopped ? "gray" : "cyan";
     }
 }

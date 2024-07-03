@@ -13,6 +13,12 @@
         "lib": ["esnext", "DOM"],
         "types": ["node"],
         "baseUrl": "./",
+        "paths": {
+            "@warden/*": ["src/*"]
+        },
+    },
+    "tsc-alias": {
+        "resolveFullPaths": true,
     },
     "exclude": ["node_modules"],
     "include": ["/src/**/*.ts", "**/src/**/*.ts", "**/__tests__/**/*.ts",  "/src/**/*.d.ts"]

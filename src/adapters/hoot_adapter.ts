@@ -1,14 +1,15 @@
-import { Page } from "puppeteer";
-import { filter, first, firstValueFrom, takeUntil } from "rxjs";
 import {
     Test,
     TestResult,
     TestSuiteAdapter,
     registerAdapter,
-} from "../adapters/test_suite_adapter.js";
-import { processExit$ } from "../index.js";
-import { TestSuiteConfig } from "../test_suite_config.js";
-import { logger } from "../helpers/terminal.js";
+} from "@warden/adapters/test_suite_adapter";
+import { processExit$ } from "@warden/index";
+import { TestSuiteConfig } from "@warden/test_suite_config";
+import { uuid } from "@warden/helpers/misc";
+
+import { Page } from "puppeteer";
+import { filter, first, firstValueFrom, takeUntil } from "rxjs";
 
 export class HootAdapter extends TestSuiteAdapter {
     static name = "Hoot";
@@ -19,8 +20,13 @@ export class HootAdapter extends TestSuiteAdapter {
         );
     }
 
+    FAIL_SELECTOR = ".HootTestResult:has(.bg-fail)";
+
     async run(page: Page) {
-        await page.waitForSelector(">>> .HootButtons button[title='Run']");
+        await page.waitForFunction(
+            () =>
+                document.querySelector("hoot-container")?.shadowRoot.querySelector(".HootButtons"),
+        );
         await page.click(">>> .HootButtons button[title='Run']");
     }
 
@@ -31,6 +37,7 @@ export class HootAdapter extends TestSuiteAdapter {
 
     getSuiteURL(config: TestSuiteConfig, testIds: string[]) {
         const queryParams = testIds.map((id) => `test=${id}`);
+        queryParams.push("showdetail=failed")
         if (config.failfast) {
             queryParams.push("bail=1");
         }
@@ -128,6 +135,23 @@ export class HootAdapter extends TestSuiteAdapter {
             );
             runner.afterAll(() => window.afterAll());
         });
+    }
+
+    async screenshotFails(page: Page, path: string) {
+        let nextPageBtn;
+        do {
+            const fails = await page.$$(">>> .HootTestResult:has(.bg-fail)");
+            // TODO - improve file name
+            for (const fail of fails) {
+                await fail.screenshot({
+                    path: `${path}/fail-${uuid()}.jpg`,
+                    optimizeForSpeed: true,
+                    quality: 25,
+                });
+            }
+            nextPageBtn = await page.$(">>> button[title='Next page']:enabled");
+            await nextPageBtn?.click();
+        } while (nextPageBtn);
     }
 
     get isDonePromise() {

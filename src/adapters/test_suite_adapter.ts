@@ -1,9 +1,10 @@
+import { StopExecution } from "@warden/errors";
+import { TestSuiteConfig } from "@warden/test_suite_config";
+
 import chalk from "chalk";
 import { oraPromise } from "ora";
 import { Page } from "puppeteer";
 import { BehaviorSubject, first, firstValueFrom } from "rxjs";
-import { StopExecution } from "../errors.js";
-import { TestSuiteConfig } from "../test_suite_config.js";
 
 export type IMetadata = {
     testById: { [id: string]: { name: string; tags: string[] } }; // TODO - deduce this from testBySuiteId
@@ -68,7 +69,7 @@ export abstract class TestSuiteAdapter {
      * register required listeners.
      */
     async accessSuite(page: Page, url: string) {
-        return page.goto(url);
+        return page.goto(url, { waitUntil: "networkidle0" });
     }
 
     /**
@@ -77,10 +78,10 @@ export abstract class TestSuiteAdapter {
      * allow to register required listeners.
      */
     async reloadSuite(page: Page) {
-        return page.reload({
-            waitUntil: "load",
-        });
+        return page.reload({ waitUntil: "domcontentloaded" });
     }
+
+    async screenshotFails(page: Page, path: string) {}
 }
 
 export type TestResult = {

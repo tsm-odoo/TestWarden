@@ -90,7 +90,10 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+<<<<<<< HEAD
 FailedTests
+=======
+>>>>>>> d124d9a... wip screenshots
 # Gatsby files
 .cache/
 # Comment in the public line in if your project uses Gatsby and not Next.js
@@ -131,3 +134,5 @@ FailedTests
 
 
 build/
+settings.json
+FailedTests/

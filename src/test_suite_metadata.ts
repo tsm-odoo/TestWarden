@@ -1,12 +1,12 @@
+import { IMetadata } from "@warden/adapters/test_suite_adapter";
+import { StopExecution } from "@warden/errors";
+import { TestSuiteConfig } from "@warden/test_suite_config";
+
 import chalk from "chalk";
 import { oraPromise } from "ora";
 import { Page } from "puppeteer";
-import { IMetadata } from "./adapters/test_suite_adapter.js";
-import { StopExecution } from "./errors.js";
-import { TestSuiteConfig } from "./test_suite_config.js";
 
 export class TestSuiteMetadata {
-    // TODO rename testById
     testById: IMetadata["testById"];
     suiteById: IMetadata["suiteById"];
     testsBySuiteId: IMetadata["testsBySuiteId"];
@@ -64,7 +64,7 @@ export class TestSuiteMetadata {
         return this._testIds;
     }
 
-    static async fetch(page: Page, config: import("./test_suite_config.js").TestSuiteConfig) {
+    static async fetch(page: Page, config: import("@warden/test_suite_config").TestSuiteConfig) {
         try {
             const adapter = new config.adapterClass();
             return await oraPromise(

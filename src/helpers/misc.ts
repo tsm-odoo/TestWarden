@@ -23,3 +23,7 @@ export class Deferred<T> extends Promise<T> {
         return this.#resolve(value);
     }
 }
+
+export function uuid() {
+    return `${Math.random().toString(36).substring(2, 15)}`.toUpperCase();
+}

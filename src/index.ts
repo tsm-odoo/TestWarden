@@ -1,15 +1,14 @@
-import commandLineArgs from "command-line-args";
-import { TestSuiteConfig } from "./test_suite_config.js";
-import { TestSuiteMetadata } from "./test_suite_metadata.js";
-import { authenticate } from "./helpers/network.js";
-import { cleanup, launch, setupCache } from "./browser.js";
-import { TestSuiteRunner } from "./runner/test_suite_runner.js";
-import { StopExecution } from "./errors.js";
-import { formatter } from "./helpers/terminal.js";
-import { TestSuiteAdapter } from "./adapters/test_suite_adapter.js";
-// TODO - how to load files automatically?
-import "./adapters/hoot_adapter.js";
-import "./adapters/qunit_adapter.js";
+import { TestSuiteConfig } from "@warden/test_suite_config";
+import { TestSuiteMetadata } from "@warden/test_suite_metadata";
+import { cleanup, launch, setupCache } from "@warden/browser";
+import { TestSuiteRunner } from "@warden/runner/test_suite_runner";
+import { StopExecution } from "@warden/errors";
+import { formatter } from "@warden/helpers/terminal";
+import { TestSuiteAdapter } from "@warden/adapters/test_suite_adapter";
+
+import "@warden/adapters/hoot_adapter";
+import "@warden/adapters/qunit_adapter";
+
 import { BehaviorSubject } from "rxjs";
 import { oraPromise } from "ora";
 import { Browser, Page } from "puppeteer";
@@ -29,27 +28,9 @@ function setupSignals() {
 (async function start() {
     try {
         setupSignals();
-        // TODO - --disable-cache to allow modifying code in place
-        const optionsDefinition = [
-            { name: "debug", type: Boolean },
-            { name: "test-id", alias: "t", type: String },
-            { name: "workers", type: Number },
-            { name: "tests-per-worker", type: Number },
-            { name: "suite-names", alias: "m", multiple: true },
-            { name: "suite", type: String, defaultValue: "/web/tests/next" },
-            { name: "server-url", type: String, defaultValue: "http://localhost:8069" },
-            { name: "visible", type: Boolean, defaultValue: false },
-            { name: "fail-fast", type: Boolean, defaultValue: false },
-            { name: "run-forever", type: Boolean, defaultValue: false },
-            { name: "only-last-stats", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTEED
-            { name: "mobile", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
-            { name: "prompt-for-retry", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
-            { name: "open-fail-folder", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
-        ];
-        const rawOptions = commandLineArgs(optionsDefinition);
-        const authCookie = await authenticate(rawOptions["server-url"], "admin", "admin");
+
         // config = TestSuiteConifg.initialize(); => then parse options and return config
-        const config = new TestSuiteConfig(rawOptions, authCookie);
+        const config = await TestSuiteConfig.parseCLIOptions();
         let browser: Browser, page: Page, metadata: TestSuiteMetadata;
         try {
             await oraPromise(
@@ -70,7 +51,7 @@ function setupSignals() {
                     });
                 },
                 {
-                    text: formatter.info("Launching chrome browser"),
+                    text: formatter.info(`Launching chrome browser, suite: ${config.suite}`),
                     failText: (err) => formatter.error(err.message),
                 },
             );
@@ -78,9 +59,7 @@ function setupSignals() {
             config.adapterClass = AdapterClass;
             process.setMaxListeners(config.MAX_NUMBER_OF_WORKERS * 2 + 5);
             metadata = await TestSuiteMetadata.fetch(page, config);
-            config.suiteIds = (rawOptions["suite-names"] ?? [])
-                .map((name: string) => metadata.suiteIdByName[name])
-                .filter(Boolean);
+
         } finally {
             await browser?.close();
         }

@@ -1,13 +1,15 @@
-import { Page } from "puppeteer";
-import { filter, first, firstValueFrom, takeUntil } from "rxjs";
 import {
     Test,
     TestResult,
     TestSuiteAdapter,
     registerAdapter,
-} from "../adapters/test_suite_adapter.js";
-import { processExit$ } from "../index.js";
-import { TestSuiteConfig } from "../test_suite_config.js";
+} from "@warden/adapters/test_suite_adapter";
+import { processExit$ } from "@warden/index";
+import { TestSuiteConfig } from "@warden/test_suite_config";
+
+import { Page } from "puppeteer";
+import { filter, first, firstValueFrom, takeUntil } from "rxjs";
+
 
 export class QUnitAdapter extends TestSuiteAdapter {
     static name = "QUnit";
@@ -82,7 +84,7 @@ export class QUnitAdapter extends TestSuiteAdapter {
                     "DOMContentLoaded",
                     () => {
                         window.originalQUnitStart = window.QUnit.start;
-                        window.QUnit.start = () => {};
+                        window.QUnit.start = () => { };
                     },
                     { capture: true, once: true },
                 );
@@ -99,7 +101,7 @@ export class QUnitAdapter extends TestSuiteAdapter {
                     "DOMContentLoaded",
                     () => {
                         window.originalQUnitStart = window.QUnit.start;
-                        window.QUnit.start = () => {};
+                        window.QUnit.start = () => { };
                     },
                     { capture: true, once: true },
                 );

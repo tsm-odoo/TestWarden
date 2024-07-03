@@ -1,5 +1,6 @@
+import { TestSuiteConfig } from "@warden/test_suite_config";
+
 import puppeteer, { Browser, BrowserLaunchArgumentOptions, Page } from "puppeteer";
-import { TestSuiteConfig } from "src/test_suite_config.js";
 
 export const CHROME_OPTIONS = [
     "--no-default-browser-check",
@@ -23,7 +24,7 @@ export const CHROME_OPTIONS = [
 ];
 
 const browsers: WeakRef<Browser>[] = [];
-let debuggingPort = 9222;
+let debuggingPort = 9300;
 export async function launch(options: BrowserLaunchArgumentOptions) {
     const browser = await puppeteer.launch({
         ...options,

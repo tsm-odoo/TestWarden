@@ -1,14 +1,15 @@
+# fixes
+- qunit broken: slow reload, cache not working, suites not found after selecting from autocomplete e.g. mail > suggested recipient
 # priorities
-- bundle as single file
+- URL building by adapter, not config
+- screenshot names
+- disable screenshot from settings
+- custom removal time from settings
+- improve caching to speed up reloads
 - logs => save as
 - env file
-- screenshot
 - full support for cli options
-- tier list => run and save slow tests, failed tests, etc.
-
-
-# cleaning
-- Setup listeners of executor in a different func
-- Abstract class handles window listening instead of each subclass
-- give config to adapter class?
-- catch .debug/.only
+- investigate CPU consumption, try to lower it
+- auto load adapters via fs
+- --help command
+- clean up node modules (axios => http(s)/fetch)

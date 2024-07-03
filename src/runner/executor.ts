@@ -1,18 +1,22 @@
+import { TestResult, TestSuiteAdapter } from "@warden/adapters/test_suite_adapter";
+import { launch, setupCache } from "@warden/browser";
+import { Deferred } from "@warden/helpers/misc";
+import { formatter } from "@warden/helpers/terminal";
+import { processExit$ } from "@warden/index";
+import { TestSuiteConfig } from "@warden/test_suite_config";
+import { TestSuiteMetadata } from "@warden/test_suite_metadata";
+import { ProgressBar } from "@warden/runner/progress_bar";
+import { uuid } from "@warden/helpers/misc";
+
 import chalk from "chalk";
-import enquirer from "enquirer";
-import { oraPromise } from "ora";
+import fs from "fs";
+import path from "path";
 import { Browser, Page } from "puppeteer";
-import { combineLatest, filter, from, map, merge, take, takeUntil } from "rxjs";
-import { TestResult, TestSuiteAdapter } from "src/adapters/test_suite_adapter.js";
-import { launch, setupCache } from "../browser.js";
-import { Deferred } from "../helpers/misc.js";
-import { formatter } from "../helpers/terminal.js";
-import { processExit$ } from "../index.js";
-import { TestSuiteConfig } from "../test_suite_config.js";
-import { TestSuiteMetadata } from "../test_suite_metadata.js";
-import { ProgressBar } from "./progress_bar.js";
+import { combineLatest, filter, from, lastValueFrom, map, merge, take, takeUntil } from "rxjs";
+import { oraPromise } from "ora";
 
 export type ExecutorStatistics = {
+    runs: number;
     min: number;
     max: number;
     median: number;
@@ -45,7 +49,7 @@ class ExecutorSplit {
         );
     }
 
-    async runOnce() {
+    async start() {
         return this.adapter.run(this.page);
     }
 
@@ -65,6 +69,10 @@ class ExecutorSplit {
         this.adapter.reset();
         this.doneDeferred = new Deferred();
         await this.adapter.reloadSuite(this.page);
+    }
+
+    async screenshotFails(path: string) {
+        return this.adapter.screenshotFails(this.page, path);
     }
 
     get lastFail$() {
@@ -90,6 +98,7 @@ class ExecutorSplit {
 
 export class Executor {
     private progressBar: ProgressBar;
+    private splits: ExecutorSplit[] = [];
 
     constructor(
         private config: TestSuiteConfig,
@@ -100,13 +109,13 @@ export class Executor {
     }
 
     async splitTests(): Promise<ExecutorSplit[]> {
-        const totalTests = this.metadata.testIds.length;
         let result: string[][] = [];
-        if (totalTests === 1) {
+        if (this.config.isSingleTest) {
             result = Array(this.config.MAX_NUMBER_OF_WORKERS)
                 .fill(0)
                 .map(() => this.metadata.testIds);
         } else {
+            const totalTests = this.metadata.testIds.length;
             const maxThreadsNeeded = Math.max(
                 1,
                 Math.floor(totalTests / this.config.MIN_TEST_PER_WORKER),
@@ -131,22 +140,24 @@ export class Executor {
     }
 
     async *run() {
-        const splits = await this.splitTests();
+        this.splits = await this.splitTests();
+        const previousResults = [];
         for (let runs = 1; true; runs++) {
             // 1. Setup progress listeners which are taken from every split and
             //    merges as one.
-            const isDonePromise = Promise.all(splits.map((s) => s.isDonePromise));
+            const isDonePromise = Promise.all(this.splits.map((s) => s.isDonePromise));
             const done$ = from(isDonePromise);
-            const testResults$ = combineLatest(splits.map((s) => s.results$)).pipe(
+            const testResults$ = combineLatest(this.splits.map((s) => s.results$)).pipe(
                 takeUntil(processExit$.pipe(filter(Boolean))),
                 takeUntil(done$),
                 map((r) => r.flat()),
             );
-            const currentTest$ = merge(...splits.map((s) => s.currentTest$)).pipe(
+            const currentTest$ = merge(...this.splits.map((s) => s.currentTest$)).pipe(
                 takeUntil(processExit$.pipe(filter(Boolean))),
                 takeUntil(done$),
+                filter(Boolean),
             );
-            const lastFail$ = merge(...splits.map((s) => s.lastFail$)).pipe(
+            const lastFail$ = merge(...this.splits.map((s) => s.lastFail$)).pipe(
                 takeUntil(processExit$.pipe(filter(Boolean))),
                 takeUntil(done$),
                 filter(Boolean),
@@ -154,67 +165,80 @@ export class Executor {
             // 2. Start the progress bar and update the state according to the
             //    observables.
             this.progressBar.start(
-                this.config.testId
+                this.config.isSingleTest
                     ? this.config.MAX_NUMBER_OF_WORKERS
                     : this.metadata.testIds.length,
             );
             testResults$.subscribe((r) => {
-                this.progressBar.update(r.length, {
-                    runs: this.config.testId ? r.length + runs * splits.length : runs,
-                    statistics: this.getStatistics(r),
-                });
-                this.progressBar.refresh();
+                const totalRuns = this.config.isSingleTest
+                    ? r.length + runs * this.splits.length
+                    : runs;
+                this.progressBar.update(r.length);
+                this.updateStatistics(totalRuns, r, previousResults);
             });
             lastFail$.subscribe((r) => {
                 this.progressBar.log(formatter.warn(`[${r.id}] ${r.name}`));
                 if (this.config.failfast || this.config.isSingleTest) {
-                    splits.forEach((s) => s.stop());
+                    this.splits.forEach((s) => s.stop());
                 }
             });
             if (!this.config.isSingleTest) {
-                currentTest$.subscribe((t) =>
-                    this.progressBar.update(this.progressBar.value, {
-                        currentTestName: t?.name,
-                    }),
-                );
+                currentTest$.subscribe((t) => this.progressBar.updateTitle(t.name));
             }
             // 3. Run the test suite and wait for completion.
-            for (const split of splits) {
-                await split.setup();
-                await split.runOnce();
-            }
+            await Promise.all(this.splits.map((s) => s.setup()));
+            await Promise.all(this.splits.map((s) => s.start()));
             await isDonePromise;
-            this.progressBar.logStatistics();
             // 4. Let the runner process the result.
             yield {
-                success: splits.filter((s) => s.failed).length === 0,
+                success: this.splits.every((s) => !s.failed),
             };
-            for (const split of splits) {
-                await split.reload();
-            }
+            previousResults.push(...(await lastValueFrom(testResults$)));
+            await Promise.all(this.splits.map((s) => s.reload()));
         }
+    }
+
+    async screenshotFails() {
+        const fullPath = path.join(this.config.failFolderPath, `result-${uuid()}`);
+        if (!fs.existsSync(fullPath)) {
+            fs.mkdirSync(fullPath, { recursive: true });
+        }
+        await oraPromise(
+            async () => {
+                for (const split of this.splits) {
+                    await split.screenshotFails(fullPath);
+                }
+            },
+            {
+                text: formatter.info(`Saving screenshot.s to ${fullPath}`),
+                successText: formatter.info(`Screenshot.s saved to ${fullPath}`),
+                failText: formatter.error(`Failed to save screenshot.s to ${fullPath}`),
+            },
+        );
     }
 
     stop() {
         this.progressBar.stop();
     }
 
-    getStatistics(results: TestResult[]): ExecutorStatistics {
+    updateStatistics(runs: number, currentResults: TestResult[], previousResults: TestResult[]) {
+        const allResults = [...currentResults, ...previousResults];
         let min: number,
             max: number,
-            sum: number = 0;
-        for (const { duration } of results) {
+            sum_all: number = 0;
+        for (const { duration } of allResults) {
             if (!min || min > duration) {
                 min = duration;
             }
             if (!max || max < duration) {
                 max = duration;
             }
-            sum += duration;
+            sum_all += duration;
         }
-        let median = sum / results.length;
+        let median = sum_all / allResults.length;
         min ||= 0;
         max ||= 0;
-        return { min, max, median, sum };
+        const sum_current = currentResults.reduce((acc, { duration }) => acc + duration, 0);
+        this.progressBar.updateStatistics({ min, max, median, runs, sum: sum_current });
     }
 }

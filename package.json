@@ -1,31 +1,31 @@
 {
     "name": "test-warden",
-    "version": "1.0.0",
-    "description": "Helper for odoo JS tests",
+    "version": "2.0.0",
+    "description": "Helper for Odoo JS tests",
     "main": "build/index.js",
     "scripts": {
         "_clear": "rimraf build/*",
         "_tsc": "tsc",
         "_make-bundle": "rollup --config",
-        "build": "rimraf build/* && rimraf release/* && tsc && rollup --config",
+        "build": "rimraf build/* && rimraf release/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && rollup --config",
         "start": "node release/test-warden.cjs",
-        "dev": "rimraf build/* && tsc && node build/index.js"
+        "dev": "rimraf build/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node build/index.js"
     },
     "author": "",
     "license": "ISC",
     "type": "module",
     "dependencies": {
-        "@types/cli-progress": "^3.11.5",
         "axios": "^1.6.2",
         "chalk": "^4.1.2",
         "cli-progress": "^3.12.0",
         "command-line-args": "^5.2.1",
         "enquirer": "^2.4.1",
         "ora": "^7.0.1",
-        "puppeteer": "22.6.5",
+        "puppeteer": "^22.12.0",
         "rxjs": "^7.8.1"
     },
     "devDependencies": {
+        "@types/cli-progress": "^3.11.5",
         "@rollup/plugin-commonjs": "^25.0.7",
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
@@ -39,6 +39,7 @@
         "prettier": "^3.1.1",
         "rollup": "^4.14.0",
         "rollup-plugin-dts": "^6.1.0",
+        "tsc-alias": "^1.8.10",
         "typescript": "^5.3.3"
     }
 }

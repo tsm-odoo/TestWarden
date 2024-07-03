@@ -1,0 +1,10 @@
+{
+    "suites": {
+        "livechat": "/web/tests/livechat",
+        "qunit": "/web/tests",
+        "hoot": "/web/tests/next"
+    },
+    "workers": 4,
+    "minWorkerLoad": 15,
+    "serverURL": "http://localhost:8069"
+}
