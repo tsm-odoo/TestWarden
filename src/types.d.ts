@@ -1,4 +1,5 @@
 declare interface TestSuiteConfigOptions {
+    verbose: boolean;
     debug?: boolean;
     "test-id"?: string;
     workers?: number;

@@ -181,6 +181,7 @@ export class TestSuiteConfig {
     suiteNames?: string[];
     suite?: string;
     serverURL: string;
+    verbose: boolean = false;
     adapterClass: new () => TestSuiteAdapter;
     authCookie: AuthCookie;
     MAX_NUMBER_OF_WORKERS: number;
@@ -223,6 +224,7 @@ export class TestSuiteConfig {
     static async parseCLIOptions() {
         const settings = await TestSuiteConfig.parseJSONSettings();
         const optionsDefinition = [
+            { name: "verbose", type: Boolean, default: false },
             { name: "debug", type: Boolean },
             { name: "test-id", alias: "t", type: String },
             { name: "workers", type: Number, defaultValue: settings["workers"] },
@@ -263,6 +265,7 @@ export class TestSuiteConfig {
         this.MIN_TEST_PER_WORKER = rawOptions["min-worker-load"];
         this.runForever = rawOptions["run-forever"];
         this.suiteNames = rawOptions["suite-names"] ?? [];
+        this.verbose = rawOptions.verbose;
     }
 
     get baseSuiteURL() {

@@ -38,7 +38,10 @@ class ExecutorSplit {
     }
 
     async initalize() {
-        this.browser = await launch({ headless: this.config.headless });
+        this.browser = await launch({
+            headless: this.config.headless,
+            dumpio: this.config.verbose,
+        });
         this.page = (await this.browser.pages())[0];
         await setupCache(this.page, this.config);
         await this.page.setCookie(this.config.authCookie);

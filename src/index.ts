@@ -35,7 +35,7 @@ function setupSignals() {
         try {
             await oraPromise(
                 async () => {
-                    browser = await launch({ headless: true });
+                    browser = await launch({ headless: true, dumpio: config.verbose });
                     [page] = await browser.pages();
                     await setupCache(page, config);
                     await page.setCookie(config.authCookie);
@@ -59,7 +59,6 @@ function setupSignals() {
             config.adapterClass = AdapterClass;
             process.setMaxListeners(config.MAX_NUMBER_OF_WORKERS * 2 + 5);
             metadata = await TestSuiteMetadata.fetch(page, config);
-
         } finally {
             await browser?.close();
         }

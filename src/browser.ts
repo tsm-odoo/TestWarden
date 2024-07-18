@@ -1,6 +1,10 @@
 import { TestSuiteConfig } from "@warden/test_suite_config";
+import { exec } from "child_process";
 
-import puppeteer, { Browser, BrowserLaunchArgumentOptions, Page } from "puppeteer";
+import puppeteer, { Browser, Page, PuppeteerLaunchOptions } from "puppeteer";
+import { promisify } from "util";
+
+const execPromise = promisify(exec);
 
 export const CHROME_OPTIONS = [
     "--no-default-browser-check",
@@ -24,8 +28,8 @@ export const CHROME_OPTIONS = [
 ];
 
 const browsers: WeakRef<Browser>[] = [];
-let debuggingPort = 9300;
-export async function launch(options: BrowserLaunchArgumentOptions) {
+let debuggingPort = 11000;
+export async function launch(options: PuppeteerLaunchOptions) {
     const browser = await puppeteer.launch({
         ...options,
         args: [...CHROME_OPTIONS, `--remote-debugging-port=${debuggingPort++}`],
