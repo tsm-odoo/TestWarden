@@ -123,11 +123,11 @@ export class QUnitAdapter extends TestSuiteAdapter {
             .subscribe((results) => this.lastFail$.next(results.at(-1)));
         const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
         if (!callbacksRegistered) {
-            page.exposeFunction("beforeEach", (test: Test) => this.currentTest$.next(test));
-            page.exposeFunction("afterEach", (result: TestResult) => {
+            await page.exposeFunction("beforeEach", (test: Test) => this.currentTest$.next(test));
+            await page.exposeFunction("afterEach", (result: TestResult) => {
                 this.testResults$.next([...this.testResults$.value, result]);
             });
-            page.exposeFunction("afterAll", async () => {
+            await page.exposeFunction("afterAll", async () => {
                 // TODO - use rxjs instead, smth like testResults$.pipe(take(1)).subscribe(() => ...)
                 await new Promise((res) => setTimeout(res, 50));
                 this.done$.next(true);

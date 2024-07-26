@@ -28,7 +28,7 @@ export const CHROME_OPTIONS = [
 ];
 
 const browsers: WeakRef<Browser>[] = [];
-let debuggingPort = 11000;
+let debuggingPort = 9222;
 export async function launch(options: PuppeteerLaunchOptions) {
     const browser = await puppeteer.launch({
         ...options,
