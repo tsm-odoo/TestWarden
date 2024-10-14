@@ -180,7 +180,10 @@ export class Executor {
                 this.updateStatistics(totalRuns, r, previousResults);
             });
             lastFail$.subscribe((r) => {
-                this.progressBar.log(formatter.warn(`[${r.id}] ${r.name}`));
+                const totalRuns = this.config.isSingleTest
+                    ? previousResults.length + runs * this.splits.length
+                    : runs;
+                this.progressBar.log(formatter.warn(`${totalRuns}. [${r.id}] ${r.name}`));
                 if (this.config.failfast || this.config.isSingleTest) {
                     this.splits.forEach((s) => s.stop());
                 }

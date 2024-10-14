@@ -1,6 +1,7 @@
 # fixes
 - qunit broken: slow reload, cache not working, suites not found after selecting from autocomplete e.g. mail > suggested recipient
 # priorities
+- notif on fail
 - URL building by adapter, not config
 - screenshot names
 - disable screenshot from settings

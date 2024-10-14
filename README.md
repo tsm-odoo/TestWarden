@@ -41,8 +41,8 @@ e.g.
 ```json
 {
     "suites": {
-        "hoot": "/web/tests/next",
-        "qunit": "/web/tests",
+        "hoot": "/web/tests",
+        "qunit": "/web/tests/legacy"
     },
 }
 ```
