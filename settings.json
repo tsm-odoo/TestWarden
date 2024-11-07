@@ -2,7 +2,8 @@
     "suites": {
         "livechat": "/web/tests/livechat",
         "hoot": "/web/tests",
-        "qunit": "/web/tests/legacy"
+        "qunit": "/web/tests/legacy",
+        "next": "/web/tests/next"
     },
     "workers": 4,
     "minWorkerLoad": 15,

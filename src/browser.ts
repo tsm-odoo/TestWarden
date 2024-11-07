@@ -8,9 +8,13 @@ const execPromise = promisify(exec);
 
 export const CHROME_OPTIONS = [
     "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-backgrounding-occluded-windows",
+    "--disable-renderer-backgrounding",
     "--disable-extensions",
     "--disable-background-networking",
     "--disable-breakpad",
+    "--disable-namespace-sandbox",
     "--disable-client-side-phishing-detection",
     "--disable-crash-reporter",
     "--disable-default-apps",

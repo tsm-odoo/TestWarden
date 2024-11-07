@@ -230,7 +230,7 @@ export class TestSuiteConfig {
             { name: "workers", type: Number, defaultValue: settings["workers"] },
             { name: "min-worker-load", type: Number, defaultValue: settings["minWorkerLoad"] },
             { name: "suite-names", alias: "m", multiple: true },
-            { name: "suite", type: String, defaultValue: "/web/tests/next" },
+            { name: "suite", type: String, defaultValue: "hoot" },
             { name: "server-url", type: String, defaultValue: settings["serverURL"] },
             { name: "visible", type: Boolean, defaultValue: false },
             { name: "fail-fast", type: Boolean, defaultValue: false },
