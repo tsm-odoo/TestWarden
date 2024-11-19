@@ -78,6 +78,22 @@ class ExecutorSplit {
         return this.adapter.screenshotFails(this.page, path);
     }
 
+    async setFailureFavicon() {
+        await this.page.evaluate(() => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = 24;
+            canvas.height = 24;
+            ctx.beginPath();
+            ctx.arc(12, 12, 11, 0, 2 * Math.PI);
+            ctx.fillStyle = "#FF0000";
+            ctx.fill();
+            const dataUrl = canvas.toDataURL();
+            let link = document.querySelector("link[rel*='icon']") as HTMLAnchorElement;
+            link.href = dataUrl;
+        });
+    }
+
     get lastFail$() {
         return this.adapter.lastFail$;
     }
@@ -195,10 +211,15 @@ export class Executor {
             await Promise.all(this.splits.map((s) => s.setup()));
             await Promise.all(this.splits.map((s) => s.start()));
             await isDonePromise;
+            let success = true;
+            for (const split of this.splits) {
+                if (split.failed) {
+                    success = false;
+                    await split.setFailureFavicon();
+                }
+            }
             // 4. Let the runner process the result.
-            yield {
-                success: this.splits.every((s) => !s.failed),
-            };
+            yield { success };
             previousResults.push(...(await lastValueFrom(testResults$)));
             await Promise.all(this.splits.map((s) => s.reload()));
         }

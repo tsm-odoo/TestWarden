@@ -72,6 +72,9 @@ let interceptHandler: InterceptionHandler;
  * memory cache which is faster.
  */
 export async function setupCache(page: Page, config: TestSuiteConfig) {
+    const client = await page.target().createCDPSession();
+    await client.send('Fetch.enable', { patterns: this.patterns });
+
     await page.setRequestInterception(true);
     page.on("request", async (request) => {
         const type = request.resourceType();
