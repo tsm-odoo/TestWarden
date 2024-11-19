@@ -2,6 +2,10 @@ import { TestSuiteConfig } from "@warden/test_suite_config";
 
 import puppeteer, { Browser, Page, PuppeteerLaunchOptions } from "puppeteer";
 import { intercept, patterns, InterceptionHandler } from "puppeteer-interceptor";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execPromise = promisify(exec);
 
 export const CHROME_OPTIONS = [
     "--no-default-browser-check",
@@ -31,9 +35,13 @@ export const CHROME_OPTIONS = [
 const browsers: WeakRef<Browser>[] = [];
 let debuggingPort = 9222;
 export async function launch(options: PuppeteerLaunchOptions) {
+    const port = debuggingPort++;
+    try {
+        await execPromise(`kill -9 $(lsof -i4TCP:${port} -sTCP:LISTEN -t)`);
+    } catch {}
     const browser = await puppeteer.launch({
         ...options,
-        args: [...CHROME_OPTIONS, `--remote-debugging-port=${debuggingPort++}`],
+        args: [...CHROME_OPTIONS, `--remote-debugging-port=${port}`],
         defaultViewport: null,
     });
     browsers.push(new WeakRef(browser));
