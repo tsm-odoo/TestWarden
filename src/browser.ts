@@ -1,10 +1,7 @@
 import { TestSuiteConfig } from "@warden/test_suite_config";
-import { exec } from "child_process";
 
 import puppeteer, { Browser, Page, PuppeteerLaunchOptions } from "puppeteer";
-import { promisify } from "util";
-
-const execPromise = promisify(exec);
+import { intercept, patterns, InterceptionHandler } from "puppeteer-interceptor";
 
 export const CHROME_OPTIONS = [
     "--no-default-browser-check",
@@ -45,12 +42,23 @@ export async function launch(options: PuppeteerLaunchOptions) {
 
 export async function cleanup() {
     await Promise.all(browsers.map((b) => b.deref()?.close()));
+    interceptHandler?.disable();
 }
 
 const cache = {};
 const allDepsRoute = "/ir.module.module.dependency/all_dependencies";
 const allDepsCache = {};
 
+function useChromeCache(reqType: string) {
+    // Puppeteer do not provide any way to ammend a response. Caching file
+    // responses locally is not an option, it consumes a lot of memory and it is
+    // very slow to answer a request from a large buffer (300-400ms). Add the
+    // cache control using the devtool protocol and ignore those requests in
+    // order to let Chrome handle it.
+    return ["script", "stylesheet", "font", "image"].includes(reqType.toLowerCase());
+}
+
+let interceptHandler: InterceptionHandler;
 /**
  * Cache responses to speed up reload time. Ideally, the browser should use the
  * memory cache which is faster.
@@ -58,15 +66,14 @@ const allDepsCache = {};
 export async function setupCache(page: Page, config: TestSuiteConfig) {
     await page.setRequestInterception(true);
     page.on("request", async (request) => {
-        if (request.resourceType() === "image") {
-            request.abort();
-            return;
+        const type = request.resourceType();
+        if (useChromeCache(type)) {
+            return request.continue();
         }
-        let url = request.url();
-        if (url.includes(config.baseSuiteURL)) {
-            url = config.baseSuiteURL;
-        }
-        if (!url.includes("file:") && url in cache) {
+        const url = request.url().includes(config.baseSuiteURL)
+            ? config.baseSuiteURL
+            : request.url();
+        if (url in cache) {
             await request.respond(cache[url]);
         } else if (url.includes(allDepsRoute)) {
             const { params } = JSON.parse(await request.fetchPostData());
@@ -80,9 +87,11 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         }
     });
     page.on("response", async (response) => {
-        let url = response.url();
-        if (url.includes(config.baseSuiteURL)) {
-            url = config.baseSuiteURL;
+        const url = response.request().url().includes(config.baseSuiteURL)
+            ? config.baseSuiteURL
+            : response.request().url();
+        if (url in cache || useChromeCache(response.request().resourceType())) {
+            return;
         }
         let buffer;
         try {
@@ -92,10 +101,7 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         }
         const cachedResponse = {
             status: response.status(),
-            headers: {
-                ...response.headers(),
-                "cache-control": "public, max-age=31536000",
-            },
+            headers: Object.assign(response.headers(), { DEBUG_FROM_LOCAL_CACHE: true }),
             body: buffer,
         };
         if (url.includes(allDepsRoute)) {
@@ -104,5 +110,21 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
             return;
         }
         cache[url] = cachedResponse;
+    });
+    interceptHandler = await intercept(page, patterns.All("*"), {
+        onResponseReceived: (event) => {
+            const cacheControlIdx = event.response.headers.findIndex(
+                ({ name }) => name === "Cache-Control",
+            );
+            if (cacheControlIdx !== -1) {
+                event.response.headers[cacheControlIdx].value = "public, max-age=31536000";
+            } else {
+                event.response.headers.push({
+                    name: "Cache-Control",
+                    value: "public, max-age=31536000",
+                });
+            }
+            return event.response;
+        },
     });
 }
