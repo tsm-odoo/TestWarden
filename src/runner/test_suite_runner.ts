@@ -38,19 +38,15 @@ export class TestSuiteRunner {
             );
         }
         const executor = new Executor(this.config, this.metadata);
-        try {
-            for await (const { success } of executor.run()) {
-                if (!success && !this.config.runForever) {
-                    executor.stop();
-                    await executor.screenshotFails();
-                    await (enquirer as any).invisible({
-                        message: formatter.info("Press any key to quit..."),
-                    });
-                    break;
-                }
+        for await (const { success } of executor.run()) {
+            if (!success && !this.config.runForever) {
+                executor.stop();
+                await executor.screenshotFails();
+                await (enquirer as any).invisible({
+                    message: formatter.info("Press any key to quit..."),
+                });
+                break;
             }
-        } finally {
-            cleanup();
         }
         executor.stop();
     }
@@ -98,7 +94,8 @@ export class TestSuiteRunner {
             limit: 5,
         });
         return {
-            testId: mode === this.config.RUN_TYPE.TEST ? this.metadata.testIdByName[name] : undefined,
+            testId:
+                mode === this.config.RUN_TYPE.TEST ? this.metadata.testIdByName[name] : undefined,
             suiteName: mode === this.config.RUN_TYPE.SUITE ? name : undefined,
         };
     }

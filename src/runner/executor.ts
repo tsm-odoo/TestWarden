@@ -199,8 +199,14 @@ export class Executor {
                 const totalRuns = this.config.isSingleTest
                     ? previousResults.length + runs * this.splits.length
                     : runs;
-                this.progressBar.log(formatter.warn(`${totalRuns}. [${r.id}] ${r.name}`));
-                if (this.config.failfast || this.config.isSingleTest) {
+                this.progressBar.log(
+                    formatter.warn(
+                        `${totalRuns}. [${r.id}] ${r.name} - ${
+                            Math.round(r.duration * 100) / 100
+                        }s`,
+                    ),
+                );
+                if (!this.config.runForever && (this.config.failfast || this.config.isSingleTest)) {
                     this.splits.forEach((s) => s.stop());
                 }
             });
@@ -211,12 +217,11 @@ export class Executor {
             await Promise.all(this.splits.map((s) => s.setup()));
             await Promise.all(this.splits.map((s) => s.start()));
             await isDonePromise;
-            let success = true;
-            for (const split of this.splits) {
-                if (split.failed) {
-                    success = false;
-                    await split.setFailureFavicon();
-                }
+            const success = this.splits.every((s) => !s.failed);
+            if (!this.config.runForever) {
+                await Promise.all([
+                    this.splits.filter((s) => s.failed).map((s) => s.setFailureFavicon()),
+                ]);
             }
             // 4. Let the runner process the result.
             yield { success };

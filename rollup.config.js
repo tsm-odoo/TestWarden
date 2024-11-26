@@ -12,7 +12,7 @@ const config = [
                 file: "release/test-warden.cjs",
                 format: "cjs",
                 inlineDynamicImports: true,
-                plugins: [terser()],
+                // plugins: [terser()],
             },
         ],
         external: [

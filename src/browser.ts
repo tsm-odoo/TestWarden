@@ -1,8 +1,17 @@
+import { Deferred } from "@warden/helpers/misc.js";
+import { formatter } from "@warden/helpers/terminal.js";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 
-import puppeteer, { Browser, Page, PuppeteerLaunchOptions } from "puppeteer";
-import { intercept, patterns, InterceptionHandler } from "puppeteer-interceptor";
 import { exec } from "child_process";
+import { oraPromise } from "ora";
+import puppeteer, {
+    Browser,
+    CDPSession,
+    Page,
+    Protocol,
+    PuppeteerLaunchOptions,
+    ResponseForRequest,
+} from "puppeteer";
 import { promisify } from "util";
 
 const execPromise = promisify(exec);
@@ -33,8 +42,12 @@ export const CHROME_OPTIONS = [
 ];
 
 const browsers: WeakRef<Browser>[] = [];
+const clients: WeakRef<CDPSession>[] = [];
 let debuggingPort = 9222;
+let launchDeferred;
+let setupCacheDeferred;
 export async function launch(options: PuppeteerLaunchOptions) {
+    launchDeferred = new Deferred();
     const port = debuggingPort++;
     try {
         await execPromise(`kill -9 $(lsof -i4TCP:${port} -sTCP:LISTEN -t)`);
@@ -43,65 +56,127 @@ export async function launch(options: PuppeteerLaunchOptions) {
         ...options,
         args: [...CHROME_OPTIONS, `--remote-debugging-port=${port}`],
         defaultViewport: null,
+        handleSIGINT: false,
+        handleSIGTERM: false,
+        handleSIGHUP: false,
     });
     browsers.push(new WeakRef(browser));
+    launchDeferred.resolve();
     return browser;
 }
 
 export async function cleanup() {
-    await Promise.all(browsers.map((b) => b.deref()?.close()));
-    interceptHandler?.disable();
+    await oraPromise(
+        async () => {
+            await Promise.all([setupCacheDeferred, launchDeferred]);
+            await Promise.all(
+                clients.map((c) =>
+                    c
+                        .deref()
+                        .detach()
+                        .catch(() => {}),
+                ),
+            );
+            await Promise.all(
+                browsers.map((b) =>
+                    b
+                        .deref()
+                        .close()
+                        .catch(() => {}),
+                ),
+            );
+        },
+        {
+            text: formatter.info("Cleaning up browsers and network caches"),
+            successText: formatter.info("Browsers and network caches cleaned up"),
+            failText: (e) =>
+                formatter.error("Failed to clean up browsers, network caches:", e.message),
+        },
+    );
 }
 
-const cache = {};
+const cache: { [pathname: string]: Partial<ResponseForRequest> } = {};
 const allDepsRoute = "/ir.module.module.dependency/all_dependencies";
 const allDepsCache = {};
 
-function useChromeCache(reqType: string) {
-    // Puppeteer do not provide any way to ammend a response. Caching file
-    // responses locally is not an option, it consumes a lot of memory and it is
-    // very slow to answer a request from a large buffer (300-400ms). Add the
-    // cache control using the devtool protocol and ignore those requests in
-    // order to let Chrome handle it.
-    return ["script", "stylesheet", "font", "image"].includes(reqType.toLowerCase());
+function addHeader(
+    ogHeaders: Protocol.Fetch.HeaderEntry[],
+    headers: [key: string, value: string][],
+): Protocol.Fetch.HeaderEntry[] {
+    for (const [key, value] of headers) {
+        const headerIdx = ogHeaders.findIndex((h) => h.name.toLowerCase() === key.toLowerCase());
+        if (headerIdx === -1) {
+            ogHeaders.push({ name: key, value });
+        } else {
+            ogHeaders[headerIdx].value = value;
+        }
+    }
+    return ogHeaders;
 }
 
-let interceptHandler: InterceptionHandler;
+const chromeCacheResourceTypes: Protocol.Network.ResourceType[] = [
+    "Stylesheet",
+    "Image",
+    "Media",
+    "Font",
+    "Script",
+];
+
 /**
  * Cache responses to speed up reload time. Ideally, the browser should use the
  * memory cache which is faster.
  */
 export async function setupCache(page: Page, config: TestSuiteConfig) {
+    setupCacheDeferred = new Deferred();
     const client = await page.target().createCDPSession();
-    await client.send('Fetch.enable', { patterns: this.patterns });
-
+    clients.push(new WeakRef(client));
+    await client.send("Network.disable");
+    await client.send("Fetch.enable");
+    client.on("Fetch.requestPaused", async (event) => {
+        const { requestId } = event;
+        if (!event.responseStatusCode) {
+            await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
+            return;
+        }
+        await client.send("Fetch.continueResponse", {
+            requestId,
+            responseCode: event.responseStatusCode,
+            responseHeaders: addHeader(event.responseHeaders, [
+                ["Cache-Control", "private, max-age=31536000"],
+            ]),
+            responsePhrase: event.responseStatusText,
+        });
+    });
     await page.setRequestInterception(true);
+    page.off("request");
+    page.off("response");
     page.on("request", async (request) => {
+        const url = new URL(request.url());
+        if (url.pathname === allDepsRoute) {
+            const { params } = JSON.parse(await request.fetchPostData());
+            const cachedResponse = allDepsCache[JSON.stringify(params.kwargs.module_names)];
+            if (cachedResponse) {
+                return request.respond(cachedResponse);
+            }
+        }
         const type = request.resourceType();
-        if (useChromeCache(type)) {
+        if (chromeCacheResourceTypes.map((t) => t.toLowerCase()).includes(type)) {
             return request.continue();
         }
-        const url = request.url().includes(config.baseSuiteURL)
-            ? config.baseSuiteURL
-            : request.url();
-        if (url in cache) {
-            await request.respond(cache[url]);
-        } else if (url.includes(allDepsRoute)) {
-            const { params } = JSON.parse(await request.fetchPostData());
-            if (JSON.stringify(params.kwargs.module_names) in allDepsCache) {
-                await request.respond(allDepsCache[JSON.stringify(params.kwargs.module_names)]);
-            } else {
-                request.continue();
-            }
-        } else {
-            request.continue();
+        if (url.pathname in cache) {
+            request.respond(cache[url.pathname]);
+            return;
         }
+
+        request.continue();
     });
     page.on("response", async (response) => {
-        const url = response.request().url().includes(config.baseSuiteURL)
-            ? config.baseSuiteURL
-            : response.request().url();
-        if (url in cache || useChromeCache(response.request().resourceType())) {
+        const url = new URL(response.url());
+        const type = response.request().resourceType();
+        if (
+            url.pathname in cache ||
+            chromeCacheResourceTypes.map((t) => t.toLowerCase()).includes(type)
+        ) {
             return;
         }
         let buffer;
@@ -112,30 +187,15 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         }
         const cachedResponse = {
             status: response.status(),
-            headers: Object.assign(response.headers(), { DEBUG_FROM_LOCAL_CACHE: true }),
+            headers: Object.assign(response.headers(), { FROM_LOCAL_CACHE: true }),
             body: buffer,
         };
-        if (url.includes(allDepsRoute)) {
+        if (url.pathname === allDepsRoute) {
             const { params } = JSON.parse(await response.request().fetchPostData());
             allDepsCache[JSON.stringify(params.kwargs.module_names)] = cachedResponse;
-            return;
+        } else {
+            cache[url.pathname] = cachedResponse;
         }
-        cache[url] = cachedResponse;
     });
-    interceptHandler = await intercept(page, patterns.All("*"), {
-        onResponseReceived: (event) => {
-            const cacheControlIdx = event.response.headers.findIndex(
-                ({ name }) => name === "Cache-Control",
-            );
-            if (cacheControlIdx !== -1) {
-                event.response.headers[cacheControlIdx].value = "public, max-age=31536000";
-            } else {
-                event.response.headers.push({
-                    name: "Cache-Control",
-                    value: "public, max-age=31536000",
-                });
-            }
-            return event.response;
-        },
-    });
+    setupCacheDeferred.resolve();
 }
