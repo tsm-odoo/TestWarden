@@ -196,9 +196,7 @@ export class Executor {
                 this.updateStatistics(totalRuns, r, previousResults);
             });
             lastFail$.subscribe((r) => {
-                const totalRuns = this.config.isSingleTest
-                    ? previousResults.length + runs * this.splits.length
-                    : runs;
+                const totalRuns = this.config.isSingleTest ? runs * this.splits.length : runs;
                 this.progressBar.log(
                     formatter.warn(
                         `${totalRuns}. [${r.id}] ${r.name} - ${

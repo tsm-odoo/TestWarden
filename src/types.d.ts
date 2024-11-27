@@ -21,15 +21,16 @@ declare type AuthCookie = {
     value: string;
     domain: string;
     path: string;
-}
+};
 
 declare interface Window {
-    QUnit: any,
-    originalQUnitStart: any,
-    odoo: any,
-    owl: any,
+    QUnit: any;
+    originalQUnitStart: any;
+    odoo: any;
+    owl: any;
+    after: any;
     afterEach: any;
     beforeEach: any;
     afterAll: any;
-    getQUnitData: Function,
+    getQUnitData: Function;
 }

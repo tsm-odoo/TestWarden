@@ -4,9 +4,9 @@ import {
     TestSuiteAdapter,
     registerAdapter,
 } from "@warden/adapters/test_suite_adapter";
+import { uuid } from "@warden/helpers/misc";
 import { processExit$ } from "@warden/index";
 import { TestSuiteConfig } from "@warden/test_suite_config";
-import { uuid } from "@warden/helpers/misc";
 
 import { Page } from "puppeteer";
 import { filter, first, firstValueFrom, takeUntil } from "rxjs";
@@ -37,7 +37,7 @@ export class HootAdapter extends TestSuiteAdapter {
 
     getSuiteURL(config: TestSuiteConfig, testIds: string[]) {
         const queryParams = testIds.map((id) => `test=${id}`);
-        queryParams.push("showdetail=failed")
+        queryParams.push("showdetail=failed");
         if (config.failfast) {
             queryParams.push("bail=1");
         }
@@ -87,6 +87,13 @@ export class HootAdapter extends TestSuiteAdapter {
         // it after each suite.
         page.once("framenavigated", async () => {
             const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
+            const client = await page.target().createCDPSession();
+            page.once("close", async () => {
+                try {
+                    await client.detach();
+                } catch {}
+            });
+            await client.send("HeapProfiler.enable");
             if (!callbacksRegistered) {
                 page.exposeFunction("beforeEach", (test: Test) => this.currentTest$.next(test));
                 page.exposeFunction("afterEach", (result: TestResult) => {
@@ -97,6 +104,7 @@ export class HootAdapter extends TestSuiteAdapter {
                     await new Promise((res) => setTimeout(res, 50));
                     this.done$.next(true);
                 });
+                page.exposeFunction("after", () => client.send("HeapProfiler.collectGarbage"));
             }
         });
         return prom;
@@ -111,7 +119,7 @@ export class HootAdapter extends TestSuiteAdapter {
             )
             .subscribe((results) => this.lastFail$.next(results.at(-1)));
         await page.evaluate(() => {
-            const { beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
+            const { after, beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
             const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
             beforeEach(
                 (test) => {
@@ -119,6 +127,7 @@ export class HootAdapter extends TestSuiteAdapter {
                 },
                 { global: true },
             );
+            after(() => window.after(), { global: true });
             runner.afterPostTest(
                 (test) => {
                     window.afterEach({

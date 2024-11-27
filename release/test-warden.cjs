@@ -292638,8 +292638,12 @@ const CHROME_OPTIONS = [
     "--disable-accelerated-2d-canvas",
     "--no-first-run",
     "--no-zygote",
+    "--blink-settings=imagesEnabled=false",
+    "--disable-features=PaintHolding",
     "--single-process",
+    "--disable-software-rasterizer",
     "--disable-translate",
+    // "--js-flags=--expose_gc",
     "--no-sandbox",
     `--window-size=1366,768`, // Same as RunBot
 ];
@@ -294193,9 +294197,7 @@ class Executor {
                 this.updateStatistics(totalRuns, r, previousResults);
             });
             lastFail$.subscribe((r) => {
-                const totalRuns = this.config.isSingleTest
-                    ? previousResults.length + runs * this.splits.length
-                    : runs;
+                const totalRuns = this.config.isSingleTest ? runs * this.splits.length : runs;
                 this.progressBar.log(formatter$1.warn(`${totalRuns}. [${r.id}] ${r.name} - ${Math.round(r.duration * 100) / 100}s`));
                 if (!this.config.runForever && (this.config.failfast || this.config.isSingleTest)) {
                     this.splits.forEach((s) => s.stop());
@@ -319831,6 +319833,14 @@ class HootAdapter extends TestSuiteAdapter {
         // it after each suite.
         page.once("framenavigated", async () => {
             const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
+            const client = await page.target().createCDPSession();
+            page.once("close", async () => {
+                try {
+                    await client.detach();
+                }
+                catch { }
+            });
+            await client.send("HeapProfiler.enable");
             if (!callbacksRegistered) {
                 page.exposeFunction("beforeEach", (test) => this.currentTest$.next(test));
                 page.exposeFunction("afterEach", (result) => {
@@ -319841,6 +319851,7 @@ class HootAdapter extends TestSuiteAdapter {
                     await new Promise((res) => setTimeout(res, 50));
                     this.done$.next(true);
                 });
+                page.exposeFunction("after", () => client.send("HeapProfiler.collectGarbage"));
             }
         });
         return prom;
@@ -319850,11 +319861,12 @@ class HootAdapter extends TestSuiteAdapter {
             .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(this.done$.pipe(cjs.filter(Boolean))), cjs.filter((results) => results?.length > 0 && !results.at(-1).pass))
             .subscribe((results) => this.lastFail$.next(results.at(-1)));
         await page.evaluate(() => {
-            const { beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
+            const { after, beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
             const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
             beforeEach((test) => {
                 window.beforeEach({ id: test.id, name: test.fullName });
             }, { global: true });
+            after(() => window.after(), { global: true });
             runner.afterPostTest((test) => {
                 window.afterEach({
                     id: test.id,
@@ -320044,7 +320056,6 @@ signals.forEach((signal) => process.on(signal, doCleanup));
             [page] = await browser.pages();
             await setupCache(page, config);
             await page.setCookie(config.authCookie);
-            await page.bringToFront();
             await page.goto(config.baseSuiteURL);
             await page.waitForResponse((response) => {
                 if (response.status() === 404) {

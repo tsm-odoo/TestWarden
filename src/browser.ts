@@ -35,8 +35,12 @@ export const CHROME_OPTIONS = [
     "--disable-accelerated-2d-canvas",
     "--no-first-run",
     "--no-zygote",
+    "--blink-settings=imagesEnabled=false",
+    "--disable-features=PaintHolding",
     "--single-process",
+    "--disable-software-rasterizer",
     "--disable-translate",
+    // "--js-flags=--expose_gc",
     "--no-sandbox",
     `--window-size=1366,768`, // Same as RunBot
 ];

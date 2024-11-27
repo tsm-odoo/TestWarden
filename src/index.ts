@@ -46,7 +46,6 @@ signals.forEach((signal) => process.on(signal, doCleanup));
                 [page] = await browser.pages();
                 await setupCache(page, config);
                 await page.setCookie(config.authCookie);
-                await page.bringToFront();
                 await page.goto(config.baseSuiteURL);
                 await page.waitForResponse((response) => {
                     if (response.status() === 404) {
