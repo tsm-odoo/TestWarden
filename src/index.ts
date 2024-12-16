@@ -1,18 +1,19 @@
 import { TestSuiteAdapter } from "@warden/adapters/test_suite_adapter";
 import { cleanup, launch, setupCache } from "@warden/browser";
 import { StopExecution } from "@warden/errors";
-import { formatter } from "@warden/helpers/terminal";
+import { formatter, logger } from "@warden/helpers/terminal";
 import { TestSuiteRunner } from "@warden/runner/test_suite_runner";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 import { TestSuiteMetadata } from "@warden/test_suite_metadata";
 import { config as rxjsConfig } from "rxjs";
-
+import os from "os";
 import "@warden/adapters/hoot_adapter";
 import "@warden/adapters/qunit_adapter";
 
 import { oraPromise } from "ora";
 import { Browser, Page } from "puppeteer";
 import { BehaviorSubject } from "rxjs";
+import nc from "nodeaffinity";
 
 export const ABORT_CONTROLLER = new AbortController();
 export const processExit$ = new BehaviorSubject(false);
@@ -67,6 +68,10 @@ signals.forEach((signal) => process.on(signal, doCleanup));
         await browser.close();
         config.metadata = metadata;
         config.check();
+        let mask = (1 << config.cpuLimit) - 1;
+        nc.setAffinity(mask);
+        const totalCPUs = os.cpus().length;
+        logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
         await new TestSuiteRunner(config, metadata).run();
     } catch (e) {
         if (!(e instanceof StopExecution) && !isCleaningUp) {

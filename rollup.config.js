@@ -3,6 +3,7 @@ import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import terser from "@rollup/plugin-terser";
+import url from "@rollup/plugin-url";
 
 const config = [
     {
@@ -42,13 +43,11 @@ const config = [
             "tls",
             "punycode",
             "readline",
+            "nodeaffinity",
             "inspector",
         ],
         plugins: [
-            typescript({
-                sourceMap: false,
-                tsconfig: false,
-            }),
+            typescript({ sourceMap: false, tsconfig: false }),
             nodeResolve({ exportConditions: ["node"] }),
             commonjs(),
             json(),

@@ -27,6 +27,7 @@ var require$$0$b = require('constants');
 var zlib$2 = require('zlib');
 require('process');
 var require$$1$4 = require('module');
+var nc = require('nodeaffinity');
 var require$$7 = require('inspector');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
@@ -292722,7 +292723,7 @@ async function setupCache(page, config) {
     await client.send("Fetch.enable");
     client.on("Fetch.requestPaused", async (event) => {
         const { requestId } = event;
-        if (!event.responseStatusCode) {
+        if (!event.responseStatusCode || !event.responseStatusText?.trim()) {
             await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
             return;
         }
@@ -292731,11 +292732,13 @@ async function setupCache(page, config) {
             responseCode: event.responseStatusCode,
             responseHeaders: addHeader(event.responseHeaders, [
                 ["Cache-Control", "private, max-age=31536000"],
+                ["FROM_FETCH_CACHE", "True"],
             ]),
             responsePhrase: event.responseStatusText,
         });
     });
     await page.setRequestInterception(true);
+    await page.setCacheEnabled(true);
     page.off("request");
     page.off("response");
     page.on("request", async (request) => {
@@ -319579,6 +319582,7 @@ class TestSuiteConfig {
     suite;
     serverURL;
     verbose = false;
+    cpuLimit = 0;
     adapterClass;
     authCookie;
     MAX_NUMBER_OF_WORKERS;
@@ -319610,6 +319614,7 @@ class TestSuiteConfig {
         settings.workers = Number(settings.workers ?? 4);
         settings.minWorkerLoad = Number(settings.minWorkerLoad ?? 15);
         settings.serverURL ??= "http://localhost:8069";
+        settings.cpuLimit ??= 0;
         return settings;
     }
     static async parseCLIOptions() {
@@ -319628,6 +319633,7 @@ class TestSuiteConfig {
             { name: "run-forever", type: Boolean, defaultValue: false },
             { name: "mobile", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
             { name: "prompt-for-retry", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
+            { name: "cpu-limit", type: Number, defaultValue: settings["cpuLimit"] },
         ];
         const rawOptions = commandLineArgs$1(optionsDefinition);
         if ("suite" in rawOptions) {
@@ -319654,6 +319660,7 @@ class TestSuiteConfig {
         this.runForever = rawOptions["run-forever"];
         this.suiteNames = rawOptions["suite-names"] ?? [];
         this.verbose = rawOptions.verbose;
+        this.cpuLimit = rawOptions["cpu-limit"] ?? 0;
     }
     get baseSuiteURL() {
         // TODO - specific suite parameters to adapters
@@ -319662,6 +319669,7 @@ class TestSuiteConfig {
             ["timeout", "15000"],
             ["loglevel", "3"],
             ["manual", "true"],
+            // ["headless", "true"],
         ];
         if (this.failfast) {
             opts.push(["failfast", true]);
@@ -320075,6 +320083,10 @@ signals.forEach((signal) => process.on(signal, doCleanup));
         await browser.close();
         config.metadata = metadata;
         config.check();
+        let mask = (1 << config.cpuLimit) - 1;
+        nc.setAffinity(mask);
+        const totalCPUs = os$2.cpus().length;
+        logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
         await new TestSuiteRunner(config, metadata).run();
     }
     catch (e) {

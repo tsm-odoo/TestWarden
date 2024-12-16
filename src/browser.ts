@@ -138,7 +138,7 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
     await client.send("Fetch.enable");
     client.on("Fetch.requestPaused", async (event) => {
         const { requestId } = event;
-        if (!event.responseStatusCode) {
+        if (!event.responseStatusCode || !event.responseStatusText?.trim()) {
             await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
             return;
         }
@@ -147,11 +147,13 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
             responseCode: event.responseStatusCode,
             responseHeaders: addHeader(event.responseHeaders, [
                 ["Cache-Control", "private, max-age=31536000"],
+                ["FROM_FETCH_CACHE", "True"],
             ]),
             responsePhrase: event.responseStatusText,
         });
     });
     await page.setRequestInterception(true);
+    await page.setCacheEnabled(true);
     page.off("request");
     page.off("response");
     page.on("request", async (request) => {

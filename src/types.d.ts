@@ -14,6 +14,7 @@ declare interface TestSuiteConfigOptions {
     "prompt-for-retry"?: boolean;
     "open-fail-folder"?: boolean;
     "run-forever": boolean;
+    cpuLimit?: number;
 }
 
 declare type AuthCookie = {

@@ -19,6 +19,7 @@ type JSONSettings = {
     workers: number;
     minWorkerLoad: number;
     serverURL: string;
+    cpuLimit?: number;
 };
 
 export class TestSuiteConfig {
@@ -167,6 +168,7 @@ export class TestSuiteConfig {
     suite?: string;
     serverURL: string;
     verbose: boolean = false;
+    cpuLimit: number = 0;
     adapterClass: new () => TestSuiteAdapter;
     authCookie: AuthCookie;
     MAX_NUMBER_OF_WORKERS: number;
@@ -203,6 +205,7 @@ export class TestSuiteConfig {
         settings.workers = Number(settings.workers ?? 4);
         settings.minWorkerLoad = Number(settings.minWorkerLoad ?? 15);
         settings.serverURL ??= "http://localhost:8069";
+        settings.cpuLimit ??= 0;
         return settings;
     }
 
@@ -222,6 +225,7 @@ export class TestSuiteConfig {
             { name: "run-forever", type: Boolean, defaultValue: false },
             { name: "mobile", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
             { name: "prompt-for-retry", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
+            { name: "cpu-limit", type: Number, defaultValue: settings["cpuLimit"] },
         ];
         const rawOptions = commandLineArgs(optionsDefinition);
         if ("suite" in rawOptions) {
@@ -251,6 +255,7 @@ export class TestSuiteConfig {
         this.runForever = rawOptions["run-forever"];
         this.suiteNames = rawOptions["suite-names"] ?? [];
         this.verbose = rawOptions.verbose;
+        this.cpuLimit = rawOptions["cpu-limit"] ?? 0;
     }
 
     get baseSuiteURL() {
@@ -260,6 +265,7 @@ export class TestSuiteConfig {
             ["timeout", "15000"],
             ["loglevel", "3"],
             ["manual", "true"],
+            // ["headless", "true"],
         ];
         if (this.failfast) {
             opts.push(["failfast", true]);
