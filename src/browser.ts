@@ -136,6 +136,7 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
     clients.push(new WeakRef(client));
     await client.send("Network.disable");
     await client.send("Fetch.enable");
+    await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
     client.on("Fetch.requestPaused", async (event) => {
         const { requestId } = event;
         if (!event.responseStatusCode || !event.responseStatusText?.trim()) {
