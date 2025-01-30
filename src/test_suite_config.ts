@@ -153,6 +153,19 @@ export class TestSuiteConfig {
                 return { ok: true };
             },
         },
+        {
+            id: "NO_TEST_FOUND",
+            execute: (config: TestSuiteConfig) => {
+                if (!config.metadata.testIds.length && config.suiteIds.length) {
+                    return {
+                        ok: false,
+                        message: `No test found for suite.s: ${config.suiteNames.join(", ")}`,
+                        fatal: true, // todo, fatal false, reset everything and prompt the user for a test.
+                    };
+                }
+                return { ok: true };
+            },
+        },
     ];
     private failedChecks = new Set();
     RUN_TYPE = RUN_TYPE;

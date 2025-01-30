@@ -292721,6 +292721,7 @@ async function setupCache(page, config) {
     clients.push(new WeakRef(client));
     await client.send("Network.disable");
     await client.send("Fetch.enable");
+    await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
     client.on("Fetch.requestPaused", async (event) => {
         const { requestId } = event;
         if (!event.responseStatusCode || !event.responseStatusText?.trim()) {
@@ -292929,7 +292930,7 @@ class Terminal{
 
         // store current position
         this.dy = this.dy + dy;
-        
+
         // move cursor relative
         _readline.moveCursor(this.stream, dx, dy);
     }
@@ -319567,6 +319568,19 @@ class TestSuiteConfig {
                 return { ok: true };
             },
         },
+        {
+            id: "NO_TEST_FOUND",
+            execute: (config) => {
+                if (!config.metadata.testIds.length && config.suiteIds.length) {
+                    return {
+                        ok: false,
+                        message: `No test found for suite.s: ${config.suiteNames.join(", ")}`,
+                        fatal: true, // todo, fatal false, reset everything and prompt the user for a test.
+                    };
+                }
+                return { ok: true };
+            },
+        },
     ];
     failedChecks = new Set();
     RUN_TYPE = RUN_TYPE;
@@ -319758,7 +319772,7 @@ class TestSuiteMetadata {
             : this.config.suiteIds
                 .map((suiteId) => this.testsBySuiteId[suiteId])
                 .flat()
-                .filter((t) => !t.tags || (t.tags.includes("desktop") && !t.tags.includes("skip"))) // TODO proper support of tags
+                .filter((t) => !t.tags?.length || (t.tags.includes("desktop") && !t.tags.includes("skip"))) // TODO proper support of tags
                 .map((t) => t.id);
         return this._testIds;
     }

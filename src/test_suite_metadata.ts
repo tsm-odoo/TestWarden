@@ -58,7 +58,7 @@ export class TestSuiteMetadata {
                   .map((suiteId) => this.testsBySuiteId[suiteId])
                   .flat()
                   .filter(
-                      (t) => !t.tags || (t.tags.includes("desktop") && !t.tags.includes("skip")),
+                      (t) => !t.tags?.length || (t.tags.includes("desktop") && !t.tags.includes("skip")),
                   ) // TODO proper support of tags
                   .map((t) => t.id);
         return this._testIds;
