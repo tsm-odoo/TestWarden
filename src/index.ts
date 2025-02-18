@@ -58,6 +58,12 @@ signals.forEach((signal) => process.on(signal, doCleanup));
             },
             {
                 text: formatter.info(`Launching chrome browser, suite: ${config.suite}`),
+                successText: () =>
+                    formatter.info(
+                        `Chrome browser started on ${new URL(browser.wsEndpoint()).port}, suite: ${
+                            config.suite
+                        }`,
+                    ),
                 failText: (err) => formatter.error(err.message),
             },
         );

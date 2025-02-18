@@ -17773,6 +17773,52 @@ let Deferred$3 = class Deferred extends Promise {
 function uuid$1() {
     return `${Math.random().toString(36).substring(2, 15)}`.toUpperCase();
 }
+let Mutex$3 = class Mutex {
+    _lock;
+    _queueSize;
+    _unlockedProm;
+    _unlock;
+    constructor() {
+        this._lock = Promise.resolve();
+        this._queueSize = 0;
+        this._unlockedProm = undefined;
+        this._unlock = undefined;
+    }
+    /**
+     * Add a computation to the queue, it will be executed as soon as the
+     * previous computations are completed.
+     *
+     * @param {() => (void | Promise<void>)} action a function which may return a Promise
+     * @returns {Promise<void>}
+     */
+    async exec(action) {
+        this._queueSize++;
+        if (!this._unlockedProm) {
+            this._unlockedProm = new Promise((resolve) => {
+                this._unlock = () => {
+                    resolve(true);
+                    this._unlockedProm = undefined;
+                };
+            });
+        }
+        const always = () => {
+            return Promise.resolve(action()).finally(() => {
+                if (--this._queueSize === 0) {
+                    this._unlock();
+                }
+            });
+        };
+        this._lock = this._lock.then(always, always);
+        return this._lock;
+    }
+    /**
+     * @returns {Promise<void>} resolved as soon as the Mutex is unlocked
+     *   (directly if it is currently idle)
+     */
+    getUnlockedDef() {
+        return this._unlockedProm || Promise.resolve();
+    }
+};
 
 const logger = {
     info: (...messages) => console.log(formatter$1.info(logSymbols.info, ...messages)),
@@ -292648,18 +292694,26 @@ const CHROME_OPTIONS = [
     "--no-sandbox",
     `--window-size=1366,768`, // Same as RunBot
 ];
+let latestDebuggingPort = 9221;
+const findPortMutext = new Mutex$3();
+async function findFirstAvailablePort() {
+    for (let port = latestDebuggingPort + 1; true; port++) {
+        try {
+            await execPromise(`netstat -tuplen | grep ${port}`);
+        }
+        catch {
+            latestDebuggingPort = port;
+            return port;
+        }
+    }
+}
 const browsers = [];
 const clients = [];
-let debuggingPort = 9222;
 let launchDeferred;
 let setupCacheDeferred;
 async function launch(options) {
     launchDeferred = new Deferred$3();
-    const port = debuggingPort++;
-    try {
-        await execPromise(`kill -9 $(lsof -i4TCP:${port} -sTCP:LISTEN -t)`);
-    }
-    catch { }
+    const port = await findPortMutext.exec(findFirstAvailablePort);
     const browser = await puppeteer.launch({
         ...options,
         args: [...CHROME_OPTIONS, `--remote-debugging-port=${port}`],
@@ -320088,6 +320142,7 @@ signals.forEach((signal) => process.on(signal, doCleanup));
             });
         }, {
             text: formatter$1.info(`Launching chrome browser, suite: ${config.suite}`),
+            successText: () => formatter$1.info(`Chrome browser started on ${new URL(browser.wsEndpoint()).port}, suite: ${config.suite}`),
             failText: (err) => formatter$1.error(err.message),
         });
         const AdapterClass = await TestSuiteAdapter.getAdapter(page);

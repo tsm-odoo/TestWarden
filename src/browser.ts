@@ -1,4 +1,4 @@
-import { Deferred } from "@warden/helpers/misc.js";
+import { Deferred, Mutex } from "@warden/helpers/misc.js";
 import { formatter } from "@warden/helpers/terminal.js";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 
@@ -45,17 +45,26 @@ export const CHROME_OPTIONS = [
     `--window-size=1366,768`, // Same as RunBot
 ];
 
+let latestDebuggingPort = 9221;
+const findPortMutext = new Mutex();
+async function findFirstAvailablePort() {
+    for (let port = latestDebuggingPort + 1; true; port++) {
+        try {
+            await execPromise(`netstat -tuplen | grep ${port}`);
+        } catch {
+            latestDebuggingPort = port;
+            return port;
+        }
+    }
+}
+
 const browsers: WeakRef<Browser>[] = [];
 const clients: WeakRef<CDPSession>[] = [];
-let debuggingPort = 9222;
 let launchDeferred;
 let setupCacheDeferred;
 export async function launch(options: PuppeteerLaunchOptions) {
     launchDeferred = new Deferred();
-    const port = debuggingPort++;
-    try {
-        await execPromise(`kill -9 $(lsof -i4TCP:${port} -sTCP:LISTEN -t)`);
-    } catch {}
+    const port = await findPortMutext.exec(findFirstAvailablePort);
     const browser = await puppeteer.launch({
         ...options,
         args: [...CHROME_OPTIONS, `--remote-debugging-port=${port}`],
