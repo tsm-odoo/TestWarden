@@ -52,7 +52,7 @@ export class TestSuiteMetadata {
     }
 
     get testIds() {
-        this._testIds ??= this.config.testId
+        return this.config.testId
             ? [this.config.testId]
             : this.config.suiteIds
                   .map((suiteId) => this.testsBySuiteId[suiteId])
@@ -61,7 +61,6 @@ export class TestSuiteMetadata {
                       (t) => !t.tags?.length || (t.tags.includes("desktop") && !t.tags.includes("skip")),
                   ) // TODO proper support of tags
                   .map((t) => t.id);
-        return this._testIds;
     }
 
     static async fetch(page: Page, config: import("@warden/test_suite_config").TestSuiteConfig) {
