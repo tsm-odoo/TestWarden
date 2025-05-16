@@ -245,6 +245,7 @@ export class TestSuiteConfig {
             rawOptions["suite"] =
                 settings.suites[rawOptions["suite"] as string] ?? rawOptions["suite"];
         }
+        console.log(rawOptions["server-url"]);
         const authCookie = await authenticate(rawOptions["server-url"], "admin", "admin");
         return new TestSuiteConfig(rawOptions, authCookie);
     }

@@ -149,7 +149,7 @@ export class HootAdapter extends TestSuiteAdapter {
     async screenshotFails(page: Page, path: string) {
         let nextPageBtn;
         do {
-            const fails = await page.$$(">>> .HootTestResult:has(.bg-fail)");
+            const fails = await page.$$(">>> .HootTestResult.bg-rose-900");
             // TODO - improve file name
             for (const fail of fails) {
                 await fail.screenshot({
