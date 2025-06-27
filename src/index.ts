@@ -32,7 +32,6 @@ signals.forEach((signal) => process.on(signal, doCleanup));
 
 (async function start() {
     try {
-        // config = TestSuiteConifg.initialize(); => then parse options and return config
         const config = await TestSuiteConfig.parseCLIOptions();
         let browser: Browser, page: Page, metadata: TestSuiteMetadata;
         rxjsConfig.onUnhandledError = (err) => {

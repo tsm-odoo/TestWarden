@@ -292731,12 +292731,12 @@ async function cleanup() {
         await Promise.all([setupCacheDeferred, launchDeferred]);
         await Promise.all(clients.map((c) => c
             .deref()
-            .detach()
-            .catch(() => { })));
+            ?.detach()
+            ?.catch(() => { })));
         await Promise.all(browsers.map((b) => b
             .deref()
-            .close()
-            .catch(() => { })));
+            ?.close()
+            ?.catch(() => { })));
     }, {
         text: formatter$1.info("Cleaning up browsers and network caches"),
         successText: formatter$1.info("Browsers and network caches cleaned up"),
@@ -292744,8 +292744,6 @@ async function cleanup() {
     });
 }
 const cache = {};
-const allDepsRoute = "/ir.module.module.dependency/all_dependencies";
-const allDepsCache = {};
 function addHeader(ogHeaders, headers) {
     for (const [key, value] of headers) {
         const headerIdx = ogHeaders.findIndex((h) => h.name.toLowerCase() === key.toLowerCase());
@@ -292758,90 +292756,58 @@ function addHeader(ogHeaders, headers) {
     }
     return ogHeaders;
 }
-const chromeCacheResourceTypes = [
-    "Stylesheet",
-    "Image",
-    "Media",
-    "Font",
-    "Script",
-];
 /**
- * Cache responses to speed up reload time. Ideally, the browser should use the
- * memory cache which is faster.
+ * Cache responses to speed up reload time.
  */
 async function setupCache(page, config) {
     setupCacheDeferred = new Deferred$3();
     const client = await page.target().createCDPSession();
     clients.push(new WeakRef(client));
-    await client.send("Network.disable");
-    await client.send("Fetch.enable");
+    await client.send("ServiceWorker.enable");
+    await client.send('ServiceWorker.unregister', { scopeURL: config.serverURL });
     await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
+    await client.send("Fetch.enable");
     client.on("Fetch.requestPaused", async (event) => {
         const { requestId } = event;
+        if (event.request.url in cache) {
+            const cached = cache[event.request.url];
+            await client.send("Fetch.fulfillRequest", {
+                requestId,
+                responseCode: cached.status,
+                responseHeaders: addHeader(cached.headers, [
+                    ["Cache-Control", "public, max-age=31536000"],
+                    ["X-Warden-XHR-Cache", "TRUE"],
+                ]),
+                body: cached.body.toString("base64"),
+            });
+            return;
+        }
         if (!event.responseStatusCode || !event.responseStatusText?.trim()) {
             await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
             return;
         }
+        if (event.resourceType === "XHR")
+            try {
+                const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
+                cache[event.request.url] = {
+                    status: event.responseStatusCode,
+                    headers: event.responseHeaders,
+                    body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
+                };
+            }
+            catch (e) {
+            }
         await client.send("Fetch.continueResponse", {
             requestId,
             responseCode: event.responseStatusCode,
             responseHeaders: addHeader(event.responseHeaders, [
-                ["Cache-Control", "private, max-age=31536000"],
-                ["FROM_FETCH_CACHE", "True"],
+                ["Cache-Control", "public, max-age=31536000"],
+                ["X-Warden-Cache-Control", "TRUE"],
             ]),
             responsePhrase: event.responseStatusText,
         });
     });
-    await page.setRequestInterception(true);
     await page.setCacheEnabled(true);
-    page.off("request");
-    page.off("response");
-    page.on("request", async (request) => {
-        const url = new URL(request.url());
-        if (url.pathname === allDepsRoute) {
-            const { params } = JSON.parse(await request.fetchPostData());
-            const cachedResponse = allDepsCache[JSON.stringify(params.kwargs.module_names)];
-            if (cachedResponse) {
-                return request.respond(cachedResponse);
-            }
-        }
-        const type = request.resourceType();
-        if (chromeCacheResourceTypes.map((t) => t.toLowerCase()).includes(type)) {
-            return request.continue();
-        }
-        if (url.pathname in cache) {
-            request.respond(cache[url.pathname]);
-            return;
-        }
-        request.continue();
-    });
-    page.on("response", async (response) => {
-        const url = new URL(response.url());
-        const type = response.request().resourceType();
-        if (url.pathname in cache ||
-            chromeCacheResourceTypes.map((t) => t.toLowerCase()).includes(type)) {
-            return;
-        }
-        let buffer;
-        try {
-            buffer = await response.buffer();
-        }
-        catch (error) {
-            return;
-        }
-        const cachedResponse = {
-            status: response.status(),
-            headers: Object.assign(response.headers(), { FROM_LOCAL_CACHE: true }),
-            body: buffer,
-        };
-        if (url.pathname === allDepsRoute) {
-            const { params } = JSON.parse(await response.request().fetchPostData());
-            allDepsCache[JSON.stringify(params.kwargs.module_names)] = cachedResponse;
-        }
-        else {
-            cache[url.pathname] = cachedResponse;
-        }
-    });
     setupCacheDeferred.resolve();
 }
 
@@ -294244,13 +294210,9 @@ class Executor {
             const lastFail$ = cjs.merge(...this.splits.map((s) => s.lastFail$)).pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(done$), cjs.filter(Boolean));
             // 2. Start the progress bar and update the state according to the
             //    observables.
-            this.progressBar.start(this.config.isSingleTest
-                ? this.config.MAX_NUMBER_OF_WORKERS
-                : this.metadata.testIds.length);
+            this.progressBar.start(this.config.isSingleTest ? this.config.MAX_NUMBER_OF_WORKERS : this.metadata.testIds.length);
             testResults$.subscribe((r) => {
-                const totalRuns = this.config.isSingleTest
-                    ? r.length + runs * this.splits.length
-                    : runs;
+                const totalRuns = this.config.isSingleTest ? r.length + runs * this.splits.length : runs;
                 this.progressBar.update(r.length);
                 this.updateStatistics(totalRuns, r, previousResults);
             });
@@ -294270,9 +294232,7 @@ class Executor {
             await isDonePromise;
             const success = this.splits.every((s) => !s.failed);
             if (!this.config.runForever) {
-                await Promise.all([
-                    this.splits.filter((s) => s.failed).map((s) => s.setFailureFavicon()),
-                ]);
+                await Promise.all([this.splits.filter((s) => s.failed).map((s) => s.setFailureFavicon())]);
             }
             // 4. Let the runner process the result.
             yield { success };
@@ -299901,9 +299861,7 @@ class TestSuiteRunner {
         // @ts-ignore
         const name = await enquirer$1.autocomplete({
             message: chalk$5.white(`Which ${mode.toLowerCase()} should I run?`),
-            choices: mode === this.config.RUN_TYPE.TEST
-                ? this.metadata.testNames
-                : this.metadata.suiteNames,
+            choices: mode === this.config.RUN_TYPE.TEST ? this.metadata.testNames : this.metadata.suiteNames,
             limit: 5,
         });
         return {
@@ -317465,14 +317423,14 @@ axios.default = axios;
 
 function buildRPCPayload(params) {
     return {
-        jsonrpc: '2.0',
-        method: 'call',
+        jsonrpc: "2.0",
+        method: "call",
         params: params || {},
     };
 }
 async function makeRPC(route, params, headers) {
     headers = headers || {};
-    headers['Content-type'] = 'application/json';
+    headers["Content-type"] = "application/json";
     const response = await axios.post(route, buildRPCPayload(params), {
         headers: headers,
         withCredentials: true,
@@ -317484,20 +317442,20 @@ async function authenticate(url, login, password) {
     const databaseList = await makeRPC(`${url}/web/database/list`);
     const db_name = databaseList.result[0];
     const headers = {
-        'Content-type': 'application/json',
+        "Content-type": "application/json",
     };
     const response = await axios.post(`${url}/web/session/authenticate`, buildRPCPayload({ login: login, password: password, db: db_name }), {
         headers: headers,
         withCredentials: true,
     });
-    if (!response.headers?.['set-cookie']) {
+    if (!response.headers?.["set-cookie"]) {
         throw new Error(`Authentication failed for user ${login} with password ${password}`);
     }
     return {
-        name: 'session_id',
-        value: response.headers['set-cookie'][0].split(';')[0].split('=')[1],
-        domain: url.split('//')[1].split(':')[0],
-        path: '/',
+        name: "session_id",
+        value: response.headers["set-cookie"][0].split(";")[0].split("=")[1],
+        domain: url.split("//")[1].split(":")[0],
+        path: "/",
     };
 }
 
@@ -319892,9 +319850,7 @@ class HootAdapter extends TestSuiteAdapter {
             .__debug__.tests.values()) {
             testById[testId] = { name: fullName, tags: tags.map(({ id }) => id) };
         }
-        for (const suite of odoo.loader.modules
-            .get("@web/../lib/hoot/hoot")
-            .__debug__.suites.values()) {
+        for (const suite of odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__.suites.values()) {
             const { id, fullName, weight } = suite;
             suiteById[id] = { name: fullName, weight };
             testsBySuiteId[id] = getAllTests(suite);
@@ -319959,7 +319915,7 @@ class HootAdapter extends TestSuiteAdapter {
     async screenshotFails(page, path) {
         let nextPageBtn;
         do {
-            const fails = await page.$$(">>> .HootTestResult:has(.bg-fail)");
+            const fails = await page.$$(">>> .HootTestResult.bg-rose-900");
             // TODO - improve file name
             for (const fail of fails) {
                 await fail.screenshot({
@@ -320019,8 +319975,7 @@ class QUnitAdapter extends TestSuiteAdapter {
                 ...new Set(result.testsBySuiteId[suite.moduleId].concat(Object.values(uniqueTests))),
             ];
             if (result.testsBySuiteId[suite.moduleId].length > 0) {
-                result.suiteById[suite.moduleId].weight =
-                    result.testsBySuiteId[suite.moduleId].length;
+                result.suiteById[suite.moduleId].weight = result.testsBySuiteId[suite.moduleId].length;
             }
             else {
                 delete result.suiteById[suite.moduleId];
@@ -320117,7 +320072,6 @@ const signals = ["SIGINT", "SIGTERM", "SIGHUP", "beforeExit"];
 signals.forEach((signal) => process.on(signal, doCleanup));
 (async function start() {
     try {
-        // config = TestSuiteConifg.initialize(); => then parse options and return config
         const config = await TestSuiteConfig.parseCLIOptions();
         let browser, page, metadata;
         cjs.config.onUnhandledError = (err) => {

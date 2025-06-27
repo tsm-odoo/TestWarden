@@ -4,58 +4,51 @@ import { TestSuiteConfig } from "@warden/test_suite_config";
 
 import { exec } from "child_process";
 import { oraPromise } from "ora";
-import puppeteer, {
-    Browser,
-    CDPSession,
-    Page,
-    Protocol,
-    PuppeteerLaunchOptions,
-    ResponseForRequest,
-} from "puppeteer";
+import puppeteer, { Browser, CDPSession, Page, Protocol, PuppeteerLaunchOptions, ResponseForRequest } from "puppeteer";
 import { promisify } from "util";
 
 const execPromise = promisify(exec);
 
 export const CHROME_OPTIONS = [
-    "--no-default-browser-check",
-    "--disable-background-timer-throttling",
-    "--disable-backgrounding-occluded-windows",
-    "--disable-renderer-backgrounding",
-    "--disable-extensions",
-    "--disable-background-networking",
-    "--disable-breakpad",
-    "--disable-namespace-sandbox",
-    "--disable-client-side-phishing-detection",
-    "--disable-crash-reporter",
-    "--disable-default-apps",
-    "--disable-device-discovery-notifications",
-    "--disable-accelerated-2d-canvas",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-accelerated-2d-canvas",
-    "--no-first-run",
-    "--no-zygote",
-    "--blink-settings=imagesEnabled=false",
-    "--disable-features=PaintHolding",
-    "--single-process",
-    "--disable-software-rasterizer",
-    "--disable-translate",
-    // "--js-flags=--expose_gc",
-    "--no-sandbox",
-    `--window-size=1366,768`, // Same as RunBot
+  "--no-default-browser-check",
+  "--disable-background-timer-throttling",
+  "--disable-backgrounding-occluded-windows",
+  "--disable-renderer-backgrounding",
+  "--disable-extensions",
+  "--disable-background-networking",
+  "--disable-breakpad",
+  "--disable-namespace-sandbox",
+  "--disable-client-side-phishing-detection",
+  "--disable-crash-reporter",
+  "--disable-default-apps",
+  "--disable-device-discovery-notifications",
+  "--disable-accelerated-2d-canvas",
+  "--disable-setuid-sandbox",
+  "--disable-dev-shm-usage",
+  "--disable-accelerated-2d-canvas",
+  "--no-first-run",
+  "--no-zygote",
+  "--blink-settings=imagesEnabled=false",
+  "--disable-features=PaintHolding",
+  "--single-process",
+  "--disable-software-rasterizer",
+  "--disable-translate",
+  // "--js-flags=--expose_gc",
+  "--no-sandbox",
+  `--window-size=1366,768`, // Same as RunBot
 ];
 
 let latestDebuggingPort = 9221;
 const findPortMutext = new Mutex();
 async function findFirstAvailablePort() {
-    for (let port = latestDebuggingPort + 1; true; port++) {
-        try {
-            await execPromise(`netstat -tuplen | grep ${port}`);
-        } catch {
-            latestDebuggingPort = port;
-            return port;
-        }
+  for (let port = latestDebuggingPort + 1; true; port++) {
+    try {
+      await execPromise(`netstat -tuplen | grep ${port}`);
+    } catch {
+      latestDebuggingPort = port;
+      return port;
     }
+  }
 }
 
 const browsers: WeakRef<Browser>[] = [];
@@ -63,155 +56,119 @@ const clients: WeakRef<CDPSession>[] = [];
 let launchDeferred;
 let setupCacheDeferred;
 export async function launch(options: PuppeteerLaunchOptions) {
-    launchDeferred = new Deferred();
-    const port = await findPortMutext.exec(findFirstAvailablePort);
-    const browser = await puppeteer.launch({
-        ...options,
-        args: [...CHROME_OPTIONS, `--remote-debugging-port=${port}`],
-        defaultViewport: null,
-        handleSIGINT: false,
-        handleSIGTERM: false,
-        handleSIGHUP: false,
-    });
-    browsers.push(new WeakRef(browser));
-    launchDeferred.resolve();
-    return browser;
+  launchDeferred = new Deferred();
+  const port = await findPortMutext.exec(findFirstAvailablePort);
+  const browser = await puppeteer.launch({
+    ...options,
+    args: [...CHROME_OPTIONS, `--remote-debugging-port=${port}`],
+    defaultViewport: null,
+    handleSIGINT: false,
+    handleSIGTERM: false,
+    handleSIGHUP: false,
+  });
+  browsers.push(new WeakRef(browser));
+  launchDeferred.resolve();
+  return browser;
 }
 
 export async function cleanup() {
-    await oraPromise(
-        async () => {
-            await Promise.all([setupCacheDeferred, launchDeferred]);
-            await Promise.all(
-                clients.map((c) =>
-                    c
-                        .deref()
-                        .detach()
-                        .catch(() => {}),
-                ),
-            );
-            await Promise.all(
-                browsers.map((b) =>
-                    b
-                        .deref()
-                        .close()
-                        .catch(() => {}),
-                ),
-            );
-        },
-        {
-            text: formatter.info("Cleaning up browsers and network caches"),
-            successText: formatter.info("Browsers and network caches cleaned up"),
-            failText: (e) =>
-                formatter.error("Failed to clean up browsers, network caches:", e.message),
-        },
-    );
+  await oraPromise(
+    async () => {
+      await Promise.all([setupCacheDeferred, launchDeferred]);
+      await Promise.all(
+        clients.map((c) =>
+          c
+            .deref()
+            ?.detach()
+            ?.catch(() => {}),
+        ),
+      );
+      await Promise.all(
+        browsers.map((b) =>
+          b
+            .deref()
+            ?.close()
+            ?.catch(() => {}),
+        ),
+      );
+    },
+    {
+      text: formatter.info("Cleaning up browsers and network caches"),
+      successText: formatter.info("Browsers and network caches cleaned up"),
+      failText: (e) => formatter.error("Failed to clean up browsers, network caches:", e.message),
+    },
+  );
 }
 
-const cache: { [pathname: string]: Partial<ResponseForRequest> } = {};
-const allDepsRoute = "/ir.module.module.dependency/all_dependencies";
-const allDepsCache = {};
+const cache: {
+  [url: string]: { status: number; headers: Protocol.Fetch.HeaderEntry[]; body: Buffer };
+} = {};
 
 function addHeader(
-    ogHeaders: Protocol.Fetch.HeaderEntry[],
-    headers: [key: string, value: string][],
+  ogHeaders: Protocol.Fetch.HeaderEntry[],
+  headers: [key: string, value: string][],
 ): Protocol.Fetch.HeaderEntry[] {
-    for (const [key, value] of headers) {
-        const headerIdx = ogHeaders.findIndex((h) => h.name.toLowerCase() === key.toLowerCase());
-        if (headerIdx === -1) {
-            ogHeaders.push({ name: key, value });
-        } else {
-            ogHeaders[headerIdx].value = value;
-        }
+  for (const [key, value] of headers) {
+    const headerIdx = ogHeaders.findIndex((h) => h.name.toLowerCase() === key.toLowerCase());
+    if (headerIdx === -1) {
+      ogHeaders.push({ name: key, value });
+    } else {
+      ogHeaders[headerIdx].value = value;
     }
-    return ogHeaders;
+  }
+  return ogHeaders;
 }
 
-const chromeCacheResourceTypes: Protocol.Network.ResourceType[] = [
-    "Stylesheet",
-    "Image",
-    "Media",
-    "Font",
-    "Script",
-];
-
 /**
- * Cache responses to speed up reload time. Ideally, the browser should use the
- * memory cache which is faster.
+ * Cache responses to speed up reload time.
  */
 export async function setupCache(page: Page, config: TestSuiteConfig) {
-    setupCacheDeferred = new Deferred();
-    const client = await page.target().createCDPSession();
-    clients.push(new WeakRef(client));
-    await client.send("Network.disable");
-    await client.send("Fetch.enable");
-    await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
-    client.on("Fetch.requestPaused", async (event) => {
-        const { requestId } = event;
-        if (!event.responseStatusCode || !event.responseStatusText?.trim()) {
-            await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
-            return;
-        }
-        await client.send("Fetch.continueResponse", {
-            requestId,
-            responseCode: event.responseStatusCode,
-            responseHeaders: addHeader(event.responseHeaders, [
-                ["Cache-Control", "private, max-age=31536000"],
-                ["FROM_FETCH_CACHE", "True"],
-            ]),
-            responsePhrase: event.responseStatusText,
-        });
-    });
-    await page.setRequestInterception(true);
-    await page.setCacheEnabled(true);
-    page.off("request");
-    page.off("response");
-    page.on("request", async (request) => {
-        const url = new URL(request.url());
-        if (url.pathname === allDepsRoute) {
-            const { params } = JSON.parse(await request.fetchPostData());
-            const cachedResponse = allDepsCache[JSON.stringify(params.kwargs.module_names)];
-            if (cachedResponse) {
-                return request.respond(cachedResponse);
-            }
-        }
-        const type = request.resourceType();
-        if (chromeCacheResourceTypes.map((t) => t.toLowerCase()).includes(type)) {
-            return request.continue();
-        }
-        if (url.pathname in cache) {
-            request.respond(cache[url.pathname]);
-            return;
-        }
-
-        request.continue();
-    });
-    page.on("response", async (response) => {
-        const url = new URL(response.url());
-        const type = response.request().resourceType();
-        if (
-            url.pathname in cache ||
-            chromeCacheResourceTypes.map((t) => t.toLowerCase()).includes(type)
-        ) {
-            return;
-        }
-        let buffer;
-        try {
-            buffer = await response.buffer();
-        } catch (error) {
-            return;
-        }
-        const cachedResponse = {
-            status: response.status(),
-            headers: Object.assign(response.headers(), { FROM_LOCAL_CACHE: true }),
-            body: buffer,
+  setupCacheDeferred = new Deferred();
+  const client = await page.target().createCDPSession();
+  clients.push(new WeakRef(client));
+  await client.send("ServiceWorker.enable");
+  await client.send('ServiceWorker.unregister', { scopeURL: config.serverURL});
+  await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
+  await client.send("Fetch.enable");
+  client.on("Fetch.requestPaused", async (event) => {
+    const { requestId } = event;
+    if (event.request.url in cache) {
+      const cached = cache[event.request.url];
+      await client.send("Fetch.fulfillRequest", {
+        requestId,
+        responseCode: cached.status,
+        responseHeaders: addHeader(cached.headers, [
+          ["Cache-Control", "public, max-age=31536000"],
+          ["X-Warden-XHR-Cache", "TRUE"],
+        ]),
+        body: cached.body.toString("base64"),
+      });
+      return;
+    }
+    if (!event.responseStatusCode || !event.responseStatusText?.trim()) {
+      await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
+      return;
+    }
+    if (event.resourceType === "XHR")
+      try {
+        const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
+        cache[event.request.url] = {
+          status: event.responseStatusCode,
+          headers: event.responseHeaders,
+          body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
         };
-        if (url.pathname === allDepsRoute) {
-            const { params } = JSON.parse(await response.request().fetchPostData());
-            allDepsCache[JSON.stringify(params.kwargs.module_names)] = cachedResponse;
-        } else {
-            cache[url.pathname] = cachedResponse;
-        }
+      } catch (e) {
+      }
+    await client.send("Fetch.continueResponse", {
+      requestId,
+      responseCode: event.responseStatusCode,
+      responseHeaders: addHeader(event.responseHeaders, [
+        ["Cache-Control", "public, max-age=31536000"],
+        ["X-Warden-Cache-Control", "TRUE"],
+    ]),
+      responsePhrase: event.responseStatusText,
     });
-    setupCacheDeferred.resolve();
+  });
+  await page.setCacheEnabled(true);
+  setupCacheDeferred.resolve();
 }
