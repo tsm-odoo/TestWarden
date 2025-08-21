@@ -28,7 +28,7 @@ export class HootAdapter extends TestSuiteAdapter {
   }
 
   getSuiteURL(config: TestSuiteConfig, testIds: string[]) {
-    const queryParams = testIds.map((id) => `test=${id}`);
+    const queryParams = testIds.map((id) => `id=${id}`);
     queryParams.push("showdetail=failed");
     if (config.failfast) {
       queryParams.push("bail=1");

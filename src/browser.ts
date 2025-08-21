@@ -4,7 +4,7 @@ import { TestSuiteConfig } from "@warden/test_suite_config";
 
 import { exec } from "child_process";
 import { oraPromise } from "ora";
-import puppeteer, { Browser, CDPSession, Page, Protocol, PuppeteerLaunchOptions, ResponseForRequest } from "puppeteer";
+import puppeteer, { Browser, CDPSession, Page, Protocol, PuppeteerLaunchOptions } from "puppeteer";
 import { promisify } from "util";
 
 const execPromise = promisify(exec);
@@ -75,22 +75,22 @@ export async function cleanup() {
   await oraPromise(
     async () => {
       await Promise.all([setupCacheDeferred, launchDeferred]);
-      await Promise.all(
-        clients.map((c) =>
-          c
-            .deref()
-            ?.detach()
-            ?.catch(() => {}),
+      await Promise.all([
+        ...clients.map(
+          (c) =>
+            c
+              .deref()
+              ?.detach()
+              ?.catch(() => {}),
         ),
-      );
-      await Promise.all(
-        browsers.map((b) =>
-          b
-            .deref()
-            ?.close()
-            ?.catch(() => {}),
+        ...browsers.map(
+          (b) =>
+            b
+              .deref()
+              ?.close()
+              ?.catch(() => {}),
         ),
-      );
+      ]);
     },
     {
       text: formatter.info("Cleaning up browsers and network caches"),
@@ -127,7 +127,7 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
   const client = await page.target().createCDPSession();
   clients.push(new WeakRef(client));
   await client.send("ServiceWorker.enable");
-  await client.send('ServiceWorker.unregister', { scopeURL: config.serverURL});
+  await client.send("ServiceWorker.unregister", { scopeURL: config.serverURL });
   await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
   await client.send("Fetch.enable");
   client.on("Fetch.requestPaused", async (event) => {
@@ -149,7 +149,7 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
       await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
       return;
     }
-    if (event.resourceType === "XHR")
+    if (event.resourceType === "XHR") {
       try {
         const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
         cache[event.request.url] = {
@@ -157,17 +157,24 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
           headers: event.responseHeaders,
           body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
         };
-      } catch (e) {
+      } catch (e) {}
+    }
+    try {
+      await client.send("Fetch.continueResponse", {
+        requestId,
+        responseCode: event.responseStatusCode,
+        responseHeaders: addHeader(event.responseHeaders, [
+          ["Cache-Control", "public, max-age=31536000"],
+          ["X-Warden-Cache-Control", "TRUE"],
+        ]),
+        responsePhrase: event.responseStatusText,
+      });
+    } catch (e) {
+      client.detach();
+      if (!["TargetCloseError", "ProtocolError"].includes(e.name)) {
+        throw e;
       }
-    await client.send("Fetch.continueResponse", {
-      requestId,
-      responseCode: event.responseStatusCode,
-      responseHeaders: addHeader(event.responseHeaders, [
-        ["Cache-Control", "public, max-age=31536000"],
-        ["X-Warden-Cache-Control", "TRUE"],
-    ]),
-      responsePhrase: event.responseStatusText,
-    });
+    }
   });
   await page.setCacheEnabled(true);
   setupCacheDeferred.resolve();

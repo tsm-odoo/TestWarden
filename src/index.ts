@@ -19,69 +19,70 @@ export const ABORT_CONTROLLER = new AbortController();
 export const processExit$ = new BehaviorSubject(false);
 let isCleaningUp = false;
 async function doCleanup() {
-    if (isCleaningUp) {
-        return;
-    }
-    isCleaningUp = true;
-    processExit$.next(true);
-    await cleanup();
-    process.exit(0);
+  if (isCleaningUp) {
+    return;
+  }
+  isCleaningUp = true;
+  processExit$.next(true);
+  await cleanup();
+  process.exit(0);
 }
 const signals = ["SIGINT", "SIGTERM", "SIGHUP", "beforeExit"];
 signals.forEach((signal) => process.on(signal, doCleanup));
+process.on("unhandledRejection", (reason) => {
+  logger.error("Unhandled Promise Rejection");
+  logger.error(reason instanceof Error ? reason.stack : JSON.stringify(reason, null, 2));
+  // process.exit(1);
+});
 
 (async function start() {
-    try {
-        const config = await TestSuiteConfig.parseCLIOptions();
-        let browser: Browser, page: Page, metadata: TestSuiteMetadata;
-        rxjsConfig.onUnhandledError = (err) => {
-            if (err instanceof StopExecution || isCleaningUp) {
-                return;
-            }
-            throw err;
-        };
-        await oraPromise(
-            async () => {
-                browser = await launch({ headless: true, dumpio: config.verbose });
-                [page] = await browser.pages();
-                await setupCache(page, config);
-                await page.setCookie(config.authCookie);
-                await page.goto(config.baseSuiteURL);
-                await page.waitForResponse((response) => {
-                    if (response.status() === 404) {
-                        const url = new URL(config.baseSuiteURL);
-                        throw new StopExecution(`Suite not found: ${url.origin}${url.pathname}`);
-                    }
-                    return true;
-                });
-            },
-            {
-                text: formatter.info(`Launching chrome browser, suite: ${config.suite}`),
-                successText: () =>
-                    formatter.info(
-                        `Chrome browser started on ${new URL(browser.wsEndpoint()).port}, suite: ${
-                            config.suite
-                        }`,
-                    ),
-                failText: (err) => formatter.error(err.message),
-            },
-        );
-        const AdapterClass = await TestSuiteAdapter.getAdapter(page);
-        config.adapterClass = AdapterClass;
-        process.setMaxListeners(config.MAX_NUMBER_OF_WORKERS * 2 + 5);
-        metadata = await TestSuiteMetadata.fetch(page, config);
-        await browser.close();
-        config.metadata = metadata;
-        config.check();
-        let mask = (1 << config.cpuLimit) - 1;
-        nc.setAffinity(mask);
-        const totalCPUs = os.cpus().length;
-        logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
-        await new TestSuiteRunner(config, metadata).run();
-    } catch (e) {
-        if (!(e instanceof StopExecution) && !isCleaningUp) {
-            throw e;
-        }
+  try {
+    const config = await TestSuiteConfig.parseCLIOptions();
+    let browser: Browser, page: Page, metadata: TestSuiteMetadata;
+    rxjsConfig.onUnhandledError = (err) => {
+      if (err instanceof StopExecution || isCleaningUp) {
+        return;
+      }
+      throw err;
+    };
+    await oraPromise(
+      async () => {
+        browser = await launch({ headless: true, dumpio: config.verbose });
+        [page] = await browser.pages();
+        await setupCache(page, config);
+        await page.setCookie(config.authCookie);
+        await page.goto(config.baseSuiteURL);
+        await page.waitForResponse((response) => {
+          if (response.status() === 404) {
+            const url = new URL(config.baseSuiteURL);
+            throw new StopExecution(`Suite not found: ${url.origin}${url.pathname}`);
+          }
+          return true;
+        });
+      },
+      {
+        text: formatter.info(`Launching chrome browser, suite: ${config.suite}`),
+        successText: () =>
+          formatter.info(`Chrome browser started on ${new URL(browser.wsEndpoint()).port}, suite: ${config.suite}`),
+        failText: (err) => formatter.error(err.message),
+      },
+    );
+    const AdapterClass = await TestSuiteAdapter.getAdapter(page);
+    config.adapterClass = AdapterClass;
+    process.setMaxListeners(config.MAX_NUMBER_OF_WORKERS * 2 + 5);
+    metadata = await TestSuiteMetadata.fetch(page, config);
+    await browser.close();
+    config.metadata = metadata;
+    config.check();
+    let mask = (1 << config.cpuLimit) - 1;
+    nc.setAffinity(mask);
+    const totalCPUs = os.cpus().length;
+    logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
+    await new TestSuiteRunner(config, metadata).run();
+  } catch (e) {
+    if (!(e instanceof StopExecution) && !isCleaningUp) {
+      throw e;
     }
-    doCleanup();
+  }
+  doCleanup();
 })();

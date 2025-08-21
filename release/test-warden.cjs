@@ -292729,14 +292729,16 @@ async function launch(options) {
 async function cleanup() {
     await oraPromise(async () => {
         await Promise.all([setupCacheDeferred, launchDeferred]);
-        await Promise.all(clients.map((c) => c
-            .deref()
-            ?.detach()
-            ?.catch(() => { })));
-        await Promise.all(browsers.map((b) => b
-            .deref()
-            ?.close()
-            ?.catch(() => { })));
+        await Promise.all([
+            ...clients.map((c) => c
+                .deref()
+                ?.detach()
+                ?.catch(() => { })),
+            ...browsers.map((b) => b
+                .deref()
+                ?.close()
+                ?.catch(() => { })),
+        ]);
     }, {
         text: formatter$1.info("Cleaning up browsers and network caches"),
         successText: formatter$1.info("Browsers and network caches cleaned up"),
@@ -292764,7 +292766,7 @@ async function setupCache(page, config) {
     const client = await page.target().createCDPSession();
     clients.push(new WeakRef(client));
     await client.send("ServiceWorker.enable");
-    await client.send('ServiceWorker.unregister', { scopeURL: config.serverURL });
+    await client.send("ServiceWorker.unregister", { scopeURL: config.serverURL });
     await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
     await client.send("Fetch.enable");
     client.on("Fetch.requestPaused", async (event) => {
@@ -292786,7 +292788,7 @@ async function setupCache(page, config) {
             await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
             return;
         }
-        if (event.resourceType === "XHR")
+        if (event.resourceType === "XHR") {
             try {
                 const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
                 cache[event.request.url] = {
@@ -292795,17 +292797,25 @@ async function setupCache(page, config) {
                     body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
                 };
             }
-            catch (e) {
+            catch (e) { }
+        }
+        try {
+            await client.send("Fetch.continueResponse", {
+                requestId,
+                responseCode: event.responseStatusCode,
+                responseHeaders: addHeader(event.responseHeaders, [
+                    ["Cache-Control", "public, max-age=31536000"],
+                    ["X-Warden-Cache-Control", "TRUE"],
+                ]),
+                responsePhrase: event.responseStatusText,
+            });
+        }
+        catch (e) {
+            client.detach();
+            if (!["TargetCloseError", "ProtocolError"].includes(e.name)) {
+                throw e;
             }
-        await client.send("Fetch.continueResponse", {
-            requestId,
-            responseCode: event.responseStatusCode,
-            responseHeaders: addHeader(event.responseHeaders, [
-                ["Cache-Control", "public, max-age=31536000"],
-                ["X-Warden-Cache-Control", "TRUE"],
-            ]),
-            responsePhrase: event.responseStatusText,
-        });
+        }
     });
     await page.setCacheEnabled(true);
     setupCacheDeferred.resolve();
@@ -294092,6 +294102,7 @@ class ExecutorSplit {
     browser;
     page;
     doneDeferred = new Deferred$3();
+    failIcon;
     constructor(config, testIds) {
         this.config = config;
         this.testIds = testIds;
@@ -294101,6 +294112,7 @@ class ExecutorSplit {
         this.browser = await launch({
             headless: this.config.headless,
             dumpio: this.config.verbose,
+            devtools: this.config.devtools,
         });
         this.page = (await this.browser.pages())[0];
         await setupCache(this.page, this.config);
@@ -294131,19 +294143,14 @@ class ExecutorSplit {
         return this.adapter.screenshotFails(this.page, path);
     }
     async setFailureFavicon() {
-        await this.page.evaluate(() => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            canvas.width = 24;
-            canvas.height = 24;
-            ctx.beginPath();
-            ctx.arc(12, 12, 11, 0, 2 * Math.PI);
-            ctx.fillStyle = "#FF0000";
-            ctx.fill();
-            const dataUrl = canvas.toDataURL();
-            let link = document.querySelector("link[rel*='icon']");
+        if (!this.failIcon) {
+            this.failIcon = (await fs$n.promises.readFile('src/resources/angry.png')).toString("base64");
+        }
+        await this.page.evaluate((base64Icon) => {
+            const dataUrl = `data:image/png;base64,${base64Icon}`;
+            const link = document.querySelector("link[rel*='icon']");
             link.href = dataUrl;
-        });
+        }, this.failIcon);
     }
     get lastFail$() {
         return this.adapter.lastFail$;
@@ -319464,6 +319471,7 @@ class TestSuiteConfig {
     rawOptions;
     static NOT_YET_IMPLEMENTED = ["promptForRetry", "onlyLastStats", "mobileEmulation"];
     // TODO, move in dedicated file
+    // Do not return object, throw FatalConfigError() or ConfigError()
     static CHECKS = [
         {
             id: "NOT_IMPLEMENTED_YET",
@@ -319474,7 +319482,6 @@ class TestSuiteConfig {
                     return {
                         ok: false,
                         message: `Not yet implemented features will be ignored: ${notYetlImplemFeatures.join(", ")}.`,
-                        fatal: false,
                     };
                 }
                 return { ok: true };
@@ -319500,17 +319507,14 @@ class TestSuiteConfig {
                     return {
                         ok: false,
                         message: `Test with id ${config.testId} does not exist.`,
-                        fatal: false,
                     };
                 }
-                const missingSuiteNames = config.suiteNames.filter((name) => !(name in config.metadata.suiteIdByName)) ??
-                    [];
+                const missingSuiteNames = config.suiteNames.filter((name) => !(name in config.metadata.suiteIdByName)) ?? [];
                 if (missingSuiteNames.length > 0) {
                     config.suiteNames = config.suiteNames.filter((name) => !missingSuiteNames.includes(name));
                     return {
                         ok: false,
                         message: `Dropping missing suites: ${missingSuiteNames.join(", ")}.`,
-                        fatal: false,
                     };
                 }
                 return { ok: true };
@@ -319525,7 +319529,6 @@ class TestSuiteConfig {
                     return {
                         ok: false,
                         message: "Only one worker can be used in debug mode. Ignoring `--workers` argument.",
-                        fatal: false,
                     };
                 }
                 else if (config.debug && !config.headless) {
@@ -319544,7 +319547,6 @@ class TestSuiteConfig {
                     return {
                         ok: false,
                         message: "Debug mode only works with single tests. Downgrading to `--workers 1 --visible`.",
-                        fatal: false,
                     };
                 }
                 return { ok: true };
@@ -319558,7 +319560,6 @@ class TestSuiteConfig {
                     return {
                         ok: false,
                         message: "Cannot use `--run-forever` and `--fail-fast` at the same time. Ignoring `--run-forever`.",
-                        fatal: false,
                     };
                 }
                 return { ok: true };
@@ -319595,26 +319596,27 @@ class TestSuiteConfig {
         },
     ];
     failedChecks = new Set();
-    RUN_TYPE = RUN_TYPE;
-    headless;
-    failfast;
-    debug;
-    onlyLastStats;
-    mobileEmulation;
-    promptForRetry;
-    runForever;
-    testId;
-    suiteNames;
-    suite;
-    serverURL;
-    verbose = false;
-    cpuLimit = 0;
-    adapterClass;
-    authCookie;
     MAX_NUMBER_OF_WORKERS;
     MIN_TEST_PER_WORKER;
-    metadata;
+    RUN_TYPE = RUN_TYPE;
+    adapterClass;
+    authCookie;
+    cpuLimit = 0;
+    debug;
+    devtools = false;
     failFolderPath = path$f.join(process.cwd(), "FailedTests");
+    failfast;
+    headless;
+    metadata;
+    mobileEmulation;
+    onlyLastStats;
+    promptForRetry;
+    runForever;
+    serverURL;
+    suite;
+    suiteNames;
+    testId;
+    verbose = false;
     static async parseJSONSettings() {
         const settingsFilePath = path$f.resolve(process.cwd(), "settings.json");
         let settings = {};
@@ -319647,6 +319649,7 @@ class TestSuiteConfig {
         const settings = await TestSuiteConfig.parseJSONSettings();
         const optionsDefinition = [
             { name: "verbose", type: Boolean, default: false },
+            { name: "devtools", type: Boolean, default: false },
             { name: "debug", type: Boolean },
             { name: "test-id", alias: "t", type: String },
             { name: "workers", type: Number, defaultValue: settings["workers"] },
@@ -319663,23 +319666,23 @@ class TestSuiteConfig {
         ];
         const rawOptions = commandLineArgs$1(optionsDefinition);
         if ("suite" in rawOptions) {
-            rawOptions["suite"] =
-                settings.suites[rawOptions["suite"]] ?? rawOptions["suite"];
+            rawOptions["suite"] = settings.suites[rawOptions["suite"]] ?? rawOptions["suite"];
         }
         const authCookie = await authenticate(rawOptions["server-url"], "admin", "admin");
         return new TestSuiteConfig(rawOptions, authCookie);
     }
     constructor(rawOptions, authCookie) {
         this.rawOptions = rawOptions;
-        this.debug = rawOptions.debug ?? false;
+        this.debug = rawOptions.debug;
+        this.devtools = rawOptions.devtools;
         this.testId = rawOptions["test-id"];
         this.suite = rawOptions.suite;
         this.serverURL = rawOptions["server-url"];
         this.headless = !rawOptions.visible;
-        this.failfast = rawOptions["fail-fast"] ?? false;
-        this.onlyLastStats = rawOptions["only-last-stats"] ?? false;
+        this.failfast = rawOptions["fail-fast"];
+        this.onlyLastStats = rawOptions["only-last-stats"];
         this.mobileEmulation = rawOptions.mobile ?? false;
-        this.promptForRetry = rawOptions["prompt-for-retry"] ?? false;
+        this.promptForRetry = rawOptions["prompt-for-retry"];
         this.authCookie = authCookie;
         this.MAX_NUMBER_OF_WORKERS = rawOptions["workers"];
         this.MIN_TEST_PER_WORKER = rawOptions["min-worker-load"];
@@ -319695,7 +319698,6 @@ class TestSuiteConfig {
             ["timeout", "15000"],
             ["loglevel", "3"],
             ["manual", "true"],
-            // ["headless", "true"],
         ];
         if (this.failfast) {
             opts.push(["failfast", true]);
@@ -319720,9 +319722,7 @@ class TestSuiteConfig {
         return this.metadata.testIds.length === 1;
     }
     get suiteIds() {
-        return this.suiteNames
-            .map((name) => this.metadata.suiteIdByName[name])
-            .filter(Boolean);
+        return this.suiteNames.map((name) => this.metadata.suiteIdByName[name]).filter(Boolean);
     }
     /**
      * Check if the config is valid. If the application can recover, adapt the
@@ -319818,7 +319818,7 @@ class HootAdapter extends TestSuiteAdapter {
         await page.click(">>> .HootButtons button[title*=Stop]");
     }
     getSuiteURL(config, testIds) {
-        const queryParams = testIds.map((id) => `test=${id}`);
+        const queryParams = testIds.map((id) => `id=${id}`);
         queryParams.push("showdetail=failed");
         if (config.failfast) {
             queryParams.push("bail=1");
@@ -320070,6 +320070,11 @@ async function doCleanup() {
 }
 const signals = ["SIGINT", "SIGTERM", "SIGHUP", "beforeExit"];
 signals.forEach((signal) => process.on(signal, doCleanup));
+process.on("unhandledRejection", (reason) => {
+    logger.error("Unhandled Promise Rejection");
+    logger.error(reason instanceof Error ? reason.stack : JSON.stringify(reason, null, 2));
+    // process.exit(1);
+});
 (async function start() {
     try {
         const config = await TestSuiteConfig.parseCLIOptions();

@@ -29,6 +29,7 @@ class ExecutorSplit {
   private browser: Browser;
   private page: Page;
   private doneDeferred: Deferred<boolean> = new Deferred();
+  private failIcon: String;
 
   constructor(
     private config: TestSuiteConfig,
@@ -41,6 +42,7 @@ class ExecutorSplit {
     this.browser = await launch({
       headless: this.config.headless,
       dumpio: this.config.verbose,
+      devtools: this.config.devtools,
     });
     this.page = (await this.browser.pages())[0];
     await setupCache(this.page, this.config);
@@ -76,19 +78,14 @@ class ExecutorSplit {
   }
 
   async setFailureFavicon() {
-    await this.page.evaluate(() => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = 24;
-      canvas.height = 24;
-      ctx.beginPath();
-      ctx.arc(12, 12, 11, 0, 2 * Math.PI);
-      ctx.fillStyle = "#FF0000";
-      ctx.fill();
-      const dataUrl = canvas.toDataURL();
-      let link = document.querySelector("link[rel*='icon']") as HTMLAnchorElement;
+    if (!this.failIcon) {
+      this.failIcon = (await fs.promises.readFile('src/resources/angry.png')).toString("base64");
+    }
+    await this.page.evaluate((base64Icon) => {
+      const dataUrl = `data:image/png;base64,${base64Icon}`;
+      const link = document.querySelector("link[rel*='icon']") as HTMLAnchorElement;
       link.href = dataUrl;
-    });
+    }, this.failIcon);
   }
 
   get lastFail$() {
