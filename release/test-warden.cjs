@@ -27,7 +27,6 @@ var require$$0$b = require('constants');
 var zlib$2 = require('zlib');
 require('process');
 var require$$1$4 = require('module');
-var nc = require('nodeaffinity');
 var require$$7 = require('inspector');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
@@ -294243,6 +294242,9 @@ class Executor {
             }
             // 4. Let the runner process the result.
             yield { success };
+            if (this.config.once) {
+                return;
+            }
             previousResults.push(...(await cjs.lastValueFrom(testResults$)));
             await Promise.all(this.splits.map((s) => s.reload()));
         }
@@ -319616,6 +319618,7 @@ class TestSuiteConfig {
     suite;
     suiteNames;
     testId;
+    once;
     verbose = false;
     static async parseJSONSettings() {
         const settingsFilePath = path$f.resolve(process.cwd(), "settings.json");
@@ -319650,6 +319653,7 @@ class TestSuiteConfig {
         const optionsDefinition = [
             { name: "verbose", type: Boolean, default: false },
             { name: "devtools", type: Boolean, default: false },
+            { name: "once", type: Boolean, default: false },
             { name: "debug", type: Boolean },
             { name: "test-id", alias: "t", type: String },
             { name: "workers", type: Number, defaultValue: settings["workers"] },
@@ -319689,6 +319693,7 @@ class TestSuiteConfig {
         this.runForever = rawOptions["run-forever"];
         this.suiteNames = rawOptions["suite-names"] ?? [];
         this.verbose = rawOptions.verbose;
+        this.once = rawOptions.once;
         this.cpuLimit = rawOptions["cpu-limit"] ?? 0;
     }
     get baseSuiteURL() {
@@ -320073,7 +320078,7 @@ signals.forEach((signal) => process.on(signal, doCleanup));
 process.on("unhandledRejection", (reason) => {
     logger.error("Unhandled Promise Rejection");
     logger.error(reason instanceof Error ? reason.stack : JSON.stringify(reason, null, 2));
-    // process.exit(1);
+    process.exit(1);
 });
 (async function start() {
     try {
@@ -320110,10 +320115,6 @@ process.on("unhandledRejection", (reason) => {
         await browser.close();
         config.metadata = metadata;
         config.check();
-        let mask = (1 << config.cpuLimit) - 1;
-        nc.setAffinity(mask);
-        const totalCPUs = os$2.cpus().length;
-        logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
         await new TestSuiteRunner(config, metadata).run();
     }
     catch (e) {

@@ -174,6 +174,7 @@ export class TestSuiteConfig {
   suite?: string;
   suiteNames?: string[];
   testId?: string;
+  once?: boolean;
   verbose: boolean = false;
 
   private static async parseJSONSettings(): Promise<JSONSettings> {
@@ -212,6 +213,7 @@ export class TestSuiteConfig {
     const optionsDefinition = [
       { name: "verbose", type: Boolean, default: false },
       { name: "devtools", type: Boolean, default: false },
+      { name: "once", type: Boolean, default: false },
       { name: "debug", type: Boolean },
       { name: "test-id", alias: "t", type: String },
       { name: "workers", type: Number, defaultValue: settings["workers"] },
@@ -254,6 +256,7 @@ export class TestSuiteConfig {
     this.runForever = rawOptions["run-forever"];
     this.suiteNames = rawOptions["suite-names"] ?? [];
     this.verbose = rawOptions.verbose;
+    this.once = rawOptions.once;
     this.cpuLimit = rawOptions["cpu-limit"] ?? 0;
   }
 

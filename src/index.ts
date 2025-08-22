@@ -6,14 +6,12 @@ import { TestSuiteRunner } from "@warden/runner/test_suite_runner";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 import { TestSuiteMetadata } from "@warden/test_suite_metadata";
 import { config as rxjsConfig } from "rxjs";
-import os from "os";
 import "@warden/adapters/hoot_adapter";
 import "@warden/adapters/qunit_adapter";
 
 import { oraPromise } from "ora";
 import { Browser, Page } from "puppeteer";
 import { BehaviorSubject } from "rxjs";
-import nc from "nodeaffinity";
 
 export const ABORT_CONTROLLER = new AbortController();
 export const processExit$ = new BehaviorSubject(false);
@@ -32,7 +30,7 @@ signals.forEach((signal) => process.on(signal, doCleanup));
 process.on("unhandledRejection", (reason) => {
   logger.error("Unhandled Promise Rejection");
   logger.error(reason instanceof Error ? reason.stack : JSON.stringify(reason, null, 2));
-  // process.exit(1);
+  process.exit(1);
 });
 
 (async function start() {
@@ -74,10 +72,6 @@ process.on("unhandledRejection", (reason) => {
     await browser.close();
     config.metadata = metadata;
     config.check();
-    let mask = (1 << config.cpuLimit) - 1;
-    nc.setAffinity(mask);
-    const totalCPUs = os.cpus().length;
-    logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
     await new TestSuiteRunner(config, metadata).run();
   } catch (e) {
     if (!(e instanceof StopExecution) && !isCleaningUp) {
