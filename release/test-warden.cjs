@@ -292687,7 +292687,7 @@ const CHROME_OPTIONS = [
     "--no-zygote",
     "--blink-settings=imagesEnabled=false",
     "--disable-features=PaintHolding",
-    "--single-process",
+    // "--single-process",
     "--disable-software-rasterizer",
     "--disable-translate",
     // "--js-flags=--expose_gc",
