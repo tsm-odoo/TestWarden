@@ -304516,7 +304516,8 @@ class HootAdapter extends TestSuiteAdapter {
     }
     FAIL_SELECTOR = ".HootTestResult:has(.bg-fail)";
     async run(page) {
-        await page.waitForFunction(() => document.querySelector("hoot-container")?.shadowRoot.querySelector(".HootButtons"));
+        await new Promise((res) => setTimeout(res, 500));
+        await page.waitForSelector(">>> .HootButtons button[title='Run']");
         await page.click(">>> .HootButtons button[title='Run']");
     }
     async abort(page) {
