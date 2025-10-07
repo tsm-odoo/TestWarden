@@ -36,6 +36,10 @@ export class HootAdapter extends TestSuiteAdapter {
     return `${config.baseSuiteURL}&${queryParams.join("&")}`;
   }
 
+  async metadataReady() {
+    return Boolean(window.odoo?.loader?.modules?.get("@web/../lib/hoot/hoot"))
+  }
+
   async getMetadata() {
     function getAllTests(suite) {
       const allTests = [];
@@ -83,7 +87,6 @@ export class HootAdapter extends TestSuiteAdapter {
           await client.detach();
         } catch {}
       });
-      await client.send("HeapProfiler.enable");
       if (!callbacksRegistered) {
         page.exposeFunction("beforeEach", (test: Test) => this.currentTest$.next(test));
         page.exposeFunction("afterEach", (result: TestResult) => {

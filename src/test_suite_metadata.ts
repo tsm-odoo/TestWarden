@@ -66,6 +66,7 @@ export class TestSuiteMetadata {
       const adapter = new config.adapterClass();
       return await oraPromise(
         async () => {
+          await page.waitForFunction(adapter.metadataReady);
           return new TestSuiteMetadata(config, await page.evaluate(adapter.getMetadata));
         },
         {

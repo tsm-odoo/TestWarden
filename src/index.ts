@@ -13,7 +13,17 @@ import "@warden/adapters/qunit_adapter";
 import { oraPromise } from "ora";
 import { Browser, Page } from "puppeteer";
 import { BehaviorSubject } from "rxjs";
-import nc from "nodeaffinity";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+let nc;
+try {
+  const mod = require("nodeaffinity");
+  nc = mod.default || mod;
+} catch (err) {
+  logger.warn("Missing package: 'nodeaffinity'. `cpuLimit` option will be ignored.");
+  nc = null;
+}
 
 export const ABORT_CONTROLLER = new AbortController();
 export const processExit$ = new BehaviorSubject(false);
@@ -32,7 +42,7 @@ signals.forEach((signal) => process.on(signal, doCleanup));
 process.on("unhandledRejection", (reason) => {
   logger.error("Unhandled Promise Rejection");
   logger.error(reason instanceof Error ? reason.stack : JSON.stringify(reason, null, 2));
-  // process.exit(1);
+  process.exit(1);
 });
 
 (async function start() {
@@ -74,15 +84,16 @@ process.on("unhandledRejection", (reason) => {
     await browser.close();
     config.metadata = metadata;
     config.check();
-    let mask = (1 << config.cpuLimit) - 1;
-    nc.setAffinity(mask);
-    const totalCPUs = os.cpus().length;
-    logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
+    if (nc) {
+      let mask = (1 << config.cpuLimit) - 1;
+      nc.setAffinity(mask);
+      const totalCPUs = os.cpus().length;
+      logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
+    }
     await new TestSuiteRunner(config, metadata).run();
   } catch (e) {
     if (!(e instanceof StopExecution) && !isCleaningUp) {
       throw e;
     }
   }
-  doCleanup();
 })();

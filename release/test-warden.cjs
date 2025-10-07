@@ -1,33 +1,36 @@
 'use strict';
 
-var require$$0$7 = require('stream');
-var require$$0$5 = require('events');
-var require$$0$9 = require('http');
+var require$$0$6 = require('stream');
+var require$$0$4 = require('events');
+var require$$0$8 = require('http');
 var require$$2 = require('crypto');
 var os$2 = require('os');
-var require$$0$4 = require('tty');
-var process$4 = require('node:process');
+var require$$0$3 = require('tty');
+var process$5 = require('node:process');
 var os$3 = require('node:os');
 var tty$1 = require('node:tty');
-var require$$0$6 = require('assert');
+var require$$0$5 = require('assert');
 var readline = require('node:readline');
-var require$$0$8 = require('buffer');
+var require$$0$7 = require('buffer');
 var require$$1 = require('util');
-var childProcess = require('child_process');
-var require$$1$3 = require('fs/promises');
+var childProcess$1 = require('child_process');
+var require$$1$4 = require('fs/promises');
 var path$f = require('path');
 var fs$n = require('fs');
 var readline$1 = require('readline');
 var require$$1$1 = require('https');
 var require$$5 = require('url');
-var require$$0$a = require('net');
+var require$$0$9 = require('net');
 var require$$1$2 = require('tls');
 var require$$3$1 = require('dns');
-var require$$0$b = require('constants');
-var zlib$2 = require('zlib');
+var require$$0$a = require('constants');
+var require$$1$3 = require('zlib');
 require('process');
-var require$$1$4 = require('module');
-var nc = require('nodeaffinity');
+var require$$1$5 = require('module');
+var require$$0$b = require('node:events');
+var require$$1$6 = require('node:child_process');
+var require$$2$1 = require('node:path');
+var require$$3$2 = require('node:fs');
 var require$$7 = require('inspector');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
@@ -48,7 +51,7 @@ function _interopNamespaceDefault(e) {
 	return Object.freeze(n);
 }
 
-var require$$0__namespace = /*#__PURE__*/_interopNamespaceDefault(require$$0$9);
+var require$$0__namespace = /*#__PURE__*/_interopNamespaceDefault(require$$0$8);
 var require$$1__namespace = /*#__PURE__*/_interopNamespaceDefault(require$$1$1);
 
 class StopExecution extends Error {
@@ -1468,7 +1471,7 @@ var hasFlag$5 = (flag, argv = process.argv) => {
 };
 
 const os$1 = os$2;
-const tty = require$$0$4;
+const tty = require$$0$3;
 const hasFlag$4 = hasFlag$5;
 
 const {env: env$4} = process;
@@ -1635,7 +1638,7 @@ const stringEncaseCRLFWithFirstIndex$3 = (string, prefix, postfix, index) => {
 	return returnValue;
 };
 
-var util$b = {
+var util$8 = {
 	stringReplaceAll: stringReplaceAll$3,
 	stringEncaseCRLFWithFirstIndex: stringEncaseCRLFWithFirstIndex$3
 };
@@ -1787,9 +1790,9 @@ const {stdout: stdoutColor$2, stderr: stderrColor$2} = supportsColor_1$2;
 const {
 	stringReplaceAll: stringReplaceAll$2,
 	stringEncaseCRLFWithFirstIndex: stringEncaseCRLFWithFirstIndex$2
-} = util$b;
+} = util$8;
 
-const {isArray: isArray$5} = Array;
+const {isArray: isArray$4} = Array;
 
 // `supportsColor.level` → `ansiStyles.color[name]` mapping
 const levelMapping$2 = [
@@ -1920,7 +1923,7 @@ const createStyler$2 = (open, close, parent) => {
 
 const createBuilder$2 = (self, _styler, _isEmpty) => {
 	const builder = (...arguments_) => {
-		if (isArray$5(arguments_[0]) && isArray$5(arguments_[0].raw)) {
+		if (isArray$4(arguments_[0]) && isArray$4(arguments_[0].raw)) {
 			// Called as a template literal, for example: chalk.red`2 + 3 = {bold ${2+3}}`
 			return applyStyle$2(builder, chalkTag(builder, ...arguments_));
 		}
@@ -1979,7 +1982,7 @@ let template;
 const chalkTag = (chalk, ...strings) => {
 	const [firstString] = strings;
 
-	if (!isArray$5(firstString) || !isArray$5(firstString.raw)) {
+	if (!isArray$4(firstString) || !isArray$4(firstString.raw)) {
 		// If chalk() was called by itself or with a string,
 		// return the string itself as a string.
 		return strings.join(' ');
@@ -2237,14 +2240,14 @@ const ansiStyles$3 = assembleStyles$1();
 
 // From: https://github.com/sindresorhus/has-flag/blob/main/index.js
 /// function hasFlag(flag, argv = globalThis.Deno?.args ?? process.argv) {
-function hasFlag$3(flag, argv = globalThis.Deno ? globalThis.Deno.args : process$4.argv) {
+function hasFlag$3(flag, argv = globalThis.Deno ? globalThis.Deno.args : process$5.argv) {
 	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
 	const position = argv.indexOf(prefix + flag);
 	const terminatorPosition = argv.indexOf('--');
 	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
 }
 
-const {env: env$3} = process$4;
+const {env: env$3} = process$5;
 
 let flagForceColor$1;
 if (
@@ -2330,7 +2333,7 @@ function _supportsColor$1(haveStream, {streamIsTTY, sniffFlags = true} = {}) {
 		return min;
 	}
 
-	if (process$4.platform === 'win32') {
+	if (process$5.platform === 'win32') {
 		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
 		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
 		const osRelease = os$3.release().split('.');
@@ -2774,7 +2777,7 @@ function requireSignals () {
 // that are in the direct sync flow of nyc's outputCoverage are
 // ignored, since we can never get coverage for them.
 // grab a reference to node's real process object right away
-var process$3 = commonjsGlobal.process;
+var process$4 = commonjsGlobal.process;
 
 const processOk = function (process) {
   return process &&
@@ -2790,26 +2793,26 @@ const processOk = function (process) {
 
 // some kind of non-node environment, just no-op
 /* istanbul ignore if */
-if (!processOk(process$3)) {
+if (!processOk(process$4)) {
   signalExit$1.exports = function () {
     return function () {}
   };
 } else {
-  var assert$6 = require$$0$6;
+  var assert$5 = require$$0$5;
   var signals$1 = requireSignals();
-  var isWin = /^win/i.test(process$3.platform);
+  var isWin = /^win/i.test(process$4.platform);
 
-  var EE = require$$0$5;
+  var EE = require$$0$4;
   /* istanbul ignore if */
   if (typeof EE !== 'function') {
     EE = EE.EventEmitter;
   }
 
   var emitter;
-  if (process$3.__signal_exit_emitter__) {
-    emitter = process$3.__signal_exit_emitter__;
+  if (process$4.__signal_exit_emitter__) {
+    emitter = process$4.__signal_exit_emitter__;
   } else {
-    emitter = process$3.__signal_exit_emitter__ = new EE();
+    emitter = process$4.__signal_exit_emitter__ = new EE();
     emitter.count = 0;
     emitter.emitted = {};
   }
@@ -2828,7 +2831,7 @@ if (!processOk(process$3)) {
     if (!processOk(commonjsGlobal.process)) {
       return function () {}
     }
-    assert$6.equal(typeof cb, 'function', 'a callback must be provided for exit handler');
+    assert$5.equal(typeof cb, 'function', 'a callback must be provided for exit handler');
 
     if (loaded === false) {
       load();
@@ -2859,11 +2862,11 @@ if (!processOk(process$3)) {
 
     signals$1.forEach(function (sig) {
       try {
-        process$3.removeListener(sig, sigListeners[sig]);
+        process$4.removeListener(sig, sigListeners[sig]);
       } catch (er) {}
     });
-    process$3.emit = originalProcessEmit;
-    process$3.reallyExit = originalProcessReallyExit;
+    process$4.emit = originalProcessEmit;
+    process$4.reallyExit = originalProcessReallyExit;
     emitter.count -= 1;
   };
   signalExit$1.exports.unload = unload;
@@ -2889,7 +2892,7 @@ if (!processOk(process$3)) {
       // Simplest way: remove us and then re-send the signal.
       // We know that this will kill the process, so we can
       // safely emit now.
-      var listeners = process$3.listeners(sig);
+      var listeners = process$4.listeners(sig);
       if (listeners.length === emitter.count) {
         unload();
         emit('exit', null, sig);
@@ -2902,7 +2905,7 @@ if (!processOk(process$3)) {
           sig = 'SIGINT';
         }
         /* istanbul ignore next */
-        process$3.kill(process$3.pid, sig);
+        process$4.kill(process$4.pid, sig);
       }
     };
   });
@@ -2927,44 +2930,44 @@ if (!processOk(process$3)) {
 
     signals$1 = signals$1.filter(function (sig) {
       try {
-        process$3.on(sig, sigListeners[sig]);
+        process$4.on(sig, sigListeners[sig]);
         return true
       } catch (er) {
         return false
       }
     });
 
-    process$3.emit = processEmit;
-    process$3.reallyExit = processReallyExit;
+    process$4.emit = processEmit;
+    process$4.reallyExit = processReallyExit;
   };
   signalExit$1.exports.load = load;
 
-  var originalProcessReallyExit = process$3.reallyExit;
+  var originalProcessReallyExit = process$4.reallyExit;
   var processReallyExit = function processReallyExit (code) {
     /* istanbul ignore if */
     if (!processOk(commonjsGlobal.process)) {
       return
     }
-    process$3.exitCode = code || /* istanbul ignore next */ 0;
-    emit('exit', process$3.exitCode, null);
+    process$4.exitCode = code || /* istanbul ignore next */ 0;
+    emit('exit', process$4.exitCode, null);
     /* istanbul ignore next */
-    emit('afterexit', process$3.exitCode, null);
+    emit('afterexit', process$4.exitCode, null);
     /* istanbul ignore next */
-    originalProcessReallyExit.call(process$3, process$3.exitCode);
+    originalProcessReallyExit.call(process$4, process$4.exitCode);
   };
 
-  var originalProcessEmit = process$3.emit;
+  var originalProcessEmit = process$4.emit;
   var processEmit = function processEmit (ev, arg) {
     if (ev === 'exit' && processOk(commonjsGlobal.process)) {
       /* istanbul ignore else */
       if (arg !== undefined) {
-        process$3.exitCode = arg;
+        process$4.exitCode = arg;
       }
       var ret = originalProcessEmit.apply(this, arguments);
       /* istanbul ignore next */
-      emit('exit', process$3.exitCode, null);
+      emit('exit', process$4.exitCode, null);
       /* istanbul ignore next */
-      emit('afterexit', process$3.exitCode, null);
+      emit('afterexit', process$4.exitCode, null);
       /* istanbul ignore next */
       return ret
     } else {
@@ -2978,7 +2981,7 @@ var signalExit = /*@__PURE__*/getDefaultExportFromCjs(signalExitExports);
 
 const restoreCursor = onetime$1(() => {
 	signalExit(() => {
-		process$4.stderr.write('\u001B[?25h');
+		process$5.stderr.write('\u001B[?25h');
 	}, {alwaysLast: true});
 });
 
@@ -2986,7 +2989,7 @@ let isHidden = false;
 
 const cliCursor = {};
 
-cliCursor.show = (writableStream = process$4.stderr) => {
+cliCursor.show = (writableStream = process$5.stderr) => {
 	if (!writableStream.isTTY) {
 		return;
 	}
@@ -2995,7 +2998,7 @@ cliCursor.show = (writableStream = process$4.stderr) => {
 	writableStream.write('\u001B[?25h');
 };
 
-cliCursor.hide = (writableStream = process$4.stderr) => {
+cliCursor.hide = (writableStream = process$5.stderr) => {
 	if (!writableStream.isTTY) {
 		return;
 	}
@@ -4637,7 +4640,7 @@ var dwarfFortress = {
 		" ██████£££  "
 	]
 };
-var require$$0$3 = {
+var require$$0$2 = {
 	dots: dots,
 	dots2: dots2,
 	dots3: dots3,
@@ -4726,7 +4729,7 @@ var require$$0$3 = {
 	dwarfFortress: dwarfFortress
 };
 
-const spinners = Object.assign({}, require$$0$3); // eslint-disable-line import/extensions
+const spinners = Object.assign({}, require$$0$2); // eslint-disable-line import/extensions
 
 const spinnersList = Object.keys(spinners);
 
@@ -4966,14 +4969,14 @@ const ansiStyles$2 = assembleStyles();
 
 // From: https://github.com/sindresorhus/has-flag/blob/main/index.js
 /// function hasFlag(flag, argv = globalThis.Deno?.args ?? process.argv) {
-function hasFlag$2(flag, argv = globalThis.Deno ? globalThis.Deno.args : process$4.argv) {
+function hasFlag$2(flag, argv = globalThis.Deno ? globalThis.Deno.args : process$5.argv) {
 	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
 	const position = argv.indexOf(prefix + flag);
 	const terminatorPosition = argv.indexOf('--');
 	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
 }
 
-const {env: env$2} = process$4;
+const {env: env$2} = process$5;
 
 let flagForceColor;
 if (
@@ -5059,7 +5062,7 @@ function _supportsColor(haveStream, {streamIsTTY, sniffFlags = true} = {}) {
 		return min;
 	}
 
-	if (process$4.platform === 'win32') {
+	if (process$5.platform === 'win32') {
 		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
 		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
 		const osRelease = os$3.release().split('.');
@@ -5368,19 +5371,19 @@ const chalk$2 = createChalk();
 createChalk({level: stderrColor ? stderrColor.level : 0});
 
 function isUnicodeSupported() {
-	if (process$4.platform !== 'win32') {
-		return process$4.env.TERM !== 'linux'; // Linux console (kernel)
+	if (process$5.platform !== 'win32') {
+		return process$5.env.TERM !== 'linux'; // Linux console (kernel)
 	}
 
-	return Boolean(process$4.env.CI)
-		|| Boolean(process$4.env.WT_SESSION) // Windows Terminal
-		|| Boolean(process$4.env.TERMINUS_SUBLIME) // Terminus (<0.2.27)
-		|| process$4.env.ConEmuTask === '{cmd::Cmder}' // ConEmu and cmder
-		|| process$4.env.TERM_PROGRAM === 'Terminus-Sublime'
-		|| process$4.env.TERM_PROGRAM === 'vscode'
-		|| process$4.env.TERM === 'xterm-256color'
-		|| process$4.env.TERM === 'alacritty'
-		|| process$4.env.TERMINAL_EMULATOR === 'JetBrains-JediTerm';
+	return Boolean(process$5.env.CI)
+		|| Boolean(process$5.env.WT_SESSION) // Windows Terminal
+		|| Boolean(process$5.env.TERMINUS_SUBLIME) // Terminus (<0.2.27)
+		|| process$5.env.ConEmuTask === '{cmd::Cmder}' // ConEmu and cmder
+		|| process$5.env.TERM_PROGRAM === 'Terminus-Sublime'
+		|| process$5.env.TERM_PROGRAM === 'vscode'
+		|| process$5.env.TERM === 'xterm-256color'
+		|| process$5.env.TERM === 'alacritty'
+		|| process$5.env.TERMINAL_EMULATOR === 'JetBrains-JediTerm';
 }
 
 const main$2 = {
@@ -5823,7 +5826,7 @@ var hasRequiredStream;
 function requireStream () {
 	if (hasRequiredStream) return stream$3;
 	hasRequiredStream = 1;
-	stream$3 = require$$0$7;
+	stream$3 = require$$0$6;
 	return stream$3;
 }
 
@@ -5842,7 +5845,7 @@ function requireBuffer_list () {
 	function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 	function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
 	function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-	var _require = require$$0$8,
+	var _require = require$$0$7,
 	  Buffer = _require.Buffer;
 	var _require2 = require$$1,
 	  inspect = _require2.inspect;
@@ -6247,11 +6250,11 @@ function requireErrors () {
 	return errors$1;
 }
 
-var state$2;
+var state$1;
 var hasRequiredState$1;
 
 function requireState$1 () {
-	if (hasRequiredState$1) return state$2;
+	if (hasRequiredState$1) return state$1;
 	hasRequiredState$1 = 1;
 
 	var ERR_INVALID_OPT_VALUE = requireErrors().codes.ERR_INVALID_OPT_VALUE;
@@ -6271,13 +6274,13 @@ function requireState$1 () {
 	  // Default value
 	  return state.objectMode ? 16 : 16 * 1024;
 	}
-	state$2 = {
+	state$1 = {
 	  getHighWaterMark: getHighWaterMark
 	};
-	return state$2;
+	return state$1;
 }
 
-var inherits$2 = {exports: {}};
+var inherits$1 = {exports: {}};
 
 var inherits_browser = {exports: {}};
 
@@ -6317,16 +6320,16 @@ function requireInherits_browser () {
 }
 
 try {
-  var util$a = require('util');
+  var util$7 = require('util');
   /* istanbul ignore next */
-  if (typeof util$a.inherits !== 'function') throw '';
-  inherits$2.exports = util$a.inherits;
+  if (typeof util$7.inherits !== 'function') throw '';
+  inherits$1.exports = util$7.inherits;
 } catch (e) {
   /* istanbul ignore next */
-  inherits$2.exports = requireInherits_browser();
+  inherits$1.exports = requireInherits_browser();
 }
 
-var inheritsExports = inherits$2.exports;
+var inheritsExports = inherits$1.exports;
 
 var node$3;
 var hasRequiredNode$2;
@@ -6379,7 +6382,7 @@ function require_stream_writable () {
 	var Stream = requireStream();
 	/*</replacement>*/
 
-	var Buffer = require$$0$8.Buffer;
+	var Buffer = require$$0$7.Buffer;
 	var OurUint8Array = (typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 	function _uint8ArrayToBuffer(chunk) {
 	  return Buffer.from(chunk);
@@ -7079,7 +7082,7 @@ function requireSafeBuffer () {
 	hasRequiredSafeBuffer = 1;
 	(function (module, exports) {
 		/* eslint-disable node/no-deprecated-api */
-		var buffer = require$$0$8;
+		var buffer = require$$0$7;
 		var Buffer = buffer.Buffer;
 
 		// alternative to using Object.keys for old browsers
@@ -7782,7 +7785,7 @@ function require_stream_readable () {
 	Readable.ReadableState = ReadableState;
 
 	/*<replacement>*/
-	require$$0$5.EventEmitter;
+	require$$0$4.EventEmitter;
 	var EElistenerCount = function EElistenerCount(emitter, type) {
 	  return emitter.listeners(type).length;
 	};
@@ -7792,7 +7795,7 @@ function require_stream_readable () {
 	var Stream = requireStream();
 	/*</replacement>*/
 
-	var Buffer = require$$0$8.Buffer;
+	var Buffer = require$$0$7.Buffer;
 	var OurUint8Array = (typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 	function _uint8ArrayToBuffer(chunk) {
 	  return Buffer.from(chunk);
@@ -9027,7 +9030,7 @@ function requirePipeline () {
 }
 
 (function (module, exports) {
-	var Stream = require$$0$7;
+	var Stream = require$$0$6;
 	if (process.env.READABLE_STREAM === 'disable' && Stream) {
 	  module.exports = Stream.Readable;
 	  Object.assign(module.exports, Stream);
@@ -9047,7 +9050,7 @@ function requirePipeline () {
 
 var readableExports = readable.exports;
 
-const { Buffer: Buffer$4 } = require$$0$8;
+const { Buffer: Buffer$4 } = require$$0$7;
 const symbol = Symbol.for('BufferList');
 
 function BufferList$1 (buf) {
@@ -9443,7 +9446,7 @@ BufferList$1.isBufferList = function isBufferList (b) {
 var BufferList_1 = BufferList$1;
 
 const DuplexStream = readableExports.Duplex;
-const inherits$1 = inheritsExports;
+const inherits = inheritsExports;
 const BufferList = BufferList_1;
 
 function BufferListStream (callback) {
@@ -9475,7 +9478,7 @@ function BufferListStream (callback) {
   DuplexStream.call(this);
 }
 
-inherits$1(BufferListStream, DuplexStream);
+inherits(BufferListStream, DuplexStream);
 Object.assign(BufferListStream.prototype, BufferList.prototype);
 
 BufferListStream.prototype._new = function _new (callback) {
@@ -9534,23 +9537,23 @@ class StdinDiscarder {
 	#rl;
 
 	constructor() {
-		this.#mutedStream.pipe(process$4.stdout);
+		this.#mutedStream.pipe(process$5.stdout);
 
 		const self = this; // eslint-disable-line unicorn/no-this-assignment
 		this.#ourEmit = function (event, data, ...arguments_) {
-			const {stdin} = process$4;
+			const {stdin} = process$5;
 			if (self.#requests > 0 || stdin.emit === self.#ourEmit) {
 				if (event === 'keypress') { // Fixes readline behavior
 					return;
 				}
 
 				if (event === 'data' && data.includes(ASCII_ETX_CODE)) {
-					process$4.emit('SIGINT');
+					process$5.emit('SIGINT');
 				}
 
 				Reflect.apply(self.#ourEmit, this, [event, data, ...arguments_]);
 			} else {
-				Reflect.apply(process$4.stdin.emit, this, [event, data, ...arguments_]);
+				Reflect.apply(process$5.stdin.emit, this, [event, data, ...arguments_]);
 			}
 		};
 	}
@@ -9578,27 +9581,27 @@ class StdinDiscarder {
 	// TODO: Use private methods when targeting Node.js 14.
 	_realStart() {
 		// No known way to make it work reliably on Windows
-		if (process$4.platform === 'win32') {
+		if (process$5.platform === 'win32') {
 			return;
 		}
 
 		this.#rl = readline.createInterface({
-			input: process$4.stdin,
+			input: process$5.stdin,
 			output: this.#mutedStream,
 		});
 
 		this.#rl.on('SIGINT', () => {
-			if (process$4.listenerCount('SIGINT') === 0) {
-				process$4.emit('SIGINT');
+			if (process$5.listenerCount('SIGINT') === 0) {
+				process$5.emit('SIGINT');
 			} else {
 				this.#rl.close();
-				process$4.kill(process$4.pid, 'SIGINT');
+				process$5.kill(process$5.pid, 'SIGINT');
 			}
 		});
 	}
 
 	_realStop() {
-		if (process$4.platform === 'win32') {
+		if (process$5.platform === 'win32') {
 			return;
 		}
 
@@ -9637,7 +9640,7 @@ class Ora {
 
 		this.#options = {
 			color: 'cyan',
-			stream: process$4.stderr,
+			stream: process$5.stderr,
 			discardStdin: true,
 			hideCursor: true,
 			...options,
@@ -9661,7 +9664,7 @@ class Ora {
 		this.suffixText = this.#options.suffixText;
 		this.indent = this.#options.indent;
 
-		if (process$4.env.NODE_ENV === 'test') {
+		if (process$5.env.NODE_ENV === 'test') {
 			this._stream = this.#stream;
 			this._isEnabled = this.#isEnabled;
 
@@ -9900,7 +9903,7 @@ class Ora {
 			cliCursor.hide(this.#stream);
 		}
 
-		if (this.#options.discardStdin && process$4.stdin.isTTY) {
+		if (this.#options.discardStdin && process$5.stdin.isTTY) {
 			this.#isDiscardingStdin = true;
 			stdinDiscarder.start();
 		}
@@ -9924,7 +9927,7 @@ class Ora {
 			cliCursor.show(this.#stream);
 		}
 
-		if (this.#options.discardStdin && process$4.stdin.isTTY && this.#isDiscardingStdin) {
+		if (this.#options.discardStdin && process$5.stdin.isTTY && this.#isDiscardingStdin) {
 			stdinDiscarder.stop();
 			this.#isDiscardingStdin = false;
 		}
@@ -10019,14 +10022,14 @@ var Observable$2 = {};
 
 var Subscriber$1 = {};
 
-var isFunction$5 = {};
+var isFunction$2 = {};
 
-Object.defineProperty(isFunction$5, "__esModule", { value: true });
-isFunction$5.isFunction = void 0;
-function isFunction$4(value) {
+Object.defineProperty(isFunction$2, "__esModule", { value: true });
+isFunction$2.isFunction = void 0;
+function isFunction$1(value) {
     return typeof value === 'function';
 }
-isFunction$5.isFunction = isFunction$4;
+isFunction$2.isFunction = isFunction$1;
 
 var Subscription$2 = {};
 
@@ -10108,7 +10111,7 @@ var __spreadArray$i = (commonjsGlobal && commonjsGlobal.__spreadArray) || functi
 };
 Object.defineProperty(Subscription$2, "__esModule", { value: true });
 Subscription$2.isSubscription = Subscription$2.EMPTY_SUBSCRIPTION = Subscription$2.Subscription = void 0;
-var isFunction_1$p = isFunction$5;
+var isFunction_1$p = isFunction$2;
 var UnsubscriptionError_1 = UnsubscriptionError$1;
 var arrRemove_1$7 = arrRemove$2;
 var Subscription$1 = (function () {
@@ -10329,12 +10332,12 @@ function reportUnhandledError$1(err) {
 }
 reportUnhandledError$2.reportUnhandledError = reportUnhandledError$1;
 
-var noop$8 = {};
+var noop$6 = {};
 
-Object.defineProperty(noop$8, "__esModule", { value: true });
-noop$8.noop = void 0;
-function noop$7() { }
-noop$8.noop = noop$7;
+Object.defineProperty(noop$6, "__esModule", { value: true });
+noop$6.noop = void 0;
+function noop$5() { }
+noop$6.noop = noop$5;
 
 var NotificationFactories = {};
 
@@ -10410,11 +10413,11 @@ errorContext$2.captureError = captureError;
 	})();
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.EMPTY_OBSERVER = exports.SafeSubscriber = exports.Subscriber = void 0;
-	var isFunction_1 = isFunction$5;
+	var isFunction_1 = isFunction$2;
 	var Subscription_1 = Subscription$2;
 	var config_1 = config$1;
 	var reportUnhandledError_1 = reportUnhandledError$2;
-	var noop_1 = noop$8;
+	var noop_1 = noop$6;
 	var NotificationFactories_1 = NotificationFactories;
 	var timeoutProvider_1 = timeoutProvider$1;
 	var errorContext_1 = errorContext$2;
@@ -10643,7 +10646,7 @@ var Subscription_1$8 = Subscription$2;
 var observable_1$2 = observable$1;
 var pipe_1$2 = pipe$3;
 var config_1 = config$1;
-var isFunction_1$o = isFunction$5;
+var isFunction_1$o = isFunction$2;
 var errorContext_1$1 = errorContext$2;
 var Observable$1 = (function () {
     function Observable(subscribe) {
@@ -10748,7 +10751,7 @@ var lift = {};
 
 Object.defineProperty(lift, "__esModule", { value: true });
 lift.operate = lift.hasLift = void 0;
-var isFunction_1$n = isFunction$5;
+var isFunction_1$n = isFunction$2;
 function hasLift$1(source) {
     return isFunction_1$n.isFunction(source === null || source === void 0 ? void 0 : source.lift);
 }
@@ -11479,7 +11482,7 @@ var AsyncSubject = (function (_super) {
 }(Subject_1$c.Subject));
 AsyncSubject$1.AsyncSubject = AsyncSubject;
 
-var asap$1 = {};
+var asap = {};
 
 var AsapAction$1 = {};
 
@@ -11935,9 +11938,9 @@ AsapScheduler$1.AsapScheduler = AsapScheduler;
 	exports.asapScheduler = new AsapScheduler_1.AsapScheduler(AsapAction_1.AsapAction);
 	exports.asap = exports.asapScheduler;
 	
-} (asap$1));
+} (asap));
 
-var async$4 = {};
+var async$1 = {};
 
 (function (exports) {
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -11947,7 +11950,7 @@ var async$4 = {};
 	exports.asyncScheduler = new AsyncScheduler_1.AsyncScheduler(AsyncAction_1.AsyncAction);
 	exports.async = exports.asyncScheduler;
 	
-} (async$4));
+} (async$1));
 
 var queue$2 = {};
 
@@ -12306,7 +12309,7 @@ var isScheduler$2 = {};
 
 Object.defineProperty(isScheduler$2, "__esModule", { value: true });
 isScheduler$2.isScheduler = void 0;
-var isFunction_1$m = isFunction$5;
+var isFunction_1$m = isFunction$2;
 function isScheduler$1(value) {
     return value && isFunction_1$m.isFunction(value.schedule);
 }
@@ -12314,7 +12317,7 @@ isScheduler$2.isScheduler = isScheduler$1;
 
 Object.defineProperty(args, "__esModule", { value: true });
 args.popNumber = args.popScheduler = args.popResultSelector = void 0;
-var isFunction_1$l = isFunction$5;
+var isFunction_1$l = isFunction$2;
 var isScheduler_1$3 = isScheduler$2;
 function last$3(arr) {
     return arr[arr.length - 1];
@@ -12340,28 +12343,28 @@ var scheduleObservable$2 = {};
 
 var innerFrom$2 = {};
 
-var isArrayLike$4 = {};
+var isArrayLike$1 = {};
 
-Object.defineProperty(isArrayLike$4, "__esModule", { value: true });
-isArrayLike$4.isArrayLike = void 0;
-isArrayLike$4.isArrayLike = (function (x) { return x && typeof x.length === 'number' && typeof x !== 'function'; });
+Object.defineProperty(isArrayLike$1, "__esModule", { value: true });
+isArrayLike$1.isArrayLike = void 0;
+isArrayLike$1.isArrayLike = (function (x) { return x && typeof x.length === 'number' && typeof x !== 'function'; });
 
-var isPromise$3 = {};
+var isPromise$2 = {};
 
-Object.defineProperty(isPromise$3, "__esModule", { value: true });
-isPromise$3.isPromise = void 0;
-var isFunction_1$k = isFunction$5;
-function isPromise$2(value) {
+Object.defineProperty(isPromise$2, "__esModule", { value: true });
+isPromise$2.isPromise = void 0;
+var isFunction_1$k = isFunction$2;
+function isPromise$1(value) {
     return isFunction_1$k.isFunction(value === null || value === void 0 ? void 0 : value.then);
 }
-isPromise$3.isPromise = isPromise$2;
+isPromise$2.isPromise = isPromise$1;
 
 var isInteropObservable$2 = {};
 
 Object.defineProperty(isInteropObservable$2, "__esModule", { value: true });
 isInteropObservable$2.isInteropObservable = void 0;
 var observable_1$1 = observable$1;
-var isFunction_1$j = isFunction$5;
+var isFunction_1$j = isFunction$2;
 function isInteropObservable$1(input) {
     return isFunction_1$j.isFunction(input[observable_1$1.observable]);
 }
@@ -12371,7 +12374,7 @@ var isAsyncIterable$2 = {};
 
 Object.defineProperty(isAsyncIterable$2, "__esModule", { value: true });
 isAsyncIterable$2.isAsyncIterable = void 0;
-var isFunction_1$i = isFunction$5;
+var isFunction_1$i = isFunction$2;
 function isAsyncIterable$1(obj) {
     return Symbol.asyncIterator && isFunction_1$i.isFunction(obj === null || obj === void 0 ? void 0 : obj[Symbol.asyncIterator]);
 }
@@ -12386,7 +12389,7 @@ function createInvalidObservableTypeError$1(input) {
 }
 throwUnobservableError.createInvalidObservableTypeError = createInvalidObservableTypeError$1;
 
-var isIterable$3 = {};
+var isIterable$2 = {};
 
 var iterator$2 = {};
 
@@ -12401,14 +12404,14 @@ function getSymbolIterator$1() {
 iterator$2.getSymbolIterator = getSymbolIterator$1;
 iterator$2.iterator = getSymbolIterator$1();
 
-Object.defineProperty(isIterable$3, "__esModule", { value: true });
-isIterable$3.isIterable = void 0;
+Object.defineProperty(isIterable$2, "__esModule", { value: true });
+isIterable$2.isIterable = void 0;
 var iterator_1$1 = iterator$2;
-var isFunction_1$h = isFunction$5;
-function isIterable$2(input) {
+var isFunction_1$h = isFunction$2;
+function isIterable$1(input) {
     return isFunction_1$h.isFunction(input === null || input === void 0 ? void 0 : input[iterator_1$1.iterator]);
 }
-isIterable$3.isIterable = isIterable$2;
+isIterable$2.isIterable = isIterable$1;
 
 var isReadableStreamLike$2 = {};
 
@@ -12453,7 +12456,7 @@ var __asyncGenerator$2 = (commonjsGlobal && commonjsGlobal.__asyncGenerator) || 
 };
 Object.defineProperty(isReadableStreamLike$2, "__esModule", { value: true });
 isReadableStreamLike$2.isReadableStreamLike = isReadableStreamLike$2.readableStreamLikeToAsyncGenerator = void 0;
-var isFunction_1$g = isFunction$5;
+var isFunction_1$g = isFunction$2;
 function readableStreamLikeToAsyncGenerator$1(readableStream) {
     return __asyncGenerator$2(this, arguments, function readableStreamLikeToAsyncGenerator_1() {
         var reader, _a, value, done;
@@ -12548,15 +12551,15 @@ var __values$8 = (commonjsGlobal && commonjsGlobal.__values) || function(o) {
 };
 Object.defineProperty(innerFrom$2, "__esModule", { value: true });
 innerFrom$2.fromReadableStreamLike = innerFrom$2.fromAsyncIterable = innerFrom$2.fromIterable = innerFrom$2.fromPromise = innerFrom$2.fromArrayLike = innerFrom$2.fromInteropObservable = innerFrom$2.innerFrom = void 0;
-var isArrayLike_1$2 = isArrayLike$4;
-var isPromise_1$1 = isPromise$3;
+var isArrayLike_1$2 = isArrayLike$1;
+var isPromise_1$1 = isPromise$2;
 var Observable_1$k = Observable$2;
 var isInteropObservable_1$1 = isInteropObservable$2;
 var isAsyncIterable_1$1 = isAsyncIterable$2;
 var throwUnobservableError_1$1 = throwUnobservableError;
-var isIterable_1$1 = isIterable$3;
+var isIterable_1$1 = isIterable$2;
 var isReadableStreamLike_1$2 = isReadableStreamLike$2;
-var isFunction_1$f = isFunction$5;
+var isFunction_1$f = isFunction$2;
 var reportUnhandledError_1 = reportUnhandledError$2;
 var observable_1 = observable$1;
 function innerFrom$1(input) {
@@ -12643,7 +12646,7 @@ function fromIterable$1(iterable) {
 innerFrom$2.fromIterable = fromIterable$1;
 function fromAsyncIterable$1(asyncIterable) {
     return new Observable_1$k.Observable(function (subscriber) {
-        process$2(asyncIterable, subscriber).catch(function (err) { return subscriber.error(err); });
+        process$3(asyncIterable, subscriber).catch(function (err) { return subscriber.error(err); });
     });
 }
 innerFrom$2.fromAsyncIterable = fromAsyncIterable$1;
@@ -12651,7 +12654,7 @@ function fromReadableStreamLike$1(readableStream) {
     return fromAsyncIterable$1(isReadableStreamLike_1$2.readableStreamLikeToAsyncGenerator(readableStream));
 }
 innerFrom$2.fromReadableStreamLike = fromReadableStreamLike$1;
-function process$2(asyncIterable, subscriber) {
+function process$3(asyncIterable, subscriber) {
     var asyncIterable_1, asyncIterable_1_1;
     var e_2, _a;
     return __awaiter$2(this, void 0, void 0, function () {
@@ -12799,7 +12802,7 @@ Object.defineProperty(scheduleIterable$2, "__esModule", { value: true });
 scheduleIterable$2.scheduleIterable = void 0;
 var Observable_1$i = Observable$2;
 var iterator_1 = iterator$2;
-var isFunction_1$e = isFunction$5;
+var isFunction_1$e = isFunction$2;
 var executeSchedule_1$5 = executeSchedule$2;
 function scheduleIterable$1(input, scheduler) {
     return new Observable_1$i.Observable(function (subscriber) {
@@ -12877,9 +12880,9 @@ var scheduleArray_1 = scheduleArray$2;
 var scheduleIterable_1$1 = scheduleIterable$2;
 var scheduleAsyncIterable_1 = scheduleAsyncIterable$2;
 var isInteropObservable_1 = isInteropObservable$2;
-var isPromise_1 = isPromise$3;
-var isArrayLike_1$1 = isArrayLike$4;
-var isIterable_1 = isIterable$3;
+var isPromise_1 = isPromise$2;
+var isArrayLike_1$1 = isArrayLike$1;
+var isIterable_1 = isIterable$2;
 var isAsyncIterable_1 = isAsyncIterable$2;
 var throwUnobservableError_1 = throwUnobservableError;
 var isReadableStreamLike_1 = isReadableStreamLike$2;
@@ -12937,7 +12940,7 @@ var throwError$1 = {};
 Object.defineProperty(throwError$1, "__esModule", { value: true });
 throwError$1.throwError = void 0;
 var Observable_1$g = Observable$2;
-var isFunction_1$d = isFunction$5;
+var isFunction_1$d = isFunction$2;
 function throwError(errorOrErrorFactory, scheduler) {
     var errorFactory = isFunction_1$d.isFunction(errorOrErrorFactory) ? errorOrErrorFactory : function () { return errorOrErrorFactory; };
     var init = function (subscriber) { return subscriber.error(errorFactory()); };
@@ -12951,7 +12954,7 @@ throwError$1.throwError = throwError;
 	var empty_1 = empty$1;
 	var of_1 = of$2;
 	var throwError_1 = throwError$1;
-	var isFunction_1 = isFunction$5;
+	var isFunction_1 = isFunction$2;
 	(function (NotificationKind) {
 	    NotificationKind["NEXT"] = "N";
 	    NotificationKind["ERROR"] = "E";
@@ -13027,7 +13030,7 @@ var isObservable$1 = {};
 Object.defineProperty(isObservable$1, "__esModule", { value: true });
 isObservable$1.isObservable = void 0;
 var Observable_1$f = Observable$2;
-var isFunction_1$c = isFunction$5;
+var isFunction_1$c = isFunction$2;
 function isObservable(obj) {
     return !!obj && (obj instanceof Observable_1$f.Observable || (isFunction_1$c.isFunction(obj.lift) && isFunction_1$c.isFunction(obj.subscribe)));
 }
@@ -13146,20 +13149,20 @@ SequenceError.SequenceError = createErrorClass_1.createErrorClass(function (_sup
 
 var timeout$1 = {};
 
-var isDate$2 = {};
+var isDate$1 = {};
 
-Object.defineProperty(isDate$2, "__esModule", { value: true });
-isDate$2.isValidDate = void 0;
+Object.defineProperty(isDate$1, "__esModule", { value: true });
+isDate$1.isValidDate = void 0;
 function isValidDate$1(value) {
     return value instanceof Date && !isNaN(value);
 }
-isDate$2.isValidDate = isValidDate$1;
+isDate$1.isValidDate = isValidDate$1;
 
 (function (exports) {
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.timeout = exports.TimeoutError = void 0;
-	var async_1 = async$4;
-	var isDate_1 = isDate$2;
+	var async_1 = async$1;
+	var isDate_1 = isDate$1;
 	var lift_1 = lift;
 	var innerFrom_1 = innerFrom$2;
 	var createErrorClass_1 = createErrorClass$2;
@@ -13266,9 +13269,9 @@ var __spreadArray$h = (commonjsGlobal && commonjsGlobal.__spreadArray) || functi
 Object.defineProperty(mapOneOrManyArgs$2, "__esModule", { value: true });
 mapOneOrManyArgs$2.mapOneOrManyArgs = void 0;
 var map_1$5 = map$3;
-var isArray$4 = Array.isArray;
+var isArray$3 = Array.isArray;
 function callOrApply$1(fn, args) {
-    return isArray$4(args) ? fn.apply(void 0, __spreadArray$h([], __read$i(args))) : fn(args);
+    return isArray$3(args) ? fn.apply(void 0, __spreadArray$h([], __read$i(args))) : fn(args);
 }
 function mapOneOrManyArgs$1(fn) {
     return map_1$5.map(function (args) { return callOrApply$1(fn, args); });
@@ -13401,12 +13404,12 @@ var argsArgArrayOrObject$2 = {};
 
 Object.defineProperty(argsArgArrayOrObject$2, "__esModule", { value: true });
 argsArgArrayOrObject$2.argsArgArrayOrObject = void 0;
-var isArray$3 = Array.isArray;
-var getPrototypeOf$3 = Object.getPrototypeOf, objectProto$2 = Object.prototype, getKeys$1 = Object.keys;
+var isArray$2 = Array.isArray;
+var getPrototypeOf$2 = Object.getPrototypeOf, objectProto$1 = Object.prototype, getKeys$1 = Object.keys;
 function argsArgArrayOrObject$1(args) {
     if (args.length === 1) {
         var first_1 = args[0];
-        if (isArray$3(first_1)) {
+        if (isArray$2(first_1)) {
             return { args: first_1, keys: null };
         }
         if (isPOJO$1(first_1)) {
@@ -13421,7 +13424,7 @@ function argsArgArrayOrObject$1(args) {
 }
 argsArgArrayOrObject$2.argsArgArrayOrObject = argsArgArrayOrObject$1;
 function isPOJO$1(obj) {
-    return obj && typeof obj === 'object' && getPrototypeOf$3(obj) === objectProto$2;
+    return obj && typeof obj === 'object' && getPrototypeOf$2(obj) === objectProto$1;
 }
 
 var createObject$2 = {};
@@ -13587,7 +13590,7 @@ var map_1$4 = map$3;
 var innerFrom_1$z = innerFrom$2;
 var lift_1$$ = lift;
 var mergeInternals_1$2 = mergeInternals$2;
-var isFunction_1$b = isFunction$5;
+var isFunction_1$b = isFunction$2;
 function mergeMap$1(project, resultSelector, concurrent) {
     if (concurrent === void 0) { concurrent = Infinity; }
     if (isFunction_1$b.isFunction(resultSelector)) {
@@ -13634,24 +13637,24 @@ concat$7.concat = concat$6;
 
 var connectable$1 = {};
 
-var defer$4 = {};
+var defer$2 = {};
 
-Object.defineProperty(defer$4, "__esModule", { value: true });
-defer$4.defer = void 0;
+Object.defineProperty(defer$2, "__esModule", { value: true });
+defer$2.defer = void 0;
 var Observable_1$c = Observable$2;
 var innerFrom_1$y = innerFrom$2;
-function defer$3(observableFactory) {
+function defer$1(observableFactory) {
     return new Observable_1$c.Observable(function (subscriber) {
         innerFrom_1$y.innerFrom(observableFactory()).subscribe(subscriber);
     });
 }
-defer$4.defer = defer$3;
+defer$2.defer = defer$1;
 
 Object.defineProperty(connectable$1, "__esModule", { value: true });
 connectable$1.connectable = void 0;
 var Subject_1$b = Subject$2;
 var Observable_1$b = Observable$2;
-var defer_1$3 = defer$4;
+var defer_1$2 = defer$2;
 var DEFAULT_CONFIG$1 = {
     connector: function () { return new Subject_1$b.Subject(); },
     resetOnDisconnect: true,
@@ -13666,7 +13669,7 @@ function connectable(source, config) {
     });
     result.connect = function () {
         if (!connection || connection.closed) {
-            connection = defer_1$3.defer(function () { return source; }).subscribe(subject);
+            connection = defer_1$2.defer(function () { return source; }).subscribe(subject);
             if (resetOnDisconnect) {
                 connection.add(function () { return (subject = connector()); });
             }
@@ -13752,8 +13755,8 @@ fromEvent$2.fromEvent = void 0;
 var innerFrom_1$w = innerFrom$2;
 var Observable_1$9 = Observable$2;
 var mergeMap_1$5 = mergeMap$2;
-var isArrayLike_1 = isArrayLike$4;
-var isFunction_1$a = isFunction$5;
+var isArrayLike_1 = isArrayLike$1;
+var isFunction_1$a = isFunction$2;
 var mapOneOrManyArgs_1$3 = mapOneOrManyArgs$2;
 var nodeEventEmitterMethods$1 = ['addListener', 'removeListener'];
 var eventTargetMethods$1 = ['addEventListener', 'removeEventListener'];
@@ -13813,7 +13816,7 @@ var fromEventPattern$1 = {};
 Object.defineProperty(fromEventPattern$1, "__esModule", { value: true });
 fromEventPattern$1.fromEventPattern = void 0;
 var Observable_1$8 = Observable$2;
-var isFunction_1$9 = isFunction$5;
+var isFunction_1$9 = isFunction$2;
 var mapOneOrManyArgs_1$2 = mapOneOrManyArgs$2;
 function fromEventPattern(addHandler, removeHandler, resultSelector) {
     if (resultSelector) {
@@ -13866,7 +13869,7 @@ Object.defineProperty(generate$1, "__esModule", { value: true });
 generate$1.generate = void 0;
 var identity_1$b = identity$2;
 var isScheduler_1$1 = isScheduler$2;
-var defer_1$2 = defer$4;
+var defer_1$1 = defer$2;
 var scheduleIterable_1 = scheduleIterable$2;
 function generate(initialStateOrOptions, condition, iterate, resultSelectorOrScheduler, scheduler) {
     var _a, _b;
@@ -13905,7 +13908,7 @@ function generate(initialStateOrOptions, condition, iterate, resultSelectorOrSch
             }
         });
     }
-    return defer_1$2.defer((scheduler
+    return defer_1$1.defer((scheduler
         ?
             function () { return scheduleIterable_1.scheduleIterable(gen(), scheduler); }
         :
@@ -13917,9 +13920,9 @@ var iif$1 = {};
 
 Object.defineProperty(iif$1, "__esModule", { value: true });
 iif$1.iif = void 0;
-var defer_1$1 = defer$4;
+var defer_1 = defer$2;
 function iif(condition, trueResult, falseResult) {
-    return defer_1$1.defer(function () { return (condition() ? trueResult : falseResult); });
+    return defer_1.defer(function () { return (condition() ? trueResult : falseResult); });
 }
 iif$1.iif = iif;
 
@@ -13930,12 +13933,12 @@ var timer$3 = {};
 Object.defineProperty(timer$3, "__esModule", { value: true });
 timer$3.timer = void 0;
 var Observable_1$7 = Observable$2;
-var async_1$b = async$4;
+var async_1$a = async$1;
 var isScheduler_1 = isScheduler$2;
-var isDate_1$1 = isDate$2;
+var isDate_1$1 = isDate$1;
 function timer$2(dueTime, intervalOrScheduler, scheduler) {
     if (dueTime === void 0) { dueTime = 0; }
-    if (scheduler === void 0) { scheduler = async_1$b.async; }
+    if (scheduler === void 0) { scheduler = async_1$a.async; }
     var intervalDuration = -1;
     if (intervalOrScheduler != null) {
         if (isScheduler_1.isScheduler(intervalOrScheduler)) {
@@ -13968,11 +13971,11 @@ timer$3.timer = timer$2;
 
 Object.defineProperty(interval$1, "__esModule", { value: true });
 interval$1.interval = void 0;
-var async_1$a = async$4;
+var async_1$9 = async$1;
 var timer_1$5 = timer$3;
 function interval(period, scheduler) {
     if (period === void 0) { period = 0; }
-    if (scheduler === void 0) { scheduler = async_1$a.asyncScheduler; }
+    if (scheduler === void 0) { scheduler = async_1$9.asyncScheduler; }
     if (period < 0) {
         period = 0;
     }
@@ -13980,16 +13983,16 @@ function interval(period, scheduler) {
 }
 interval$1.interval = interval;
 
-var merge$7 = {};
+var merge$6 = {};
 
-Object.defineProperty(merge$7, "__esModule", { value: true });
-merge$7.merge = void 0;
+Object.defineProperty(merge$6, "__esModule", { value: true });
+merge$6.merge = void 0;
 var mergeAll_1$1 = mergeAll$2;
 var innerFrom_1$v = innerFrom$2;
 var empty_1$6 = empty$1;
 var args_1$8 = args;
 var from_1$3 = from$3;
-function merge$6() {
+function merge$5() {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
@@ -14006,7 +14009,7 @@ function merge$6() {
             :
                 mergeAll_1$1.mergeAll(concurrent)(from_1$3.from(sources, scheduler));
 }
-merge$7.merge = merge$6;
+merge$6.merge = merge$5;
 
 var never = {};
 
@@ -14014,7 +14017,7 @@ var never = {};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.never = exports.NEVER = void 0;
 	var Observable_1 = Observable$2;
-	var noop_1 = noop$8;
+	var noop_1 = noop$6;
 	exports.NEVER = new Observable_1.Observable(noop_1.noop);
 	function never() {
 	    return exports.NEVER;
@@ -14029,9 +14032,9 @@ var argsOrArgArray$2 = {};
 
 Object.defineProperty(argsOrArgArray$2, "__esModule", { value: true });
 argsOrArgArray$2.argsOrArgArray = void 0;
-var isArray$2 = Array.isArray;
+var isArray$1 = Array.isArray;
 function argsOrArgArray$1(args) {
-    return args.length === 1 && isArray$2(args[0]) ? args[0] : args;
+    return args.length === 1 && isArray$1(args[0]) ? args[0] : args;
 }
 argsOrArgArray$2.argsOrArgArray = argsOrArgArray$1;
 
@@ -14040,7 +14043,7 @@ onErrorResumeNext$1.onErrorResumeNext = void 0;
 var Observable_1$6 = Observable$2;
 var argsOrArgArray_1$5 = argsOrArgArray$2;
 var OperatorSubscriber_1$O = OperatorSubscriber$2;
-var noop_1$c = noop$8;
+var noop_1$c = noop$6;
 var innerFrom_1$u = innerFrom$2;
 function onErrorResumeNext() {
     var sources = [];
@@ -14339,11 +14342,11 @@ var auditTime$1 = {};
 
 Object.defineProperty(auditTime$1, "__esModule", { value: true });
 auditTime$1.auditTime = void 0;
-var async_1$9 = async$4;
+var async_1$8 = async$1;
 var audit_1 = audit$1;
 var timer_1$4 = timer$3;
 function auditTime(duration, scheduler) {
-    if (scheduler === void 0) { scheduler = async_1$9.asyncScheduler; }
+    if (scheduler === void 0) { scheduler = async_1$8.asyncScheduler; }
     return audit_1.audit(function () { return timer_1$4.timer(duration, scheduler); });
 }
 auditTime$1.auditTime = auditTime;
@@ -14353,7 +14356,7 @@ var buffer$1 = {};
 Object.defineProperty(buffer$1, "__esModule", { value: true });
 buffer$1.buffer = void 0;
 var lift_1$Y = lift;
-var noop_1$b = noop$8;
+var noop_1$b = noop$6;
 var OperatorSubscriber_1$J = OperatorSubscriber$2;
 var innerFrom_1$o = innerFrom$2;
 function buffer(closingNotifier) {
@@ -14480,7 +14483,7 @@ var Subscription_1$3 = Subscription$2;
 var lift_1$W = lift;
 var OperatorSubscriber_1$H = OperatorSubscriber$2;
 var arrRemove_1$3 = arrRemove$2;
-var async_1$8 = async$4;
+var async_1$7 = async$1;
 var args_1$6 = args;
 var executeSchedule_1$1 = executeSchedule$2;
 function bufferTime(bufferTimeSpan) {
@@ -14489,7 +14492,7 @@ function bufferTime(bufferTimeSpan) {
     for (var _i = 1; _i < arguments.length; _i++) {
         otherArgs[_i - 1] = arguments[_i];
     }
-    var scheduler = (_a = args_1$6.popScheduler(otherArgs)) !== null && _a !== void 0 ? _a : async_1$8.asyncScheduler;
+    var scheduler = (_a = args_1$6.popScheduler(otherArgs)) !== null && _a !== void 0 ? _a : async_1$7.asyncScheduler;
     var bufferCreationInterval = (_b = otherArgs[0]) !== null && _b !== void 0 ? _b : null;
     var maxBufferSize = otherArgs[1] || Infinity;
     return lift_1$W.operate(function (source, subscriber) {
@@ -14572,7 +14575,7 @@ var Subscription_1$2 = Subscription$2;
 var lift_1$V = lift;
 var innerFrom_1$n = innerFrom$2;
 var OperatorSubscriber_1$G = OperatorSubscriber$2;
-var noop_1$a = noop$8;
+var noop_1$a = noop$6;
 var arrRemove_1$2 = arrRemove$2;
 function bufferToggle(openings, closingSelector) {
     return lift_1$V.operate(function (source, subscriber) {
@@ -14618,7 +14621,7 @@ var bufferWhen$1 = {};
 Object.defineProperty(bufferWhen$1, "__esModule", { value: true });
 bufferWhen$1.bufferWhen = void 0;
 var lift_1$U = lift;
-var noop_1$9 = noop$8;
+var noop_1$9 = noop$6;
 var OperatorSubscriber_1$F = OperatorSubscriber$2;
 var innerFrom_1$m = innerFrom$2;
 function bufferWhen(closingSelector) {
@@ -14679,7 +14682,7 @@ var combineLatestAll$1 = {};
 
 var joinAllInternals$1 = {};
 
-var toArray$2 = {};
+var toArray$1 = {};
 
 var reduce$1 = {};
 
@@ -14719,17 +14722,17 @@ function reduce(accumulator, seed) {
 }
 reduce$1.reduce = reduce;
 
-Object.defineProperty(toArray$2, "__esModule", { value: true });
-toArray$2.toArray = void 0;
+Object.defineProperty(toArray$1, "__esModule", { value: true });
+toArray$1.toArray = void 0;
 var reduce_1$3 = reduce$1;
 var lift_1$R = lift;
 var arrReducer = function (arr, value) { return (arr.push(value), arr); };
-function toArray$1() {
+function toArray() {
     return lift_1$R.operate(function (source, subscriber) {
         reduce_1$3.reduce(arrReducer, [])(source).subscribe(subscriber);
     });
 }
-toArray$2.toArray = toArray$1;
+toArray$1.toArray = toArray;
 
 Object.defineProperty(joinAllInternals$1, "__esModule", { value: true });
 joinAllInternals$1.joinAllInternals = void 0;
@@ -14737,7 +14740,7 @@ var identity_1$a = identity$2;
 var mapOneOrManyArgs_1$1 = mapOneOrManyArgs$2;
 var pipe_1$1 = pipe$3;
 var mergeMap_1$4 = mergeMap$2;
-var toArray_1 = toArray$2;
+var toArray_1 = toArray$1;
 function joinAllInternals(joinFn, project) {
     return pipe_1$1.pipe(toArray_1.toArray(), mergeMap_1$4.mergeMap(function (sources) { return joinFn(sources); }), project ? mapOneOrManyArgs_1$1.mapOneOrManyArgs(project) : identity_1$a.identity);
 }
@@ -14842,7 +14845,7 @@ var concatMap$2 = {};
 Object.defineProperty(concatMap$2, "__esModule", { value: true });
 concatMap$2.concatMap = void 0;
 var mergeMap_1$3 = mergeMap$2;
-var isFunction_1$8 = isFunction$5;
+var isFunction_1$8 = isFunction$2;
 function concatMap$1(project, resultSelector) {
     return isFunction_1$8.isFunction(resultSelector) ? mergeMap_1$3.mergeMap(project, resultSelector, 1) : mergeMap_1$3.mergeMap(project, 1);
 }
@@ -14853,7 +14856,7 @@ var concatMapTo$1 = {};
 Object.defineProperty(concatMapTo$1, "__esModule", { value: true });
 concatMapTo$1.concatMapTo = void 0;
 var concatMap_1 = concatMap$2;
-var isFunction_1$7 = isFunction$5;
+var isFunction_1$7 = isFunction$2;
 function concatMapTo(innerObservable, resultSelector) {
     return isFunction_1$7.isFunction(resultSelector) ? concatMap_1.concatMap(function () { return innerObservable; }, resultSelector) : concatMap_1.concatMap(function () { return innerObservable; });
 }
@@ -14982,7 +14985,7 @@ var debounce$1 = {};
 Object.defineProperty(debounce$1, "__esModule", { value: true });
 debounce$1.debounce = void 0;
 var lift_1$N = lift;
-var noop_1$8 = noop$8;
+var noop_1$8 = noop$6;
 var OperatorSubscriber_1$C = OperatorSubscriber$2;
 var innerFrom_1$j = innerFrom$2;
 function debounce(durationSelector) {
@@ -15020,11 +15023,11 @@ var debounceTime$1 = {};
 
 Object.defineProperty(debounceTime$1, "__esModule", { value: true });
 debounceTime$1.debounceTime = void 0;
-var async_1$7 = async$4;
+var async_1$6 = async$1;
 var lift_1$M = lift;
 var OperatorSubscriber_1$B = OperatorSubscriber$2;
 function debounceTime(dueTime, scheduler) {
-    if (scheduler === void 0) { scheduler = async_1$7.asyncScheduler; }
+    if (scheduler === void 0) { scheduler = async_1$6.asyncScheduler; }
     return lift_1$M.operate(function (source, subscriber) {
         var activeTask = null;
         var lastValue = null;
@@ -15122,7 +15125,7 @@ Object.defineProperty(ignoreElements$2, "__esModule", { value: true });
 ignoreElements$2.ignoreElements = void 0;
 var lift_1$J = lift;
 var OperatorSubscriber_1$y = OperatorSubscriber$2;
-var noop_1$7 = noop$8;
+var noop_1$7 = noop$6;
 function ignoreElements$1() {
     return lift_1$J.operate(function (source, subscriber) {
         source.subscribe(OperatorSubscriber_1$y.createOperatorSubscriber(subscriber, noop_1$7.noop));
@@ -15160,11 +15163,11 @@ delayWhen$2.delayWhen = delayWhen$1;
 
 Object.defineProperty(delay$1, "__esModule", { value: true });
 delay$1.delay = void 0;
-var async_1$6 = async$4;
+var async_1$5 = async$1;
 var delayWhen_1 = delayWhen$2;
 var timer_1$3 = timer$3;
 function delay(due, scheduler) {
-    if (scheduler === void 0) { scheduler = async_1$6.asyncScheduler; }
+    if (scheduler === void 0) { scheduler = async_1$5.asyncScheduler; }
     var duration = timer_1$3.timer(due, scheduler);
     return delayWhen_1.delayWhen(function () { return duration; });
 }
@@ -15190,7 +15193,7 @@ Object.defineProperty(distinct$1, "__esModule", { value: true });
 distinct$1.distinct = void 0;
 var lift_1$H = lift;
 var OperatorSubscriber_1$w = OperatorSubscriber$2;
-var noop_1$6 = noop$8;
+var noop_1$6 = noop$6;
 var innerFrom_1$h = innerFrom$2;
 function distinct(keySelector, flushes) {
     return lift_1$H.operate(function (source, subscriber) {
@@ -15667,7 +15670,7 @@ var max$1 = {};
 Object.defineProperty(max$1, "__esModule", { value: true });
 max$1.max = void 0;
 var reduce_1$1 = reduce$1;
-var isFunction_1$6 = isFunction$5;
+var isFunction_1$6 = isFunction$2;
 function max(comparer) {
     return reduce_1$1.reduce(isFunction_1$6.isFunction(comparer) ? function (x, y) { return (comparer(x, y) > 0 ? x : y); } : function (x, y) { return (x > y ? x : y); });
 }
@@ -15685,7 +15688,7 @@ var mergeMapTo$1 = {};
 Object.defineProperty(mergeMapTo$1, "__esModule", { value: true });
 mergeMapTo$1.mergeMapTo = void 0;
 var mergeMap_1 = mergeMap$2;
-var isFunction_1$5 = isFunction$5;
+var isFunction_1$5 = isFunction$2;
 function mergeMapTo(innerObservable, resultSelector, concurrent) {
     if (concurrent === void 0) { concurrent = Infinity; }
     if (isFunction_1$5.isFunction(resultSelector)) {
@@ -15717,7 +15720,7 @@ mergeScan$2.mergeScan = mergeScan$1;
 
 var mergeWith$1 = {};
 
-var merge$5 = {};
+var merge$4 = {};
 
 var __read$9 = (commonjsGlobal && commonjsGlobal.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
@@ -15740,14 +15743,14 @@ var __spreadArray$9 = (commonjsGlobal && commonjsGlobal.__spreadArray) || functi
         to[j] = from[i];
     return to;
 };
-Object.defineProperty(merge$5, "__esModule", { value: true });
-merge$5.merge = void 0;
+Object.defineProperty(merge$4, "__esModule", { value: true });
+merge$4.merge = void 0;
 var lift_1$t = lift;
 var argsOrArgArray_1$1 = argsOrArgArray$2;
 var mergeAll_1 = mergeAll$2;
 var args_1$3 = args;
 var from_1 = from$3;
-function merge$4() {
+function merge$3() {
     var args = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         args[_i] = arguments[_i];
@@ -15759,7 +15762,7 @@ function merge$4() {
         mergeAll_1.mergeAll(concurrent)(from_1.from(__spreadArray$9([source], __read$9(args)), scheduler)).subscribe(subscriber);
     });
 }
-merge$5.merge = merge$4;
+merge$4.merge = merge$3;
 
 var __read$8 = (commonjsGlobal && commonjsGlobal.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
@@ -15784,7 +15787,7 @@ var __spreadArray$8 = (commonjsGlobal && commonjsGlobal.__spreadArray) || functi
 };
 Object.defineProperty(mergeWith$1, "__esModule", { value: true });
 mergeWith$1.mergeWith = void 0;
-var merge_1$2 = merge$5;
+var merge_1$2 = merge$4;
 function mergeWith() {
     var otherSources = [];
     for (var _i = 0; _i < arguments.length; _i++) {
@@ -15799,7 +15802,7 @@ var min$1 = {};
 Object.defineProperty(min$1, "__esModule", { value: true });
 min$1.min = void 0;
 var reduce_1 = reduce$1;
-var isFunction_1$4 = isFunction$5;
+var isFunction_1$4 = isFunction$2;
 function min(comparer) {
     return reduce_1.reduce(isFunction_1$4.isFunction(comparer) ? function (x, y) { return (comparer(x, y) < 0 ? x : y); } : function (x, y) { return (x < y ? x : y); });
 }
@@ -15810,7 +15813,7 @@ var multicast$1 = {};
 Object.defineProperty(multicast$1, "__esModule", { value: true });
 multicast$1.multicast = void 0;
 var ConnectableObservable_1$2 = ConnectableObservable$1;
-var isFunction_1$3 = isFunction$5;
+var isFunction_1$3 = isFunction$2;
 var connect_1$1 = connect$1;
 function multicast(subjectOrSubjectFactory, selector) {
     var subjectFactory = isFunction_1$3.isFunction(subjectOrSubjectFactory) ? subjectOrSubjectFactory : function () { return subjectOrSubjectFactory; };
@@ -15957,7 +15960,7 @@ Object.defineProperty(publishReplay$1, "__esModule", { value: true });
 publishReplay$1.publishReplay = void 0;
 var ReplaySubject_1$1 = ReplaySubject$2;
 var multicast_1 = multicast$1;
-var isFunction_1$2 = isFunction$5;
+var isFunction_1$2 = isFunction$2;
 function publishReplay(bufferSize, windowTime, selectorOrScheduler, timestampProvider) {
     if (selectorOrScheduler && !isFunction_1$2.isFunction(selectorOrScheduler)) {
         timestampProvider = selectorOrScheduler;
@@ -16241,7 +16244,7 @@ Object.defineProperty(sample$1, "__esModule", { value: true });
 sample$1.sample = void 0;
 var innerFrom_1$a = innerFrom$2;
 var lift_1$m = lift;
-var noop_1$5 = noop$8;
+var noop_1$5 = noop$6;
 var OperatorSubscriber_1$h = OperatorSubscriber$2;
 function sample(notifier) {
     return lift_1$m.operate(function (source, subscriber) {
@@ -16267,11 +16270,11 @@ var sampleTime$1 = {};
 
 Object.defineProperty(sampleTime$1, "__esModule", { value: true });
 sampleTime$1.sampleTime = void 0;
-var async_1$5 = async$4;
+var async_1$4 = async$1;
 var sample_1 = sample$1;
 var interval_1 = interval$1;
 function sampleTime(period, scheduler) {
-    if (scheduler === void 0) { scheduler = async_1$5.asyncScheduler; }
+    if (scheduler === void 0) { scheduler = async_1$4.asyncScheduler; }
     return sample_1.sample(interval_1.interval(period, scheduler));
 }
 sampleTime$1.sampleTime = sampleTime;
@@ -16552,7 +16555,7 @@ skipUntil$1.skipUntil = void 0;
 var lift_1$g = lift;
 var OperatorSubscriber_1$d = OperatorSubscriber$2;
 var innerFrom_1$7 = innerFrom$2;
-var noop_1$4 = noop$8;
+var noop_1$4 = noop$6;
 function skipUntil(notifier) {
     return lift_1$g.operate(function (source, subscriber) {
         var taking = false;
@@ -16645,7 +16648,7 @@ var switchMapTo$1 = {};
 Object.defineProperty(switchMapTo$1, "__esModule", { value: true });
 switchMapTo$1.switchMapTo = void 0;
 var switchMap_1$1 = switchMap$2;
-var isFunction_1$1 = isFunction$5;
+var isFunction_1$1 = isFunction$2;
 function switchMapTo(innerObservable, resultSelector) {
     return isFunction_1$1.isFunction(resultSelector) ? switchMap_1$1.switchMap(function () { return innerObservable; }, resultSelector) : switchMap_1$1.switchMap(function () { return innerObservable; });
 }
@@ -16675,7 +16678,7 @@ takeUntil$2.takeUntil = void 0;
 var lift_1$b = lift;
 var OperatorSubscriber_1$a = OperatorSubscriber$2;
 var innerFrom_1$5 = innerFrom$2;
-var noop_1$3 = noop$8;
+var noop_1$3 = noop$6;
 function takeUntil$1(notifier) {
     return lift_1$b.operate(function (source, subscriber) {
         innerFrom_1$5.innerFrom(notifier).subscribe(OperatorSubscriber_1$a.createOperatorSubscriber(subscriber, function () { return subscriber.complete(); }, noop_1$3.noop));
@@ -16707,7 +16710,7 @@ var tap$2 = {};
 
 Object.defineProperty(tap$2, "__esModule", { value: true });
 tap$2.tap = void 0;
-var isFunction_1 = isFunction$5;
+var isFunction_1 = isFunction$2;
 var lift_1$9 = lift;
 var OperatorSubscriber_1$8 = OperatorSubscriber$2;
 var identity_1$1 = identity$2;
@@ -16748,14 +16751,14 @@ function tap$1(observerOrNext, error, complete) {
 }
 tap$2.tap = tap$1;
 
-var throttle$2 = {};
+var throttle$1 = {};
 
-Object.defineProperty(throttle$2, "__esModule", { value: true });
-throttle$2.throttle = void 0;
+Object.defineProperty(throttle$1, "__esModule", { value: true });
+throttle$1.throttle = void 0;
 var lift_1$8 = lift;
 var OperatorSubscriber_1$7 = OperatorSubscriber$2;
 var innerFrom_1$4 = innerFrom$2;
-function throttle$1(durationSelector, config) {
+function throttle(durationSelector, config) {
     return lift_1$8.operate(function (source, subscriber) {
         var _a = config !== null && config !== void 0 ? config : {}, _b = _a.leading, leading = _b === void 0 ? true : _b, _c = _a.trailing, trailing = _c === void 0 ? false : _c;
         var hasValue = false;
@@ -16796,17 +16799,17 @@ function throttle$1(durationSelector, config) {
         }));
     });
 }
-throttle$2.throttle = throttle$1;
+throttle$1.throttle = throttle;
 
 var throttleTime$1 = {};
 
 Object.defineProperty(throttleTime$1, "__esModule", { value: true });
 throttleTime$1.throttleTime = void 0;
-var async_1$4 = async$4;
-var throttle_1 = throttle$2;
+var async_1$3 = async$1;
+var throttle_1 = throttle$1;
 var timer_1 = timer$3;
 function throttleTime(duration, scheduler, config) {
-    if (scheduler === void 0) { scheduler = async_1$4.asyncScheduler; }
+    if (scheduler === void 0) { scheduler = async_1$3.asyncScheduler; }
     var duration$ = timer_1.timer(duration, scheduler);
     return throttle_1.throttle(function () { return duration$; }, config);
 }
@@ -16816,11 +16819,11 @@ var timeInterval$1 = {};
 
 Object.defineProperty(timeInterval$1, "__esModule", { value: true });
 timeInterval$1.TimeInterval = timeInterval$1.timeInterval = void 0;
-var async_1$3 = async$4;
+var async_1$2 = async$1;
 var lift_1$7 = lift;
 var OperatorSubscriber_1$6 = OperatorSubscriber$2;
 function timeInterval(scheduler) {
-    if (scheduler === void 0) { scheduler = async_1$3.asyncScheduler; }
+    if (scheduler === void 0) { scheduler = async_1$2.asyncScheduler; }
     return lift_1$7.operate(function (source, subscriber) {
         var last = scheduler.now();
         source.subscribe(OperatorSubscriber_1$6.createOperatorSubscriber(subscriber, function (value) {
@@ -16845,14 +16848,14 @@ var timeoutWith$1 = {};
 
 Object.defineProperty(timeoutWith$1, "__esModule", { value: true });
 timeoutWith$1.timeoutWith = void 0;
-var async_1$2 = async$4;
-var isDate_1 = isDate$2;
+var async_1$1 = async$1;
+var isDate_1 = isDate$1;
 var timeout_1 = timeout$1;
 function timeoutWith(due, withObservable, scheduler) {
     var first;
     var each;
     var _with;
-    scheduler = scheduler !== null && scheduler !== void 0 ? scheduler : async_1$2.async;
+    scheduler = scheduler !== null && scheduler !== void 0 ? scheduler : async_1$1.async;
     if (isDate_1.isValidDate(due)) {
         first = due;
     }
@@ -16896,7 +16899,7 @@ window$2.window = void 0;
 var Subject_1$4 = Subject$2;
 var lift_1$6 = lift;
 var OperatorSubscriber_1$5 = OperatorSubscriber$2;
-var noop_1$2 = noop$8;
+var noop_1$2 = noop$6;
 var innerFrom_1$3 = innerFrom$2;
 function window$1(windowBoundaries) {
     return lift_1$6.operate(function (source, subscriber) {
@@ -16993,7 +16996,7 @@ var windowTime$1 = {};
 Object.defineProperty(windowTime$1, "__esModule", { value: true });
 windowTime$1.windowTime = void 0;
 var Subject_1$2 = Subject$2;
-var async_1$1 = async$4;
+var async_1 = async$1;
 var Subscription_1$1 = Subscription$2;
 var lift_1$4 = lift;
 var OperatorSubscriber_1$3 = OperatorSubscriber$2;
@@ -17006,7 +17009,7 @@ function windowTime(windowTimeSpan) {
     for (var _i = 1; _i < arguments.length; _i++) {
         otherArgs[_i - 1] = arguments[_i];
     }
-    var scheduler = (_a = args_1$1.popScheduler(otherArgs)) !== null && _a !== void 0 ? _a : async_1$1.asyncScheduler;
+    var scheduler = (_a = args_1$1.popScheduler(otherArgs)) !== null && _a !== void 0 ? _a : async_1.asyncScheduler;
     var windowCreationInterval = (_b = otherArgs[0]) !== null && _b !== void 0 ? _b : null;
     var maxWindowSize = otherArgs[1] || Infinity;
     return lift_1$4.operate(function (source, subscriber) {
@@ -17083,7 +17086,7 @@ var Subscription_1 = Subscription$2;
 var lift_1$3 = lift;
 var innerFrom_1$2 = innerFrom$2;
 var OperatorSubscriber_1$2 = OperatorSubscriber$2;
-var noop_1$1 = noop$8;
+var noop_1$1 = noop$6;
 var arrRemove_1 = arrRemove$2;
 function windowToggle(openings, closingSelector) {
     return lift_1$3.operate(function (source, subscriber) {
@@ -17216,7 +17219,7 @@ var lift_1$1 = lift;
 var OperatorSubscriber_1 = OperatorSubscriber$2;
 var innerFrom_1 = innerFrom$2;
 var identity_1 = identity$2;
-var noop_1 = noop$8;
+var noop_1 = noop$6;
 var args_1 = args;
 function withLatestFrom() {
     var inputs = [];
@@ -17367,10 +17370,10 @@ zipWith$1.zipWith = zipWith;
 	Object.defineProperty(exports, "ReplaySubject", { enumerable: true, get: function () { return ReplaySubject_1.ReplaySubject; } });
 	var AsyncSubject_1 = AsyncSubject$1;
 	Object.defineProperty(exports, "AsyncSubject", { enumerable: true, get: function () { return AsyncSubject_1.AsyncSubject; } });
-	var asap_1 = asap$1;
+	var asap_1 = asap;
 	Object.defineProperty(exports, "asap", { enumerable: true, get: function () { return asap_1.asap; } });
 	Object.defineProperty(exports, "asapScheduler", { enumerable: true, get: function () { return asap_1.asapScheduler; } });
-	var async_1 = async$4;
+	var async_1 = async$1;
 	Object.defineProperty(exports, "async", { enumerable: true, get: function () { return async_1.async; } });
 	Object.defineProperty(exports, "asyncScheduler", { enumerable: true, get: function () { return async_1.asyncScheduler; } });
 	var queue_1 = queue$2;
@@ -17393,7 +17396,7 @@ zipWith$1.zipWith = zipWith;
 	Object.defineProperty(exports, "NotificationKind", { enumerable: true, get: function () { return Notification_1.NotificationKind; } });
 	var pipe_1 = pipe$3;
 	Object.defineProperty(exports, "pipe", { enumerable: true, get: function () { return pipe_1.pipe; } });
-	var noop_1 = noop$8;
+	var noop_1 = noop$6;
 	Object.defineProperty(exports, "noop", { enumerable: true, get: function () { return noop_1.noop; } });
 	var identity_1 = identity$2;
 	Object.defineProperty(exports, "identity", { enumerable: true, get: function () { return identity_1.identity; } });
@@ -17427,7 +17430,7 @@ zipWith$1.zipWith = zipWith;
 	Object.defineProperty(exports, "concat", { enumerable: true, get: function () { return concat_1.concat; } });
 	var connectable_1 = connectable$1;
 	Object.defineProperty(exports, "connectable", { enumerable: true, get: function () { return connectable_1.connectable; } });
-	var defer_1 = defer$4;
+	var defer_1 = defer$2;
 	Object.defineProperty(exports, "defer", { enumerable: true, get: function () { return defer_1.defer; } });
 	var empty_1 = empty$1;
 	Object.defineProperty(exports, "empty", { enumerable: true, get: function () { return empty_1.empty; } });
@@ -17445,7 +17448,7 @@ zipWith$1.zipWith = zipWith;
 	Object.defineProperty(exports, "iif", { enumerable: true, get: function () { return iif_1.iif; } });
 	var interval_1 = interval$1;
 	Object.defineProperty(exports, "interval", { enumerable: true, get: function () { return interval_1.interval; } });
-	var merge_1 = merge$7;
+	var merge_1 = merge$6;
 	Object.defineProperty(exports, "merge", { enumerable: true, get: function () { return merge_1.merge; } });
 	var never_1 = never;
 	Object.defineProperty(exports, "never", { enumerable: true, get: function () { return never_1.never; } });
@@ -17660,7 +17663,7 @@ zipWith$1.zipWith = zipWith;
 	Object.defineProperty(exports, "takeWhile", { enumerable: true, get: function () { return takeWhile_1.takeWhile; } });
 	var tap_1 = tap$2;
 	Object.defineProperty(exports, "tap", { enumerable: true, get: function () { return tap_1.tap; } });
-	var throttle_1 = throttle$2;
+	var throttle_1 = throttle$1;
 	Object.defineProperty(exports, "throttle", { enumerable: true, get: function () { return throttle_1.throttle; } });
 	var throttleTime_1 = throttleTime$1;
 	Object.defineProperty(exports, "throttleTime", { enumerable: true, get: function () { return throttleTime_1.throttleTime; } });
@@ -17674,7 +17677,7 @@ zipWith$1.zipWith = zipWith;
 	Object.defineProperty(exports, "timeoutWith", { enumerable: true, get: function () { return timeoutWith_1.timeoutWith; } });
 	var timestamp_1 = timestamp$2;
 	Object.defineProperty(exports, "timestamp", { enumerable: true, get: function () { return timestamp_1.timestamp; } });
-	var toArray_1 = toArray$2;
+	var toArray_1 = toArray$1;
 	Object.defineProperty(exports, "toArray", { enumerable: true, get: function () { return toArray_1.toArray; } });
 	var window_1 = window$2;
 	Object.defineProperty(exports, "window", { enumerable: true, get: function () { return window_1.window; } });
@@ -17695,16 +17698,16 @@ zipWith$1.zipWith = zipWith;
 	
 } (cjs));
 
-const adapters$1 = [];
+const adapters = [];
 function registerAdapter(cls) {
-    adapters$1.push(cls);
+    adapters.push(cls);
 }
 class TestSuiteAdapter {
     static name;
     static check = async (page) => false;
     static async getAdapter(page) {
         return oraPromise(async () => {
-            for (const adapter of adapters$1) {
+            for (const adapter of adapters) {
                 if (await adapter.check(page)) {
                     return adapter;
                 }
@@ -17748,6 +17751,9 @@ class TestSuiteAdapter {
         return page.reload({ waitUntil: "domcontentloaded" });
     }
     async screenshotFails(page, path) { }
+    async metadataReady() {
+        return true;
+    }
 }
 
 let Deferred$3 = class Deferred extends Promise {
@@ -17773,52 +17779,6 @@ let Deferred$3 = class Deferred extends Promise {
 function uuid$1() {
     return `${Math.random().toString(36).substring(2, 15)}`.toUpperCase();
 }
-let Mutex$3 = class Mutex {
-    _lock;
-    _queueSize;
-    _unlockedProm;
-    _unlock;
-    constructor() {
-        this._lock = Promise.resolve();
-        this._queueSize = 0;
-        this._unlockedProm = undefined;
-        this._unlock = undefined;
-    }
-    /**
-     * Add a computation to the queue, it will be executed as soon as the
-     * previous computations are completed.
-     *
-     * @param {() => (void | Promise<void>)} action a function which may return a Promise
-     * @returns {Promise<void>}
-     */
-    async exec(action) {
-        this._queueSize++;
-        if (!this._unlockedProm) {
-            this._unlockedProm = new Promise((resolve) => {
-                this._unlock = () => {
-                    resolve(true);
-                    this._unlockedProm = undefined;
-                };
-            });
-        }
-        const always = () => {
-            return Promise.resolve(action()).finally(() => {
-                if (--this._queueSize === 0) {
-                    this._unlock();
-                }
-            });
-        };
-        this._lock = this._lock.then(always, always);
-        return this._lock;
-    }
-    /**
-     * @returns {Promise<void>} resolved as soon as the Mutex is unlocked
-     *   (directly if it is currently idle)
-     */
-    getUnlockedDef() {
-        return this._unlockedProm || Promise.resolve();
-    }
-};
 
 const logger = {
     info: (...messages) => console.log(formatter$1.info(logSymbols.info, ...messages)),
@@ -18246,7 +18206,7 @@ function __asyncValues$1(o) {
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/isFunction.js
-function isFunction$3(value) {
+function isFunction(value) {
   return typeof value === "function";
 }
 
@@ -18318,7 +18278,7 @@ var Subscription = function() {
         }
       }
       var initialFinalizer = this.initialTeardown;
-      if (isFunction$3(initialFinalizer)) {
+      if (isFunction(initialFinalizer)) {
         try {
           initialFinalizer();
         } catch (e) {
@@ -18405,10 +18365,10 @@ var Subscription = function() {
 }();
 var EMPTY_SUBSCRIPTION = Subscription.EMPTY;
 function isSubscription(value) {
-  return value instanceof Subscription || value && "closed" in value && isFunction$3(value.remove) && isFunction$3(value.add) && isFunction$3(value.unsubscribe);
+  return value instanceof Subscription || value && "closed" in value && isFunction(value.remove) && isFunction(value.add) && isFunction(value.unsubscribe);
 }
 function execFinalizer(finalizer) {
-  if (isFunction$3(finalizer)) {
+  if (isFunction(finalizer)) {
     finalizer();
   } else {
     finalizer.unsubscribe();
@@ -18449,7 +18409,7 @@ function reportUnhandledError(err) {
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/noop.js
-function noop$6() {
+function noop$4() {
 }
 function errorContext(cb) {
   {
@@ -18520,7 +18480,7 @@ var Subscriber = function(_super) {
   return Subscriber2;
 }(Subscription);
 var _bind = Function.prototype.bind;
-function bind$1(fn, thisArg) {
+function bind(fn, thisArg) {
   return _bind.call(fn, thisArg);
 }
 var ConsumerObserver = function() {
@@ -18566,7 +18526,7 @@ var SafeSubscriber = function(_super) {
   function SafeSubscriber2(observerOrNext, error, complete) {
     var _this = _super.call(this) || this;
     var partialObserver;
-    if (isFunction$3(observerOrNext) || !observerOrNext) {
+    if (isFunction(observerOrNext) || !observerOrNext) {
       partialObserver = {
         next: observerOrNext !== null && observerOrNext !== void 0 ? observerOrNext : void 0,
         error: error !== null && error !== void 0 ? error : void 0,
@@ -18580,9 +18540,9 @@ var SafeSubscriber = function(_super) {
           return _this.unsubscribe();
         };
         partialObserver = {
-          next: observerOrNext.next && bind$1(observerOrNext.next, context_1),
-          error: observerOrNext.error && bind$1(observerOrNext.error, context_1),
-          complete: observerOrNext.complete && bind$1(observerOrNext.complete, context_1)
+          next: observerOrNext.next && bind(observerOrNext.next, context_1),
+          error: observerOrNext.error && bind(observerOrNext.error, context_1),
+          complete: observerOrNext.complete && bind(observerOrNext.complete, context_1)
         };
       } else {
         partialObserver = observerOrNext;
@@ -18603,9 +18563,9 @@ function defaultErrorHandler(err) {
 }
 var EMPTY_OBSERVER = {
   closed: true,
-  next: noop$6,
+  next: noop$4,
   error: defaultErrorHandler,
-  complete: noop$6
+  complete: noop$4
 };
 
 // node_modules/rxjs/dist/esm5/internal/symbol/observable.js
@@ -18726,7 +18686,7 @@ function getPromiseCtor(promiseCtor) {
   return (_a = promiseCtor !== null && promiseCtor !== void 0 ? promiseCtor : config.Promise) !== null && _a !== void 0 ? _a : Promise;
 }
 function isObserver(value) {
-  return value && isFunction$3(value.next) && isFunction$3(value.error) && isFunction$3(value.complete);
+  return value && isFunction(value.next) && isFunction(value.error) && isFunction(value.complete);
 }
 function isSubscriber(value) {
   return value && value instanceof Subscriber || isObserver(value) && isSubscription(value);
@@ -18734,7 +18694,7 @@ function isSubscriber(value) {
 
 // node_modules/rxjs/dist/esm5/internal/util/lift.js
 function hasLift(source) {
-  return isFunction$3(source === null || source === void 0 ? void 0 : source.lift);
+  return isFunction(source === null || source === void 0 ? void 0 : source.lift);
 }
 function operate(init) {
   return function(source) {
@@ -19206,7 +19166,7 @@ var AsyncScheduler = function(_super) {
 
 // node_modules/rxjs/dist/esm5/internal/scheduler/async.js
 var asyncScheduler = new AsyncScheduler(AsyncAction);
-var async$3 = asyncScheduler;
+var async = asyncScheduler;
 
 // node_modules/rxjs/dist/esm5/internal/observable/empty.js
 var EMPTY = new Observable(function(subscriber) {
@@ -19215,7 +19175,7 @@ var EMPTY = new Observable(function(subscriber) {
 
 // node_modules/rxjs/dist/esm5/internal/util/isScheduler.js
 function isScheduler(value) {
-  return value && isFunction$3(value.schedule);
+  return value && isFunction(value.schedule);
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/args.js
@@ -19223,7 +19183,7 @@ function last(arr) {
   return arr[arr.length - 1];
 }
 function popResultSelector(args) {
-  return isFunction$3(last(args)) ? args.pop() : void 0;
+  return isFunction(last(args)) ? args.pop() : void 0;
 }
 function popScheduler(args) {
   return isScheduler(last(args)) ? args.pop() : void 0;
@@ -19233,23 +19193,23 @@ function popNumber(args, defaultValue) {
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/isArrayLike.js
-var isArrayLike$3 = function(x) {
+var isArrayLike = function(x) {
   return x && typeof x.length === "number" && typeof x !== "function";
 };
 
 // node_modules/rxjs/dist/esm5/internal/util/isPromise.js
-function isPromise$1(value) {
-  return isFunction$3(value === null || value === void 0 ? void 0 : value.then);
+function isPromise(value) {
+  return isFunction(value === null || value === void 0 ? void 0 : value.then);
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/isInteropObservable.js
 function isInteropObservable(input) {
-  return isFunction$3(input[observable]);
+  return isFunction(input[observable]);
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/isAsyncIterable.js
 function isAsyncIterable(obj) {
-  return Symbol.asyncIterator && isFunction$3(obj === null || obj === void 0 ? void 0 : obj[Symbol.asyncIterator]);
+  return Symbol.asyncIterator && isFunction(obj === null || obj === void 0 ? void 0 : obj[Symbol.asyncIterator]);
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/throwUnobservableError.js
@@ -19267,8 +19227,8 @@ function getSymbolIterator() {
 var iterator$1 = getSymbolIterator();
 
 // node_modules/rxjs/dist/esm5/internal/util/isIterable.js
-function isIterable$1(input) {
-  return isFunction$3(input === null || input === void 0 ? void 0 : input[iterator$1]);
+function isIterable(input) {
+  return isFunction(input === null || input === void 0 ? void 0 : input[iterator$1]);
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/isReadableStreamLike.js
@@ -19310,7 +19270,7 @@ function readableStreamLikeToAsyncGenerator(readableStream) {
   });
 }
 function isReadableStreamLike(obj) {
-  return isFunction$3(obj === null || obj === void 0 ? void 0 : obj.getReader);
+  return isFunction(obj === null || obj === void 0 ? void 0 : obj.getReader);
 }
 
 // node_modules/rxjs/dist/esm5/internal/observable/innerFrom.js
@@ -19322,16 +19282,16 @@ function innerFrom(input) {
     if (isInteropObservable(input)) {
       return fromInteropObservable(input);
     }
-    if (isArrayLike$3(input)) {
+    if (isArrayLike(input)) {
       return fromArrayLike(input);
     }
-    if (isPromise$1(input)) {
+    if (isPromise(input)) {
       return fromPromise(input);
     }
     if (isAsyncIterable(input)) {
       return fromAsyncIterable(input);
     }
-    if (isIterable$1(input)) {
+    if (isIterable(input)) {
       return fromIterable(input);
     }
     if (isReadableStreamLike(input)) {
@@ -19343,7 +19303,7 @@ function innerFrom(input) {
 function fromInteropObservable(obj) {
   return new Observable(function(subscriber) {
     var obs = obj[observable]();
-    if (isFunction$3(obs.subscribe)) {
+    if (isFunction(obs.subscribe)) {
       return obs.subscribe(subscriber);
     }
     throw new TypeError("Provided object does not correctly implement Symbol.observable");
@@ -19394,7 +19354,7 @@ function fromIterable(iterable) {
 }
 function fromAsyncIterable(asyncIterable) {
   return new Observable(function(subscriber) {
-    process$1(asyncIterable, subscriber).catch(function(err) {
+    process$2(asyncIterable, subscriber).catch(function(err) {
       return subscriber.error(err);
     });
   });
@@ -19402,7 +19362,7 @@ function fromAsyncIterable(asyncIterable) {
 function fromReadableStreamLike(readableStream) {
   return fromAsyncIterable(readableStreamLikeToAsyncGenerator(readableStream));
 }
-function process$1(asyncIterable, subscriber) {
+function process$2(asyncIterable, subscriber) {
   var asyncIterable_1, asyncIterable_1_1;
   var e_2, _a;
   return __awaiter$1(this, void 0, void 0, function() {
@@ -19560,7 +19520,7 @@ function scheduleIterable(input, scheduler) {
       }, 0, true);
     });
     return function() {
-      return isFunction$3(iterator2 === null || iterator2 === void 0 ? void 0 : iterator2.return) && iterator2.return();
+      return isFunction(iterator2 === null || iterator2 === void 0 ? void 0 : iterator2.return) && iterator2.return();
     };
   });
 }
@@ -19597,16 +19557,16 @@ function scheduled(input, scheduler) {
     if (isInteropObservable(input)) {
       return scheduleObservable(input, scheduler);
     }
-    if (isArrayLike$3(input)) {
+    if (isArrayLike(input)) {
       return scheduleArray(input, scheduler);
     }
-    if (isPromise$1(input)) {
+    if (isPromise(input)) {
       return schedulePromise(input, scheduler);
     }
     if (isAsyncIterable(input)) {
       return scheduleAsyncIterable(input, scheduler);
     }
-    if (isIterable$1(input)) {
+    if (isIterable(input)) {
       return scheduleIterable(input, scheduler);
     }
     if (isReadableStreamLike(input)) {
@@ -19700,9 +19660,9 @@ function map$1(project, thisArg) {
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/mapOneOrManyArgs.js
-var isArray$1 = Array.isArray;
+var isArray = Array.isArray;
 function callOrApply(fn, args) {
-  return isArray$1(args) ? fn.apply(void 0, __spreadArray$1([], __read$1(args))) : fn(args);
+  return isArray(args) ? fn.apply(void 0, __spreadArray$1([], __read$1(args))) : fn(args);
 }
 function mapOneOrManyArgs(fn) {
   return map$1(function(args) {
@@ -19712,8 +19672,8 @@ function mapOneOrManyArgs(fn) {
 
 // node_modules/rxjs/dist/esm5/internal/util/argsArgArrayOrObject.js
 var isArray2 = Array.isArray;
-var getPrototypeOf$2 = Object.getPrototypeOf;
-var objectProto$1 = Object.prototype;
+var getPrototypeOf$1 = Object.getPrototypeOf;
+var objectProto = Object.prototype;
 var getKeys = Object.keys;
 function argsArgArrayOrObject(args) {
   if (args.length === 1) {
@@ -19734,7 +19694,7 @@ function argsArgArrayOrObject(args) {
   return { args, keys: null };
 }
 function isPOJO(obj) {
-  return obj && typeof obj === "object" && getPrototypeOf$2(obj) === objectProto$1;
+  return obj && typeof obj === "object" && getPrototypeOf$1(obj) === objectProto;
 }
 
 // node_modules/rxjs/dist/esm5/internal/util/createObject.js
@@ -19866,7 +19826,7 @@ function mergeMap(project, resultSelector, concurrent) {
   if (concurrent === void 0) {
     concurrent = Infinity;
   }
-  if (isFunction$3(resultSelector)) {
+  if (isFunction(resultSelector)) {
     return mergeMap(function(a, i) {
       return map$1(function(b, ii) {
         return resultSelector(a, b, i, ii);
@@ -19903,7 +19863,7 @@ function concat$3() {
 }
 
 // node_modules/rxjs/dist/esm5/internal/observable/defer.js
-function defer$2(observableFactory) {
+function defer(observableFactory) {
   return new Observable(function(subscriber) {
     innerFrom(observableFactory()).subscribe(subscriber);
   });
@@ -19914,7 +19874,7 @@ var nodeEventEmitterMethods = ["addListener", "removeListener"];
 var eventTargetMethods = ["addEventListener", "removeEventListener"];
 var jqueryMethods = ["on", "off"];
 function fromEvent(target, eventName, options, resultSelector) {
-  if (isFunction$3(options)) {
+  if (isFunction(options)) {
     resultSelector = options;
     options = void 0;
   }
@@ -19927,7 +19887,7 @@ function fromEvent(target, eventName, options, resultSelector) {
     };
   }) : isNodeStyleEventEmitter(target) ? nodeEventEmitterMethods.map(toCommonHandlerRegistry(target, eventName)) : isJQueryStyleEventEmitter(target) ? jqueryMethods.map(toCommonHandlerRegistry(target, eventName)) : [], 2), add = _a[0], remove = _a[1];
   if (!add) {
-    if (isArrayLike$3(target)) {
+    if (isArrayLike(target)) {
       return mergeMap(function(subTarget) {
         return fromEvent(subTarget, eventName, options);
       })(innerFrom(target));
@@ -19958,13 +19918,13 @@ function toCommonHandlerRegistry(target, eventName) {
   };
 }
 function isNodeStyleEventEmitter(target) {
-  return isFunction$3(target.addListener) && isFunction$3(target.removeListener);
+  return isFunction(target.addListener) && isFunction(target.removeListener);
 }
 function isJQueryStyleEventEmitter(target) {
-  return isFunction$3(target.on) && isFunction$3(target.off);
+  return isFunction(target.on) && isFunction(target.off);
 }
 function isEventTarget(target) {
-  return isFunction$3(target.addEventListener) && isFunction$3(target.removeEventListener);
+  return isFunction(target.addEventListener) && isFunction(target.removeEventListener);
 }
 
 // node_modules/rxjs/dist/esm5/internal/observable/timer.js
@@ -19973,7 +19933,7 @@ function timer$1(dueTime, intervalOrScheduler, scheduler) {
     dueTime = 0;
   }
   if (scheduler === void 0) {
-    scheduler = async$3;
+    scheduler = async;
   }
   return new Observable(function(subscriber) {
     var due = isValidDate(dueTime) ? +dueTime - scheduler.now() : dueTime;
@@ -19993,7 +19953,7 @@ function timer$1(dueTime, intervalOrScheduler, scheduler) {
 }
 
 // node_modules/rxjs/dist/esm5/internal/observable/merge.js
-function merge$3() {
+function merge$2() {
   var args = [];
   for (var _i = 0; _i < arguments.length; _i++) {
     args[_i] = arguments[_i];
@@ -20005,7 +19965,7 @@ function merge$3() {
 }
 
 // node_modules/rxjs/dist/esm5/internal/observable/never.js
-var NEVER = new Observable(noop$6);
+var NEVER = new Observable(noop$4);
 
 // node_modules/rxjs/dist/esm5/internal/util/argsOrArgArray.js
 var isArray3 = Array.isArray;
@@ -20151,7 +20111,7 @@ function catchError(selector) {
 
 // node_modules/rxjs/dist/esm5/internal/operators/concatMap.js
 function concatMap(project, resultSelector) {
-  return isFunction$3(resultSelector) ? mergeMap(project, resultSelector, 1) : mergeMap(project, 1);
+  return isFunction(resultSelector) ? mergeMap(project, resultSelector, 1) : mergeMap(project, 1);
 }
 
 // node_modules/rxjs/dist/esm5/internal/operators/defaultIfEmpty.js
@@ -20190,7 +20150,7 @@ function take(count) {
 // node_modules/rxjs/dist/esm5/internal/operators/ignoreElements.js
 function ignoreElements() {
   return operate(function(source, subscriber) {
-    source.subscribe(createOperatorSubscriber(subscriber, noop$6));
+    source.subscribe(createOperatorSubscriber(subscriber, noop$4));
   });
 }
 
@@ -20371,14 +20331,14 @@ function takeUntil(notifier) {
   return operate(function(source, subscriber) {
     innerFrom(notifier).subscribe(createOperatorSubscriber(subscriber, function() {
       return subscriber.complete();
-    }, noop$6));
+    }, noop$4));
     !subscriber.closed && source.subscribe(subscriber);
   });
 }
 
 // node_modules/rxjs/dist/esm5/internal/operators/tap.js
 function tap(observerOrNext, error, complete) {
-  var tapObserver = isFunction$3(observerOrNext) || error || complete ? { next: observerOrNext, error, complete } : observerOrNext;
+  var tapObserver = isFunction(observerOrNext) || error || complete ? { next: observerOrNext, error, complete } : observerOrNext;
   return tapObserver ? operate(function(source, subscriber) {
     var _a;
     (_a = tapObserver.subscribe) === null || _a === void 0 ? void 0 : _a.call(tapObserver);
@@ -20696,7 +20656,7 @@ class AsyncDisposableStack {
  *
  * @public
  */
-let EventEmitter$5 = class EventEmitter {
+let EventEmitter$6 = class EventEmitter {
     #emitter;
     #handlers = new Map();
     /**
@@ -20834,7 +20794,7 @@ class EventSubscription {
  *
  * @internal
  */
-const assert$5 = (value, message) => {
+const assert$4 = (value, message) => {
     if (!value) {
         throw new Error(message);
     }
@@ -20906,7 +20866,7 @@ async function importDebug() {
  *
  * @internal
  */
-const debug$g = (prefix) => {
+const debug$e = (prefix) => {
     if (isNode) {
         return async (...logArgs) => {
             (await importDebug())(prefix)(logArgs);
@@ -21045,7 +21005,7 @@ const paperFormats = {
 /**
  * @internal
  */
-const debugError = debug$g('puppeteer:error');
+const debugError = debug$e('puppeteer:error');
 /**
  * @internal
  */
@@ -21124,39 +21084,39 @@ const getSourcePuppeteerURLIfAvailable = (object) => {
 /**
  * @internal
  */
-const isString$3 = (obj) => {
+const isString = (obj) => {
     return typeof obj === 'string' || obj instanceof String;
 };
 /**
  * @internal
  */
-const isNumber$2 = (obj) => {
+const isNumber = (obj) => {
     return typeof obj === 'number' || obj instanceof Number;
 };
 /**
  * @internal
  */
-const isPlainObject$2 = (obj) => {
+const isPlainObject = (obj) => {
     return typeof obj === 'object' && obj?.constructor === Object;
 };
 /**
  * @internal
  */
-const isRegExp$1 = (obj) => {
+const isRegExp = (obj) => {
     return typeof obj === 'object' && obj?.constructor === RegExp;
 };
 /**
  * @internal
  */
-const isDate$1 = (obj) => {
+const isDate = (obj) => {
     return typeof obj === 'object' && obj?.constructor === Date;
 };
 /**
  * @internal
  */
 function evaluationString(fun, ...args) {
-    if (isString$3(fun)) {
-        assert$5(args.length === 0, 'Cannot evaluate a string with arguments');
+    if (isString(fun)) {
+        assert$4(args.length === 0, 'Cannot evaluate a string with arguments');
         return fun;
     }
     function serializeArgument(arg) {
@@ -21271,7 +21231,7 @@ function validateDialogType(type) {
     if (validDialogTypes.has(type)) {
         dialogType = type;
     }
-    assert$5(dialogType, `Unknown javascript dialog type: ${type}`);
+    assert$4(dialogType, `Unknown javascript dialog type: ${type}`);
     return dialogType;
 }
 /**
@@ -21323,7 +21283,7 @@ function parsePDFOptions(options = {}, lengthUnit = 'in') {
     let height = 11;
     if (options.format) {
         const format = paperFormats[options.format.toLowerCase()];
-        assert$5(format, 'Unknown paper format: ' + options.format);
+        assert$4(format, 'Unknown paper format: ' + options.format);
         width = format.width;
         height = format.height;
     }
@@ -21364,11 +21324,11 @@ function convertPrintParameterToInches(parameter, lengthUnit = 'in') {
         return undefined;
     }
     let pixels;
-    if (isNumber$2(parameter)) {
+    if (isNumber(parameter)) {
         // Treat numbers as pixel values to be aligned with phantom's paperSize.
         pixels = parameter;
     }
-    else if (isString$3(parameter)) {
+    else if (isString(parameter)) {
         const text = parameter;
         let unit = text.substring(text.length - 2).toLowerCase();
         let valueText = '';
@@ -21382,7 +21342,7 @@ function convertPrintParameterToInches(parameter, lengthUnit = 'in') {
             valueText = text;
         }
         const value = Number(valueText);
-        assert$5(!isNaN(value), 'Failed to parse parameter value: ' + text);
+        assert$4(!isNaN(value), 'Failed to parse parameter value: ' + text);
         pixels = value * unitToPixels[unit];
     }
     else {
@@ -21501,7 +21461,7 @@ const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map([
  *
  * @public
  */
-let Browser$2 = class Browser extends EventEmitter$5 {
+let Browser$2 = class Browser extends EventEmitter$6 {
     /**
      * @internal
      */
@@ -21525,7 +21485,7 @@ let Browser$2 = class Browser extends EventEmitter$5 {
      */
     async waitForTarget(predicate, options = {}) {
         const { timeout: ms = 30000 } = options;
-        return await firstValueFrom(merge$3(fromEmitterEvent(this, "targetcreated" /* BrowserEvent.TargetCreated */), fromEmitterEvent(this, "targetchanged" /* BrowserEvent.TargetChanged */), from$1(this.targets())).pipe(filterAsync(predicate), raceWith(timeout(ms))));
+        return await firstValueFrom(merge$2(fromEmitterEvent(this, "targetcreated" /* BrowserEvent.TargetCreated */), fromEmitterEvent(this, "targetchanged" /* BrowserEvent.TargetChanged */), from$1(this.targets())).pipe(filterAsync(predicate), raceWith(timeout(ms))));
     }
     /**
      * Gets a list of all open {@link Page | pages} inside this {@link Browser}.
@@ -21606,7 +21566,7 @@ let Browser$2 = class Browser extends EventEmitter$5 {
  *
  * @public
  */
-class BrowserContext extends EventEmitter$5 {
+class BrowserContext extends EventEmitter$6 {
     /**
      * @internal
      */
@@ -21630,7 +21590,7 @@ class BrowserContext extends EventEmitter$5 {
      */
     async waitForTarget(predicate, options = {}) {
         const { timeout: ms = 30000 } = options;
-        return await firstValueFrom(merge$3(fromEmitterEvent(this, "targetcreated" /* BrowserContextEvent.TargetCreated */), fromEmitterEvent(this, "targetchanged" /* BrowserContextEvent.TargetChanged */), from$1(this.targets())).pipe(filterAsync(predicate), raceWith(timeout(ms))));
+        return await firstValueFrom(merge$2(fromEmitterEvent(this, "targetcreated" /* BrowserContextEvent.TargetCreated */), fromEmitterEvent(this, "targetchanged" /* BrowserContextEvent.TargetChanged */), from$1(this.targets())).pipe(filterAsync(predicate), raceWith(timeout(ms))));
     }
     /**
      * Whether this {@link BrowserContext | browser context} is closed.
@@ -21704,7 +21664,7 @@ var CDPSessionEvent;
  *
  * @public
  */
-class CDPSession extends EventEmitter$5 {
+class CDPSession extends EventEmitter$6 {
     /**
      * @internal
      */
@@ -21790,7 +21750,7 @@ class Dialog {
      *
      */
     async accept(promptText) {
-        assert$5(!this.#handled, 'Cannot accept dialog which is already handled!');
+        assert$4(!this.#handled, 'Cannot accept dialog which is already handled!');
         this.#handled = true;
         await this.handle({
             accept: true,
@@ -21801,7 +21761,7 @@ class Dialog {
      * A promise which will resolve once the dialog has been dismissed
      */
     async dismiss() {
-        assert$5(!this.#handled, 'Cannot dismiss dialog which is already handled!');
+        assert$4(!this.#handled, 'Cannot dismiss dialog which is already handled!');
         this.#handled = true;
         await this.handle({
             accept: false,
@@ -22337,7 +22297,7 @@ class AsyncIterableUtil {
 const isKnownAttribute = (attribute) => {
     return ['name', 'role'].includes(attribute);
 };
-const normalizeValue$1 = (value) => {
+const normalizeValue = (value) => {
     return value.replace(/ +/g, ' ').trim();
 };
 /**
@@ -22356,12 +22316,12 @@ const parseARIASelector = (selector) => {
     const queryOptions = {};
     const defaultName = selector.replace(ATTRIBUTE_REGEXP, (_, attribute, __, value) => {
         attribute = attribute.trim();
-        assert$5(isKnownAttribute(attribute), `Unknown aria attribute "${attribute}" in selector`);
-        queryOptions[attribute] = normalizeValue$1(value);
+        assert$4(isKnownAttribute(attribute), `Unknown aria attribute "${attribute}" in selector`);
+        queryOptions[attribute] = normalizeValue(value);
         return '';
     });
     if (defaultName && !queryOptions.name) {
-        queryOptions.name = normalizeValue$1(defaultName);
+        queryOptions.name = normalizeValue(defaultName);
     }
     return queryOptions;
 };
@@ -22500,9 +22460,9 @@ class CustomQueryHandlerRegistry {
      * register.
      */
     register(name, handler) {
-        assert$5(!this.#handlers.has(name), `Cannot register over existing handler: ${name}`);
-        assert$5(/^[a-zA-Z]+$/.test(name), `Custom query handler names may only contain [a-zA-Z]`);
-        assert$5(handler.queryAll || handler.queryOne, `At least one query method must be implemented.`);
+        assert$4(!this.#handlers.has(name), `Cannot register over existing handler: ${name}`);
+        assert$4(/^[a-zA-Z]+$/.test(name), `Custom query handler names may only contain [a-zA-Z]`);
+        assert$4(handler.queryAll || handler.queryOne, `At least one query method must be implemented.`);
         const Handler = class extends QueryHandler {
             static querySelectorAll = interpolateFunction((node, selector, PuppeteerUtil) => {
                 return PuppeteerUtil.customQuerySelectors
@@ -24288,7 +24248,7 @@ let ElementHandle = (() => {
          */
         async dragAndDrop(target, options) {
             const page = this.frame.page();
-            assert$5(page.isDragInterceptionEnabled(), 'Drag Interception is not enabled!');
+            assert$4(page.isDragInterceptionEnabled(), 'Drag Interception is not enabled!');
             await this.scrollIntoViewIfNeeded();
             const startPoint = await this.clickablePoint();
             const targetPoint = await target.clickablePoint();
@@ -24312,7 +24272,7 @@ let ElementHandle = (() => {
          */
         async select(...values) {
             for (const value of values) {
-                assert$5(isString$3(value), 'Values must be strings. Found value "' +
+                assert$4(isString(value), 'Values must be strings. Found value "' +
                     value +
                     '" of type "' +
                     typeof value +
@@ -24716,9 +24676,9 @@ let ElementHandle = (() => {
         }
         async #nonEmptyVisibleBoundingBox() {
             const box = await this.boundingBox();
-            assert$5(box, 'Node is either not visible or not an HTMLElement');
-            assert$5(box.width !== 0, 'Node has 0 width.');
-            assert$5(box.height !== 0, 'Node has 0 height.');
+            assert$4(box, 'Node is either not visible or not an HTMLElement');
+            assert$4(box.width !== 0, 'Node has 0 width.');
+            assert$4(box.height !== 0, 'Node has 0 height.');
             return box;
         }
         /**
@@ -24896,7 +24856,7 @@ var LocatorEvent;
  *
  * @public
  */
-class Locator extends EventEmitter$5 {
+class Locator extends EventEmitter$6 {
     /**
      * Creates a race between multiple locators but ensures that only a single one
      * acts.
@@ -24923,7 +24883,7 @@ class Locator extends EventEmitter$5 {
     operators = {
         conditions: (conditions, signal) => {
             return mergeMap((handle) => {
-                return merge$3(...conditions.map(condition => {
+                return merge$2(...conditions.map(condition => {
                     return condition(handle, signal);
                 })).pipe(defaultIfEmpty(handle));
             });
@@ -25011,7 +24971,7 @@ class Locator extends EventEmitter$5 {
         if (!this.#waitForStableBoundingBox) {
             return EMPTY;
         }
-        return defer$2(() => {
+        return defer(() => {
             // Note we don't use waitForFunction because that relies on RAF.
             return from$1(handle.evaluate(element => {
                 return new Promise(resolve => {
@@ -25056,7 +25016,7 @@ class Locator extends EventEmitter$5 {
         }), mergeMap(() => {
             return from$1(handle.scrollIntoView());
         }), mergeMap(() => {
-            return defer$2(() => {
+            return defer(() => {
                 return from$1(handle.isIntersectingViewport({ threshold: 0 }));
             }).pipe(first(identity), retry$1({ delay: RETRY_DELAY }), ignoreElements());
         }));
@@ -25119,7 +25079,7 @@ class Locator extends EventEmitter$5 {
                 .pipe(mergeMap(inputType => {
                 switch (inputType) {
                     case 'select':
-                        return from$1(handle.select(value).then(noop$6));
+                        return from$1(handle.select(value).then(noop$4));
                     case 'contenteditable':
                     case 'typeable-input':
                         return from$1(handle.evaluate((input, newValue) => {
@@ -25328,7 +25288,7 @@ class FunctionLocator extends Locator {
     }
     _wait(options) {
         const signal = options?.signal;
-        return defer$2(() => {
+        return defer(() => {
             return from$1(this.#pageOrFrame.waitForFunction(this.#func, {
                 timeout: this.timeout,
                 signal,
@@ -25445,11 +25405,11 @@ class NodeLocator extends Locator {
         return (() => {
             switch (this.visibility) {
                 case 'hidden':
-                    return defer$2(() => {
+                    return defer(() => {
                         return from$1(handle.isHidden());
                     });
                 case 'visible':
-                    return defer$2(() => {
+                    return defer(() => {
                         return from$1(handle.isVisible());
                     });
             }
@@ -25460,7 +25420,7 @@ class NodeLocator extends Locator {
     }
     _wait(options) {
         const signal = options?.signal;
-        return defer$2(() => {
+        return defer(() => {
             return from$1(this.#pageOrFrame.waitForSelector(this.#selector, {
                 visible: false,
                 timeout: this._timeout,
@@ -25674,7 +25634,7 @@ const throwIfDetached = throwIfDisposed(frame => {
  * @public
  */
 let Frame = (() => {
-    let _classSuper = EventEmitter$5;
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _frameElement_decorators;
     let _evaluateHandle_decorators;
@@ -26234,7 +26194,7 @@ let Frame = (() => {
             const env_3 = { stack: [], error: void 0, hasError: false };
             try {
                 const handle = __addDisposableResource$a(env_3, await this.$(selector), false);
-                assert$5(handle, `No element found for selector: ${selector}`);
+                assert$4(handle, `No element found for selector: ${selector}`);
                 await handle.click(options);
                 await handle.dispose();
             }
@@ -26256,7 +26216,7 @@ let Frame = (() => {
             const env_4 = { stack: [], error: void 0, hasError: false };
             try {
                 const handle = __addDisposableResource$a(env_4, await this.$(selector), false);
-                assert$5(handle, `No element found for selector: ${selector}`);
+                assert$4(handle, `No element found for selector: ${selector}`);
                 await handle.focus();
             }
             catch (e_4) {
@@ -26278,7 +26238,7 @@ let Frame = (() => {
             const env_5 = { stack: [], error: void 0, hasError: false };
             try {
                 const handle = __addDisposableResource$a(env_5, await this.$(selector), false);
-                assert$5(handle, `No element found for selector: ${selector}`);
+                assert$4(handle, `No element found for selector: ${selector}`);
                 await handle.hover();
             }
             catch (e_5) {
@@ -26311,7 +26271,7 @@ let Frame = (() => {
             const env_6 = { stack: [], error: void 0, hasError: false };
             try {
                 const handle = __addDisposableResource$a(env_6, await this.$(selector), false);
-                assert$5(handle, `No element found for selector: ${selector}`);
+                assert$4(handle, `No element found for selector: ${selector}`);
                 return await handle.select(...values);
             }
             catch (e_6) {
@@ -26332,7 +26292,7 @@ let Frame = (() => {
             const env_7 = { stack: [], error: void 0, hasError: false };
             try {
                 const handle = __addDisposableResource$a(env_7, await this.$(selector), false);
-                assert$5(handle, `No element found for selector: ${selector}`);
+                assert$4(handle, `No element found for selector: ${selector}`);
                 await handle.tap();
             }
             catch (e_7) {
@@ -26368,7 +26328,7 @@ let Frame = (() => {
             const env_8 = { stack: [], error: void 0, hasError: false };
             try {
                 const handle = __addDisposableResource$a(env_8, await this.$(selector), false);
-                assert$5(handle, `No element found for selector: ${selector}`);
+                assert$4(handle, `No element found for selector: ${selector}`);
                 await handle.type(text, options);
             }
             catch (e_8) {
@@ -26466,7 +26426,7 @@ class HTTPRequest {
      * `respond()` aren't called).
      */
     continueRequestOverrides() {
-        assert$5(this.interception.enabled, 'Request Interception is not enabled!');
+        assert$4(this.interception.enabled, 'Request Interception is not enabled!');
         return this.interception.requestOverrides;
     }
     /**
@@ -26474,14 +26434,14 @@ class HTTPRequest {
      * interception is allowed to respond (ie, `abort()` is not called).
      */
     responseForRequest() {
-        assert$5(this.interception.enabled, 'Request Interception is not enabled!');
+        assert$4(this.interception.enabled, 'Request Interception is not enabled!');
         return this.interception.response;
     }
     /**
      * The most recent reason for aborting the request
      */
     abortErrorReason() {
-        assert$5(this.interception.enabled, 'Request Interception is not enabled!');
+        assert$4(this.interception.enabled, 'Request Interception is not enabled!');
         return this.interception.abortReason;
     }
     /**
@@ -26575,8 +26535,8 @@ class HTTPRequest {
         if (this.url().startsWith('data:')) {
             return;
         }
-        assert$5(this.interception.enabled, 'Request Interception is not enabled!');
-        assert$5(!this.interception.handled, 'Request is already handled!');
+        assert$4(this.interception.enabled, 'Request Interception is not enabled!');
+        assert$4(!this.interception.handled, 'Request is already handled!');
         if (priority === undefined) {
             return await this._continue(overrides);
         }
@@ -26636,8 +26596,8 @@ class HTTPRequest {
         if (this.url().startsWith('data:')) {
             return;
         }
-        assert$5(this.interception.enabled, 'Request Interception is not enabled!');
-        assert$5(!this.interception.handled, 'Request is already handled!');
+        assert$4(this.interception.enabled, 'Request Interception is not enabled!');
+        assert$4(!this.interception.handled, 'Request is already handled!');
         if (priority === undefined) {
             return await this._respond(response);
         }
@@ -26678,9 +26638,9 @@ class HTTPRequest {
             return;
         }
         const errorReason = errorReasons[errorCode];
-        assert$5(errorReason, 'Unknown error code: ' + errorCode);
-        assert$5(this.interception.enabled, 'Request Interception is not enabled!');
-        assert$5(!this.interception.handled, 'Request is already handled!');
+        assert$4(errorReason, 'Unknown error code: ' + errorCode);
+        assert$4(this.interception.enabled, 'Request Interception is not enabled!');
+        assert$4(!this.interception.handled, 'Request is already handled!');
         if (priority === undefined) {
             return await this._abort(errorReason);
         }
@@ -27220,7 +27180,7 @@ function setDefaultScreenshotOptions(options) {
  * @public
  */
 let Page = (() => {
-    let _classSuper = EventEmitter$5;
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _screenshot_decorators;
     return class Page extends _classSuper {
@@ -27246,7 +27206,7 @@ let Page = (() => {
             super();
             fromEmitterEvent(this, "request" /* PageEvent.Request */)
                 .pipe(mergeMap(originalRequest => {
-                return concat$3(of(1), merge$3(fromEmitterEvent(this, "requestfailed" /* PageEvent.RequestFailed */), fromEmitterEvent(this, "requestfinished" /* PageEvent.RequestFinished */), fromEmitterEvent(this, "response" /* PageEvent.Response */).pipe(map$1(response => {
+                return concat$3(of(1), merge$2(fromEmitterEvent(this, "requestfailed" /* PageEvent.RequestFailed */), fromEmitterEvent(this, "requestfinished" /* PageEvent.RequestFinished */), fromEmitterEvent(this, "response" /* PageEvent.Response */).pipe(map$1(response => {
                     return response.request();
                 }))).pipe(filter(request => {
                     return request.id === originalRequest.id;
@@ -27771,12 +27731,12 @@ let Page = (() => {
          */
         async waitForFrame(urlOrPredicate, options = {}) {
             const { timeout: ms = this.getDefaultTimeout(), signal } = options;
-            if (isString$3(urlOrPredicate)) {
+            if (isString(urlOrPredicate)) {
                 urlOrPredicate = (frame) => {
                     return urlOrPredicate === frame.url();
                 };
             }
-            return await firstValueFrom(merge$3(fromEmitterEvent(this, "frameattached" /* PageEvent.FrameAttached */), fromEmitterEvent(this, "framenavigated" /* PageEvent.FrameNavigated */), from$1(this.frames())).pipe(filterAsync(urlOrPredicate), first(), raceWith(timeout(ms), fromAbortSignal(signal), fromEmitterEvent(this, "close" /* PageEvent.Close */).pipe(map$1(() => {
+            return await firstValueFrom(merge$2(fromEmitterEvent(this, "frameattached" /* PageEvent.FrameAttached */), fromEmitterEvent(this, "framenavigated" /* PageEvent.FrameNavigated */), from$1(this.frames())).pipe(filterAsync(urlOrPredicate), first(), raceWith(timeout(ms), fromAbortSignal(signal), fromEmitterEvent(this, "close" /* PageEvent.Close */).pipe(map$1(() => {
                 throw new TargetCloseError('Page closed.');
             })))));
         }
@@ -28767,7 +28727,7 @@ class Target {
  *
  * @public
  */
-class WebWorker extends EventEmitter$5 {
+class WebWorker extends EventEmitter$6 {
     /**
      * @internal
      */
@@ -29460,7 +29420,7 @@ class CdpBrowserContext extends BrowserContext {
         return this.#browser;
     }
     async close() {
-        assert$5(this.#id, 'Non-incognito profiles cannot be closed!');
+        assert$4(this.#id, 'Non-incognito profiles cannot be closed!');
         await this.#browser._disposeContext(this.#id);
     }
 }
@@ -29632,7 +29592,7 @@ class CdpCDPSession extends CDPSession {
      * @internal
      */
     _target() {
-        assert$5(this.#target, 'Target must exist');
+        assert$4(this.#target, 'Target must exist');
         return this.#target;
     }
     connection() {
@@ -29665,7 +29625,7 @@ class CdpCDPSession extends CDPSession {
             }
         }
         else {
-            assert$5(!object.id);
+            assert$4(!object.id);
             this.emit(object.method, object.params);
         }
     }
@@ -29814,7 +29774,7 @@ class FileChooser {
      * absolute.
      */
     async accept(paths) {
-        assert$5(!this.#handled, 'Cannot accept FileChooser which is already handled!');
+        assert$4(!this.#handled, 'Cannot accept FileChooser which is already handled!');
         this.#handled = true;
         await this.#element.uploadFile(...paths);
     }
@@ -29822,7 +29782,7 @@ class FileChooser {
      * Closes the file chooser without selecting any files.
      */
     async cancel() {
-        assert$5(!this.#handled, 'Cannot cancel FileChooser which is already handled!');
+        assert$4(!this.#handled, 'Cannot cancel FileChooser which is already handled!');
         this.#handled = true;
         // XXX: These events should converted to trusted events. Perhaps do this
         // in `DOM.setFileInputFiles`?
@@ -29858,12 +29818,12 @@ var NetworkManagerEvent;
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-const debugProtocolSend$1 = debug$g('puppeteer:protocol:SEND ►');
-const debugProtocolReceive$1 = debug$g('puppeteer:protocol:RECV ◀');
+const debugProtocolSend$1 = debug$e('puppeteer:protocol:SEND ►');
+const debugProtocolReceive$1 = debug$e('puppeteer:protocol:RECV ◀');
 /**
  * @public
  */
-class Connection extends EventEmitter$5 {
+class Connection extends EventEmitter$6 {
     #url;
     #transport;
     #delay;
@@ -30192,7 +30152,7 @@ class JSCoverage {
         this.#client = client;
     }
     async start(options = {}) {
-        assert$5(!this.#enabled, 'JSCoverage is already enabled');
+        assert$4(!this.#enabled, 'JSCoverage is already enabled');
         const { resetOnNavigation = true, reportAnonymousScripts = false, includeRawScriptCoverage = false, useBlockCoverage = true, } = options;
         this.#resetOnNavigation = resetOnNavigation;
         this.#reportAnonymousScripts = reportAnonymousScripts;
@@ -30201,7 +30161,7 @@ class JSCoverage {
         this.#scriptURLs.clear();
         this.#scriptSources.clear();
         this.#subscriptions = new DisposableStack();
-        const clientEmitter = this.#subscriptions.use(new EventEmitter$5(this.#client));
+        const clientEmitter = this.#subscriptions.use(new EventEmitter$6(this.#client));
         clientEmitter.on('Debugger.scriptParsed', this.#onScriptParsed.bind(this));
         clientEmitter.on('Runtime.executionContextsCleared', this.#onExecutionContextsCleared.bind(this));
         await Promise.all([
@@ -30243,7 +30203,7 @@ class JSCoverage {
         }
     }
     async stop() {
-        assert$5(this.#enabled, 'JSCoverage is not enabled');
+        assert$4(this.#enabled, 'JSCoverage is not enabled');
         this.#enabled = false;
         const result = await Promise.all([
             this.#client.send('Profiler.takePreciseCoverage'),
@@ -30298,14 +30258,14 @@ class CSSCoverage {
         this.#client = client;
     }
     async start(options = {}) {
-        assert$5(!this.#enabled, 'CSSCoverage is already enabled');
+        assert$4(!this.#enabled, 'CSSCoverage is already enabled');
         const { resetOnNavigation = true } = options;
         this.#resetOnNavigation = resetOnNavigation;
         this.#enabled = true;
         this.#stylesheetURLs.clear();
         this.#stylesheetSources.clear();
         this.#eventListeners = new DisposableStack();
-        const clientEmitter = this.#eventListeners.use(new EventEmitter$5(this.#client));
+        const clientEmitter = this.#eventListeners.use(new EventEmitter$6(this.#client));
         clientEmitter.on('CSS.styleSheetAdded', this.#onStyleSheet.bind(this));
         clientEmitter.on('Runtime.executionContextsCleared', this.#onExecutionContextsCleared.bind(this));
         await Promise.all([
@@ -30340,7 +30300,7 @@ class CSSCoverage {
         }
     }
     async stop() {
-        assert$5(this.#enabled, 'CSSCoverage is not enabled');
+        assert$4(this.#enabled, 'CSSCoverage is not enabled');
         this.#enabled = false;
         const ruleTrackingResponse = await this.#client.send('CSS.stopRuleUsageTracking');
         await Promise.all([
@@ -30365,9 +30325,9 @@ class CSSCoverage {
         const coverage = [];
         for (const styleSheetId of this.#stylesheetURLs.keys()) {
             const url = this.#stylesheetURLs.get(styleSheetId);
-            assert$5(typeof url !== 'undefined', `Stylesheet URL is undefined (styleSheetId=${styleSheetId})`);
+            assert$4(typeof url !== 'undefined', `Stylesheet URL is undefined (styleSheetId=${styleSheetId})`);
             const text = this.#stylesheetSources.get(styleSheetId);
-            assert$5(typeof text !== 'undefined', `Stylesheet text is undefined (styleSheetId=${styleSheetId})`);
+            assert$4(typeof text !== 'undefined', `Stylesheet text is undefined (styleSheetId=${styleSheetId})`);
             const ranges = convertToDisjointRanges(styleSheetIdToCoverage.get(styleSheetId) || []);
             coverage.push({ url, ranges, text });
         }
@@ -30779,7 +30739,7 @@ let EmulationManager = (() => {
                 'protanopia',
                 'tritanopia',
             ]);
-            assert$5(!type || visionDeficiencies.has(type), `Unsupported vision deficiency: ${type}`);
+            assert$4(!type || visionDeficiencies.has(type), `Unsupported vision deficiency: ${type}`);
             await this.#visionDeficiencyState.setState({
                 active: true,
                 visionDeficiency: type,
@@ -30787,7 +30747,7 @@ let EmulationManager = (() => {
         }
         get #emulateCpuThrottling() { return _private_emulateCpuThrottling_descriptor.value; }
         async emulateCPUThrottling(factor) {
-            assert$5(factor === null || factor >= 1, 'Throttling rate should be greater or equal to 1');
+            assert$4(factor === null || factor >= 1, 'Throttling rate should be greater or equal to 1');
             await this.#cpuThrottlingState.setState({
                 active: true,
                 factor: factor ?? undefined,
@@ -30798,7 +30758,7 @@ let EmulationManager = (() => {
             if (Array.isArray(features)) {
                 for (const mediaFeature of features) {
                     const name = mediaFeature.name;
-                    assert$5(/^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(name), 'Unsupported media feature: ' + name);
+                    assert$4(/^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(name), 'Unsupported media feature: ' + name);
                 }
             }
             await this.#mediaFeaturesState.setState({
@@ -30808,7 +30768,7 @@ let EmulationManager = (() => {
         }
         get #emulateMediaType() { return _private_emulateMediaType_descriptor.value; }
         async emulateMediaType(type) {
-            assert$5(type === 'screen' ||
+            assert$4(type === 'screen' ||
                 type === 'print' ||
                 (type ?? undefined) === undefined, 'Unsupported media type: ' + type);
             await this.#mediaTypeState.setState({
@@ -30885,7 +30845,7 @@ let EmulationManager = (() => {
  * - https://bugzilla.mozilla.org/show_bug.cgi?id=1636979
  *   @internal
  */
-class FirefoxTargetManager extends EventEmitter$5 {
+class FirefoxTargetManager extends EventEmitter$6 {
     #connection;
     /**
      * Keeps track of the following events: 'Target.targetCreated',
@@ -30928,7 +30888,7 @@ class FirefoxTargetManager extends EventEmitter$5 {
         const listener = (event) => {
             return this.#onAttachedToTarget(session, event);
         };
-        assert$5(!this.#attachedToTargetListenersBySession.has(session));
+        assert$4(!this.#attachedToTargetListenersBySession.has(session));
         this.#attachedToTargetListenersBySession.set(session, listener);
         session.on('Target.attachedToTarget', listener);
     }
@@ -30995,7 +30955,7 @@ class FirefoxTargetManager extends EventEmitter$5 {
             throw new Error(`Session ${event.sessionId} was not created.`);
         }
         const target = this.#availableTargetsByTargetId.get(targetInfo.targetId);
-        assert$5(target, `Target ${targetInfo.targetId} is missing`);
+        assert$4(target, `Target ${targetInfo.targetId} is missing`);
         session._setTarget(target);
         this.setupAttachmentListeners(session);
         this.#availableTargetsBySessionId.set(session.id(), this.#availableTargetsByTargetId.get(targetInfo.targetId));
@@ -31128,9 +31088,9 @@ class DeviceRequestPrompt {
      * Select a device in the prompt's list.
      */
     async select(device) {
-        assert$5(this.#client !== null, 'Cannot select device through detached session!');
-        assert$5(this.devices.includes(device), 'Cannot select unknown device!');
-        assert$5(!this.#handled, 'Cannot select DeviceRequestPrompt which is already handled!');
+        assert$4(this.#client !== null, 'Cannot select device through detached session!');
+        assert$4(this.devices.includes(device), 'Cannot select unknown device!');
+        assert$4(!this.#handled, 'Cannot select DeviceRequestPrompt which is already handled!');
         this.#client.off('DeviceAccess.deviceRequestPrompted', this.#updateDevicesHandle);
         this.#handled = true;
         return await this.#client.send('DeviceAccess.selectPrompt', {
@@ -31142,8 +31102,8 @@ class DeviceRequestPrompt {
      * Cancel the prompt.
      */
     async cancel() {
-        assert$5(this.#client !== null, 'Cannot cancel prompt through detached session!');
-        assert$5(!this.#handled, 'Cannot cancel DeviceRequestPrompt which is already handled!');
+        assert$4(this.#client !== null, 'Cannot cancel prompt through detached session!');
+        assert$4(!this.#handled, 'Cannot cancel DeviceRequestPrompt which is already handled!');
         this.#client.off('DeviceAccess.deviceRequestPrompted', this.#updateDevicesHandle);
         this.#handled = true;
         return await this.#client.send('DeviceAccess.cancelPrompt', { id: this.#id });
@@ -31174,7 +31134,7 @@ class DeviceRequestPromptManager {
      * requestDevice.
      */
     async waitForDevicePrompt(options = {}) {
-        assert$5(this.#client !== null, 'Cannot wait for device prompt through detached session!');
+        assert$4(this.#client !== null, 'Cannot wait for device prompt through detached session!');
         const needsEnable = this.#deviceRequestPrompDeferreds.size === 0;
         let enablePromise;
         if (needsEnable) {
@@ -31204,7 +31164,7 @@ class DeviceRequestPromptManager {
         if (!this.#deviceRequestPrompDeferreds.size) {
             return;
         }
-        assert$5(this.#client !== null);
+        assert$4(this.#client !== null);
         const devicePrompt = new DeviceRequestPrompt(this.#client, this.#timeoutSettings, event);
         for (const promise of this.#deviceRequestPrompDeferreds) {
             promise.resolve(devicePrompt);
@@ -31319,7 +31279,7 @@ function createClientError(details) {
  * @internal
  */
 function valueFromRemoteObject(remoteObject) {
-    assert$5(!remoteObject.objectId, 'Cannot extract value when objectId is given');
+    assert$4(!remoteObject.objectId, 'Cannot extract value when objectId is given');
     if (remoteObject.unserializableValue) {
         if (remoteObject.type === 'bigint') {
             return BigInt(remoteObject.unserializableValue.replace('n', ''));
@@ -31608,7 +31568,7 @@ let CdpElementHandle = (() => {
             const isMultiple = await this.evaluate(element => {
                 return element.multiple;
             });
-            assert$5(filePaths.length <= 1 || isMultiple, 'Multiple file uploads only work with <input type=file multiple>');
+            assert$4(filePaths.length <= 1 || isMultiple, 'Multiple file uploads only work with <input type=file multiple>');
             // Locate all files and confirm that they exist.
             let path;
             try {
@@ -31750,7 +31710,7 @@ const ariaQuerySelectorAllBinding = new Binding('__ariaQuerySelectorAll', (async
 /**
  * @internal
  */
-class ExecutionContext extends EventEmitter$5 {
+class ExecutionContext extends EventEmitter$6 {
     #client;
     #world;
     #id;
@@ -31764,7 +31724,7 @@ class ExecutionContext extends EventEmitter$5 {
         if (contextPayload.name) {
             this.#name = contextPayload.name;
         }
-        const clientEmitter = this.#disposables.use(new EventEmitter$5(this.#client));
+        const clientEmitter = this.#disposables.use(new EventEmitter$6(this.#client));
         clientEmitter.on('Runtime.bindingCalled', this.#onBindingCalled.bind(this));
         clientEmitter.on('Runtime.executionContextDestroyed', async (event) => {
             if (event.executionContextId === this.#id) {
@@ -32000,7 +31960,7 @@ class ExecutionContext extends EventEmitter$5 {
     async #evaluate(returnByValue, pageFunction, ...args) {
         const sourceUrlComment = getSourceUrlComment(getSourcePuppeteerURLIfAvailable(pageFunction)?.toString() ??
             PuppeteerURL.INTERNAL_URL);
-        if (isString$3(pageFunction)) {
+        if (isString(pageFunction)) {
             const contextId = this.#id;
             const expression = pageFunction;
             const expressionWithSourceUrl = SOURCE_URL_REGEX.test(expression)
@@ -32149,7 +32109,7 @@ var FrameManagerEvent;
  */
 class IsolatedWorld extends Realm$3 {
     #context;
-    #emitter = new EventEmitter$5();
+    #emitter = new EventEmitter$6();
     #frameOrWorker;
     constructor(frameOrWorker, timeoutSettings) {
         super(timeoutSettings);
@@ -32346,20 +32306,20 @@ class LifecycleWatcher {
         this.#initialLoaderId = frame._loaderId;
         this.#expectedLifecycle = waitUntil.map(value => {
             const protocolEvent = puppeteerToProtocolLifecycle.get(value);
-            assert$5(protocolEvent, 'Unknown value for options.waitUntil: ' + value);
+            assert$4(protocolEvent, 'Unknown value for options.waitUntil: ' + value);
             return protocolEvent;
         });
         this.#frame = frame;
         this.#timeout = timeout;
-        const frameManagerEmitter = this.#subscriptions.use(new EventEmitter$5(frame._frameManager));
+        const frameManagerEmitter = this.#subscriptions.use(new EventEmitter$6(frame._frameManager));
         frameManagerEmitter.on(FrameManagerEvent.LifecycleEvent, this.#checkLifecycleComplete.bind(this));
-        const frameEmitter = this.#subscriptions.use(new EventEmitter$5(frame));
+        const frameEmitter = this.#subscriptions.use(new EventEmitter$6(frame));
         frameEmitter.on(FrameEvent.FrameNavigatedWithinDocument, this.#navigatedWithinDocument.bind(this));
         frameEmitter.on(FrameEvent.FrameNavigated, this.#navigated.bind(this));
         frameEmitter.on(FrameEvent.FrameSwapped, this.#frameSwapped.bind(this));
         frameEmitter.on(FrameEvent.FrameSwappedByActivation, this.#frameSwapped.bind(this));
         frameEmitter.on(FrameEvent.FrameDetached, this.#onFrameDetached.bind(this));
-        const networkManagerEmitter = this.#subscriptions.use(new EventEmitter$5(networkManager));
+        const networkManagerEmitter = this.#subscriptions.use(new EventEmitter$6(networkManager));
         networkManagerEmitter.on(NetworkManagerEvent.Request, this.#onRequest.bind(this));
         networkManagerEmitter.on(NetworkManagerEvent.Response, this.#onResponse.bind(this));
         networkManagerEmitter.on(NetworkManagerEvent.RequestFailed, this.#onRequestFailed.bind(this));
@@ -32960,7 +32920,7 @@ class CdpHTTPRequest extends HTTPRequest {
     }
     async _respond(response) {
         this.interception.handled = true;
-        const responseBody = response.body && isString$3(response.body)
+        const responseBody = response.body && isString(response.body)
             ? Buffer.from(response.body)
             : response.body || null;
         const responseHeaders = {};
@@ -33341,7 +33301,7 @@ class NetworkEventManager {
 /**
  * @internal
  */
-class NetworkManager extends EventEmitter$5 {
+class NetworkManager extends EventEmitter$6 {
     #frameManager;
     #networkEventManager = new NetworkEventManager();
     #extraHTTPHeaders;
@@ -33375,7 +33335,7 @@ class NetworkManager extends EventEmitter$5 {
         }
         const subscriptions = new DisposableStack();
         this.#clients.set(client, subscriptions);
-        const clientEmitter = subscriptions.use(new EventEmitter$5(client));
+        const clientEmitter = subscriptions.use(new EventEmitter$6(client));
         for (const [event, handler] of this.#handlers) {
             clientEmitter.on(event, (arg) => {
                 return handler.bind(this)(client, arg);
@@ -33406,7 +33366,7 @@ class NetworkManager extends EventEmitter$5 {
     async setExtraHTTPHeaders(headers) {
         const extraHTTPHeaders = {};
         for (const [key, value] of Object.entries(headers)) {
-            assert$5(isString$3(value), `Expected value of header "${key}" to be String, but "${typeof value}" is found.`);
+            assert$4(isString(value), `Expected value of header "${key}" to be String, but "${typeof value}" is found.`);
             extraHTTPHeaders[key.toLowerCase()] = value;
         }
         this.#extraHTTPHeaders = extraHTTPHeaders;
@@ -33821,7 +33781,7 @@ const TIME_FOR_WAITING_FOR_SWAP = 100; // ms.
  *
  * @internal
  */
-class FrameManager extends EventEmitter$5 {
+class FrameManager extends EventEmitter$6 {
     #page;
     #networkManager;
     #timeoutSettings;
@@ -33890,7 +33850,7 @@ class FrameManager extends EventEmitter$5 {
      */
     async swapFrameTree(client) {
         this.#client = client;
-        assert$5(this.#client instanceof CdpCDPSession, 'CDPSession is not an instance of CDPSessionImpl.');
+        assert$4(this.#client instanceof CdpCDPSession, 'CDPSession is not an instance of CDPSessionImpl.');
         const frame = this._frameTree.getMainFrame();
         if (frame) {
             this.#frameNavigatedReceived.add(this.#client._target()._targetId);
@@ -33982,7 +33942,7 @@ class FrameManager extends EventEmitter$5 {
     }
     mainFrame() {
         const mainFrame = this._frameTree.getMainFrame();
-        assert$5(mainFrame, 'Requesting main frame too early!');
+        assert$4(mainFrame, 'Requesting main frame too early!');
         return mainFrame;
     }
     frames() {
@@ -34650,7 +34610,7 @@ class CdpKeyboard extends Keyboard {
             location: 0,
         };
         const definition = _keyDefinitions[keyString];
-        assert$5(definition, `Unknown key: "${keyString}"`);
+        assert$4(definition, `Unknown key: "${keyString}"`);
         if (definition.key) {
             description.key = definition.key;
         }
@@ -35090,7 +35050,7 @@ class Tracing {
      * @param options - Optional `TracingOptions`.
      */
     async start(options = {}) {
-        assert$5(!this.#recording, 'Cannot start recording trace while already recording trace.');
+        assert$4(!this.#recording, 'Cannot start recording trace while already recording trace.');
         const defaultCategories = [
             '-*',
             'devtools.timeline',
@@ -35136,7 +35096,7 @@ class Tracing {
         const contentDeferred = Deferred$2.create();
         this.#client.once('Tracing.tracingComplete', async (event) => {
             try {
-                assert$5(event.stream, 'Missing "stream"');
+                assert$4(event.stream, 'Missing "stream"');
                 const readable = await getReadableFromProtocolStream(this.#client, event.stream);
                 const buffer = await getReadableAsBuffer(readable, this.#path);
                 contentDeferred.resolve(buffer ?? undefined);
@@ -35401,9 +35361,9 @@ class CdpPage extends Page {
         super();
         this.#primaryTargetClient = client;
         this.#tabTargetClient = client.parentSession();
-        assert$5(this.#tabTargetClient, 'Tab target session is not defined.');
+        assert$4(this.#tabTargetClient, 'Tab target session is not defined.');
         this.#tabTarget = this.#tabTargetClient._target();
-        assert$5(this.#tabTarget, 'Tab target is not defined.');
+        assert$4(this.#tabTarget, 'Tab target is not defined.');
         this.#primaryTarget = target;
         this.#targetManager = target._targetManager();
         this.#keyboard = new CdpKeyboard(client);
@@ -35442,9 +35402,9 @@ class CdpPage extends Page {
     }
     async #onActivation(newSession) {
         this.#primaryTargetClient = newSession;
-        assert$5(this.#primaryTargetClient instanceof CdpCDPSession, 'CDPSession is not instance of CDPSessionImpl');
+        assert$4(this.#primaryTargetClient instanceof CdpCDPSession, 'CDPSession is not instance of CDPSessionImpl');
         this.#primaryTarget = this.#primaryTargetClient._target();
-        assert$5(this.#primaryTarget, 'Missing target on swap');
+        assert$4(this.#primaryTarget, 'Missing target on swap');
         this.#keyboard.updateClient(newSession);
         this.#mouse.updateClient(newSession);
         this.#touchscreen.updateClient(newSession);
@@ -35455,7 +35415,7 @@ class CdpPage extends Page {
         this.#setupPrimaryTargetListeners();
     }
     async #onSecondaryTarget(session) {
-        assert$5(session instanceof CdpCDPSession);
+        assert$4(session instanceof CdpCDPSession);
         if (session._target()._subtype() !== 'prerender') {
             return;
         }
@@ -35485,7 +35445,7 @@ class CdpPage extends Page {
         this.emit("workerdestroyed" /* PageEvent.WorkerDestroyed */, worker);
     };
     #onAttachedToTarget = (session) => {
-        assert$5(session instanceof CdpCDPSession);
+        assert$4(session instanceof CdpCDPSession);
         this.#frameManager.onAttachedToTarget(session._target());
         if (session._target()._getTargetInfo().type === 'worker') {
             const worker = new CdpWebWorker(session, session._target().url(), session._target()._targetId, session._target().type(), this.#addConsoleMessage.bind(this), this.#handleException.bind(this));
@@ -35518,7 +35478,7 @@ class CdpPage extends Page {
                 return;
             }
             const frame = this.#frameManager.frame(event.frameId);
-            assert$5(frame, 'This should never happen.');
+            assert$4(frame, 'This should never happen.');
             // This is guaranteed to be an HTMLInputElement handle by the event.
             const handle = __addDisposableResource$6(env_1, (await frame.worlds[MAIN_WORLD].adoptBackendNode(event.backendNodeId)), false);
             const fileChooser = new FileChooser(handle.move(), event);
@@ -35649,8 +35609,8 @@ class CdpPage extends Page {
         return this._timeoutSettings.timeout();
     }
     async queryObjects(prototypeHandle) {
-        assert$5(!prototypeHandle.disposed, 'Prototype JSHandle is disposed!');
-        assert$5(prototypeHandle.id, 'Prototype JSHandle must not be referencing primitive value');
+        assert$4(!prototypeHandle.disposed, 'Prototype JSHandle is disposed!');
+        assert$4(prototypeHandle.id, 'Prototype JSHandle must not be referencing primitive value');
         const response = await this.mainFrame().client.send('Runtime.queryObjects', {
             prototypeObjectId: prototypeHandle.id,
         });
@@ -35689,8 +35649,8 @@ class CdpPage extends Page {
             if (!item.url && startsWithHTTP) {
                 item.url = pageURL;
             }
-            assert$5(item.url !== 'about:blank', `Blank page can not have cookie "${item.name}"`);
-            assert$5(!String.prototype.startsWith.call(item.url || '', 'data:'), `Data URL page can not have cookie "${item.name}"`);
+            assert$4(item.url !== 'about:blank', `Blank page can not have cookie "${item.name}"`);
+            assert$4(!String.prototype.startsWith.call(item.url || '', 'data:'), `Data URL page can not have cookie "${item.name}"`);
             return item;
         });
         await this.deleteCookie(...items);
@@ -36016,19 +35976,19 @@ class CdpPage extends Page {
         if (omitBackground) {
             await this.#emulationManager.resetDefaultBackgroundColor();
         }
-        assert$5(result.stream, '`stream` is missing from `Page.printToPDF');
+        assert$4(result.stream, '`stream` is missing from `Page.printToPDF');
         return await getReadableFromProtocolStream(this.#primaryTargetClient, result.stream);
     }
     async pdf(options = {}) {
         const { path = undefined } = options;
         const readable = await this.createPDFStream(options);
         const buffer = await getReadableAsBuffer(readable, path);
-        assert$5(buffer, 'Could not create buffer');
+        assert$4(buffer, 'Could not create buffer');
         return buffer;
     }
     async close(options = { runBeforeUnload: undefined }) {
         const connection = this.#primaryTargetClient.connection();
-        assert$5(connection, 'Protocol error: Connection closed. Most likely the page has been closed.');
+        assert$4(connection, 'Protocol error: Connection closed. Most likely the page has been closed.');
         const runBeforeUnload = !!options.runBeforeUnload;
         if (runBeforeUnload) {
             await this.#primaryTargetClient.send('Page.close');
@@ -36344,7 +36304,7 @@ function isPageTargetBecomingPrimary(target, newTargetInfo) {
  *
  * @internal
  */
-class ChromeTargetManager extends EventEmitter$5 {
+class ChromeTargetManager extends EventEmitter$6 {
     #connection;
     /**
      * Keeps track of the following events: 'Target.targetCreated',
@@ -36443,13 +36403,13 @@ class ChromeTargetManager extends EventEmitter$5 {
         const listener = (event) => {
             void this.#onAttachedToTarget(session, event);
         };
-        assert$5(!this.#attachedToTargetListenersBySession.has(session));
+        assert$4(!this.#attachedToTargetListenersBySession.has(session));
         this.#attachedToTargetListenersBySession.set(session, listener);
         session.on('Target.attachedToTarget', listener);
         const detachedListener = (event) => {
             return this.#onDetachedFromTarget(session, event);
         };
-        assert$5(!this.#detachedFromTargetListenersBySession.has(session));
+        assert$4(!this.#detachedFromTargetListenersBySession.has(session));
         this.#detachedFromTargetListenersBySession.set(session, detachedListener);
         session.on('Target.detachedFromTarget', detachedListener);
     }
@@ -36512,7 +36472,7 @@ class ChromeTargetManager extends EventEmitter$5 {
         const wasInitialized = target._initializedDeferred.value() === InitializationStatus.SUCCESS;
         if (isPageTargetBecomingPrimary(target, event.targetInfo)) {
             const session = target?._session();
-            assert$5(session, 'Target that is being activated is missing a CDPSession.');
+            assert$4(session, 'Target that is being activated is missing a CDPSession.');
             session.parentSession()?.emit(CDPSessionEvent.Swapped, session);
         }
         target._targetInfoChanged(event.targetInfo);
@@ -38448,7 +38408,7 @@ async function _connectToBrowser(options) {
  */
 async function getConnectionTransport(options) {
     const { browserWSEndpoint, browserURL, transport, headers = {} } = options;
-    assert$5(Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) ===
+    assert$4(Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) ===
         1, 'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect');
     if (transport) {
         return { connectionTransport: transport, endpointUrl: '' };
@@ -38659,7 +38619,7 @@ var ChromeReleaseChannel;
     ChromeReleaseChannel["BETA"] = "beta";
 })(ChromeReleaseChannel || (ChromeReleaseChannel = {}));
 
-var re$5 = {exports: {}};
+var re$4 = {exports: {}};
 
 // Note: this is the semver.org version of the spec that it implements
 // Not necessarily the package version of this code.
@@ -38697,7 +38657,7 @@ var constants$9 = {
   FLAG_LOOSE: 0b010,
 };
 
-const debug$f = (
+const debug$d = (
   typeof process === 'object' &&
   process.env &&
   process.env.NODE_DEBUG &&
@@ -38705,7 +38665,7 @@ const debug$f = (
 ) ? (...args) => console.error('SEMVER', ...args)
   : () => {};
 
-var debug_1$a = debug$f;
+var debug_1$9 = debug$d;
 
 (function (module, exports) {
 	const {
@@ -38713,7 +38673,7 @@ var debug_1$a = debug$f;
 	  MAX_SAFE_BUILD_LENGTH,
 	  MAX_LENGTH,
 	} = constants$9;
-	const debug = debug_1$a;
+	const debug = debug_1$9;
 	exports = module.exports = {};
 
 	// The actual regexps go on exports.re
@@ -38925,9 +38885,9 @@ var debug_1$a = debug$f;
 	// >=0.0.0 is like a star
 	createToken('GTE0', '^\\s*>=\\s*0\\.0\\.0\\s*$');
 	createToken('GTE0PRE', '^\\s*>=\\s*0\\.0\\.0-0\\s*$'); 
-} (re$5, re$5.exports));
+} (re$4, re$4.exports));
 
-var reExports = re$5.exports;
+var reExports = re$4.exports;
 
 // parse out just the options we care about
 const looseOption = Object.freeze({ loose: true });
@@ -38969,9 +38929,9 @@ var identifiers$1 = {
   rcompareIdentifiers,
 };
 
-const debug$e = debug_1$a;
+const debug$c = debug_1$9;
 const { MAX_LENGTH, MAX_SAFE_INTEGER } = constants$9;
-const { safeRe: re$4, t: t$3 } = reExports;
+const { safeRe: re$3, t: t$2 } = reExports;
 
 const parseOptions = parseOptions_1;
 const { compareIdentifiers } = identifiers$1;
@@ -38996,14 +38956,14 @@ let SemVer$d = class SemVer {
       )
     }
 
-    debug$e('SemVer', version, options);
+    debug$c('SemVer', version, options);
     this.options = options;
     this.loose = !!options.loose;
     // this isn't actually relevant for versions, but keep it so that we
     // don't run into trouble passing this.options around.
     this.includePrerelease = !!options.includePrerelease;
 
-    const m = version.trim().match(options.loose ? re$4[t$3.LOOSE] : re$4[t$3.FULL]);
+    const m = version.trim().match(options.loose ? re$3[t$2.LOOSE] : re$3[t$2.FULL]);
 
     if (!m) {
       throw new TypeError(`Invalid Version: ${version}`)
@@ -39060,7 +39020,7 @@ let SemVer$d = class SemVer {
   }
 
   compare (other) {
-    debug$e('SemVer.compare', this.version, this.options, other);
+    debug$c('SemVer.compare', this.version, this.options, other);
     if (!(other instanceof SemVer)) {
       if (typeof other === 'string' && other === this.version) {
         return 0
@@ -39105,7 +39065,7 @@ let SemVer$d = class SemVer {
     do {
       const a = this.prerelease[i];
       const b = other.prerelease[i];
-      debug$e('prerelease compare', i, a, b);
+      debug$c('prerelease compare', i, a, b);
       if (a === undefined && b === undefined) {
         return 0
       } else if (b === undefined) {
@@ -39129,7 +39089,7 @@ let SemVer$d = class SemVer {
     do {
       const a = this.build[i];
       const b = other.build[i];
-      debug$e('prerelease compare', i, a, b);
+      debug$c('prerelease compare', i, a, b);
       if (a === undefined && b === undefined) {
         return 0
       } else if (b === undefined) {
@@ -39297,11 +39257,11 @@ const valid$2 = (version, options) => {
 var valid_1 = valid$2;
 
 const parse$6 = parse_1;
-const clean$2 = (version, options) => {
+const clean$1 = (version, options) => {
   const s = parse$6(version.trim().replace(/^[=v]+/, ''), options);
   return s ? s.version : null
 };
-var clean_1 = clean$2;
+var clean_1 = clean$1;
 
 const SemVer$b = semver$2;
 
@@ -39517,7 +39477,7 @@ var cmp_1 = cmp$1;
 
 const SemVer$5 = semver$2;
 const parse$3 = parse_1;
-const { safeRe: re$3, t: t$2 } = reExports;
+const { safeRe: re$2, t: t$1 } = reExports;
 
 const coerce$1 = (version, options) => {
   if (version instanceof SemVer$5) {
@@ -39536,7 +39496,7 @@ const coerce$1 = (version, options) => {
 
   let match = null;
   if (!options.rtl) {
-    match = version.match(options.includePrerelease ? re$3[t$2.COERCEFULL] : re$3[t$2.COERCE]);
+    match = version.match(options.includePrerelease ? re$2[t$1.COERCEFULL] : re$2[t$1.COERCE]);
   } else {
     // Find the right-most coercible string that does not share
     // a terminus with a more left-ward coercible string.
@@ -39547,7 +39507,7 @@ const coerce$1 = (version, options) => {
     // Manually set the index so as to pick up overlapping matches.
     // Stop when we get a match that ends at the string end, since no
     // coercible string can be more right-ward without the same terminus.
-    const coerceRtlRegex = options.includePrerelease ? re$3[t$2.COERCERTLFULL] : re$3[t$2.COERCERTL];
+    const coerceRtlRegex = options.includePrerelease ? re$2[t$1.COERCERTLFULL] : re$2[t$1.COERCERTL];
     let next;
     while ((next = coerceRtlRegex.exec(version)) &&
         (!match || match.index + match[0].length !== version.length)
@@ -40579,7 +40539,7 @@ function requireRange () {
 
 	const parseOptions = parseOptions_1;
 	const Comparator = requireComparator();
-	const debug = debug_1$a;
+	const debug = debug_1$9;
 	const SemVer = semver$2;
 	const {
 	  safeRe: re,
@@ -41060,7 +41020,7 @@ function requireComparator () {
 	const parseOptions = parseOptions_1;
 	const { safeRe: re, t } = reExports;
 	const cmp = cmp_1;
-	const debug = debug_1$a;
+	const debug = debug_1$9;
 	const SemVer = semver$2;
 	const Range = requireRange();
 	return comparator;
@@ -41613,7 +41573,7 @@ const SemVer = semver$2;
 const identifiers = identifiers$1;
 const parse$2 = parse_1;
 const valid = valid_1;
-const clean$1 = clean_1;
+const clean = clean_1;
 const inc = inc_1;
 const diff = diff_1;
 const major = major_1;
@@ -41651,7 +41611,7 @@ const subset = subset_1;
 var semver = {
   parse: parse$2,
   valid,
-  clean: clean$1,
+  clean,
   inc,
   diff,
   major,
@@ -41698,7 +41658,7 @@ var semver = {
 
 var semver$1 = /*@__PURE__*/getDefaultExportFromCjs(semver);
 
-var dist$c = {};
+var dist$b = {};
 
 const perf =
   typeof performance === 'object' &&
@@ -42928,7 +42888,7 @@ class LRUCache {
 
 var lruCache = LRUCache;
 
-var dist$b = {};
+var dist$a = {};
 
 var helpers$3 = {};
 
@@ -42957,8 +42917,8 @@ var __importStar$a = (commonjsGlobal && commonjsGlobal.__importStar) || function
 };
 Object.defineProperty(helpers$3, "__esModule", { value: true });
 helpers$3.req = helpers$3.json = helpers$3.toBuffer = void 0;
-const http$4 = __importStar$a(require$$0$9);
-const https$5 = __importStar$a(require$$1$1);
+const http$2 = __importStar$a(require$$0$8);
+const https$3 = __importStar$a(require$$1$1);
 async function toBuffer$4(stream) {
     let length = 0;
     const chunks = [];
@@ -42985,7 +42945,7 @@ async function json$2(stream) {
 helpers$3.json = json$2;
 function req(url, opts = {}) {
     const href = typeof url === 'string' ? url : url.href;
-    const req = (href.startsWith('https:') ? https$5 : http$4).request(url, opts);
+    const req = (href.startsWith('https:') ? https$3 : http$2).request(url, opts);
     const promise = new Promise((resolve, reject) => {
         req
             .once('response', resolve)
@@ -43026,8 +42986,8 @@ helpers$3.req = req;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.Agent = void 0;
-	const net = __importStar(require$$0$a);
-	const http = __importStar(require$$0$9);
+	const net = __importStar(require$$0$9);
+	const http = __importStar(require$$0$8);
 	const https_1 = require$$1$1;
 	__exportStar(helpers$3, exports);
 	const INTERNAL = Symbol('AgentBaseInternalState');
@@ -43172,7 +43132,7 @@ helpers$3.req = req;
 	}
 	exports.Agent = Agent;
 	
-} (dist$b));
+} (dist$a));
 
 var src$1 = {exports: {}};
 
@@ -43922,7 +43882,7 @@ function requireNode$1 () {
 	if (hasRequiredNode$1) return node$2.exports;
 	hasRequiredNode$1 = 1;
 	(function (module, exports) {
-		const tty = require$$0$4;
+		const tty = require$$0$3;
 		const util = require$$1;
 
 		/**
@@ -44197,11 +44157,11 @@ if (typeof process === 'undefined' || process.type === 'renderer' || process.bro
 }
 
 var srcExports$1 = src$1.exports;
-var debug$d = /*@__PURE__*/getDefaultExportFromCjs(srcExports$1);
+var debug$b = /*@__PURE__*/getDefaultExportFromCjs(srcExports$1);
 
 var proxyFromEnv = {};
 
-var parseUrl$2 = require$$5.parse;
+var parseUrl = require$$5.parse;
 
 var DEFAULT_PORTS = {
   ftp: 21,
@@ -44223,7 +44183,7 @@ var stringEndsWith = String.prototype.endsWith || function(s) {
  *  given URL. If no proxy is set, this will be an empty string.
  */
 function getProxyForUrl(url) {
-  var parsedUrl = typeof url === 'string' ? parseUrl$2(url) : url || {};
+  var parsedUrl = typeof url === 'string' ? parseUrl(url) : url || {};
   var proto = parsedUrl.protocol;
   var hostname = parsedUrl.host;
   var port = parsedUrl.port;
@@ -44306,11 +44266,11 @@ function getEnv(key) {
   return process.env[key.toLowerCase()] || process.env[key.toUpperCase()] || '';
 }
 
-var getProxyForUrl_1 = proxyFromEnv.getProxyForUrl = getProxyForUrl;
-
-var dist$a = {};
+proxyFromEnv.getProxyForUrl = getProxyForUrl;
 
 var dist$9 = {};
+
+var dist$8 = {};
 
 var __createBinding$9 = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -44338,15 +44298,15 @@ var __importStar$9 = (commonjsGlobal && commonjsGlobal.__importStar) || function
 var __importDefault$e = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(dist$9, "__esModule", { value: true });
-dist$9.HttpProxyAgent = void 0;
-const net$5 = __importStar$9(require$$0$a);
+Object.defineProperty(dist$8, "__esModule", { value: true });
+dist$8.HttpProxyAgent = void 0;
+const net$5 = __importStar$9(require$$0$9);
 const tls$4 = __importStar$9(require$$1$2);
-const debug_1$9 = __importDefault$e(srcExports$1);
-const events_1$1 = require$$0$5;
-const agent_base_1$3 = dist$b;
+const debug_1$8 = __importDefault$e(srcExports$1);
+const events_1$1 = require$$0$4;
+const agent_base_1$3 = dist$a;
 const url_1$4 = require$$5;
-const debug$c = (0, debug_1$9.default)('http-proxy-agent');
+const debug$a = (0, debug_1$8.default)('http-proxy-agent');
 /**
  * The `HttpProxyAgent` implements an HTTP Agent subclass that connects
  * to the specified "HTTP proxy server" in order to proxy HTTP requests.
@@ -44356,7 +44316,7 @@ class HttpProxyAgent extends agent_base_1$3.Agent {
         super(opts);
         this.proxy = typeof proxy === 'string' ? new url_1$4.URL(proxy) : proxy;
         this.proxyHeaders = opts?.headers ?? {};
-        debug$c('Creating new HttpProxyAgent instance: %o', this.proxy.href);
+        debug$a('Creating new HttpProxyAgent instance: %o', this.proxy.href);
         // Trim off the brackets from IPv6 addresses
         const host = (this.proxy.hostname || this.proxy.host).replace(/^\[|\]$/g, '');
         const port = this.proxy.port
@@ -44418,24 +44378,24 @@ class HttpProxyAgent extends agent_base_1$3.Agent {
         // to re-generate the string since we just changed the `req.path`.
         let first;
         let endOfHeaders;
-        debug$c('Regenerating stored HTTP header string for request');
+        debug$a('Regenerating stored HTTP header string for request');
         req._implicitHeader();
         if (req.outputData && req.outputData.length > 0) {
-            debug$c('Patching connection write() output buffer with updated header');
+            debug$a('Patching connection write() output buffer with updated header');
             first = req.outputData[0].data;
             endOfHeaders = first.indexOf('\r\n\r\n') + 4;
             req.outputData[0].data =
                 req._header + first.substring(endOfHeaders);
-            debug$c('Output buffer: %o', req.outputData[0].data);
+            debug$a('Output buffer: %o', req.outputData[0].data);
         }
         // Create a socket connection to the proxy server.
         let socket;
         if (this.proxy.protocol === 'https:') {
-            debug$c('Creating `tls.Socket`: %o', this.connectOpts);
+            debug$a('Creating `tls.Socket`: %o', this.connectOpts);
             socket = tls$4.connect(this.connectOpts);
         }
         else {
-            debug$c('Creating `net.Socket`: %o', this.connectOpts);
+            debug$a('Creating `net.Socket`: %o', this.connectOpts);
             socket = net$5.connect(this.connectOpts);
         }
         // Wait for the socket's `connect` event, so that this `callback()`
@@ -44447,7 +44407,7 @@ class HttpProxyAgent extends agent_base_1$3.Agent {
     }
 }
 HttpProxyAgent.protocols = ['http', 'https'];
-dist$9.HttpProxyAgent = HttpProxyAgent;
+dist$8.HttpProxyAgent = HttpProxyAgent;
 function omit$2(obj, ...keys) {
     const ret = {};
     let key;
@@ -44459,7 +44419,7 @@ function omit$2(obj, ...keys) {
     return ret;
 }
 
-var dist$8 = {};
+var dist$7 = {};
 
 var parseProxyResponse$1 = {};
 
@@ -44468,8 +44428,8 @@ var __importDefault$d = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(parseProxyResponse$1, "__esModule", { value: true });
 parseProxyResponse$1.parseProxyResponse = void 0;
-const debug_1$8 = __importDefault$d(srcExports$1);
-const debug$b = (0, debug_1$8.default)('https-proxy-agent:parse-proxy-response');
+const debug_1$7 = __importDefault$d(srcExports$1);
+const debug$9 = (0, debug_1$7.default)('https-proxy-agent:parse-proxy-response');
 function parseProxyResponse(socket) {
     return new Promise((resolve, reject) => {
         // we need to buffer any HTTP traffic that happens with the proxy before we get
@@ -44492,12 +44452,12 @@ function parseProxyResponse(socket) {
         }
         function onend() {
             cleanup();
-            debug$b('onend');
+            debug$9('onend');
             reject(new Error('Proxy connection ended before receiving CONNECT response'));
         }
         function onerror(err) {
             cleanup();
-            debug$b('onerror %o', err);
+            debug$9('onerror %o', err);
             reject(err);
         }
         function ondata(b) {
@@ -44507,7 +44467,7 @@ function parseProxyResponse(socket) {
             const endOfHeaders = buffered.indexOf('\r\n\r\n');
             if (endOfHeaders === -1) {
                 // keep buffering
-                debug$b('have not received end of HTTP headers yet...');
+                debug$9('have not received end of HTTP headers yet...');
                 read();
                 return;
             }
@@ -44545,7 +44505,7 @@ function parseProxyResponse(socket) {
                     headers[key] = value;
                 }
             }
-            debug$b('got proxy server response: %o %o', firstLine, headers);
+            debug$9('got proxy server response: %o %o', firstLine, headers);
             cleanup();
             resolve({
                 connect: {
@@ -44589,16 +44549,16 @@ var __importStar$8 = (commonjsGlobal && commonjsGlobal.__importStar) || function
 var __importDefault$c = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(dist$8, "__esModule", { value: true });
-dist$8.HttpsProxyAgent = void 0;
-const net$4 = __importStar$8(require$$0$a);
+Object.defineProperty(dist$7, "__esModule", { value: true });
+dist$7.HttpsProxyAgent = void 0;
+const net$4 = __importStar$8(require$$0$9);
 const tls$3 = __importStar$8(require$$1$2);
-const assert_1 = __importDefault$c(require$$0$6);
-const debug_1$7 = __importDefault$c(srcExports$1);
-const agent_base_1$2 = dist$b;
+const assert_1 = __importDefault$c(require$$0$5);
+const debug_1$6 = __importDefault$c(srcExports$1);
+const agent_base_1$2 = dist$a;
 const url_1$3 = require$$5;
 const parse_proxy_response_1 = parseProxyResponse$1;
-const debug$a = (0, debug_1$7.default)('https-proxy-agent');
+const debug$8 = (0, debug_1$6.default)('https-proxy-agent');
 /**
  * The `HttpsProxyAgent` implements an HTTP Agent subclass that connects to
  * the specified "HTTP(s) proxy server" in order to proxy HTTPS requests.
@@ -44617,7 +44577,7 @@ class HttpsProxyAgent extends agent_base_1$2.Agent {
         this.options = { path: undefined };
         this.proxy = typeof proxy === 'string' ? new url_1$3.URL(proxy) : proxy;
         this.proxyHeaders = opts?.headers ?? {};
-        debug$a('Creating new HttpsProxyAgent instance: %o', this.proxy.href);
+        debug$8('Creating new HttpsProxyAgent instance: %o', this.proxy.href);
         // Trim off the brackets from IPv6 addresses
         const host = (this.proxy.hostname || this.proxy.host).replace(/^\[|\]$/g, '');
         const port = this.proxy.port
@@ -44645,7 +44605,7 @@ class HttpsProxyAgent extends agent_base_1$2.Agent {
         // Create a socket connection to the proxy server.
         let socket;
         if (proxy.protocol === 'https:') {
-            debug$a('Creating `tls.Socket`: %o', this.connectOpts);
+            debug$8('Creating `tls.Socket`: %o', this.connectOpts);
             const servername = this.connectOpts.servername || this.connectOpts.host;
             socket = tls$3.connect({
                 ...this.connectOpts,
@@ -44653,7 +44613,7 @@ class HttpsProxyAgent extends agent_base_1$2.Agent {
             });
         }
         else {
-            debug$a('Creating `net.Socket`: %o', this.connectOpts);
+            debug$8('Creating `net.Socket`: %o', this.connectOpts);
             socket = net$4.connect(this.connectOpts);
         }
         const headers = typeof this.proxyHeaders === 'function'
@@ -44685,7 +44645,7 @@ class HttpsProxyAgent extends agent_base_1$2.Agent {
             if (opts.secureEndpoint) {
                 // The proxy is connecting to a TLS server, so upgrade
                 // this socket connection to a TLS connection.
-                debug$a('Upgrading socket connection to TLS');
+                debug$8('Upgrading socket connection to TLS');
                 const servername = opts.servername || opts.host;
                 return tls$3.connect({
                     ...omit$1(opts, 'host', 'path', 'port'),
@@ -44710,7 +44670,7 @@ class HttpsProxyAgent extends agent_base_1$2.Agent {
         fakeSocket.readable = true;
         // Need to wait for the "socket" event to re-play the "data" events.
         req.once('socket', (s) => {
-            debug$a('Replaying proxy buffer for failed request');
+            debug$8('Replaying proxy buffer for failed request');
             (0, assert_1.default)(s.listenerCount('data') > 0);
             // Replay the "buffered" Buffer onto the fake `socket`, since at
             // this point the HTTP module machinery has been hooked up for
@@ -44722,7 +44682,7 @@ class HttpsProxyAgent extends agent_base_1$2.Agent {
     }
 }
 HttpsProxyAgent.protocols = ['http', 'https'];
-dist$8.HttpsProxyAgent = HttpsProxyAgent;
+dist$7.HttpsProxyAgent = HttpsProxyAgent;
 function resume$1(socket) {
     socket.resume();
 }
@@ -44737,7 +44697,7 @@ function omit$1(obj, ...keys) {
     return ret;
 }
 
-var dist$7 = {};
+var dist$6 = {};
 
 var build$5 = {};
 
@@ -44745,10 +44705,10 @@ var socksclient = {};
 
 var smartbuffer = {};
 
-var utils$7 = {};
+var utils$5 = {};
 
-Object.defineProperty(utils$7, "__esModule", { value: true });
-const buffer_1 = require$$0$8;
+Object.defineProperty(utils$5, "__esModule", { value: true });
+const buffer_1 = require$$0$7;
 /**
  * Error strings
  */
@@ -44766,7 +44726,7 @@ const ERRORS$1 = {
     INVALID_READ_BEYOND_BOUNDS: 'Attempted to read beyond the bounds of the managed data.',
     INVALID_WRITE_BEYOND_BOUNDS: 'Attempted to write beyond the bounds of the managed data.'
 };
-utils$7.ERRORS = ERRORS$1;
+utils$5.ERRORS = ERRORS$1;
 /**
  * Checks if a given encoding is a valid Buffer encoding. (Throws an exception if check fails)
  *
@@ -44777,7 +44737,7 @@ function checkEncoding(encoding) {
         throw new Error(ERRORS$1.INVALID_ENCODING);
     }
 }
-utils$7.checkEncoding = checkEncoding;
+utils$5.checkEncoding = checkEncoding;
 /**
  * Checks if a given number is a finite integer. (Throws an exception if check fails)
  *
@@ -44786,7 +44746,7 @@ utils$7.checkEncoding = checkEncoding;
 function isFiniteInteger(value) {
     return typeof value === 'number' && isFinite(value) && isInteger(value);
 }
-utils$7.isFiniteInteger = isFiniteInteger;
+utils$5.isFiniteInteger = isFiniteInteger;
 /**
  * Checks if an offset/length value is valid. (Throws an exception if check fails)
  *
@@ -44812,7 +44772,7 @@ function checkOffsetOrLengthValue(value, offset) {
 function checkLengthValue(length) {
     checkOffsetOrLengthValue(length, false);
 }
-utils$7.checkLengthValue = checkLengthValue;
+utils$5.checkLengthValue = checkLengthValue;
 /**
  * Checks if a offset value is valid. (Throws an exception if check fails)
  *
@@ -44821,7 +44781,7 @@ utils$7.checkLengthValue = checkLengthValue;
 function checkOffsetValue(offset) {
     checkOffsetOrLengthValue(offset, true);
 }
-utils$7.checkOffsetValue = checkOffsetValue;
+utils$5.checkOffsetValue = checkOffsetValue;
 /**
  * Checks if a target offset value is out of bounds. (Throws an exception if check fails)
  *
@@ -44833,7 +44793,7 @@ function checkTargetOffset(offset, buff) {
         throw new Error(ERRORS$1.INVALID_TARGET_OFFSET);
     }
 }
-utils$7.checkTargetOffset = checkTargetOffset;
+utils$5.checkTargetOffset = checkTargetOffset;
 /**
  * Determines whether a given number is a integer.
  * @param value The number to check.
@@ -44852,10 +44812,10 @@ function bigIntAndBufferInt64Check(bufferMethod) {
         throw new Error(`Platform does not support Buffer.prototype.${bufferMethod}.`);
     }
 }
-utils$7.bigIntAndBufferInt64Check = bigIntAndBufferInt64Check;
+utils$5.bigIntAndBufferInt64Check = bigIntAndBufferInt64Check;
 
 Object.defineProperty(smartbuffer, "__esModule", { value: true });
-const utils_1 = utils$7;
+const utils_1 = utils$5;
 // The default Buffer size if one is not provided.
 const DEFAULT_SMARTBUFFER_SIZE = 4096;
 // The default string encoding to use for reading/writing strings.
@@ -46197,10 +46157,10 @@ var SocksClientState;
 
 var helpers$2 = {};
 
-var util$9 = {};
+var util$6 = {};
 
-Object.defineProperty(util$9, "__esModule", { value: true });
-util$9.shuffleArray = util$9.SocksClientError = void 0;
+Object.defineProperty(util$6, "__esModule", { value: true });
+util$6.shuffleArray = util$6.SocksClientError = void 0;
 /**
  * Error wrapper for SocksClient
  */
@@ -46210,7 +46170,7 @@ class SocksClientError extends Error {
         this.options = options;
     }
 }
-util$9.SocksClientError = SocksClientError;
+util$6.SocksClientError = SocksClientError;
 /**
  * Shuffles a given array.
  * @param array The array to shuffle.
@@ -46221,7 +46181,7 @@ function shuffleArray(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
-util$9.shuffleArray = shuffleArray;
+util$6.shuffleArray = shuffleArray;
 
 var ipAddress = {};
 
@@ -48453,7 +48413,7 @@ const regular_expressions_1 = regularExpressions;
 const address_error_1 = addressError;
 const jsbn_1 = jsbnExports;
 const sprintf_js_1 = sprintf;
-function assert$4(condition) {
+function assert$3(condition) {
     if (!condition) {
         throw new Error('Assertion failed.');
     }
@@ -49323,8 +49283,8 @@ class Address6 {
             // The simple case
             return helpers.simpleGroup(this.address).join(':');
         }
-        assert$4(typeof this.elidedGroups === 'number');
-        assert$4(typeof this.elisionBegin === 'number');
+        assert$3(typeof this.elidedGroups === 'number');
+        assert$3(typeof this.elisionBegin === 'number');
         // The elided case
         const output = [];
         const [left, right] = this.address.split('::');
@@ -49346,7 +49306,7 @@ class Address6 {
             output.push('');
         }
         if (this.is4()) {
-            assert$4(this.address4 instanceof ipv4_1.Address4);
+            assert$3(this.address4 instanceof ipv4_1.Address4);
             output.pop();
             output.push(this.address4.groupForV6());
         }
@@ -49380,7 +49340,7 @@ class Address6 {
             if (halves[0].length) {
                 output.push((0, regular_expressions_1.simpleRegularExpression)(halves[0].split(':')));
             }
-            assert$4(typeof address6.elidedGroups === 'number');
+            assert$3(typeof address6.elidedGroups === 'number');
             output.push((0, regular_expressions_1.possibleElisions)(address6.elidedGroups, halves[0].length !== 0, halves[1].length !== 0));
             if (halves[1].length) {
                 output.push((0, regular_expressions_1.simpleRegularExpression)(halves[1].split(':')));
@@ -49453,11 +49413,11 @@ ipv6.Address6 = Address6;
 
 Object.defineProperty(helpers$2, "__esModule", { value: true });
 helpers$2.ipToBuffer = helpers$2.int32ToIpv4 = helpers$2.ipv4ToInt32 = helpers$2.validateSocksClientChainOptions = helpers$2.validateSocksClientOptions = void 0;
-const util_1$7 = util$9;
+const util_1$7 = util$6;
 const constants_1 = constants$7;
-const stream$2 = require$$0$7;
+const stream$2 = require$$0$6;
 const ip_address_1 = ipAddress;
-const net$3 = require$$0$a;
+const net$3 = require$$0$9;
 /**
  * Validates the provided SocksClientOptions
  * @param options { SocksClientOptions }
@@ -49672,13 +49632,13 @@ receivebuffer.ReceiveBuffer = ReceiveBuffer;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.SocksClientError = exports.SocksClient = void 0;
-	const events_1 = require$$0$5;
-	const net = require$$0$a;
+	const events_1 = require$$0$4;
+	const net = require$$0$9;
 	const smart_buffer_1 = smartbuffer;
 	const constants_1 = constants$7;
 	const helpers_1 = helpers$2;
 	const receivebuffer_1 = receivebuffer;
-	const util_1 = util$9;
+	const util_1 = util$6;
 	Object.defineProperty(exports, "SocksClientError", { enumerable: true, get: function () { return util_1.SocksClientError; } });
 	const ip_address_1 = ipAddress;
 	class SocksClient extends events_1.EventEmitter {
@@ -50501,16 +50461,16 @@ var __importStar$4 = (commonjsGlobal && commonjsGlobal.__importStar) || function
 var __importDefault$b = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(dist$7, "__esModule", { value: true });
-dist$7.SocksProxyAgent = void 0;
+Object.defineProperty(dist$6, "__esModule", { value: true });
+dist$6.SocksProxyAgent = void 0;
 const socks_1 = build$5;
-const agent_base_1$1 = dist$b;
-const debug_1$6 = __importDefault$b(srcExports$1);
+const agent_base_1$1 = dist$a;
+const debug_1$5 = __importDefault$b(srcExports$1);
 const dns = __importStar$4(require$$3$1);
-const net$2 = __importStar$4(require$$0$a);
+const net$2 = __importStar$4(require$$0$9);
 const tls$2 = __importStar$4(require$$1$2);
 const url_1$2 = require$$5;
-const debug$9 = (0, debug_1$6.default)('socks-proxy-agent');
+const debug$7 = (0, debug_1$5.default)('socks-proxy-agent');
 function parseSocksURL(url) {
     let lookup = false;
     let type = 5;
@@ -50615,9 +50575,9 @@ class SocksProxyAgent extends agent_base_1$1.Agent {
             if (tlsSocket)
                 tlsSocket.destroy();
         };
-        debug$9('Creating socks proxy connection: %o', socksOpts);
+        debug$7('Creating socks proxy connection: %o', socksOpts);
         const { socket } = await socks_1.SocksClient.createConnection(socksOpts);
-        debug$9('Successfully created socks proxy connection');
+        debug$7('Successfully created socks proxy connection');
         if (timeout !== null) {
             socket.setTimeout(timeout);
             socket.on('timeout', () => cleanup());
@@ -50625,7 +50585,7 @@ class SocksProxyAgent extends agent_base_1$1.Agent {
         if (opts.secureEndpoint) {
             // The proxy is connecting to a TLS server, so upgrade
             // this socket connection to a TLS connection.
-            debug$9('Upgrading socket connection to TLS');
+            debug$7('Upgrading socket connection to TLS');
             const servername = opts.servername || opts.host;
             const tlsSocket = tls$2.connect({
                 ...omit(opts, 'host', 'path', 'port'),
@@ -50633,7 +50593,7 @@ class SocksProxyAgent extends agent_base_1$1.Agent {
                 servername: net$2.isIP(servername) ? undefined : servername,
             });
             tlsSocket.once('error', (error) => {
-                debug$9('Socket TLS error', error.message);
+                debug$7('Socket TLS error', error.message);
                 cleanup(tlsSocket);
             });
             return tlsSocket;
@@ -50648,7 +50608,7 @@ SocksProxyAgent.protocols = [
     'socks5',
     'socks5h',
 ];
-dist$7.SocksProxyAgent = SocksProxyAgent;
+dist$6.SocksProxyAgent = SocksProxyAgent;
 function omit(obj, ...keys) {
     const ret = {};
     let key;
@@ -50660,7 +50620,7 @@ function omit(obj, ...keys) {
     return ret;
 }
 
-var dist$6 = {};
+var dist$5 = {};
 
 var data$1 = {};
 
@@ -50769,12 +50729,12 @@ var __importDefault$a = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(data$1, "__esModule", { value: true });
 data$1.data = void 0;
-const debug_1$5 = __importDefault$a(srcExports$1);
-const stream_1$3 = require$$0$7;
+const debug_1$4 = __importDefault$a(srcExports$1);
+const stream_1$3 = require$$0$6;
 const crypto_1 = require$$2;
 const data_uri_to_buffer_1 = node$1;
 const notmodified_1$2 = __importDefault$a(notmodified);
-const debug$8 = (0, debug_1$5.default)('get-uri:data');
+const debug$6 = (0, debug_1$4.default)('get-uri:data');
 class DataReadable extends stream_1$3.Readable {
     constructor(hash, buf) {
         super();
@@ -50792,14 +50752,14 @@ const data = async ({ href: uri }, { cache } = {}) => {
     const shasum = (0, crypto_1.createHash)('sha1');
     shasum.update(uri);
     const hash = shasum.digest('hex');
-    debug$8('generated SHA1 hash for "data:" URI: %o', hash);
+    debug$6('generated SHA1 hash for "data:" URI: %o', hash);
     // check if the cache is the same "data:" URI that was previously passed in.
     if (cache?.hash === hash) {
-        debug$8('got matching cache SHA1 hash: %o', hash);
+        debug$6('got matching cache SHA1 hash: %o', hash);
         throw new notmodified_1$2.default();
     }
     else {
-        debug$8('creating Readable stream from "data:" URI buffer');
+        debug$6('creating Readable stream from "data:" URI buffer');
         const { buffer } = (0, data_uri_to_buffer_1.dataUriToBuffer)(uri);
         return new DataReadable(hash, Buffer.from(buffer));
     }
@@ -50835,12 +50795,12 @@ universalify$1.fromPromise = function (fn) {
   }, 'name', { value: fn.name })
 };
 
-var constants$3 = require$$0$b;
+var constants$3 = require$$0$a;
 
 var origCwd = process.cwd;
 var cwd = null;
 
-var platform$2 = process.env.GRACEFUL_FS_PLATFORM || process.platform;
+var platform = process.env.GRACEFUL_FS_PLATFORM || process.platform;
 
 process.cwd = function() {
   if (!cwd)
@@ -50930,7 +50890,7 @@ function patch$1 (fs) {
   // failures. Also, take care to yield the scheduler. Windows scheduling gives
   // CPU to a busy looping process, which can cause the program causing the lock
   // contention to be starved of CPU by node, so the contention doesn't resolve.
-  if (platform$2 === "win32") {
+  if (platform === "win32") {
     fs.rename = typeof fs.rename !== 'function' ? fs.rename
     : (function (fs$rename) {
       function rename (from, to, cb) {
@@ -51191,7 +51151,7 @@ function patch$1 (fs) {
   }
 }
 
-var Stream$3 = require$$0$7.Stream;
+var Stream = require$$0$6.Stream;
 
 var legacyStreams = legacy$2;
 
@@ -51204,7 +51164,7 @@ function legacy$2 (fs) {
   function ReadStream (path, options) {
     if (!(this instanceof ReadStream)) return new ReadStream(path, options);
 
-    Stream$3.call(this);
+    Stream.call(this);
 
     var self = this;
 
@@ -51268,7 +51228,7 @@ function legacy$2 (fs) {
   function WriteStream (path, options) {
     if (!(this instanceof WriteStream)) return new WriteStream(path, options);
 
-    Stream$3.call(this);
+    Stream.call(this);
 
     this.path = path;
     this.fd = null;
@@ -51312,7 +51272,7 @@ function legacy$2 (fs) {
 
 var clone_1 = clone$1;
 
-var getPrototypeOf$1 = Object.getPrototypeOf || function (obj) {
+var getPrototypeOf = Object.getPrototypeOf || function (obj) {
   return obj.__proto__
 };
 
@@ -51321,7 +51281,7 @@ function clone$1 (obj) {
     return obj
 
   if (obj instanceof Object)
-    var copy = { __proto__: getPrototypeOf$1(obj) };
+    var copy = { __proto__: getPrototypeOf(obj) };
   else
     var copy = Object.create(null);
 
@@ -51337,7 +51297,7 @@ var polyfills = polyfills$1;
 var legacy$1 = legacyStreams;
 var clone = clone_1;
 
-var util$8 = require$$1;
+var util$5 = require$$1;
 
 /* istanbul ignore next - node 0.x polyfill */
 var gracefulQueue;
@@ -51353,7 +51313,7 @@ if (typeof Symbol === 'function' && typeof Symbol.for === 'function') {
   previousSymbol = '___graceful-fs.previous';
 }
 
-function noop$5 () {}
+function noop$3 () {}
 
 function publishQueue(context, queue) {
   Object.defineProperty(context, gracefulQueue, {
@@ -51363,12 +51323,12 @@ function publishQueue(context, queue) {
   });
 }
 
-var debug$7 = noop$5;
-if (util$8.debuglog)
-  debug$7 = util$8.debuglog('gfs4');
+var debug$5 = noop$3;
+if (util$5.debuglog)
+  debug$5 = util$5.debuglog('gfs4');
 else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
-  debug$7 = function() {
-    var m = util$8.format.apply(util$8, arguments);
+  debug$5 = function() {
+    var m = util$5.format.apply(util$5, arguments);
     m = 'GFS4: ' + m.split(/\n/).join('\nGFS4: ');
     console.error(m);
   };
@@ -51417,8 +51377,8 @@ if (!fs$k[gracefulQueue]) {
 
   if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
     process.on('exit', function() {
-      debug$7(fs$k[gracefulQueue]);
-      require$$0$6.equal(fs$k[gracefulQueue].length, 0);
+      debug$5(fs$k[gracefulQueue]);
+      require$$0$5.equal(fs$k[gracefulQueue].length, 0);
     });
   }
 }
@@ -51703,7 +51663,7 @@ function patch (fs) {
 }
 
 function enqueue (elem) {
-  debug$7('ENQUEUE', elem[0].name, elem[1]);
+  debug$5('ENQUEUE', elem[0].name, elem[1]);
   fs$k[gracefulQueue].push(elem);
   retry();
 }
@@ -51747,11 +51707,11 @@ function retry () {
   // if we don't have a startTime we have no way of knowing if we've waited
   // long enough, so go ahead and retry this item now
   if (startTime === undefined) {
-    debug$7('RETRY', fn.name, args);
+    debug$5('RETRY', fn.name, args);
     fn.apply(null, args);
   } else if (Date.now() - startTime >= 60000) {
     // it's been more than 60 seconds total, bail now
-    debug$7('TIMEOUT', fn.name, args);
+    debug$5('TIMEOUT', fn.name, args);
     var cb = args.pop();
     if (typeof cb === 'function')
       cb.call(null, err);
@@ -51766,7 +51726,7 @@ function retry () {
     var desiredDelay = Math.min(sinceStart * 1.2, 100);
     // it's been long enough since the last retry, do it again
     if (sinceAttempt >= desiredDelay) {
-      debug$7('RETRY', fn.name, args);
+      debug$5('RETRY', fn.name, args);
       fn.apply(null, args.concat([startTime]));
     } else {
       // if we can't do this job yet, push it to the end of the queue
@@ -51925,13 +51885,13 @@ function retry () {
 
 var makeDir$1 = {};
 
-var utils$6 = {};
+var utils$4 = {};
 
 const path$e = path$f;
 
 // https://github.com/nodejs/node/issues/8987
 // https://github.com/libuv/libuv/pull/1088
-utils$6.checkPath = function checkPath (pth) {
+utils$4.checkPath = function checkPath (pth) {
   if (process.platform === 'win32') {
     const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path$e.parse(pth).root, ''));
 
@@ -51944,7 +51904,7 @@ utils$6.checkPath = function checkPath (pth) {
 };
 
 const fs$j = fs$l;
-const { checkPath } = utils$6;
+const { checkPath } = utils$4;
 
 const getMode = options => {
   const defaults = { mode: 0o777 };
@@ -52946,7 +52906,7 @@ function stripBom$1 (content) {
   return content.replace(/^\uFEFF/, '')
 }
 
-var utils$5 = { stringify: stringify$3, stripBom: stripBom$1 };
+var utils$3 = { stringify: stringify$3, stripBom: stripBom$1 };
 
 let _fs;
 try {
@@ -52955,7 +52915,7 @@ try {
   _fs = fs$n;
 }
 const universalify = universalify$1;
-const { stringify: stringify$2, stripBom } = utils$5;
+const { stringify: stringify$2, stripBom } = utils$3;
 
 async function _readFile (file, options = {}) {
   if (typeof options === 'string') {
@@ -53077,7 +53037,7 @@ var outputFile_1 = {
   outputFileSync: outputFileSync$1
 };
 
-const { stringify: stringify$1 } = utils$5;
+const { stringify: stringify$1 } = utils$3;
 const { outputFile } = outputFile_1;
 
 async function outputJson (file, data, options = {}) {
@@ -53088,7 +53048,7 @@ async function outputJson (file, data, options = {}) {
 
 var outputJson_1 = outputJson;
 
-const { stringify } = utils$5;
+const { stringify } = utils$3;
 const { outputFileSync } = outputFile_1;
 
 function outputJsonSync (file, data, options) {
@@ -53269,13 +53229,13 @@ var __importDefault$9 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(file$2, "__esModule", { value: true });
 file$2.file = void 0;
-const debug_1$4 = __importDefault$9(srcExports$1);
+const debug_1$3 = __importDefault$9(srcExports$1);
 const fs_1$3 = fs$n;
 const fs_extra_1 = lib$3;
 const notfound_1$1 = __importDefault$9(notfound);
 const notmodified_1$1 = __importDefault$9(notmodified);
 const url_1$1 = require$$5;
-const debug$6 = (0, debug_1$4.default)('get-uri:file');
+const debug$4 = (0, debug_1$3.default)('get-uri:file');
 /**
  * Returns a `fs.ReadStream` instance from a "file:" URI.
  */
@@ -53285,7 +53245,7 @@ const file = async ({ href: uri }, opts = {}) => {
     try {
         // Convert URI → Path
         const filepath = (0, url_1$1.fileURLToPath)(uri);
-        debug$6('Normalized pathname: %o', filepath);
+        debug$4('Normalized pathname: %o', filepath);
         // `open()` first to get a file descriptor and ensure that the file
         // exists.
         const fd = await (0, fs_extra_1.open)(filepath, flags, mode);
@@ -53322,7 +53282,7 @@ function isNotModified(prev, curr) {
 
 var ftp$1 = {};
 
-var dist$5 = {};
+var dist$4 = {};
 
 var Client$1 = {};
 
@@ -53399,7 +53359,7 @@ function isNotBlank$1(str) {
 
 Object.defineProperty(FtpContext, "__esModule", { value: true });
 FtpContext.FTPContext = FtpContext.FTPError = void 0;
-const net_1$1 = require$$0$a;
+const net_1$1 = require$$0$9;
 const parseControlResponse_1$2 = parseControlResponse$1;
 /**
  * Describes an FTP server error response including the FTP response code.
@@ -54342,13 +54302,13 @@ class ProgressTracker {
     constructor() {
         this.bytesOverall = 0;
         this.intervalMs = 500;
-        this.onStop = noop$4;
-        this.onHandle = noop$4;
+        this.onStop = noop$2;
+        this.onHandle = noop$2;
     }
     /**
      * Register a new handler for progress info. Use `undefined` to disable reporting.
      */
-    reportTo(onHandle = noop$4) {
+    reportTo(onHandle = noop$2) {
         this.onHandle = onHandle;
     }
     /**
@@ -54398,18 +54358,18 @@ function poll(intervalMs, updateFunc) {
             updateFunc();
         }
         // Prevent repeated calls to stop calling handler.
-        updateFunc = noop$4;
+        updateFunc = noop$2;
     };
     updateFunc();
     return stopFunc;
 }
-function noop$4() { }
+function noop$2() { }
 
 var StringWriter$1 = {};
 
 Object.defineProperty(StringWriter$1, "__esModule", { value: true });
 StringWriter$1.StringWriter = void 0;
-const stream_1$2 = require$$0$7;
+const stream_1$2 = require$$0$6;
 class StringWriter extends stream_1$2.Writable {
     constructor() {
         super(...arguments);
@@ -54504,7 +54464,7 @@ var transfer = {};
 Object.defineProperty(transfer, "__esModule", { value: true });
 transfer.downloadTo = transfer.uploadFrom = transfer.connectForPassiveTransfer = transfer.parsePasvResponse = transfer.enterPassiveModeIPv4 = transfer.parseEpsvResponse = transfer.enterPassiveModeIPv6 = void 0;
 const netUtils_1$1 = netUtils;
-const stream_1$1 = require$$0$7;
+const stream_1$1 = require$$0$6;
 const tls_1$1 = require$$1$2;
 const parseControlResponse_1$1 = parseControlResponse$1;
 /**
@@ -55603,20 +55563,20 @@ Object.defineProperty(StringEncoding, "__esModule", { value: true });
 	var transfer_1 = transfer;
 	Object.defineProperty(exports, "enterPassiveModeIPv4", { enumerable: true, get: function () { return transfer_1.enterPassiveModeIPv4; } });
 	Object.defineProperty(exports, "enterPassiveModeIPv6", { enumerable: true, get: function () { return transfer_1.enterPassiveModeIPv6; } }); 
-} (dist$5));
+} (dist$4));
 
 var __importDefault$8 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(ftp$1, "__esModule", { value: true });
 ftp$1.ftp = void 0;
-const basic_ftp_1 = dist$5;
-const stream_1 = require$$0$7;
+const basic_ftp_1 = dist$4;
+const stream_1 = require$$0$6;
 const path_1$3 = path$f;
-const debug_1$3 = __importDefault$8(srcExports$1);
+const debug_1$2 = __importDefault$8(srcExports$1);
 const notfound_1 = __importDefault$8(notfound);
 const notmodified_1 = __importDefault$8(notmodified);
-const debug$5 = (0, debug_1$3.default)('get-uri:ftp');
+const debug$3 = (0, debug_1$2.default)('get-uri:ftp');
 /**
  * Returns a Readable stream from an "ftp:" URI.
  */
@@ -55677,7 +55637,7 @@ const ftp = async (url, opts = {}) => {
         const stream = new stream_1.PassThrough();
         const rs = stream;
         client.downloadTo(stream, filepath).then((result) => {
-            debug$5(result.message);
+            debug$3(result.message);
             client.close();
         });
         rs.lastModified = lastModified;
@@ -55697,12 +55657,12 @@ const ftp = async (url, opts = {}) => {
 };
 ftp$1.ftp = ftp;
 
-var http$3 = {};
+var http$1 = {};
 
 var httpError = {};
 
 Object.defineProperty(httpError, "__esModule", { value: true });
-const http_1$1 = require$$0$9;
+const http_1$1 = require$$0$8;
 /**
  * Error subclass to use when an HTTP application error has occurred.
  */
@@ -55721,9 +55681,9 @@ httpError.default = HTTPError;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.http = void 0;
-	const http_1 = __importDefault(require$$0$9);
+	const http_1 = __importDefault(require$$0$8);
 	const https_1 = __importDefault(require$$1$1);
-	const events_1 = require$$0$5;
+	const events_1 = require$$0$4;
 	const debug_1 = __importDefault(srcExports$1);
 	const http_error_1 = __importDefault(httpError);
 	const notfound_1 = __importDefault(notfound);
@@ -55903,24 +55863,24 @@ httpError.default = HTTPError;
 	    return null;
 	}
 	
-} (http$3));
+} (http$1));
 
-var https$4 = {};
+var https$2 = {};
 
 var __importDefault$7 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(https$4, "__esModule", { value: true });
-https$4.https = void 0;
+Object.defineProperty(https$2, "__esModule", { value: true });
+https$2.https = void 0;
 const https_1 = __importDefault$7(require$$1$1);
-const http_1 = http$3;
+const http_1 = http$1;
 /**
  * Returns a Readable stream from an "https:" URI.
  */
-const https$3 = (url, opts) => {
+const https$1 = (url, opts) => {
     return (0, http_1.http)(url, { ...opts, http: https_1.default });
 };
-https$4.https = https$3;
+https$2.https = https$1;
 
 (function (exports) {
 	var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
@@ -55933,8 +55893,8 @@ https$4.https = https$3;
 	const data_1 = data$1;
 	const file_1 = file$2;
 	const ftp_1 = ftp$1;
-	const http_1 = http$3;
-	const https_1 = https$4;
+	const http_1 = http$1;
+	const https_1 = https$2;
 	const debug = (0, debug_1.default)('get-uri');
 	exports.protocols = {
 	    data: data_1.data,
@@ -55979,11 +55939,11 @@ https$4.https = https$3;
 	}
 	exports.getUri = getUri;
 	
-} (dist$6));
-
-var dist$4 = {};
+} (dist$5));
 
 var dist$3 = {};
+
+var dist$2 = {};
 
 var degenerator$1 = {};
 
@@ -56799,7 +56759,7 @@ var estraverse = {};
 	/* vim: set sw=4 ts=4 et tw=80 : */ 
 } (estraverse));
 
-var utils$4 = {};
+var utils$2 = {};
 
 var ast = {exports: {}};
 
@@ -57282,9 +57242,9 @@ var keywordExports = keyword$1.exports;
 */
 (function () {
 
-    utils$4.ast = astExports;
-    utils$4.code = codeExports;
-    utils$4.keyword = keywordExports;
+    utils$2.ast = astExports;
+    utils$2.code = codeExports;
+    utils$2.keyword = keywordExports;
 }());
 
 var sourceMap = {};
@@ -57520,14 +57480,14 @@ function requireBase64Vlq () {
 	return base64Vlq;
 }
 
-var util$7 = {};
+var util$4 = {};
 
 /* -*- Mode: js; js-indent-level: 2; -*- */
 
 var hasRequiredUtil;
 
 function requireUtil () {
-	if (hasRequiredUtil) return util$7;
+	if (hasRequiredUtil) return util$4;
 	hasRequiredUtil = 1;
 	(function (exports) {
 		/*
@@ -58017,8 +57977,8 @@ function requireUtil () {
 		  return normalize(sourceURL);
 		}
 		exports.computeSourceURL = computeSourceURL; 
-	} (util$7));
-	return util$7;
+	} (util$4));
+	return util$4;
 }
 
 var arraySet = {};
@@ -60670,7 +60630,7 @@ var require$$3 = {
 	        FORMAT_DEFAULTS;
 
 	    estraverse$1 = estraverse;
-	    esutils = utils$4;
+	    esutils = utils$2;
 
 	    Syntax = estraverse$1.Syntax;
 
@@ -70328,7 +70288,7 @@ var tslib_es6$1 = /*#__PURE__*/Object.freeze({
 	default: tslib_es6
 });
 
-var require$$0$2 = /*@__PURE__*/getAugmentedNamespace(tslib_es6$1);
+var require$$0$1 = /*@__PURE__*/getAugmentedNamespace(tslib_es6$1);
 
 var fork = {exports: {}};
 
@@ -70341,7 +70301,7 @@ function requireTypes$2 () {
 	hasRequiredTypes$2 = 1;
 	Object.defineProperty(types$2, "__esModule", { value: true });
 	types$2.Def = void 0;
-	var tslib_1 = require$$0$2;
+	var tslib_1 = require$$0$1;
 	var Op = Object.prototype;
 	var objToStr = Op.toString;
 	var hasOwn = Op.hasOwnProperty;
@@ -71133,7 +71093,7 @@ function requirePath () {
 	hasRequiredPath = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var Op = Object.prototype;
 		var hasOwn = Op.hasOwnProperty;
@@ -71475,7 +71435,7 @@ function requireScope () {
 	hasRequiredScope = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var hasOwn = Object.prototype.hasOwnProperty;
 		function scopePlugin(fork) {
@@ -71798,7 +71758,7 @@ function requireNodePath () {
 	hasRequiredNodePath = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var path_1 = tslib_1.__importDefault(requirePath());
 		var scope_1 = tslib_1.__importDefault(requireScope());
@@ -72210,7 +72170,7 @@ function requirePathVisitor () {
 	hasRequiredPathVisitor = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var node_path_1 = tslib_1.__importDefault(requireNodePath());
 		var hasOwn = Object.prototype.hasOwnProperty;
@@ -72562,7 +72522,7 @@ function requireEquiv () {
 	hasRequiredEquiv = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		function default_1(fork) {
 		    var types = fork.use(types_1.default);
@@ -72725,7 +72685,7 @@ function requireFork () {
 	hasRequiredFork = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var path_visitor_1 = tslib_1.__importDefault(requirePathVisitor());
 		var equiv_1 = tslib_1.__importDefault(requireEquiv());
@@ -72790,7 +72750,7 @@ function requireShared () {
 	hasRequiredShared = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		function default_1(fork) {
 		    var types = fork.use(types_1.default);
@@ -72845,7 +72805,7 @@ function requireCore$1 () {
 	hasRequiredCore$1 = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var shared_1 = tslib_1.__importDefault(requireShared());
 		function default_1(fork) {
@@ -73154,7 +73114,7 @@ function requireEs6 () {
 	hasRequiredEs6 = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var core_1 = tslib_1.__importDefault(requireCore$1());
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var shared_1 = tslib_1.__importDefault(requireShared());
@@ -73375,7 +73335,7 @@ function requireEs7 () {
 	hasRequiredEs7 = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var es6_1 = tslib_1.__importDefault(requireEs6());
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var shared_1 = tslib_1.__importDefault(requireShared());
@@ -73420,7 +73380,7 @@ function requireEs2020 () {
 	hasRequiredEs2020 = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var es7_1 = tslib_1.__importDefault(requireEs7());
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		function default_1(fork) {
@@ -73447,7 +73407,7 @@ function requireJsx () {
 	hasRequiredJsx = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var es7_1 = tslib_1.__importDefault(requireEs7());
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var shared_1 = tslib_1.__importDefault(requireShared());
@@ -73568,7 +73528,7 @@ function requireTypeAnnotations () {
 		 * because they use the same name.
 		 */
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var shared_1 = tslib_1.__importDefault(requireShared());
 		function default_1(fork) {
@@ -73612,7 +73572,7 @@ function requireFlow () {
 	hasRequiredFlow = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var es7_1 = tslib_1.__importDefault(requireEs7());
 		var type_annotations_1 = tslib_1.__importDefault(requireTypeAnnotations());
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
@@ -73915,7 +73875,7 @@ function requireEsprima () {
 	hasRequiredEsprima = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var es7_1 = tslib_1.__importDefault(requireEs7());
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var shared_1 = tslib_1.__importDefault(requireShared());
@@ -73977,7 +73937,7 @@ function requireBabelCore () {
 	hasRequiredBabelCore = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var shared_1 = tslib_1.__importDefault(requireShared());
 		var es7_1 = tslib_1.__importDefault(requireEs7());
@@ -74242,7 +74202,7 @@ function requireBabel () {
 	hasRequiredBabel = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var babel_core_1 = tslib_1.__importDefault(requireBabelCore());
 		var flow_1 = tslib_1.__importDefault(requireFlow());
 		function default_1(fork) {
@@ -74264,7 +74224,7 @@ function requireTypescript$1 () {
 	hasRequiredTypescript$1 = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var babel_core_1 = tslib_1.__importDefault(requireBabelCore());
 		var type_annotations_1 = tslib_1.__importDefault(requireTypeAnnotations());
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
@@ -74619,7 +74579,7 @@ function requireEsProposals () {
 	hasRequiredEsProposals = 1;
 	(function (module, exports) {
 		Object.defineProperty(exports, "__esModule", { value: true });
-		var tslib_1 = require$$0$2;
+		var tslib_1 = require$$0$1;
 		var types_1 = tslib_1.__importDefault(requireTypes$2());
 		var shared_1 = tslib_1.__importDefault(requireShared());
 		var core_1 = tslib_1.__importDefault(requireCore$1());
@@ -74673,7 +74633,7 @@ function requireNamedTypes () {
 (function (exports) {
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.visit = exports.use = exports.Type = exports.someField = exports.PathVisitor = exports.Path = exports.NodePath = exports.namedTypes = exports.getSupertypeNames = exports.getFieldValue = exports.getFieldNames = exports.getBuilderName = exports.finalize = exports.eachField = exports.defineMethod = exports.builtInTypes = exports.builders = exports.astNodesAreEquivalent = void 0;
-	var tslib_1 = require$$0$2;
+	var tslib_1 = require$$0$1;
 	var fork_1 = tslib_1.__importDefault(requireFork());
 	var core_1 = tslib_1.__importDefault(requireCore$1());
 	var es6_1 = tslib_1.__importDefault(requireEs6());
@@ -75007,7 +74967,7 @@ function hostToQuickJSHandle(vm, val) {
 	__exportStar(degenerator$1, exports);
 	__exportStar(compile$1, exports);
 	
-} (dist$3));
+} (dist$2));
 
 var dateRange$1 = {};
 
@@ -75145,10 +75105,10 @@ dnsDomainLevels$1.default = dnsDomainLevels;
 
 var dnsResolve$1 = {};
 
-var util$6 = {};
+var util$3 = {};
 
-Object.defineProperty(util$6, "__esModule", { value: true });
-util$6.isGMT = util$6.dnsLookup = void 0;
+Object.defineProperty(util$3, "__esModule", { value: true });
+util$3.isGMT = util$3.dnsLookup = void 0;
 const dns_1 = require$$3$1;
 function dnsLookup(host, opts) {
     return new Promise((resolve, reject) => {
@@ -75162,14 +75122,14 @@ function dnsLookup(host, opts) {
         });
     });
 }
-util$6.dnsLookup = dnsLookup;
+util$3.dnsLookup = dnsLookup;
 function isGMT(v) {
     return v === 'GMT';
 }
-util$6.isGMT = isGMT;
+util$3.isGMT = isGMT;
 
 Object.defineProperty(dnsResolve$1, "__esModule", { value: true });
-const util_1$3 = util$6;
+const util_1$3 = util$3;
 /**
  * Resolves the given DNS hostname into an IP address, and returns it in the dot
  * separated format as a string.
@@ -75412,7 +75372,7 @@ var netmask = {};
 
 Object.defineProperty(isInNet$1, "__esModule", { value: true });
 const netmask_1 = netmask;
-const util_1$2 = util$6;
+const util_1$2 = util$3;
 /**
  * True iff the IP address of the host matches the specified IP address pattern.
  *
@@ -75478,7 +75438,7 @@ isPlainHostName$1.default = isPlainHostName;
 var isResolvable$1 = {};
 
 Object.defineProperty(isResolvable$1, "__esModule", { value: true });
-const util_1$1 = util$6;
+const util_1$1 = util$3;
 /**
  * Tries to resolve the hostname. Returns true if succeeds.
  *
@@ -75601,7 +75561,7 @@ var __importDefault$5 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(myIpAddress$1, "__esModule", { value: true });
 const ip_1 = ip;
-const net_1 = __importDefault$5(require$$0$a);
+const net_1 = __importDefault$5(require$$0$9);
 /**
  * Returns the IP address of the host that the Navigator is running on, as
  * a string in the dot-separated integer format.
@@ -75783,7 +75743,7 @@ function valueInRange$1(start, value, finish) {
 var weekdayRange$1 = {};
 
 Object.defineProperty(weekdayRange$1, "__esModule", { value: true });
-const util_1 = util$6;
+const util_1 = util$3;
 const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 /**
  * Only the first parameter is mandatory. Either the second, the third, or both
@@ -75878,7 +75838,7 @@ function isWeekday(v) {
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.sandbox = exports.createPacResolver = void 0;
-	const degenerator_1 = dist$3;
+	const degenerator_1 = dist$2;
 	/**
 	 * Built-in PAC functions.
 	 */
@@ -75959,9 +75919,9 @@ function isWeekday(v) {
 	    return Boolean(v.async);
 	}
 	
-} (dist$4));
+} (dist$3));
 
-var dist$2 = {};
+var dist$1 = {};
 
 var variants = {};
 
@@ -75987,7 +75947,7 @@ esmHelpers.unwrapJavascript = fakeUnwrapDefault;
 
 var module$1 = {};
 
-var debug$4 = {};
+var debug$2 = {};
 
 (function (exports) {
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -75995,7 +75955,7 @@ var debug$4 = {};
 	exports.QTS_DEBUG = Boolean(typeof process === "object" && process.env.QTS_DEBUG);
 	exports.debugLog = exports.QTS_DEBUG ? console.log.bind(console) : () => { };
 	
-} (debug$4));
+} (debug$2));
 
 var errors = {};
 
@@ -76107,7 +76067,7 @@ asyncifyHelpers.awaitEachYieldedPromise = awaitEachYieldedPromise;
 Object.defineProperty(lifetime, "__esModule", { value: true });
 lifetime.Scope = lifetime.WeakLifetime = lifetime.StaticLifetime = lifetime.Lifetime = void 0;
 const asyncify_helpers_1 = asyncifyHelpers;
-const debug_1$2 = debug$4;
+const debug_1$1 = debug$2;
 const errors_1$1 = errors;
 /**
  * A lifetime prevents access to a value after the lifetime has been
@@ -76130,7 +76090,7 @@ class Lifetime {
         this.disposer = disposer;
         this._owner = _owner;
         this._alive = true;
-        this._constructorStack = debug_1$2.QTS_DEBUG ? new Error("Lifetime constructed").stack : undefined;
+        this._constructorStack = debug_1$1.QTS_DEBUG ? new Error("Lifetime constructed").stack : undefined;
     }
     get alive() {
         return this._alive;
@@ -76588,7 +76548,7 @@ function requireContext () {
 	hasRequiredContext = 1;
 	Object.defineProperty(context, "__esModule", { value: true });
 	context.QuickJSContext = void 0;
-	const debug_1 = debug$4;
+	const debug_1 = debug$2;
 	const deferred_promise_1 = deferredPromise;
 	const errors_1 = errors;
 	const lifetime_1 = lifetime;
@@ -77288,7 +77248,7 @@ function requireRuntime () {
 	runtime.QuickJSRuntime = void 0;
 	const asyncify_helpers_1 = asyncifyHelpers;
 	const context_1 = requireContext();
-	const debug_1 = debug$4;
+	const debug_1 = debug$2;
 	const errors_1 = errors;
 	const lifetime_1 = lifetime;
 	const memory_1 = requireMemory();
@@ -77593,7 +77553,7 @@ function requireModule () {
 	hasRequiredModule = 1;
 	Object.defineProperty(module$1, "__esModule", { value: true });
 	module$1.QuickJSWASMModule = module$1.applyModuleEvalRuntimeOptions = module$1.applyBaseRuntimeOptions = module$1.QuickJSModuleCallbacks = void 0;
-	const debug_1 = debug$4;
+	const debug_1 = debug$2;
 	const errors_1 = errors;
 	const lifetime_1 = lifetime;
 	const runtime_1 = requireRuntime();
@@ -77909,7 +77869,7 @@ function requireContextAsyncify () {
 	Object.defineProperty(contextAsyncify, "__esModule", { value: true });
 	contextAsyncify.QuickJSAsyncContext = void 0;
 	const context_1 = requireContext();
-	const debug_1 = debug$4;
+	const debug_1 = debug$2;
 	const types_1 = requireTypes$1();
 	/**
 	 * Asyncified version of [[QuickJSContext]].
@@ -78871,7 +78831,7 @@ moduleTest.TestQuickJSWASMModule = TestQuickJSWASMModule;
 var hasRequiredDist;
 
 function requireDist () {
-	if (hasRequiredDist) return dist$2;
+	if (hasRequiredDist) return dist$1;
 	hasRequiredDist = 1;
 	(function (exports) {
 		var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -79001,8 +78961,8 @@ function requireDist () {
 		}
 		exports.shouldInterruptAfterDeadline = shouldInterruptAfterDeadline;
 		
-	} (dist$2));
-	return dist$2;
+	} (dist$1));
+	return dist$1;
 }
 
 var __createBinding$1 = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -79031,22 +78991,22 @@ var __importStar$1 = (commonjsGlobal && commonjsGlobal.__importStar) || function
 var __importDefault$4 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(dist$a, "__esModule", { value: true });
-dist$a.PacProxyAgent = void 0;
-const net$1 = __importStar$1(require$$0$a);
+Object.defineProperty(dist$9, "__esModule", { value: true });
+dist$9.PacProxyAgent = void 0;
+const net$1 = __importStar$1(require$$0$9);
 const tls$1 = __importStar$1(require$$1$2);
 const crypto = __importStar$1(require$$2);
-const events_1 = require$$0$5;
-const debug_1$1 = __importDefault$4(srcExports$1);
+const events_1 = require$$0$4;
+const debug_1 = __importDefault$4(srcExports$1);
 const url_1 = require$$5;
-const agent_base_1 = dist$b;
-const http_proxy_agent_1 = dist$9;
-const https_proxy_agent_1 = dist$8;
-const socks_proxy_agent_1 = dist$7;
-const get_uri_1 = dist$6;
-const pac_resolver_1 = dist$4;
+const agent_base_1 = dist$a;
+const http_proxy_agent_1 = dist$8;
+const https_proxy_agent_1 = dist$7;
+const socks_proxy_agent_1 = dist$6;
+const get_uri_1 = dist$5;
+const pac_resolver_1 = dist$3;
 const quickjs_emscripten_1 = requireDist();
-const debug$3 = (0, debug_1$1.default)('pac-proxy-agent');
+const debug$1 = (0, debug_1.default)('pac-proxy-agent');
 /**
  * The `PacProxyAgent` class.
  *
@@ -79068,7 +79028,7 @@ class PacProxyAgent extends agent_base_1.Agent {
         // Strip the "pac+" prefix
         const uriStr = typeof uri === 'string' ? uri : uri.href;
         this.uri = new url_1.URL(uriStr.replace(/^pac\+/i, ''));
-        debug$3('Creating PacProxyAgent with URI %o', this.uri.href);
+        debug$1('Creating PacProxyAgent with URI %o', this.uri.href);
         // @ts-expect-error Not sure why TS is complaining here…
         this.opts = { ...opts };
         this.cache = undefined;
@@ -79103,11 +79063,11 @@ class PacProxyAgent extends agent_base_1.Agent {
             // Create a sha1 hash of the JS code
             const hash = crypto.createHash('sha1').update(code).digest('hex');
             if (this.resolver && this.resolverHash === hash) {
-                debug$3('Same sha1 hash for code - contents have not changed, reusing previous proxy resolver');
+                debug$1('Same sha1 hash for code - contents have not changed, reusing previous proxy resolver');
                 return this.resolver;
             }
             // Cache the resolver
-            debug$3('Creating new proxy resolver instance');
+            debug$1('Creating new proxy resolver instance');
             this.resolver = (0, pac_resolver_1.createPacResolver)(qjs, code, this.opts);
             // Store that sha1 hash for future comparison purposes
             this.resolverHash = hash;
@@ -79116,7 +79076,7 @@ class PacProxyAgent extends agent_base_1.Agent {
         catch (err) {
             if (this.resolver &&
                 err.code === 'ENOTMODIFIED') {
-                debug$3('Got ENOTMODIFIED response, reusing previous proxy resolver');
+                debug$1('Got ENOTMODIFIED response, reusing previous proxy resolver');
                 return this.resolver;
             }
             throw err;
@@ -79128,12 +79088,12 @@ class PacProxyAgent extends agent_base_1.Agent {
      * @api private
      */
     async loadPacFile() {
-        debug$3('Loading PAC file: %o', this.uri);
+        debug$1('Loading PAC file: %o', this.uri);
         const rs = await (0, get_uri_1.getUri)(this.uri, { ...this.opts, cache: this.cache });
-        debug$3('Got `Readable` instance for URI');
+        debug$1('Got `Readable` instance for URI');
         this.cache = rs;
         const buf = await (0, agent_base_1.toBuffer)(rs);
-        debug$3('Read %o byte PAC file from URI', buf.length);
+        debug$1('Read %o byte PAC file from URI', buf.length);
         return buf.toString('utf8');
     }
     /**
@@ -79166,7 +79126,7 @@ class PacProxyAgent extends agent_base_1.Agent {
             port: defaultPort === opts.port ? null : opts.port,
         };
         const url = (0, url_1.format)(urlOpts);
-        debug$3('url: %o', url);
+        debug$1('url: %o', url);
         let result = await resolver(url);
         // Default to "DIRECT" if a falsey value was returned (or nothing)
         if (!result) {
@@ -79183,7 +79143,7 @@ class PacProxyAgent extends agent_base_1.Agent {
             let agent = null;
             let socket = null;
             const [type, target] = proxy.split(/\s+/);
-            debug$3('Attempting to use proxy: %o', proxy);
+            debug$1('Attempting to use proxy: %o', proxy);
             if (type === 'DIRECT') {
                 // Direct connection to the destination endpoint
                 if (secureEndpoint) {
@@ -79238,7 +79198,7 @@ class PacProxyAgent extends agent_base_1.Agent {
                 throw new Error(`Could not determine proxy type for: ${proxy}`);
             }
             catch (err) {
-                debug$3('Got error for proxy %o: %o', proxy, err);
+                debug$1('Got error for proxy %o: %o', proxy, err);
                 req.emit('proxy', { proxy, error: err });
             }
         }
@@ -79252,7 +79212,7 @@ PacProxyAgent.protocols = [
     'pac+http',
     'pac+https',
 ];
-dist$a.PacProxyAgent = PacProxyAgent;
+dist$9.PacProxyAgent = PacProxyAgent;
 
 (function (exports) {
 	var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -79283,17 +79243,17 @@ dist$a.PacProxyAgent = PacProxyAgent;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.ProxyAgent = exports.proxies = void 0;
-	const http = __importStar(require$$0$9);
+	const http = __importStar(require$$0$8);
 	const https = __importStar(require$$1$1);
 	const url_1 = require$$5;
 	const lru_cache_1 = __importDefault(lruCache);
-	const agent_base_1 = dist$b;
+	const agent_base_1 = dist$a;
 	const debug_1 = __importDefault(srcExports$1);
 	const proxy_from_env_1 = proxyFromEnv;
-	const pac_proxy_agent_1 = dist$a;
-	const http_proxy_agent_1 = dist$9;
-	const https_proxy_agent_1 = dist$8;
-	const socks_proxy_agent_1 = dist$7;
+	const pac_proxy_agent_1 = dist$9;
+	const http_proxy_agent_1 = dist$8;
+	const https_proxy_agent_1 = dist$7;
+	const socks_proxy_agent_1 = dist$6;
 	const debug = (0, debug_1.default)('proxy-agent');
 	const PROTOCOLS = [
 	    ...http_proxy_agent_1.HttpProxyAgent.protocols,
@@ -79388,7 +79348,7 @@ dist$a.PacProxyAgent = PacProxyAgent;
 	}
 	exports.ProxyAgent = ProxyAgent;
 	
-} (dist$c));
+} (dist$b));
 
 /**
  * @license
@@ -79404,7 +79364,7 @@ function httpRequest(url, method, response, keepAlive = true) {
         method,
         headers: keepAlive ? { Connection: 'keep-alive' } : undefined,
         auth: require$$5.urlToHttpOptions(url).auth,
-        agent: new dist$c.ProxyAgent(),
+        agent: new dist$b.ProxyAgent(),
     };
     const requestCallback = (res) => {
         if (res.statusCode &&
@@ -80307,7 +80267,7 @@ function isWindows11(version) {
  * Copyright 2023 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-const debugCache = debug$d('puppeteer:browsers:cache');
+const debugCache = debug$b('puppeteer:browsers:cache');
 /**
  * @public
  */
@@ -80484,7 +80444,7 @@ function parseFolderPath(folderPath) {
  * Copyright 2023 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-const debugLaunch = debug$d('puppeteer:browsers:launcher');
+const debugLaunch = debug$b('puppeteer:browsers:launcher');
 /**
  * @public
  */
@@ -80607,7 +80567,7 @@ class Process {
             }, {}),
             stdio,
         });
-        this.#browserProcess = childProcess.spawn(this.#executablePath, this.#args, {
+        this.#browserProcess = childProcess$1.spawn(this.#executablePath, this.#args, {
             detached: opts.detached,
             env,
             stdio,
@@ -80716,7 +80676,7 @@ class Process {
                 debugLaunch(`Browser process ${this.#browserProcess.pid} exists`);
                 if (process.platform === 'win32') {
                     try {
-                        childProcess.execSync(`taskkill /pid ${this.#browserProcess.pid} /T /F`);
+                        childProcess$1.execSync(`taskkill /pid ${this.#browserProcess.pid} /T /F`);
                     }
                     catch (error) {
                         debugLaunch(`Killing ${this.#browserProcess.pid} using taskkill failed`, error);
@@ -80928,9 +80888,9 @@ var onceExports = once$3.exports;
 
 var once$1 = onceExports;
 
-var noop$3 = function() {};
+var noop$1 = function() {};
 
-var isRequest$2 = function(stream) {
+var isRequest$1 = function(stream) {
 	return stream.setHeader && typeof stream.abort === 'function';
 };
 
@@ -80942,7 +80902,7 @@ var eos$1 = function(stream, opts, callback) {
 	if (typeof opts === 'function') return eos$1(stream, null, opts);
 	if (!opts) opts = {};
 
-	callback = once$1(callback || noop$3);
+	callback = once$1(callback || noop$1);
 
 	var ws = stream._writableState;
 	var rs = stream._readableState;
@@ -80986,7 +80946,7 @@ var eos$1 = function(stream, opts, callback) {
 		stream.req.on('finish', onfinish);
 	};
 
-	if (isRequest$2(stream)) {
+	if (isRequest$1(stream)) {
 		stream.on('complete', onfinish);
 		stream.on('abort', onclose);
 		if (stream.req) onrequest();
@@ -81025,7 +80985,7 @@ var once = onceExports;
 var eos = endOfStream;
 var fs$3 = fs$n; // we only need fs to get the ReadStream and WriteStream prototypes
 
-var noop$2 = function () {};
+var noop = function () {};
 var ancient = /^v?\.0/.test(process.version);
 
 var isFn = function (fn) {
@@ -81035,10 +80995,10 @@ var isFn = function (fn) {
 var isFS = function (stream) {
   if (!ancient) return false // newer node version do not need to care about fs is a special way
   if (!fs$3) return false // browser
-  return (stream instanceof (fs$3.ReadStream || noop$2) || stream instanceof (fs$3.WriteStream || noop$2)) && isFn(stream.close)
+  return (stream instanceof (fs$3.ReadStream || noop) || stream instanceof (fs$3.WriteStream || noop)) && isFn(stream.close)
 };
 
-var isRequest$1 = function (stream) {
+var isRequest = function (stream) {
   return stream.setHeader && isFn(stream.abort)
 };
 
@@ -81062,8 +81022,8 @@ var destroyer = function (stream, reading, writing, callback) {
     if (destroyed) return
     destroyed = true;
 
-    if (isFS(stream)) return stream.close(noop$2) // use close for fs streams to avoid fd leaks
-    if (isRequest$1(stream)) return stream.abort() // request.destroy just do .end - .abort is what we want
+    if (isFS(stream)) return stream.close(noop) // use close for fs streams to avoid fd leaks
+    if (isRequest(stream)) return stream.abort() // request.destroy just do .end - .abort is what we want
 
     if (isFn(stream.destroy)) return stream.destroy()
 
@@ -81081,7 +81041,7 @@ var pipe = function (from, to) {
 
 var pump$1 = function () {
   var streams = Array.prototype.slice.call(arguments);
-  var callback = isFn(streams[streams.length - 1] || noop$2) && streams.pop() || noop$2;
+  var callback = isFn(streams[streams.length - 1] || noop) && streams.pop() || noop;
 
   if (Array.isArray(streams[0])) streams = streams[0];
   if (streams.length < 2) throw new Error('pump requires two streams per minimum')
@@ -81104,7 +81064,7 @@ var pump$1 = function () {
 
 var pump_1 = pump$1;
 
-const {PassThrough: PassThroughStream} = require$$0$7;
+const {PassThrough: PassThroughStream} = require$$0$6;
 
 var bufferStream$1 = options => {
 	options = {...options};
@@ -81156,7 +81116,7 @@ var bufferStream$1 = options => {
 	return stream;
 };
 
-const {constants: BufferConstants} = require$$0$8;
+const {constants: BufferConstants} = require$$0$7;
 const pump = pump_1;
 const bufferStream = bufferStream$1;
 
@@ -81277,23 +81237,23 @@ function pendGo(self, fn) {
 }
 
 var fs$2 = fs$n;
-var util$5 = require$$1;
-var stream$1 = require$$0$7;
+var util$2 = require$$1;
+var stream$1 = require$$0$6;
 var Readable = stream$1.Readable;
-var Writable$3 = stream$1.Writable;
+var Writable$2 = stream$1.Writable;
 var PassThrough$1 = stream$1.PassThrough;
 var Pend = pend;
-var EventEmitter$4 = require$$0$5.EventEmitter;
+var EventEmitter$5 = require$$0$4.EventEmitter;
 
 fdSlicer.createFromBuffer = createFromBuffer;
 fdSlicer.createFromFd = createFromFd;
 fdSlicer.BufferSlicer = BufferSlicer;
 fdSlicer.FdSlicer = FdSlicer;
 
-util$5.inherits(FdSlicer, EventEmitter$4);
+util$2.inherits(FdSlicer, EventEmitter$5);
 function FdSlicer(fd, options) {
   options = options || {};
-  EventEmitter$4.call(this);
+  EventEmitter$5.call(this);
 
   this.fd = fd;
   this.pend = new Pend();
@@ -81354,7 +81314,7 @@ FdSlicer.prototype.unref = function() {
   }
 };
 
-util$5.inherits(ReadStream, Readable);
+util$2.inherits(ReadStream, Readable);
 function ReadStream(context, options) {
   options = options || {};
   Readable.call(this, options);
@@ -81409,10 +81369,10 @@ ReadStream.prototype.destroy = function(err) {
   this.context.unref();
 };
 
-util$5.inherits(WriteStream, Writable$3);
+util$2.inherits(WriteStream, Writable$2);
 function WriteStream(context, options) {
   options = options || {};
-  Writable$3.call(this, options);
+  Writable$2.call(this, options);
 
   this.context = context;
   this.context.ref();
@@ -81461,9 +81421,9 @@ WriteStream.prototype.destroy = function() {
   this.context.unref();
 };
 
-util$5.inherits(BufferSlicer, EventEmitter$4);
+util$2.inherits(BufferSlicer, EventEmitter$5);
 function BufferSlicer(buffer, options) {
-  EventEmitter$4.call(this);
+  EventEmitter$5.call(this);
 
   options = options || {};
   this.refCount = 0;
@@ -81523,7 +81483,7 @@ BufferSlicer.prototype.createReadStream = function(options) {
 BufferSlicer.prototype.createWriteStream = function(options) {
   var bufferSlicer = this;
   options = options || {};
-  var writeStream = new Writable$3(options);
+  var writeStream = new Writable$2(options);
   writeStream.start = options.start || 0;
   writeStream.endOffset = (options.end == null) ? this.buffer.length : +options.end;
   writeStream.bytesWritten = 0;
@@ -81573,7 +81533,7 @@ function createFromFd(fd, options) {
   return new FdSlicer(fd, options);
 }
 
-var Buffer$3 = require$$0$8.Buffer;
+var Buffer$3 = require$$0$7.Buffer;
 
 var CRC_TABLE = [
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
@@ -81686,14 +81646,14 @@ crc32$1.unsigned = function () {
 var bufferCrc32 = crc32$1;
 
 var fs$1 = fs$n;
-var zlib$1 = zlib$2;
+var zlib$1 = require$$1$3;
 var fd_slicer = fdSlicer;
 var crc32 = bufferCrc32;
-var util$4 = require$$1;
-var EventEmitter$3 = require$$0$5.EventEmitter;
-var Transform = require$$0$7.Transform;
-var PassThrough = require$$0$7.PassThrough;
-var Writable$2 = require$$0$7.Writable;
+var util$1 = require$$1;
+var EventEmitter$4 = require$$0$4.EventEmitter;
+var Transform = require$$0$6.Transform;
+var PassThrough = require$$0$6.PassThrough;
+var Writable$1 = require$$0$6.Writable;
 
 yauzl$1.open = open;
 yauzl$1.fromFd = fromFd;
@@ -81875,10 +81835,10 @@ function fromRandomAccessReader(reader, totalSize, options, callback) {
   });
 }
 
-util$4.inherits(ZipFile, EventEmitter$3);
+util$1.inherits(ZipFile, EventEmitter$4);
 function ZipFile(reader, centralDirectoryOffset, fileSize, entryCount, comment, autoClose, lazyEntries, decodeStrings, validateEntrySizes, strictFileNames) {
   var self = this;
-  EventEmitter$3.call(self);
+  EventEmitter$4.call(self);
   self.reader = reader;
   // forward close events
   self.reader.on("error", function(err) {
@@ -82319,7 +82279,7 @@ function readAndAssertNoEof(reader, buffer, offset, length, position, callback) 
   });
 }
 
-util$4.inherits(AssertByteCountStream, Transform);
+util$1.inherits(AssertByteCountStream, Transform);
 function AssertByteCountStream(byteCount) {
   Transform.call(this);
   this.actualByteCount = 0;
@@ -82341,9 +82301,9 @@ AssertByteCountStream.prototype._flush = function(cb) {
   cb();
 };
 
-util$4.inherits(RandomAccessReader, EventEmitter$3);
+util$1.inherits(RandomAccessReader, EventEmitter$4);
 function RandomAccessReader() {
-  EventEmitter$3.call(this);
+  EventEmitter$4.call(this);
   this.refCount = 0;
 }
 RandomAccessReader.prototype.ref = function() {
@@ -82407,7 +82367,7 @@ RandomAccessReader.prototype._readStreamForRange = function(start, end) {
 };
 RandomAccessReader.prototype.read = function(buffer, offset, length, position, callback) {
   var readStream = this.createReadStream({start: position, end: position + length});
-  var writeStream = new Writable$2();
+  var writeStream = new Writable$1();
   var written = 0;
   writeStream._write = function(chunk, encoding, cb) {
     chunk.copy(buffer, offset + written, 0, chunk.length);
@@ -82424,7 +82384,7 @@ RandomAccessReader.prototype.close = function(callback) {
   setImmediate(callback);
 };
 
-util$4.inherits(RefUnrefFilter, PassThrough);
+util$1.inherits(RefUnrefFilter, PassThrough);
 function RefUnrefFilter(context) {
   PassThrough.call(this);
   this.context = context;
@@ -82484,7 +82444,7 @@ function defaultCallback(err) {
 
 srcExports$1('extract-zip');
 const { promisify } = require$$1;
-const stream = require$$0$7;
+const stream = require$$0$6;
 const yauzl = yauzl$1;
 
 promisify(yauzl.open);
@@ -82504,7 +82464,7 @@ function requireQueueMicrotask () {
   ? process.nextTick.bind(process)
   : requireQueueMicrotask();
 
-function isBuffer$2 (value) {
+function isBuffer (value) {
   return Buffer.isBuffer(value) || value instanceof Uint8Array
 }
 
@@ -82581,7 +82541,7 @@ function toBuffer$3 (buffer) {
   return Buffer.from(buffer.buffer, buffer.byteOffset, buffer.byteLength)
 }
 
-function toString$2 (buffer, encoding, start, end) {
+function toString (buffer, encoding, start, end) {
   return toBuffer$3(buffer).toString(encoding, start, end)
 }
 
@@ -82622,7 +82582,7 @@ function readInt32LE (buffer, offset) {
 }
 
 var b4a$3 = {
-  isBuffer: isBuffer$2,
+  isBuffer,
   isEncoding,
   alloc,
   allocUnsafe,
@@ -82641,7 +82601,7 @@ var b4a$3 = {
   swap32,
   swap64,
   toBuffer: toBuffer$3,
-  toString: toString$2,
+  toString,
   write,
   writeDoubleLE,
   writeFloatLE,
@@ -82690,7 +82650,7 @@ b4a.alloc(1024);
 var through = {exports: {}};
 
 (function (module, exports) {
-	var Stream = require$$0$7;
+	var Stream = require$$0$6;
 
 	// through
 	//
@@ -83169,14 +83129,14 @@ bzip2.decompress = function(bits, stream, buf, bufsize, streamCRC) {
  * Copyright 2023 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-require$$1.promisify(childProcess.exec);
+require$$1.promisify(childProcess$1.exec);
 
 /**
  * @license
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-debug$d('puppeteer:browsers:install');
+debug$b('puppeteer:browsers:install');
 /**
  *
  * @public
@@ -83468,7 +83428,7 @@ function getProcessArgvBin() {
  * Copyright (c) 2016, Contributors
  * SPDX-License-Identifier: ISC
  */
-function camelCase$2(str) {
+function camelCase(str) {
     // Handle the case where an argument is provided as camel case, e.g., fooBar.
     // by ensuring that the string isn't already mixed case:
     const isCamelCase = str !== str.toLowerCase() && str !== str.toUpperCase();
@@ -83977,7 +83937,7 @@ class YargsParser {
         if (configuration['strip-aliased']) {
             [].concat(...Object.keys(aliases).map(k => aliases[k])).forEach(alias => {
                 if (configuration['camel-case-expansion'] && alias.includes('-')) {
-                    delete argv[alias.split('.').map(prop => camelCase$2(prop)).join('.')];
+                    delete argv[alias.split('.').map(prop => camelCase(prop)).join('.')];
                 }
                 delete argv[alias];
             });
@@ -84083,7 +84043,7 @@ class YargsParser {
         function setArg(key, val, shouldStripQuotes = inputIsString) {
             if (/-/.test(key) && configuration['camel-case-expansion']) {
                 const alias = key.split('.').map(function (prop) {
-                    return camelCase$2(prop);
+                    return camelCase(prop);
                 }).join('.');
                 addNewAlias(key, alias);
             }
@@ -84258,7 +84218,7 @@ class YargsParser {
                         if (i === 0) {
                             key = key.substring(prefix.length);
                         }
-                        return camelCase$2(key);
+                        return camelCase(key);
                     });
                     if (((configOnly && flags.configs[keys.join('.')]) || !configOnly) && !hasKey(argv, keys)) {
                         setArg(keys.join('.'), env[envVar]);
@@ -84402,7 +84362,7 @@ class YargsParser {
                     // For "--option-name", also set argv.optionName
                     flags.aliases[key].concat(key).forEach(function (x) {
                         if (/-/.test(x) && configuration['camel-case-expansion']) {
-                            const c = camelCase$2(x);
+                            const c = camelCase(x);
                             if (c !== key && flags.aliases[key].indexOf(c) === -1) {
                                 flags.aliases[key].push(c);
                                 newAliases[c] = true;
@@ -84676,7 +84636,7 @@ const yargsParser = function Parser(args, opts) {
 yargsParser.detailed = function (args, opts) {
     return parser.parse(args.slice(), opts);
 };
-yargsParser.camelCase = camelCase$2;
+yargsParser.camelCase = camelCase;
 yargsParser.decamelize = decamelize;
 yargsParser.looksLikeNumber = looksLikeNumber;
 
@@ -84979,7 +84939,7 @@ const ansi$1 = new RegExp('\x1b(?:\\[(?:\\d+[ABCDEFGJKSTm]|\\d+;\\d+[Hfm]|' +
 function stripAnsi$2(str) {
     return str.replace(ansi$1, '');
 }
-function wrap$1(str, width) {
+function wrap(str, width) {
     const [start, end] = str.match(ansi$1) || ['', ''];
     str = stripAnsi$2(str);
     let wrapped = '';
@@ -85003,7 +84963,7 @@ function ui (opts) {
       return [...str].length
     },
     stripAnsi: stripAnsi$2,
-    wrap: wrap$1
+    wrap
   })
 }
 
@@ -85232,8 +85192,8 @@ const mainFilename = __dirname$1.substring(0, __dirname$1.lastIndexOf('node_modu
 
 ({
   assert: {
-    notStrictEqual: require$$0$6.notStrictEqual,
-    strictEqual: require$$0$6.strictEqual
+    notStrictEqual: require$$0$5.notStrictEqual,
+    strictEqual: require$$0$5.strictEqual
   },
   cliui: ui,
   findUp: escalade,
@@ -87378,7 +87338,7 @@ function requireRequireDirectory () {
 	return requireDirectory.exports;
 }
 
-var t$1=require$$0$6;class e extends Error{constructor(t){super(t||"yargs error"),this.name="YError",Error.captureStackTrace&&Error.captureStackTrace(this,e);}}let s,i=[];function n(t,o,a,h){s=h;let l={};if(Object.prototype.hasOwnProperty.call(t,"extends")){if("string"!=typeof t.extends)return l;const r=/\.json|\..*rc$/.test(t.extends);let h=null;if(r)h=function(t,e){return s.path.resolve(t,e)}(o,t.extends);else try{h=require.resolve(t.extends);}catch(e){return t}!function(t){if(i.indexOf(t)>-1)throw new e(`Circular extended configurations: '${t}'.`)}(h),i.push(h),l=r?JSON.parse(s.readFileSync(h,"utf8")):commonjsRequire(t.extends),delete t.extends,l=n(l,s.path.dirname(h),a,s);}return i=[],a?r(l,t):Object.assign({},l,t)}function r(t,e){const s={};function i(t){return t&&"object"==typeof t&&!Array.isArray(t)}Object.assign(s,t);for(const n of Object.keys(e))i(e[n])&&i(s[n])?s[n]=r(t[n],e[n]):s[n]=e[n];return s}function o(t){const e=t.replace(/\s{2,}/g," ").split(/\s+(?![^[]*]|[^<]*>)/),s=/\.*[\][<>]/g,i=e.shift();if(!i)throw new Error(`No command found in: ${t}`);const n={cmd:i.replace(s,""),demanded:[],optional:[]};return e.forEach(((t,i)=>{let r=!1;t=t.replace(/\s/g,""),/\.+[\]>]/.test(t)&&i===e.length-1&&(r=!0),/^\[/.test(t)?n.optional.push({cmd:t.replace(s,"").split("|"),variadic:r}):n.demanded.push({cmd:t.replace(s,"").split("|"),variadic:r});})),n}const a=["first","second","third","fourth","fifth","sixth"];function h(t,s,i){try{let n=0;const[r,a,h]="object"==typeof t?[{demanded:[],optional:[]},t,s]:[o(`cmd ${t}`),s,i],f=[].slice.call(a);for(;f.length&&void 0===f[f.length-1];)f.pop();const d=h||f.length;if(d<r.demanded.length)throw new e(`Not enough arguments provided. Expected ${r.demanded.length} but received ${f.length}.`);const u=r.demanded.length+r.optional.length;if(d>u)throw new e(`Too many arguments provided. Expected max ${u} but received ${d}.`);r.demanded.forEach((t=>{const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1;})),r.optional.forEach((t=>{if(0===f.length)return;const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1;}));}catch(t){console.warn(t.stack);}}function l(t){return Array.isArray(t)?"array":null===t?"null":typeof t}function c(t,s,i){throw new e(`Invalid ${a[i]||"manyith"} argument. Expected ${s.join(" or ")} but received ${t}.`)}function f(t){return !!t&&!!t.then&&"function"==typeof t.then}function d(t,e,s,i){s.assert.notStrictEqual(t,e,i);}function u(t,e){e.assert.strictEqual(typeof t,"string");}function p(t){return Object.keys(t)}function g(t={},e=(()=>!0)){const s={};return p(t).forEach((i=>{e(i,t[i])&&(s[i]=t[i]);})),s}function m(){return process.versions.electron&&!process.defaultApp?0:1}function y$1(){return process.argv[m()]}var b$1=Object.freeze({__proto__:null,hideBin:function(t){return t.slice(m()+1)},getProcessArgvBin:y$1});function v$1(t,e,s,i){if("a"===s&&!i)throw new TypeError("Private accessor was defined without a getter");if("function"==typeof e?t!==e||!i:!e.has(t))throw new TypeError("Cannot read private member from an object whose class did not declare it");return "m"===s?i:"a"===s?i.call(t):i?i.value:e.get(t)}function O(t,e,s,i,n){if("function"==typeof e?t!==e||!n:!e.has(t))throw new TypeError("Cannot write private member to an object whose class did not declare it");return e.set(t,s),s}let w$1 = class w{constructor(t){this.globalMiddleware=[],this.frozens=[],this.yargs=t;}addMiddleware(t,e,s=!0,i=!1){if(h("<array|function> [boolean] [boolean] [boolean]",[t,e,s],arguments.length),Array.isArray(t)){for(let i=0;i<t.length;i++){if("function"!=typeof t[i])throw Error("middleware must be a function");const n=t[i];n.applyBeforeValidation=e,n.global=s;}Array.prototype.push.apply(this.globalMiddleware,t);}else if("function"==typeof t){const n=t;n.applyBeforeValidation=e,n.global=s,n.mutates=i,this.globalMiddleware.push(t);}return this.yargs}addCoerceMiddleware(t,e){const s=this.yargs.getAliases();return this.globalMiddleware=this.globalMiddleware.filter((t=>{const i=[...s[e]||[],e];return !t.option||!i.includes(t.option)})),t.option=e,this.addMiddleware(t,!0,!0,!0)}getMiddleware(){return this.globalMiddleware}freeze(){this.frozens.push([...this.globalMiddleware]);}unfreeze(){const t=this.frozens.pop();void 0!==t&&(this.globalMiddleware=t);}reset(){this.globalMiddleware=this.globalMiddleware.filter((t=>t.global));}};function C$1(t,e,s,i){return s.reduce(((t,s)=>{if(s.applyBeforeValidation!==i)return t;if(s.mutates){if(s.applied)return t;s.applied=!0;}if(f(t))return t.then((t=>Promise.all([t,s(t,e)]))).then((([t,e])=>Object.assign(t,e)));{const i=s(t,e);return f(i)?i.then((e=>Object.assign(t,e))):Object.assign(t,i)}}),t)}function j$1(t,e,s=(t=>{throw t})){try{const s="function"==typeof t?t():t;return f(s)?s.then((t=>e(t))):e(s)}catch(t){return s(t)}}const M$1=/(^\*)|(^\$0)/;let _$1 = class _{constructor(t,e,s,i){this.requireCache=new Set,this.handlers={},this.aliasMap={},this.frozens=[],this.shim=i,this.usage=t,this.globalMiddleware=s,this.validation=e;}addDirectory(t,e,s,i){"boolean"!=typeof(i=i||{}).recurse&&(i.recurse=!1),Array.isArray(i.extensions)||(i.extensions=["js"]);const n="function"==typeof i.visit?i.visit:t=>t;i.visit=(t,e,s)=>{const i=n(t,e,s);if(i){if(this.requireCache.has(e))return i;this.requireCache.add(e),this.addHandler(i);}return i},this.shim.requireDirectory({require:e,filename:s},t,i);}addHandler(t,e,s,i,n,r){let a=[];const h=function(t){return t?t.map((t=>(t.applyBeforeValidation=!1,t))):[]}(n);if(i=i||(()=>{}),Array.isArray(t))if(function(t){return t.every((t=>"string"==typeof t))}(t))[t,...a]=t;else for(const e of t)this.addHandler(e);else {if(function(t){return "object"==typeof t&&!Array.isArray(t)}(t)){let e=Array.isArray(t.command)||"string"==typeof t.command?t.command:this.moduleName(t);return t.aliases&&(e=[].concat(e).concat(t.aliases)),void this.addHandler(e,this.extractDesc(t),t.builder,t.handler,t.middlewares,t.deprecated)}if(k$1(s))return void this.addHandler([t].concat(a),e,s.builder,s.handler,s.middlewares,s.deprecated)}if("string"==typeof t){const n=o(t);a=a.map((t=>o(t).cmd));let l=!1;const c=[n.cmd].concat(a).filter((t=>!M$1.test(t)||(l=!0,!1)));0===c.length&&l&&c.push("$0"),l&&(n.cmd=c[0],a=c.slice(1),t=t.replace(M$1,n.cmd)),a.forEach((t=>{this.aliasMap[t]=n.cmd;})),!1!==e&&this.usage.command(t,e,l,a,r),this.handlers[n.cmd]={original:t,description:e,handler:i,builder:s||{},middlewares:h,deprecated:r,demanded:n.demanded,optional:n.optional},l&&(this.defaultCommand=this.handlers[n.cmd]);}}getCommandHandlers(){return this.handlers}getCommands(){return Object.keys(this.handlers).concat(Object.keys(this.aliasMap))}hasDefaultCommand(){return !!this.defaultCommand}runCommand(t,e,s,i,n,r){const o=this.handlers[t]||this.handlers[this.aliasMap[t]]||this.defaultCommand,a=e.getInternalMethods().getContext(),h=a.commands.slice(),l=!t;t&&(a.commands.push(t),a.fullCommands.push(o.original));const c=this.applyBuilderUpdateUsageAndParse(l,o,e,s.aliases,h,i,n,r);return f(c)?c.then((t=>this.applyMiddlewareAndGetResult(l,o,t.innerArgv,a,n,t.aliases,e))):this.applyMiddlewareAndGetResult(l,o,c.innerArgv,a,n,c.aliases,e)}applyBuilderUpdateUsageAndParse(t,e,s,i,n,r,o,a){const h=e.builder;let l=s;if(x$1(h)){s.getInternalMethods().getUsageInstance().freeze();const c=h(s.getInternalMethods().reset(i),a);if(f(c))return c.then((i=>{var a;return l=(a=i)&&"function"==typeof a.getInternalMethods?i:s,this.parseAndUpdateUsage(t,e,l,n,r,o)}))}else (function(t){return "object"==typeof t})(h)&&(s.getInternalMethods().getUsageInstance().freeze(),l=s.getInternalMethods().reset(i),Object.keys(e.builder).forEach((t=>{l.option(t,h[t]);})));return this.parseAndUpdateUsage(t,e,l,n,r,o)}parseAndUpdateUsage(t,e,s,i,n,r){t&&s.getInternalMethods().getUsageInstance().unfreeze(!0),this.shouldUpdateUsage(s)&&s.getInternalMethods().getUsageInstance().usage(this.usageFromParentCommandsCommandHandler(i,e),e.description);const o=s.getInternalMethods().runYargsParserAndExecuteCommands(null,void 0,!0,n,r);return f(o)?o.then((t=>({aliases:s.parsed.aliases,innerArgv:t}))):{aliases:s.parsed.aliases,innerArgv:o}}shouldUpdateUsage(t){return !t.getInternalMethods().getUsageInstance().getUsageDisabled()&&0===t.getInternalMethods().getUsageInstance().getUsage().length}usageFromParentCommandsCommandHandler(t,e){const s=M$1.test(e.original)?e.original.replace(M$1,"").trim():e.original,i=t.filter((t=>!M$1.test(t)));return i.push(s),`$0 ${i.join(" ")}`}handleValidationAndGetResult(t,e,s,i,n,r,o,a){if(!r.getInternalMethods().getHasOutput()){const e=r.getInternalMethods().runValidation(n,a,r.parsed.error,t);s=j$1(s,(t=>(e(t),t)));}if(e.handler&&!r.getInternalMethods().getHasOutput()){r.getInternalMethods().setHasOutput();const i=!!r.getOptions().configuration["populate--"];r.getInternalMethods().postProcess(s,i,!1,!1),s=j$1(s=C$1(s,r,o,!1),(t=>{const s=e.handler(t);return f(s)?s.then((()=>t)):t})),t||r.getInternalMethods().getUsageInstance().cacheHelpMessage(),f(s)&&!r.getInternalMethods().hasParseCallback()&&s.catch((t=>{try{r.getInternalMethods().getUsageInstance().fail(null,t);}catch(t){}}));}return t||(i.commands.pop(),i.fullCommands.pop()),s}applyMiddlewareAndGetResult(t,e,s,i,n,r,o){let a={};if(n)return s;o.getInternalMethods().getHasOutput()||(a=this.populatePositionals(e,s,i,o));const h=this.globalMiddleware.getMiddleware().slice(0).concat(e.middlewares),l=C$1(s,o,h,!0);return f(l)?l.then((s=>this.handleValidationAndGetResult(t,e,s,i,r,o,h,a))):this.handleValidationAndGetResult(t,e,l,i,r,o,h,a)}populatePositionals(t,e,s,i){e._=e._.slice(s.commands.length);const n=t.demanded.slice(0),r=t.optional.slice(0),o={};for(this.validation.positionalCount(n.length,e._.length);n.length;){const t=n.shift();this.populatePositional(t,e,o);}for(;r.length;){const t=r.shift();this.populatePositional(t,e,o);}return e._=s.commands.concat(e._.map((t=>""+t))),this.postProcessPositionals(e,o,this.cmdToParseOptions(t.original),i),o}populatePositional(t,e,s){const i=t.cmd[0];t.variadic?s[i]=e._.splice(0).map(String):e._.length&&(s[i]=[String(e._.shift())]);}cmdToParseOptions(t){const e={array:[],default:{},alias:{},demand:{}},s=o(t);return s.demanded.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i,e.demand[s]=!0;})),s.optional.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i;})),e}postProcessPositionals(t,e,s,i){const n=Object.assign({},i.getOptions());n.default=Object.assign(s.default,n.default);for(const t of Object.keys(s.alias))n.alias[t]=(n.alias[t]||[]).concat(s.alias[t]);n.array=n.array.concat(s.array),n.config={};const r=[];if(Object.keys(e).forEach((t=>{e[t].map((e=>{n.configuration["unknown-options-as-args"]&&(n.key[t]=!0),r.push(`--${t}`),r.push(e);}));})),!r.length)return;const o=Object.assign({},n.configuration,{"populate--":!1}),a=this.shim.Parser.detailed(r,Object.assign({},n,{configuration:o}));if(a.error)i.getInternalMethods().getUsageInstance().fail(a.error.message,a.error);else {const s=Object.keys(e);Object.keys(e).forEach((t=>{s.push(...a.aliases[t]);})),Object.keys(a.argv).forEach((n=>{s.includes(n)&&(e[n]||(e[n]=a.argv[n]),!this.isInConfigs(i,n)&&!this.isDefaulted(i,n)&&Object.prototype.hasOwnProperty.call(t,n)&&Object.prototype.hasOwnProperty.call(a.argv,n)&&(Array.isArray(t[n])||Array.isArray(a.argv[n]))?t[n]=[].concat(t[n],a.argv[n]):t[n]=a.argv[n]);}));}}isDefaulted(t,e){const{default:s}=t.getOptions();return Object.prototype.hasOwnProperty.call(s,e)||Object.prototype.hasOwnProperty.call(s,this.shim.Parser.camelCase(e))}isInConfigs(t,e){const{configObjects:s}=t.getOptions();return s.some((t=>Object.prototype.hasOwnProperty.call(t,e)))||s.some((t=>Object.prototype.hasOwnProperty.call(t,this.shim.Parser.camelCase(e))))}runDefaultBuilderOn(t){if(!this.defaultCommand)return;if(this.shouldUpdateUsage(t)){const e=M$1.test(this.defaultCommand.original)?this.defaultCommand.original:this.defaultCommand.original.replace(/^[^[\]<>]*/,"$0 ");t.getInternalMethods().getUsageInstance().usage(e,this.defaultCommand.description);}const e=this.defaultCommand.builder;if(x$1(e))return e(t,!0);k$1(e)||Object.keys(e).forEach((s=>{t.option(s,e[s]);}));}moduleName(t){const e=function(t){if("undefined"==typeof commonjsRequire)return null;for(let e,s=0,i=Object.keys(require.cache);s<i.length;s++)if(e=require.cache[i[s]],e.exports===t)return e;return null}(t);if(!e)throw new Error(`No command name given for module: ${this.shim.inspect(t)}`);return this.commandFromFilename(e.filename)}commandFromFilename(t){return this.shim.path.basename(t,this.shim.path.extname(t))}extractDesc({describe:t,description:e,desc:s}){for(const i of [t,e,s]){if("string"==typeof i||!1===i)return i;d(i,!0,this.shim);}return !1}freeze(){this.frozens.push({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand});}unfreeze(){const t=this.frozens.pop();d(t,void 0,this.shim),({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand}=t);}reset(){return this.handlers={},this.aliasMap={},this.defaultCommand=void 0,this.requireCache=new Set,this}};function k$1(t){return "object"==typeof t&&!!t.builder&&"function"==typeof t.handler}function x$1(t){return "function"==typeof t}function E$1(t){"undefined"!=typeof process&&[process.stdout,process.stderr].forEach((e=>{const s=e;s._handle&&s.isTTY&&"function"==typeof s._handle.setBlocking&&s._handle.setBlocking(t);}));}function A(t){return "boolean"==typeof t}function P(t,s){const i=s.y18n.__,n={},r=[];n.failFn=function(t){r.push(t);};let o=null,a=null,h=!0;n.showHelpOnFail=function(e=!0,s){const[i,r]="string"==typeof e?[!0,e]:[e,s];return t.getInternalMethods().isGlobalContext()&&(a=r),o=r,h=i,n};let l=!1;n.fail=function(s,i){const c=t.getInternalMethods().getLoggerInstance();if(!r.length){if(t.getExitProcess()&&E$1(!0),!l){l=!0,h&&(t.showHelp("error"),c.error()),(s||i)&&c.error(s||i);const e=o||a;e&&((s||i)&&c.error(""),c.error(e));}if(i=i||new e(s),t.getExitProcess())return t.exit(1);if(t.getInternalMethods().hasParseCallback())return t.exit(1,i);throw i}for(let t=r.length-1;t>=0;--t){const e=r[t];if(A(e)){if(i)throw i;if(s)throw Error(s)}else e(s,i,n);}};let c=[],f=!1;n.usage=(t,e)=>null===t?(f=!0,c=[],n):(f=!1,c.push([t,e||""]),n),n.getUsage=()=>c,n.getUsageDisabled=()=>f,n.getPositionalGroupName=()=>i("Positionals:");let d=[];n.example=(t,e)=>{d.push([t,e||""]);};let u=[];n.command=function(t,e,s,i,n=!1){s&&(u=u.map((t=>(t[2]=!1,t)))),u.push([t,e||"",s,i,n]);},n.getCommands=()=>u;let p={};n.describe=function(t,e){Array.isArray(t)?t.forEach((t=>{n.describe(t,e);})):"object"==typeof t?Object.keys(t).forEach((e=>{n.describe(e,t[e]);})):p[t]=e;},n.getDescriptions=()=>p;let m=[];n.epilog=t=>{m.push(t);};let y,b=!1;n.wrap=t=>{b=!0,y=t;},n.getWrap=()=>s.getEnv("YARGS_DISABLE_WRAP")?null:(b||(y=function(){const t=80;return s.process.stdColumns?Math.min(t,s.process.stdColumns):t}(),b=!0),y);const v="__yargsString__:";function O(t,e,i){let n=0;return Array.isArray(t)||(t=Object.values(t).map((t=>[t]))),t.forEach((t=>{n=Math.max(s.stringWidth(i?`${i} ${I(t[0])}`:I(t[0]))+$(t[0]),n);})),e&&(n=Math.min(n,parseInt((.5*e).toString(),10))),n}let w;function C(e){return t.getOptions().hiddenOptions.indexOf(e)<0||t.parsed.argv[t.getOptions().showHiddenOpt]}function j(t,e){let s=`[${i("default:")} `;if(void 0===t&&!e)return null;if(e)s+=e;else switch(typeof t){case"string":s+=`"${t}"`;break;case"object":s+=JSON.stringify(t);break;default:s+=t;}return `${s}]`}n.deferY18nLookup=t=>v+t,n.help=function(){if(w)return w;!function(){const e=t.getDemandedOptions(),s=t.getOptions();(Object.keys(s.alias)||[]).forEach((i=>{s.alias[i].forEach((r=>{p[r]&&n.describe(i,p[r]),r in e&&t.demandOption(i,e[r]),s.boolean.includes(r)&&t.boolean(i),s.count.includes(r)&&t.count(i),s.string.includes(r)&&t.string(i),s.normalize.includes(r)&&t.normalize(i),s.array.includes(r)&&t.array(i),s.number.includes(r)&&t.number(i);}));}));}();const e=t.customScriptName?t.$0:s.path.basename(t.$0),r=t.getDemandedOptions(),o=t.getDemandedCommands(),a=t.getDeprecatedOptions(),h=t.getGroups(),l=t.getOptions();let g=[];g=g.concat(Object.keys(p)),g=g.concat(Object.keys(r)),g=g.concat(Object.keys(o)),g=g.concat(Object.keys(l.default)),g=g.filter(C),g=Object.keys(g.reduce(((t,e)=>("_"!==e&&(t[e]=!0),t)),{}));const y=n.getWrap(),b=s.cliui({width:y,wrap:!!y});if(!f)if(c.length)c.forEach((t=>{b.div({text:`${t[0].replace(/\$0/g,e)}`}),t[1]&&b.div({text:`${t[1]}`,padding:[1,0,0,0]});})),b.div();else if(u.length){let t=null;t=o._?`${e} <${i("command")}>\n`:`${e} [${i("command")}]\n`,b.div(`${t}`);}if(u.length>1||1===u.length&&!u[0][2]){b.div(i("Commands:"));const s=t.getInternalMethods().getContext(),n=s.commands.length?`${s.commands.join(" ")} `:"";!0===t.getInternalMethods().getParserConfiguration()["sort-commands"]&&(u=u.sort(((t,e)=>t[0].localeCompare(e[0]))));const r=e?`${e} `:"";u.forEach((t=>{const s=`${r}${n}${t[0].replace(/^\$0 ?/,"")}`;b.span({text:s,padding:[0,2,0,2],width:O(u,y,`${e}${n}`)+4},{text:t[1]});const o=[];t[2]&&o.push(`[${i("default")}]`),t[3]&&t[3].length&&o.push(`[${i("aliases:")} ${t[3].join(", ")}]`),t[4]&&("string"==typeof t[4]?o.push(`[${i("deprecated: %s",t[4])}]`):o.push(`[${i("deprecated")}]`)),o.length?b.div({text:o.join(" "),padding:[0,0,0,2],align:"right"}):b.div();})),b.div();}const M=(Object.keys(l.alias)||[]).concat(Object.keys(t.parsed.newAliases)||[]);g=g.filter((e=>!t.parsed.newAliases[e]&&M.every((t=>-1===(l.alias[t]||[]).indexOf(e)))));const _=i("Options:");h[_]||(h[_]=[]),function(t,e,s,i){let n=[],r=null;Object.keys(s).forEach((t=>{n=n.concat(s[t]);})),t.forEach((t=>{r=[t].concat(e[t]),r.some((t=>-1!==n.indexOf(t)))||s[i].push(t);}));}(g,l.alias,h,_);const k=t=>/^--/.test(I(t)),x=Object.keys(h).filter((t=>h[t].length>0)).map((t=>({groupName:t,normalizedKeys:h[t].filter(C).map((t=>{if(M.includes(t))return t;for(let e,s=0;void 0!==(e=M[s]);s++)if((l.alias[e]||[]).includes(t))return e;return t}))}))).filter((({normalizedKeys:t})=>t.length>0)).map((({groupName:t,normalizedKeys:e})=>{const s=e.reduce(((e,s)=>(e[s]=[s].concat(l.alias[s]||[]).map((e=>t===n.getPositionalGroupName()?e:(/^[0-9]$/.test(e)?l.boolean.includes(s)?"-":"--":e.length>1?"--":"-")+e)).sort(((t,e)=>k(t)===k(e)?0:k(t)?1:-1)).join(", "),e)),{});return {groupName:t,normalizedKeys:e,switches:s}}));if(x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).some((({normalizedKeys:t,switches:e})=>!t.every((t=>k(e[t])))))&&x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).forEach((({normalizedKeys:t,switches:e})=>{t.forEach((t=>{var s,i;k(e[t])&&(e[t]=(s=e[t],i=4,S$1(s)?{text:s.text,indentation:s.indentation+i}:{text:s,indentation:i}));}));})),x.forEach((({groupName:e,normalizedKeys:s,switches:o})=>{b.div(e),s.forEach((e=>{const s=o[e];let h=p[e]||"",c=null;h.includes(v)&&(h=i(h.substring(16))),l.boolean.includes(e)&&(c=`[${i("boolean")}]`),l.count.includes(e)&&(c=`[${i("count")}]`),l.string.includes(e)&&(c=`[${i("string")}]`),l.normalize.includes(e)&&(c=`[${i("string")}]`),l.array.includes(e)&&(c=`[${i("array")}]`),l.number.includes(e)&&(c=`[${i("number")}]`);const f=[e in a?(d=a[e],"string"==typeof d?`[${i("deprecated: %s",d)}]`:`[${i("deprecated")}]`):null,c,e in r?`[${i("required")}]`:null,l.choices&&l.choices[e]?`[${i("choices:")} ${n.stringifiedValues(l.choices[e])}]`:null,j(l.default[e],l.defaultDescription[e])].filter(Boolean).join(" ");var d;b.span({text:I(s),padding:[0,2,0,2+$(s)],width:O(o,y)+4},h);const u=!0===t.getInternalMethods().getUsageConfiguration()["hide-types"];f&&!u?b.div({text:f,padding:[0,0,0,2],align:"right"}):b.div();})),b.div();})),d.length&&(b.div(i("Examples:")),d.forEach((t=>{t[0]=t[0].replace(/\$0/g,e);})),d.forEach((t=>{""===t[1]?b.div({text:t[0],padding:[0,2,0,2]}):b.div({text:t[0],padding:[0,2,0,2],width:O(d,y)+4},{text:t[1]});})),b.div()),m.length>0){const t=m.map((t=>t.replace(/\$0/g,e))).join("\n");b.div(`${t}\n`);}return b.toString().replace(/\s*$/,"")},n.cacheHelpMessage=function(){w=this.help();},n.clearCachedHelpMessage=function(){w=void 0;},n.hasCachedHelpMessage=function(){return !!w},n.showHelp=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(n.help());},n.functionDescription=t=>["(",t.name?s.Parser.decamelize(t.name,"-"):i("generated-value"),")"].join(""),n.stringifiedValues=function(t,e){let s="";const i=e||", ",n=[].concat(t);return t&&n.length?(n.forEach((t=>{s.length&&(s+=i),s+=JSON.stringify(t);})),s):s};let M=null;n.version=t=>{M=t;},n.showVersion=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(M);},n.reset=function(t){return o=null,l=!1,c=[],f=!1,m=[],d=[],u=[],p=g(p,(e=>!t[e])),n};const _=[];return n.freeze=function(){_.push({failMessage:o,failureOutput:l,usages:c,usageDisabled:f,epilogs:m,examples:d,commands:u,descriptions:p});},n.unfreeze=function(t=!1){const e=_.pop();e&&(t?(p={...e.descriptions,...p},u=[...e.commands,...u],c=[...e.usages,...c],d=[...e.examples,...d],m=[...e.epilogs,...m]):({failMessage:o,failureOutput:l,usages:c,usageDisabled:f,epilogs:m,examples:d,commands:u,descriptions:p}=e));},n}function S$1(t){return "object"==typeof t}function $(t){return S$1(t)?t.indentation:0}function I(t){return S$1(t)?t.text:t}let D$1 = class D{constructor(t,e,s,i){var n,r,o;this.yargs=t,this.usage=e,this.command=s,this.shim=i,this.completionKey="get-yargs-completions",this.aliases=null,this.customCompletionFunction=null,this.indexAfterLastReset=0,this.zshShell=null!==(o=(null===(n=this.shim.getEnv("SHELL"))||void 0===n?void 0:n.includes("zsh"))||(null===(r=this.shim.getEnv("ZSH_NAME"))||void 0===r?void 0:r.includes("zsh")))&&void 0!==o&&o;}defaultCompletion(t,e,s,i){const n=this.command.getCommandHandlers();for(let e=0,s=t.length;e<s;++e)if(n[t[e]]&&n[t[e]].builder){const s=n[t[e]].builder;if(x$1(s)){this.indexAfterLastReset=e+1;const t=this.yargs.getInternalMethods().reset();return s(t,!0),t.argv}}const r=[];this.commandCompletions(r,t,s),this.optionCompletions(r,t,e,s),this.choicesFromOptionsCompletions(r,t,e,s),this.choicesFromPositionalsCompletions(r,t,e,s),i(null,r);}commandCompletions(t,e,s){const i=this.yargs.getInternalMethods().getContext().commands;s.match(/^-/)||i[i.length-1]===s||this.previousArgHasChoices(e)||this.usage.getCommands().forEach((s=>{const i=o(s[0]).cmd;if(-1===e.indexOf(i))if(this.zshShell){const e=s[1]||"";t.push(i.replace(/:/g,"\\:")+":"+e);}else t.push(i);}));}optionCompletions(t,e,s,i){if((i.match(/^-/)||""===i&&0===t.length)&&!this.previousArgHasChoices(e)){const s=this.yargs.getOptions(),n=this.yargs.getGroups()[this.usage.getPositionalGroupName()]||[];Object.keys(s.key).forEach((r=>{const o=!!s.configuration["boolean-negation"]&&s.boolean.includes(r);n.includes(r)||s.hiddenOptions.includes(r)||this.argsContainKey(e,r,o)||this.completeOptionKey(r,t,i,o&&!!s.default[r]);}));}}choicesFromOptionsCompletions(t,e,s,i){if(this.previousArgHasChoices(e)){const s=this.getPreviousArgChoices(e);s&&s.length>0&&t.push(...s.map((t=>t.replace(/:/g,"\\:"))));}}choicesFromPositionalsCompletions(t,e,s,i){if(""===i&&t.length>0&&this.previousArgHasChoices(e))return;const n=this.yargs.getGroups()[this.usage.getPositionalGroupName()]||[],r=Math.max(this.indexAfterLastReset,this.yargs.getInternalMethods().getContext().commands.length+1),o=n[s._.length-r-1];if(!o)return;const a=this.yargs.getOptions().choices[o]||[];for(const e of a)e.startsWith(i)&&t.push(e.replace(/:/g,"\\:"));}getPreviousArgChoices(t){if(t.length<1)return;let e=t[t.length-1],s="";if(!e.startsWith("-")&&t.length>1&&(s=e,e=t[t.length-2]),!e.startsWith("-"))return;const i=e.replace(/^-+/,""),n=this.yargs.getOptions(),r=[i,...this.yargs.getAliases()[i]||[]];let o;for(const t of r)if(Object.prototype.hasOwnProperty.call(n.key,t)&&Array.isArray(n.choices[t])){o=n.choices[t];break}return o?o.filter((t=>!s||t.startsWith(s))):void 0}previousArgHasChoices(t){const e=this.getPreviousArgChoices(t);return void 0!==e&&e.length>0}argsContainKey(t,e,s){const i=e=>-1!==t.indexOf((/^[^0-9]$/.test(e)?"-":"--")+e);if(i(e))return !0;if(s&&i(`no-${e}`))return !0;if(this.aliases)for(const t of this.aliases[e])if(i(t))return !0;return !1}completeOptionKey(t,e,s,i){var n,r,o,a;let h=t;if(this.zshShell){const e=this.usage.getDescriptions(),s=null===(r=null===(n=null==this?void 0:this.aliases)||void 0===n?void 0:n[t])||void 0===r?void 0:r.find((t=>{const s=e[t];return "string"==typeof s&&s.length>0})),i=s?e[s]:void 0,l=null!==(a=null!==(o=e[t])&&void 0!==o?o:i)&&void 0!==a?a:"";h=`${t.replace(/:/g,"\\:")}:${l.replace("__yargsString__:","").replace(/(\r\n|\n|\r)/gm," ")}`;}const l=!/^--/.test(s)&&(t=>/^[^0-9]$/.test(t))(t)?"-":"--";e.push(l+h),i&&e.push(l+"no-"+h);}customCompletion(t,e,s,i){if(d(this.customCompletionFunction,null,this.shim),this.customCompletionFunction.length<3){const t=this.customCompletionFunction(s,e);return f(t)?t.then((t=>{this.shim.process.nextTick((()=>{i(null,t);}));})).catch((t=>{this.shim.process.nextTick((()=>{i(t,void 0);}));})):i(null,t)}return function(t){return t.length>3}(this.customCompletionFunction)?this.customCompletionFunction(s,e,((n=i)=>this.defaultCompletion(t,e,s,n)),(t=>{i(null,t);})):this.customCompletionFunction(s,e,(t=>{i(null,t);}))}getCompletion(t,e){const s=t.length?t[t.length-1]:"",i=this.yargs.parse(t,!0),n=this.customCompletionFunction?i=>this.customCompletion(t,i,s,e):i=>this.defaultCompletion(t,i,s,e);return f(i)?i.then(n):n(i)}generateCompletionScript(t,e){let s=this.zshShell?'#compdef {{app_name}}\n###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.zshrc\n#    or {{app_path}} {{completion_command}} >> ~/.zprofile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n  local reply\n  local si=$IFS\n  IFS=$\'\n\' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" {{app_path}} --get-yargs-completions "${words[@]}"))\n  IFS=$si\n  _describe \'values\' reply\n}\ncompdef _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n':'###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.bashrc\n#    or {{app_path}} {{completion_command}} >> ~/.bash_profile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n    local cur_word args type_list\n\n    cur_word="${COMP_WORDS[COMP_CWORD]}"\n    args=("${COMP_WORDS[@]}")\n\n    # ask yargs to generate completions.\n    type_list=$({{app_path}} --get-yargs-completions "${args[@]}")\n\n    COMPREPLY=( $(compgen -W "${type_list}" -- ${cur_word}) )\n\n    # if no match was found, fall back to filename completion\n    if [ ${#COMPREPLY[@]} -eq 0 ]; then\n      COMPREPLY=()\n    fi\n\n    return 0\n}\ncomplete -o bashdefault -o default -F _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n';const i=this.shim.path.basename(t);return t.match(/\.js$/)&&(t=`./${t}`),s=s.replace(/{{app_name}}/g,i),s=s.replace(/{{completion_command}}/g,e),s.replace(/{{app_path}}/g,t)}registerFunction(t){this.customCompletionFunction=t;}setParsed(t){this.aliases=t.aliases;}};function N$1(t,e){if(0===t.length)return e.length;if(0===e.length)return t.length;const s=[];let i,n;for(i=0;i<=e.length;i++)s[i]=[i];for(n=0;n<=t.length;n++)s[0][n]=n;for(i=1;i<=e.length;i++)for(n=1;n<=t.length;n++)e.charAt(i-1)===t.charAt(n-1)?s[i][n]=s[i-1][n-1]:i>1&&n>1&&e.charAt(i-2)===t.charAt(n-1)&&e.charAt(i-1)===t.charAt(n-2)?s[i][n]=s[i-2][n-2]+1:s[i][n]=Math.min(s[i-1][n-1]+1,Math.min(s[i][n-1]+1,s[i-1][n]+1));return s[e.length][t.length]}const H$1=["$0","--","_"];var z$1,W$1,q$1,U,F$1,L,V$1,G$1,R$1,T,B$1,Y$1,K$1,J$1,Z,X,Q$1,tt,et,st,it,nt,rt,ot,at,ht,lt,ct,ft,dt,ut,pt,gt,mt,yt;const bt=Symbol("copyDoubleDash"),vt=Symbol("copyDoubleDash"),Ot=Symbol("deleteFromParserHintObject"),wt=Symbol("emitWarning"),Ct=Symbol("freeze"),jt=Symbol("getDollarZero"),Mt=Symbol("getParserConfiguration"),_t=Symbol("getUsageConfiguration"),kt=Symbol("guessLocale"),xt=Symbol("guessVersion"),Et=Symbol("parsePositionalNumbers"),At=Symbol("pkgUp"),Pt=Symbol("populateParserHintArray"),St=Symbol("populateParserHintSingleValueDictionary"),$t=Symbol("populateParserHintArrayDictionary"),It=Symbol("populateParserHintDictionary"),Dt=Symbol("sanitizeKey"),Nt=Symbol("setKey"),Ht=Symbol("unfreeze"),zt=Symbol("validateAsync"),Wt=Symbol("getCommandInstance"),qt=Symbol("getContext"),Ut=Symbol("getHasOutput"),Ft=Symbol("getLoggerInstance"),Lt=Symbol("getParseContext"),Vt=Symbol("getUsageInstance"),Gt=Symbol("getValidationInstance"),Rt=Symbol("hasParseCallback"),Tt=Symbol("isGlobalContext"),Bt=Symbol("postProcess"),Yt=Symbol("rebase"),Kt=Symbol("reset"),Jt=Symbol("runYargsParserAndExecuteCommands"),Zt=Symbol("runValidation"),Xt=Symbol("setHasOutput"),Qt=Symbol("kTrackManuallySetKeys");let te$1 = class te{constructor(t=[],e,s,i){this.customScriptName=!1,this.parsed=!1,z$1.set(this,void 0),W$1.set(this,void 0),q$1.set(this,{commands:[],fullCommands:[]}),U.set(this,null),F$1.set(this,null),L.set(this,"show-hidden"),V$1.set(this,null),G$1.set(this,!0),R$1.set(this,{}),T.set(this,!0),B$1.set(this,[]),Y$1.set(this,void 0),K$1.set(this,{}),J$1.set(this,!1),Z.set(this,null),X.set(this,!0),Q$1.set(this,void 0),tt.set(this,""),et.set(this,void 0),st.set(this,void 0),it.set(this,{}),nt.set(this,null),rt.set(this,null),ot.set(this,{}),at.set(this,{}),ht.set(this,void 0),lt.set(this,!1),ct.set(this,void 0),ft.set(this,!1),dt.set(this,!1),ut.set(this,!1),pt.set(this,void 0),gt.set(this,{}),mt.set(this,null),yt.set(this,void 0),O(this,ct,i),O(this,ht,t),O(this,W$1,e),O(this,st,s),O(this,Y$1,new w$1(this)),this.$0=this[jt](),this[Kt](),O(this,z$1,v$1(this,z$1,"f")),O(this,pt,v$1(this,pt,"f")),O(this,yt,v$1(this,yt,"f")),O(this,et,v$1(this,et,"f")),v$1(this,et,"f").showHiddenOpt=v$1(this,L,"f"),O(this,Q$1,this[vt]());}addHelpOpt(t,e){return h("[string|boolean] [string]",[t,e],arguments.length),v$1(this,Z,"f")&&(this[Ot](v$1(this,Z,"f")),O(this,Z,null)),!1===t&&void 0===e||(O(this,Z,"string"==typeof t?t:"help"),this.boolean(v$1(this,Z,"f")),this.describe(v$1(this,Z,"f"),e||v$1(this,pt,"f").deferY18nLookup("Show help"))),this}help(t,e){return this.addHelpOpt(t,e)}addShowHiddenOpt(t,e){if(h("[string|boolean] [string]",[t,e],arguments.length),!1===t&&void 0===e)return this;const s="string"==typeof t?t:v$1(this,L,"f");return this.boolean(s),this.describe(s,e||v$1(this,pt,"f").deferY18nLookup("Show hidden options")),v$1(this,et,"f").showHiddenOpt=s,this}showHidden(t,e){return this.addShowHiddenOpt(t,e)}alias(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[$t](this.alias.bind(this),"alias",t,e),this}array(t){return h("<array|string>",[t],arguments.length),this[Pt]("array",t),this[Qt](t),this}boolean(t){return h("<array|string>",[t],arguments.length),this[Pt]("boolean",t),this[Qt](t),this}check(t,e){return h("<function> [boolean]",[t,e],arguments.length),this.middleware(((e,s)=>j$1((()=>t(e,s.getOptions())),(s=>(s?("string"==typeof s||s instanceof Error)&&v$1(this,pt,"f").fail(s.toString(),s):v$1(this,pt,"f").fail(v$1(this,ct,"f").y18n.__("Argument check failed: %s",t.toString())),e)),(t=>(v$1(this,pt,"f").fail(t.message?t.message:t.toString(),t),e)))),!1,e),this}choices(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[$t](this.choices.bind(this),"choices",t,e),this}coerce(t,s){if(h("<object|string|array> [function]",[t,s],arguments.length),Array.isArray(t)){if(!s)throw new e("coerce callback must be provided");for(const e of t)this.coerce(e,s);return this}if("object"==typeof t){for(const e of Object.keys(t))this.coerce(e,t[e]);return this}if(!s)throw new e("coerce callback must be provided");return v$1(this,et,"f").key[t]=!0,v$1(this,Y$1,"f").addCoerceMiddleware(((i,n)=>{let r;return Object.prototype.hasOwnProperty.call(i,t)?j$1((()=>(r=n.getAliases(),s(i[t]))),(e=>{i[t]=e;const s=n.getInternalMethods().getParserConfiguration()["strip-aliased"];if(r[t]&&!0!==s)for(const s of r[t])i[s]=e;return i}),(t=>{throw new e(t.message)})):i}),t),this}conflicts(t,e){return h("<string|object> [string|array]",[t,e],arguments.length),v$1(this,yt,"f").conflicts(t,e),this}config(t="config",e,s){return h("[object|string] [string|function] [function]",[t,e,s],arguments.length),"object"!=typeof t||Array.isArray(t)?("function"==typeof e&&(s=e,e=void 0),this.describe(t,e||v$1(this,pt,"f").deferY18nLookup("Path to JSON config file")),(Array.isArray(t)?t:[t]).forEach((t=>{v$1(this,et,"f").config[t]=s||!0;})),this):(t=n(t,v$1(this,W$1,"f"),this[Mt]()["deep-merge-config"]||!1,v$1(this,ct,"f")),v$1(this,et,"f").configObjects=(v$1(this,et,"f").configObjects||[]).concat(t),this)}completion(t,e,s){return h("[string] [string|boolean|function] [function]",[t,e,s],arguments.length),"function"==typeof e&&(s=e,e=void 0),O(this,F$1,t||v$1(this,F$1,"f")||"completion"),e||!1===e||(e="generate completion script"),this.command(v$1(this,F$1,"f"),e),s&&v$1(this,U,"f").registerFunction(s),this}command(t,e,s,i,n,r){return h("<string|array|object> [string|boolean] [function|object] [function] [array] [boolean|string]",[t,e,s,i,n,r],arguments.length),v$1(this,z$1,"f").addHandler(t,e,s,i,n,r),this}commands(t,e,s,i,n,r){return this.command(t,e,s,i,n,r)}commandDir(t,e){h("<string> [object]",[t,e],arguments.length);const s=v$1(this,st,"f")||v$1(this,ct,"f").require;return v$1(this,z$1,"f").addDirectory(t,s,v$1(this,ct,"f").getCallerFile(),e),this}count(t){return h("<array|string>",[t],arguments.length),this[Pt]("count",t),this[Qt](t),this}default(t,e,s){return h("<object|string|array> [*] [string]",[t,e,s],arguments.length),s&&(u(t,v$1(this,ct,"f")),v$1(this,et,"f").defaultDescription[t]=s),"function"==typeof e&&(u(t,v$1(this,ct,"f")),v$1(this,et,"f").defaultDescription[t]||(v$1(this,et,"f").defaultDescription[t]=v$1(this,pt,"f").functionDescription(e)),e=e.call()),this[St](this.default.bind(this),"default",t,e),this}defaults(t,e,s){return this.default(t,e,s)}demandCommand(t=1,e,s,i){return h("[number] [number|string] [string|null|undefined] [string|null|undefined]",[t,e,s,i],arguments.length),"number"!=typeof e&&(s=e,e=1/0),this.global("_",!1),v$1(this,et,"f").demandedCommands._={min:t,max:e,minMsg:s,maxMsg:i},this}demand(t,e,s){return Array.isArray(e)?(e.forEach((t=>{d(s,!0,v$1(this,ct,"f")),this.demandOption(t,s);})),e=1/0):"number"!=typeof e&&(s=e,e=1/0),"number"==typeof t?(d(s,!0,v$1(this,ct,"f")),this.demandCommand(t,e,s,s)):Array.isArray(t)?t.forEach((t=>{d(s,!0,v$1(this,ct,"f")),this.demandOption(t,s);})):"string"==typeof s?this.demandOption(t,s):!0!==s&&void 0!==s||this.demandOption(t),this}demandOption(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[St](this.demandOption.bind(this),"demandedOptions",t,e),this}deprecateOption(t,e){return h("<string> [string|boolean]",[t,e],arguments.length),v$1(this,et,"f").deprecatedOptions[t]=e,this}describe(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[Nt](t,!0),v$1(this,pt,"f").describe(t,e),this}detectLocale(t){return h("<boolean>",[t],arguments.length),O(this,G$1,t),this}env(t){return h("[string|boolean]",[t],arguments.length),!1===t?delete v$1(this,et,"f").envPrefix:v$1(this,et,"f").envPrefix=t||"",this}epilogue(t){return h("<string>",[t],arguments.length),v$1(this,pt,"f").epilog(t),this}epilog(t){return this.epilogue(t)}example(t,e){return h("<string|array> [string]",[t,e],arguments.length),Array.isArray(t)?t.forEach((t=>this.example(...t))):v$1(this,pt,"f").example(t,e),this}exit(t,e){O(this,J$1,!0),O(this,V$1,e),v$1(this,T,"f")&&v$1(this,ct,"f").process.exit(t);}exitProcess(t=!0){return h("[boolean]",[t],arguments.length),O(this,T,t),this}fail(t){if(h("<function|boolean>",[t],arguments.length),"boolean"==typeof t&&!1!==t)throw new e("Invalid first argument. Expected function or boolean 'false'");return v$1(this,pt,"f").failFn(t),this}getAliases(){return this.parsed?this.parsed.aliases:{}}async getCompletion(t,e){return h("<array> [function]",[t,e],arguments.length),e?v$1(this,U,"f").getCompletion(t,e):new Promise(((e,s)=>{v$1(this,U,"f").getCompletion(t,((t,i)=>{t?s(t):e(i);}));}))}getDemandedOptions(){return h([],0),v$1(this,et,"f").demandedOptions}getDemandedCommands(){return h([],0),v$1(this,et,"f").demandedCommands}getDeprecatedOptions(){return h([],0),v$1(this,et,"f").deprecatedOptions}getDetectLocale(){return v$1(this,G$1,"f")}getExitProcess(){return v$1(this,T,"f")}getGroups(){return Object.assign({},v$1(this,K$1,"f"),v$1(this,at,"f"))}getHelp(){if(O(this,J$1,!0),!v$1(this,pt,"f").hasCachedHelpMessage()){if(!this.parsed){const t=this[Jt](v$1(this,ht,"f"),void 0,void 0,0,!0);if(f(t))return t.then((()=>v$1(this,pt,"f").help()))}const t=v$1(this,z$1,"f").runDefaultBuilderOn(this);if(f(t))return t.then((()=>v$1(this,pt,"f").help()))}return Promise.resolve(v$1(this,pt,"f").help())}getOptions(){return v$1(this,et,"f")}getStrict(){return v$1(this,ft,"f")}getStrictCommands(){return v$1(this,dt,"f")}getStrictOptions(){return v$1(this,ut,"f")}global(t,e){return h("<string|array> [boolean]",[t,e],arguments.length),t=[].concat(t),!1!==e?v$1(this,et,"f").local=v$1(this,et,"f").local.filter((e=>-1===t.indexOf(e))):t.forEach((t=>{v$1(this,et,"f").local.includes(t)||v$1(this,et,"f").local.push(t);})),this}group(t,e){h("<string|array> <string>",[t,e],arguments.length);const s=v$1(this,at,"f")[e]||v$1(this,K$1,"f")[e];v$1(this,at,"f")[e]&&delete v$1(this,at,"f")[e];const i={};return v$1(this,K$1,"f")[e]=(s||[]).concat(t).filter((t=>!i[t]&&(i[t]=!0))),this}hide(t){return h("<string>",[t],arguments.length),v$1(this,et,"f").hiddenOptions.push(t),this}implies(t,e){return h("<string|object> [number|string|array]",[t,e],arguments.length),v$1(this,yt,"f").implies(t,e),this}locale(t){return h("[string]",[t],arguments.length),void 0===t?(this[kt](),v$1(this,ct,"f").y18n.getLocale()):(O(this,G$1,!1),v$1(this,ct,"f").y18n.setLocale(t),this)}middleware(t,e,s){return v$1(this,Y$1,"f").addMiddleware(t,!!e,s)}nargs(t,e){return h("<string|object|array> [number]",[t,e],arguments.length),this[St](this.nargs.bind(this),"narg",t,e),this}normalize(t){return h("<array|string>",[t],arguments.length),this[Pt]("normalize",t),this}number(t){return h("<array|string>",[t],arguments.length),this[Pt]("number",t),this[Qt](t),this}option(t,e){if(h("<string|object> [object]",[t,e],arguments.length),"object"==typeof t)Object.keys(t).forEach((e=>{this.options(e,t[e]);}));else {"object"!=typeof e&&(e={}),this[Qt](t),!v$1(this,mt,"f")||"version"!==t&&"version"!==(null==e?void 0:e.alias)||this[wt](['"version" is a reserved word.',"Please do one of the following:",'- Disable version with `yargs.version(false)` if using "version" as an option',"- Use the built-in `yargs.version` method instead (if applicable)","- Use a different option key","https://yargs.js.org/docs/#api-reference-version"].join("\n"),void 0,"versionWarning"),v$1(this,et,"f").key[t]=!0,e.alias&&this.alias(t,e.alias);const s=e.deprecate||e.deprecated;s&&this.deprecateOption(t,s);const i=e.demand||e.required||e.require;i&&this.demand(t,i),e.demandOption&&this.demandOption(t,"string"==typeof e.demandOption?e.demandOption:void 0),e.conflicts&&this.conflicts(t,e.conflicts),"default"in e&&this.default(t,e.default),void 0!==e.implies&&this.implies(t,e.implies),void 0!==e.nargs&&this.nargs(t,e.nargs),e.config&&this.config(t,e.configParser),e.normalize&&this.normalize(t),e.choices&&this.choices(t,e.choices),e.coerce&&this.coerce(t,e.coerce),e.group&&this.group(t,e.group),(e.boolean||"boolean"===e.type)&&(this.boolean(t),e.alias&&this.boolean(e.alias)),(e.array||"array"===e.type)&&(this.array(t),e.alias&&this.array(e.alias)),(e.number||"number"===e.type)&&(this.number(t),e.alias&&this.number(e.alias)),(e.string||"string"===e.type)&&(this.string(t),e.alias&&this.string(e.alias)),(e.count||"count"===e.type)&&this.count(t),"boolean"==typeof e.global&&this.global(t,e.global),e.defaultDescription&&(v$1(this,et,"f").defaultDescription[t]=e.defaultDescription),e.skipValidation&&this.skipValidation(t);const n=e.describe||e.description||e.desc,r=v$1(this,pt,"f").getDescriptions();Object.prototype.hasOwnProperty.call(r,t)&&"string"!=typeof n||this.describe(t,n),e.hidden&&this.hide(t),e.requiresArg&&this.requiresArg(t);}return this}options(t,e){return this.option(t,e)}parse(t,e,s){h("[string|array] [function|boolean|object] [function]",[t,e,s],arguments.length),this[Ct](),void 0===t&&(t=v$1(this,ht,"f")),"object"==typeof e&&(O(this,rt,e),e=s),"function"==typeof e&&(O(this,nt,e),e=!1),e||O(this,ht,t),v$1(this,nt,"f")&&O(this,T,!1);const i=this[Jt](t,!!e),n=this.parsed;return v$1(this,U,"f").setParsed(this.parsed),f(i)?i.then((t=>(v$1(this,nt,"f")&&v$1(this,nt,"f").call(this,v$1(this,V$1,"f"),t,v$1(this,tt,"f")),t))).catch((t=>{throw v$1(this,nt,"f")&&v$1(this,nt,"f")(t,this.parsed.argv,v$1(this,tt,"f")),t})).finally((()=>{this[Ht](),this.parsed=n;})):(v$1(this,nt,"f")&&v$1(this,nt,"f").call(this,v$1(this,V$1,"f"),i,v$1(this,tt,"f")),this[Ht](),this.parsed=n,i)}parseAsync(t,e,s){const i=this.parse(t,e,s);return f(i)?i:Promise.resolve(i)}parseSync(t,s,i){const n=this.parse(t,s,i);if(f(n))throw new e(".parseSync() must not be used with asynchronous builders, handlers, or middleware");return n}parserConfiguration(t){return h("<object>",[t],arguments.length),O(this,it,t),this}pkgConf(t,e){h("<string> [string]",[t,e],arguments.length);let s=null;const i=this[At](e||v$1(this,W$1,"f"));return i[t]&&"object"==typeof i[t]&&(s=n(i[t],e||v$1(this,W$1,"f"),this[Mt]()["deep-merge-config"]||!1,v$1(this,ct,"f")),v$1(this,et,"f").configObjects=(v$1(this,et,"f").configObjects||[]).concat(s)),this}positional(t,e){h("<string> <object>",[t,e],arguments.length);const s=["default","defaultDescription","implies","normalize","choices","conflicts","coerce","type","describe","desc","description","alias"];e=g(e,((t,e)=>!("type"===t&&!["string","number","boolean"].includes(e))&&s.includes(t)));const i=v$1(this,q$1,"f").fullCommands[v$1(this,q$1,"f").fullCommands.length-1],n=i?v$1(this,z$1,"f").cmdToParseOptions(i):{array:[],alias:{},default:{},demand:{}};return p(n).forEach((s=>{const i=n[s];Array.isArray(i)?-1!==i.indexOf(t)&&(e[s]=!0):i[t]&&!(s in e)&&(e[s]=i[t]);})),this.group(t,v$1(this,pt,"f").getPositionalGroupName()),this.option(t,e)}recommendCommands(t=!0){return h("[boolean]",[t],arguments.length),O(this,lt,t),this}required(t,e,s){return this.demand(t,e,s)}require(t,e,s){return this.demand(t,e,s)}requiresArg(t){return h("<array|string|object> [number]",[t],arguments.length),"string"==typeof t&&v$1(this,et,"f").narg[t]||this[St](this.requiresArg.bind(this),"narg",t,NaN),this}showCompletionScript(t,e){return h("[string] [string]",[t,e],arguments.length),t=t||this.$0,v$1(this,Q$1,"f").log(v$1(this,U,"f").generateCompletionScript(t,e||v$1(this,F$1,"f")||"completion")),this}showHelp(t){if(h("[string|function]",[t],arguments.length),O(this,J$1,!0),!v$1(this,pt,"f").hasCachedHelpMessage()){if(!this.parsed){const e=this[Jt](v$1(this,ht,"f"),void 0,void 0,0,!0);if(f(e))return e.then((()=>{v$1(this,pt,"f").showHelp(t);})),this}const e=v$1(this,z$1,"f").runDefaultBuilderOn(this);if(f(e))return e.then((()=>{v$1(this,pt,"f").showHelp(t);})),this}return v$1(this,pt,"f").showHelp(t),this}scriptName(t){return this.customScriptName=!0,this.$0=t,this}showHelpOnFail(t,e){return h("[boolean|string] [string]",[t,e],arguments.length),v$1(this,pt,"f").showHelpOnFail(t,e),this}showVersion(t){return h("[string|function]",[t],arguments.length),v$1(this,pt,"f").showVersion(t),this}skipValidation(t){return h("<array|string>",[t],arguments.length),this[Pt]("skipValidation",t),this}strict(t){return h("[boolean]",[t],arguments.length),O(this,ft,!1!==t),this}strictCommands(t){return h("[boolean]",[t],arguments.length),O(this,dt,!1!==t),this}strictOptions(t){return h("[boolean]",[t],arguments.length),O(this,ut,!1!==t),this}string(t){return h("<array|string>",[t],arguments.length),this[Pt]("string",t),this[Qt](t),this}terminalWidth(){return h([],0),v$1(this,ct,"f").process.stdColumns}updateLocale(t){return this.updateStrings(t)}updateStrings(t){return h("<object>",[t],arguments.length),O(this,G$1,!1),v$1(this,ct,"f").y18n.updateLocale(t),this}usage(t,s,i,n){if(h("<string|null|undefined> [string|boolean] [function|object] [function]",[t,s,i,n],arguments.length),void 0!==s){if(d(t,null,v$1(this,ct,"f")),(t||"").match(/^\$0( |$)/))return this.command(t,s,i,n);throw new e(".usage() description must start with $0 if being used as alias for .command()")}return v$1(this,pt,"f").usage(t),this}usageConfiguration(t){return h("<object>",[t],arguments.length),O(this,gt,t),this}version(t,e,s){const i="version";if(h("[boolean|string] [string] [string]",[t,e,s],arguments.length),v$1(this,mt,"f")&&(this[Ot](v$1(this,mt,"f")),v$1(this,pt,"f").version(void 0),O(this,mt,null)),0===arguments.length)s=this[xt](),t=i;else if(1===arguments.length){if(!1===t)return this;s=t,t=i;}else 2===arguments.length&&(s=e,e=void 0);return O(this,mt,"string"==typeof t?t:i),e=e||v$1(this,pt,"f").deferY18nLookup("Show version number"),v$1(this,pt,"f").version(s||void 0),this.boolean(v$1(this,mt,"f")),this.describe(v$1(this,mt,"f"),e),this}wrap(t){return h("<number|null|undefined>",[t],arguments.length),v$1(this,pt,"f").wrap(t),this}[(z$1=new WeakMap,W$1=new WeakMap,q$1=new WeakMap,U=new WeakMap,F$1=new WeakMap,L=new WeakMap,V$1=new WeakMap,G$1=new WeakMap,R$1=new WeakMap,T=new WeakMap,B$1=new WeakMap,Y$1=new WeakMap,K$1=new WeakMap,J$1=new WeakMap,Z=new WeakMap,X=new WeakMap,Q$1=new WeakMap,tt=new WeakMap,et=new WeakMap,st=new WeakMap,it=new WeakMap,nt=new WeakMap,rt=new WeakMap,ot=new WeakMap,at=new WeakMap,ht=new WeakMap,lt=new WeakMap,ct=new WeakMap,ft=new WeakMap,dt=new WeakMap,ut=new WeakMap,pt=new WeakMap,gt=new WeakMap,mt=new WeakMap,yt=new WeakMap,bt)](t){if(!t._||!t["--"])return t;t._.push.apply(t._,t["--"]);try{delete t["--"];}catch(t){}return t}[vt](){return {log:(...t)=>{this[Rt]()||console.log(...t),O(this,J$1,!0),v$1(this,tt,"f").length&&O(this,tt,v$1(this,tt,"f")+"\n"),O(this,tt,v$1(this,tt,"f")+t.join(" "));},error:(...t)=>{this[Rt]()||console.error(...t),O(this,J$1,!0),v$1(this,tt,"f").length&&O(this,tt,v$1(this,tt,"f")+"\n"),O(this,tt,v$1(this,tt,"f")+t.join(" "));}}}[Ot](t){p(v$1(this,et,"f")).forEach((e=>{if("configObjects"===e)return;const s=v$1(this,et,"f")[e];Array.isArray(s)?s.includes(t)&&s.splice(s.indexOf(t),1):"object"==typeof s&&delete s[t];})),delete v$1(this,pt,"f").getDescriptions()[t];}[wt](t,e,s){v$1(this,R$1,"f")[s]||(v$1(this,ct,"f").process.emitWarning(t,e),v$1(this,R$1,"f")[s]=!0);}[Ct](){v$1(this,B$1,"f").push({options:v$1(this,et,"f"),configObjects:v$1(this,et,"f").configObjects.slice(0),exitProcess:v$1(this,T,"f"),groups:v$1(this,K$1,"f"),strict:v$1(this,ft,"f"),strictCommands:v$1(this,dt,"f"),strictOptions:v$1(this,ut,"f"),completionCommand:v$1(this,F$1,"f"),output:v$1(this,tt,"f"),exitError:v$1(this,V$1,"f"),hasOutput:v$1(this,J$1,"f"),parsed:this.parsed,parseFn:v$1(this,nt,"f"),parseContext:v$1(this,rt,"f")}),v$1(this,pt,"f").freeze(),v$1(this,yt,"f").freeze(),v$1(this,z$1,"f").freeze(),v$1(this,Y$1,"f").freeze();}[jt](){let t,e="";return t=/\b(node|iojs|electron)(\.exe)?$/.test(v$1(this,ct,"f").process.argv()[0])?v$1(this,ct,"f").process.argv().slice(1,2):v$1(this,ct,"f").process.argv().slice(0,1),e=t.map((t=>{const e=this[Yt](v$1(this,W$1,"f"),t);return t.match(/^(\/|([a-zA-Z]:)?\\)/)&&e.length<t.length?e:t})).join(" ").trim(),v$1(this,ct,"f").getEnv("_")&&v$1(this,ct,"f").getProcessArgvBin()===v$1(this,ct,"f").getEnv("_")&&(e=v$1(this,ct,"f").getEnv("_").replace(`${v$1(this,ct,"f").path.dirname(v$1(this,ct,"f").process.execPath())}/`,"")),e}[Mt](){return v$1(this,it,"f")}[_t](){return v$1(this,gt,"f")}[kt](){if(!v$1(this,G$1,"f"))return;const t=v$1(this,ct,"f").getEnv("LC_ALL")||v$1(this,ct,"f").getEnv("LC_MESSAGES")||v$1(this,ct,"f").getEnv("LANG")||v$1(this,ct,"f").getEnv("LANGUAGE")||"en_US";this.locale(t.replace(/[.:].*/,""));}[xt](){return this[At]().version||"unknown"}[Et](t){const e=t["--"]?t["--"]:t._;for(let t,s=0;void 0!==(t=e[s]);s++)v$1(this,ct,"f").Parser.looksLikeNumber(t)&&Number.isSafeInteger(Math.floor(parseFloat(`${t}`)))&&(e[s]=Number(t));return t}[At](t){const e=t||"*";if(v$1(this,ot,"f")[e])return v$1(this,ot,"f")[e];let s={};try{let e=t||v$1(this,ct,"f").mainFilename;!t&&v$1(this,ct,"f").path.extname(e)&&(e=v$1(this,ct,"f").path.dirname(e));const i=v$1(this,ct,"f").findUp(e,((t,e)=>e.includes("package.json")?"package.json":void 0));d(i,void 0,v$1(this,ct,"f")),s=JSON.parse(v$1(this,ct,"f").readFileSync(i,"utf8"));}catch(t){}return v$1(this,ot,"f")[e]=s||{},v$1(this,ot,"f")[e]}[Pt](t,e){(e=[].concat(e)).forEach((e=>{e=this[Dt](e),v$1(this,et,"f")[t].push(e);}));}[St](t,e,s,i){this[It](t,e,s,i,((t,e,s)=>{v$1(this,et,"f")[t][e]=s;}));}[$t](t,e,s,i){this[It](t,e,s,i,((t,e,s)=>{v$1(this,et,"f")[t][e]=(v$1(this,et,"f")[t][e]||[]).concat(s);}));}[It](t,e,s,i,n){if(Array.isArray(s))s.forEach((e=>{t(e,i);}));else if((t=>"object"==typeof t)(s))for(const e of p(s))t(e,s[e]);else n(e,this[Dt](s),i);}[Dt](t){return "__proto__"===t?"___proto___":t}[Nt](t,e){return this[St](this[Nt].bind(this),"key",t,e),this}[Ht](){var t,e,s,i,n,r,o,a,h,l,c,f;const u=v$1(this,B$1,"f").pop();let p;d(u,void 0,v$1(this,ct,"f")),t=this,e=this,s=this,i=this,n=this,r=this,o=this,a=this,h=this,l=this,c=this,f=this,({options:{set value(e){O(t,et,e);}}.value,configObjects:p,exitProcess:{set value(t){O(e,T,t);}}.value,groups:{set value(t){O(s,K$1,t);}}.value,output:{set value(t){O(i,tt,t);}}.value,exitError:{set value(t){O(n,V$1,t);}}.value,hasOutput:{set value(t){O(r,J$1,t);}}.value,parsed:this.parsed,strict:{set value(t){O(o,ft,t);}}.value,strictCommands:{set value(t){O(a,dt,t);}}.value,strictOptions:{set value(t){O(h,ut,t);}}.value,completionCommand:{set value(t){O(l,F$1,t);}}.value,parseFn:{set value(t){O(c,nt,t);}}.value,parseContext:{set value(t){O(f,rt,t);}}.value}=u),v$1(this,et,"f").configObjects=p,v$1(this,pt,"f").unfreeze(),v$1(this,yt,"f").unfreeze(),v$1(this,z$1,"f").unfreeze(),v$1(this,Y$1,"f").unfreeze();}[zt](t,e){return j$1(e,(e=>(t(e),e)))}getInternalMethods(){return {getCommandInstance:this[Wt].bind(this),getContext:this[qt].bind(this),getHasOutput:this[Ut].bind(this),getLoggerInstance:this[Ft].bind(this),getParseContext:this[Lt].bind(this),getParserConfiguration:this[Mt].bind(this),getUsageConfiguration:this[_t].bind(this),getUsageInstance:this[Vt].bind(this),getValidationInstance:this[Gt].bind(this),hasParseCallback:this[Rt].bind(this),isGlobalContext:this[Tt].bind(this),postProcess:this[Bt].bind(this),reset:this[Kt].bind(this),runValidation:this[Zt].bind(this),runYargsParserAndExecuteCommands:this[Jt].bind(this),setHasOutput:this[Xt].bind(this)}}[Wt](){return v$1(this,z$1,"f")}[qt](){return v$1(this,q$1,"f")}[Ut](){return v$1(this,J$1,"f")}[Ft](){return v$1(this,Q$1,"f")}[Lt](){return v$1(this,rt,"f")||{}}[Vt](){return v$1(this,pt,"f")}[Gt](){return v$1(this,yt,"f")}[Rt](){return !!v$1(this,nt,"f")}[Tt](){return v$1(this,X,"f")}[Bt](t,e,s,i){if(s)return t;if(f(t))return t;e||(t=this[bt](t));return (this[Mt]()["parse-positional-numbers"]||void 0===this[Mt]()["parse-positional-numbers"])&&(t=this[Et](t)),i&&(t=C$1(t,this,v$1(this,Y$1,"f").getMiddleware(),!1)),t}[Kt](t={}){O(this,et,v$1(this,et,"f")||{});const e={};e.local=v$1(this,et,"f").local||[],e.configObjects=v$1(this,et,"f").configObjects||[];const s={};e.local.forEach((e=>{s[e]=!0,(t[e]||[]).forEach((t=>{s[t]=!0;}));})),Object.assign(v$1(this,at,"f"),Object.keys(v$1(this,K$1,"f")).reduce(((t,e)=>{const i=v$1(this,K$1,"f")[e].filter((t=>!(t in s)));return i.length>0&&(t[e]=i),t}),{})),O(this,K$1,{});return ["array","boolean","string","skipValidation","count","normalize","number","hiddenOptions"].forEach((t=>{e[t]=(v$1(this,et,"f")[t]||[]).filter((t=>!s[t]));})),["narg","key","alias","default","defaultDescription","config","choices","demandedOptions","demandedCommands","deprecatedOptions"].forEach((t=>{e[t]=g(v$1(this,et,"f")[t],(t=>!s[t]));})),e.envPrefix=v$1(this,et,"f").envPrefix,O(this,et,e),O(this,pt,v$1(this,pt,"f")?v$1(this,pt,"f").reset(s):P(this,v$1(this,ct,"f"))),O(this,yt,v$1(this,yt,"f")?v$1(this,yt,"f").reset(s):function(t,e,s){const i=s.y18n.__,n=s.y18n.__n,r={nonOptionCount:function(s){const i=t.getDemandedCommands(),r=s._.length+(s["--"]?s["--"].length:0)-t.getInternalMethods().getContext().commands.length;i._&&(r<i._.min||r>i._.max)&&(r<i._.min?void 0!==i._.minMsg?e.fail(i._.minMsg?i._.minMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.min.toString()):null):e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",r,r.toString(),i._.min.toString())):r>i._.max&&(void 0!==i._.maxMsg?e.fail(i._.maxMsg?i._.maxMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.max.toString()):null):e.fail(n("Too many non-option arguments: got %s, maximum of %s","Too many non-option arguments: got %s, maximum of %s",r,r.toString(),i._.max.toString()))));},positionalCount:function(t,s){s<t&&e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",s,s+"",t+""));},requiredArguments:function(t,s){let i=null;for(const e of Object.keys(s))Object.prototype.hasOwnProperty.call(t,e)&&void 0!==t[e]||(i=i||{},i[e]=s[e]);if(i){const t=[];for(const e of Object.keys(i)){const s=i[e];s&&t.indexOf(s)<0&&t.push(s);}const s=t.length?`\n${t.join("\n")}`:"";e.fail(n("Missing required argument: %s","Missing required arguments: %s",Object.keys(i).length,Object.keys(i).join(", ")+s));}},unknownArguments:function(s,i,o,a,h=!0){var l;const c=t.getInternalMethods().getCommandInstance().getCommands(),f=[],d=t.getInternalMethods().getContext();if(Object.keys(s).forEach((e=>{H$1.includes(e)||Object.prototype.hasOwnProperty.call(o,e)||Object.prototype.hasOwnProperty.call(t.getInternalMethods().getParseContext(),e)||r.isValidAndSomeAliasIsNotNew(e,i)||f.push(e);})),h&&(d.commands.length>0||c.length>0||a)&&s._.slice(d.commands.length).forEach((t=>{c.includes(""+t)||f.push(""+t);})),h){const e=(null===(l=t.getDemandedCommands()._)||void 0===l?void 0:l.max)||0,i=d.commands.length+e;i<s._.length&&s._.slice(i).forEach((t=>{t=String(t),d.commands.includes(t)||f.includes(t)||f.push(t);}));}f.length&&e.fail(n("Unknown argument: %s","Unknown arguments: %s",f.length,f.map((t=>t.trim()?t:`"${t}"`)).join(", ")));},unknownCommands:function(s){const i=t.getInternalMethods().getCommandInstance().getCommands(),r=[],o=t.getInternalMethods().getContext();return (o.commands.length>0||i.length>0)&&s._.slice(o.commands.length).forEach((t=>{i.includes(""+t)||r.push(""+t);})),r.length>0&&(e.fail(n("Unknown command: %s","Unknown commands: %s",r.length,r.join(", "))),!0)},isValidAndSomeAliasIsNotNew:function(e,s){if(!Object.prototype.hasOwnProperty.call(s,e))return !1;const i=t.parsed.newAliases;return [e,...s[e]].some((t=>!Object.prototype.hasOwnProperty.call(i,t)||!i[e]))},limitedChoices:function(s){const n=t.getOptions(),r={};if(!Object.keys(n.choices).length)return;Object.keys(s).forEach((t=>{-1===H$1.indexOf(t)&&Object.prototype.hasOwnProperty.call(n.choices,t)&&[].concat(s[t]).forEach((e=>{-1===n.choices[t].indexOf(e)&&void 0!==e&&(r[t]=(r[t]||[]).concat(e));}));}));const o=Object.keys(r);if(!o.length)return;let a=i("Invalid values:");o.forEach((t=>{a+=`\n  ${i("Argument: %s, Given: %s, Choices: %s",t,e.stringifiedValues(r[t]),e.stringifiedValues(n.choices[t]))}`;})),e.fail(a);}};let o={};function a(t,e){const s=Number(e);return "number"==typeof(e=isNaN(s)?e:s)?e=t._.length>=e:e.match(/^--no-.+/)?(e=e.match(/^--no-(.+)/)[1],e=!Object.prototype.hasOwnProperty.call(t,e)):e=Object.prototype.hasOwnProperty.call(t,e),e}r.implies=function(e,i){h("<string|object> [array|number|string]",[e,i],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.implies(t,e[t]);})):(t.global(e),o[e]||(o[e]=[]),Array.isArray(i)?i.forEach((t=>r.implies(e,t))):(d(i,void 0,s),o[e].push(i)));},r.getImplied=function(){return o},r.implications=function(t){const s=[];if(Object.keys(o).forEach((e=>{const i=e;(o[e]||[]).forEach((e=>{let n=i;const r=e;n=a(t,n),e=a(t,e),n&&!e&&s.push(` ${i} -> ${r}`);}));})),s.length){let t=`${i("Implications failed:")}\n`;s.forEach((e=>{t+=e;})),e.fail(t);}};let l={};r.conflicts=function(e,s){h("<string|object> [array|string]",[e,s],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.conflicts(t,e[t]);})):(t.global(e),l[e]||(l[e]=[]),Array.isArray(s)?s.forEach((t=>r.conflicts(e,t))):l[e].push(s));},r.getConflicting=()=>l,r.conflicting=function(n){Object.keys(n).forEach((t=>{l[t]&&l[t].forEach((s=>{s&&void 0!==n[t]&&void 0!==n[s]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,s));}));})),t.getInternalMethods().getParserConfiguration()["strip-dashed"]&&Object.keys(l).forEach((t=>{l[t].forEach((r=>{r&&void 0!==n[s.Parser.camelCase(t)]&&void 0!==n[s.Parser.camelCase(r)]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,r));}));}));},r.recommendCommands=function(t,s){s=s.sort(((t,e)=>e.length-t.length));let n=null,r=1/0;for(let e,i=0;void 0!==(e=s[i]);i++){const s=N$1(t,e);s<=3&&s<r&&(r=s,n=e);}n&&e.fail(i("Did you mean %s?",n));},r.reset=function(t){return o=g(o,(e=>!t[e])),l=g(l,(e=>!t[e])),r};const c=[];return r.freeze=function(){c.push({implied:o,conflicting:l});},r.unfreeze=function(){const t=c.pop();d(t,void 0,s),({implied:o,conflicting:l}=t);},r}(this,v$1(this,pt,"f"),v$1(this,ct,"f"))),O(this,z$1,v$1(this,z$1,"f")?v$1(this,z$1,"f").reset():function(t,e,s,i){return new _$1(t,e,s,i)}(v$1(this,pt,"f"),v$1(this,yt,"f"),v$1(this,Y$1,"f"),v$1(this,ct,"f"))),v$1(this,U,"f")||O(this,U,function(t,e,s,i){return new D$1(t,e,s,i)}(this,v$1(this,pt,"f"),v$1(this,z$1,"f"),v$1(this,ct,"f"))),v$1(this,Y$1,"f").reset(),O(this,F$1,null),O(this,tt,""),O(this,V$1,null),O(this,J$1,!1),this.parsed=!1,this}[Yt](t,e){return v$1(this,ct,"f").path.relative(t,e)}[Jt](t,s,i,n=0,r=!1){let o=!!i||r;t=t||v$1(this,ht,"f"),v$1(this,et,"f").__=v$1(this,ct,"f").y18n.__,v$1(this,et,"f").configuration=this[Mt]();const a=!!v$1(this,et,"f").configuration["populate--"],h=Object.assign({},v$1(this,et,"f").configuration,{"populate--":!0}),l=v$1(this,ct,"f").Parser.detailed(t,Object.assign({},v$1(this,et,"f"),{configuration:{"parse-positional-numbers":!1,...h}})),c=Object.assign(l.argv,v$1(this,rt,"f"));let d;const u=l.aliases;let p=!1,g=!1;Object.keys(c).forEach((t=>{t===v$1(this,Z,"f")&&c[t]?p=!0:t===v$1(this,mt,"f")&&c[t]&&(g=!0);})),c.$0=this.$0,this.parsed=l,0===n&&v$1(this,pt,"f").clearCachedHelpMessage();try{if(this[kt](),s)return this[Bt](c,a,!!i,!1);if(v$1(this,Z,"f")){[v$1(this,Z,"f")].concat(u[v$1(this,Z,"f")]||[]).filter((t=>t.length>1)).includes(""+c._[c._.length-1])&&(c._.pop(),p=!0);}O(this,X,!1,"f");const h=v$1(this,z$1,"f").getCommands(),m=v$1(this,U,"f").completionKey in c,y=p||m||r;if(c._.length){if(h.length){let t;for(let e,s=n||0;void 0!==c._[s];s++){if(e=String(c._[s]),h.includes(e)&&e!==v$1(this,F$1,"f")){const t=v$1(this,z$1,"f").runCommand(e,this,l,s+1,r,p||g||r);return this[Bt](t,a,!!i,!1)}if(!t&&e!==v$1(this,F$1,"f")){t=e;break}}!v$1(this,z$1,"f").hasDefaultCommand()&&v$1(this,lt,"f")&&t&&!y&&v$1(this,yt,"f").recommendCommands(t,h);}v$1(this,F$1,"f")&&c._.includes(v$1(this,F$1,"f"))&&!m&&(v$1(this,T,"f")&&E$1(!0),this.showCompletionScript(),this.exit(0));}if(v$1(this,z$1,"f").hasDefaultCommand()&&!y){const t=v$1(this,z$1,"f").runCommand(null,this,l,0,r,p||g||r);return this[Bt](t,a,!!i,!1)}if(m){v$1(this,T,"f")&&E$1(!0);const s=(t=[].concat(t)).slice(t.indexOf(`--${v$1(this,U,"f").completionKey}`)+1);return v$1(this,U,"f").getCompletion(s,((t,s)=>{if(t)throw new e(t.message);(s||[]).forEach((t=>{v$1(this,Q$1,"f").log(t);})),this.exit(0);})),this[Bt](c,!a,!!i,!1)}if(v$1(this,J$1,"f")||(p?(v$1(this,T,"f")&&E$1(!0),o=!0,this.showHelp("log"),this.exit(0)):g&&(v$1(this,T,"f")&&E$1(!0),o=!0,v$1(this,pt,"f").showVersion("log"),this.exit(0))),!o&&v$1(this,et,"f").skipValidation.length>0&&(o=Object.keys(c).some((t=>v$1(this,et,"f").skipValidation.indexOf(t)>=0&&!0===c[t]))),!o){if(l.error)throw new e(l.error.message);if(!m){const t=this[Zt](u,{},l.error);i||(d=C$1(c,this,v$1(this,Y$1,"f").getMiddleware(),!0)),d=this[zt](t,null!=d?d:c),f(d)&&!i&&(d=d.then((()=>C$1(c,this,v$1(this,Y$1,"f").getMiddleware(),!1))));}}}catch(t){if(!(t instanceof e))throw t;v$1(this,pt,"f").fail(t.message,t);}return this[Bt](null!=d?d:c,a,!!i,!0)}[Zt](t,s,i,n){const r={...this.getDemandedOptions()};return o=>{if(i)throw new e(i.message);v$1(this,yt,"f").nonOptionCount(o),v$1(this,yt,"f").requiredArguments(o,r);let a=!1;v$1(this,dt,"f")&&(a=v$1(this,yt,"f").unknownCommands(o)),v$1(this,ft,"f")&&!a?v$1(this,yt,"f").unknownArguments(o,t,s,!!n):v$1(this,ut,"f")&&v$1(this,yt,"f").unknownArguments(o,t,{},!1,!1),v$1(this,yt,"f").limitedChoices(o),v$1(this,yt,"f").implications(o),v$1(this,yt,"f").conflicting(o);}}[Xt](){O(this,J$1,!0);}[Qt](t){if("string"==typeof t)v$1(this,et,"f").key[t]=!0;else for(const e of t)v$1(this,et,"f").key[e]=!0;}};var ee$1,se$1;const{readFileSync:ie$1}=fs$n,{inspect:ne$1}=require$$1,{resolve:re$2}=path$f,oe$1=requireBuild$3(),ae$1=requireBuild$2();var he$1,le$1={assert:{notStrictEqual:t$1.notStrictEqual,strictEqual:t$1.strictEqual},cliui:requireBuild$1(),findUp:requireSync(),getEnv:t=>process.env[t],getCallerFile:requireGetCallerFile(),getProcessArgvBin:y$1,inspect:ne$1,mainFilename:null!==(se$1=null===(ee$1=null===commonjsRequire||void 0===commonjsRequire?void 0:require.main)||void 0===ee$1?void 0:ee$1.filename)&&void 0!==se$1?se$1:process.cwd(),Parser:ae$1,path:path$f,process:{argv:()=>process.argv,cwd:process.cwd,emitWarning:(t,e)=>process.emitWarning(t,e),execPath:()=>process.execPath,exit:t=>{process.exit(t);},nextTick:process.nextTick,stdColumns:void 0!==process.stdout.columns?process.stdout.columns:null},readFileSync:ie$1,require:commonjsRequire,requireDirectory:requireRequireDirectory(),stringWidth:stringWidthExports,y18n:oe$1({directory:re$2(__dirname,"../locales"),updateFiles:!1})};const ce$1=(null===(he$1=null===process||void 0===process?void 0:process.env)||void 0===he$1?void 0:he$1.YARGS_MIN_NODE_VERSION)?Number(process.env.YARGS_MIN_NODE_VERSION):12;if(process&&process.version){if(Number(process.version.match(/v([^.]+)/)[1])<ce$1)throw Error(`yargs supports a minimum Node.js version of ${ce$1}. Read our version support policy: https://github.com/yargs/yargs#supported-nodejs-versions`)}const fe$1=requireBuild$2();var de$1,ue$1={applyExtends:n,cjsPlatformShim:le$1,Yargs:(de$1=le$1,(t=[],e=de$1.process.cwd(),s)=>{const i=new te$1(t,e,s,de$1);return Object.defineProperty(i,"argv",{get:()=>i.parse(),enumerable:!0}),i.help(),i.version(),i}),argsert:h,isPromise:f,objFilter:g,parseCommand:o,Parser:fe$1,processArgv:b$1,YError:e};var build$1=ue$1;
+var t=require$$0$5;class e extends Error{constructor(t){super(t||"yargs error"),this.name="YError",Error.captureStackTrace&&Error.captureStackTrace(this,e);}}let s,i=[];function n(t,o,a,h){s=h;let l={};if(Object.prototype.hasOwnProperty.call(t,"extends")){if("string"!=typeof t.extends)return l;const r=/\.json|\..*rc$/.test(t.extends);let h=null;if(r)h=function(t,e){return s.path.resolve(t,e)}(o,t.extends);else try{h=require.resolve(t.extends);}catch(e){return t}!function(t){if(i.indexOf(t)>-1)throw new e(`Circular extended configurations: '${t}'.`)}(h),i.push(h),l=r?JSON.parse(s.readFileSync(h,"utf8")):commonjsRequire(t.extends),delete t.extends,l=n(l,s.path.dirname(h),a,s);}return i=[],a?r(l,t):Object.assign({},l,t)}function r(t,e){const s={};function i(t){return t&&"object"==typeof t&&!Array.isArray(t)}Object.assign(s,t);for(const n of Object.keys(e))i(e[n])&&i(s[n])?s[n]=r(t[n],e[n]):s[n]=e[n];return s}function o(t){const e=t.replace(/\s{2,}/g," ").split(/\s+(?![^[]*]|[^<]*>)/),s=/\.*[\][<>]/g,i=e.shift();if(!i)throw new Error(`No command found in: ${t}`);const n={cmd:i.replace(s,""),demanded:[],optional:[]};return e.forEach(((t,i)=>{let r=!1;t=t.replace(/\s/g,""),/\.+[\]>]/.test(t)&&i===e.length-1&&(r=!0),/^\[/.test(t)?n.optional.push({cmd:t.replace(s,"").split("|"),variadic:r}):n.demanded.push({cmd:t.replace(s,"").split("|"),variadic:r});})),n}const a=["first","second","third","fourth","fifth","sixth"];function h(t,s,i){try{let n=0;const[r,a,h]="object"==typeof t?[{demanded:[],optional:[]},t,s]:[o(`cmd ${t}`),s,i],f=[].slice.call(a);for(;f.length&&void 0===f[f.length-1];)f.pop();const d=h||f.length;if(d<r.demanded.length)throw new e(`Not enough arguments provided. Expected ${r.demanded.length} but received ${f.length}.`);const u=r.demanded.length+r.optional.length;if(d>u)throw new e(`Too many arguments provided. Expected max ${u} but received ${d}.`);r.demanded.forEach((t=>{const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1;})),r.optional.forEach((t=>{if(0===f.length)return;const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1;}));}catch(t){console.warn(t.stack);}}function l(t){return Array.isArray(t)?"array":null===t?"null":typeof t}function c(t,s,i){throw new e(`Invalid ${a[i]||"manyith"} argument. Expected ${s.join(" or ")} but received ${t}.`)}function f(t){return !!t&&!!t.then&&"function"==typeof t.then}function d(t,e,s,i){s.assert.notStrictEqual(t,e,i);}function u(t,e){e.assert.strictEqual(typeof t,"string");}function p(t){return Object.keys(t)}function g(t={},e=(()=>!0)){const s={};return p(t).forEach((i=>{e(i,t[i])&&(s[i]=t[i]);})),s}function m(){return process.versions.electron&&!process.defaultApp?0:1}function y$1(){return process.argv[m()]}var b$1=Object.freeze({__proto__:null,hideBin:function(t){return t.slice(m()+1)},getProcessArgvBin:y$1});function v$1(t,e,s,i){if("a"===s&&!i)throw new TypeError("Private accessor was defined without a getter");if("function"==typeof e?t!==e||!i:!e.has(t))throw new TypeError("Cannot read private member from an object whose class did not declare it");return "m"===s?i:"a"===s?i.call(t):i?i.value:e.get(t)}function O(t,e,s,i,n){if("function"==typeof e?t!==e||!n:!e.has(t))throw new TypeError("Cannot write private member to an object whose class did not declare it");return e.set(t,s),s}let w$1 = class w{constructor(t){this.globalMiddleware=[],this.frozens=[],this.yargs=t;}addMiddleware(t,e,s=!0,i=!1){if(h("<array|function> [boolean] [boolean] [boolean]",[t,e,s],arguments.length),Array.isArray(t)){for(let i=0;i<t.length;i++){if("function"!=typeof t[i])throw Error("middleware must be a function");const n=t[i];n.applyBeforeValidation=e,n.global=s;}Array.prototype.push.apply(this.globalMiddleware,t);}else if("function"==typeof t){const n=t;n.applyBeforeValidation=e,n.global=s,n.mutates=i,this.globalMiddleware.push(t);}return this.yargs}addCoerceMiddleware(t,e){const s=this.yargs.getAliases();return this.globalMiddleware=this.globalMiddleware.filter((t=>{const i=[...s[e]||[],e];return !t.option||!i.includes(t.option)})),t.option=e,this.addMiddleware(t,!0,!0,!0)}getMiddleware(){return this.globalMiddleware}freeze(){this.frozens.push([...this.globalMiddleware]);}unfreeze(){const t=this.frozens.pop();void 0!==t&&(this.globalMiddleware=t);}reset(){this.globalMiddleware=this.globalMiddleware.filter((t=>t.global));}};function C$1(t,e,s,i){return s.reduce(((t,s)=>{if(s.applyBeforeValidation!==i)return t;if(s.mutates){if(s.applied)return t;s.applied=!0;}if(f(t))return t.then((t=>Promise.all([t,s(t,e)]))).then((([t,e])=>Object.assign(t,e)));{const i=s(t,e);return f(i)?i.then((e=>Object.assign(t,e))):Object.assign(t,i)}}),t)}function j$1(t,e,s=(t=>{throw t})){try{const s="function"==typeof t?t():t;return f(s)?s.then((t=>e(t))):e(s)}catch(t){return s(t)}}const M$1=/(^\*)|(^\$0)/;let _$1 = class _{constructor(t,e,s,i){this.requireCache=new Set,this.handlers={},this.aliasMap={},this.frozens=[],this.shim=i,this.usage=t,this.globalMiddleware=s,this.validation=e;}addDirectory(t,e,s,i){"boolean"!=typeof(i=i||{}).recurse&&(i.recurse=!1),Array.isArray(i.extensions)||(i.extensions=["js"]);const n="function"==typeof i.visit?i.visit:t=>t;i.visit=(t,e,s)=>{const i=n(t,e,s);if(i){if(this.requireCache.has(e))return i;this.requireCache.add(e),this.addHandler(i);}return i},this.shim.requireDirectory({require:e,filename:s},t,i);}addHandler(t,e,s,i,n,r){let a=[];const h=function(t){return t?t.map((t=>(t.applyBeforeValidation=!1,t))):[]}(n);if(i=i||(()=>{}),Array.isArray(t))if(function(t){return t.every((t=>"string"==typeof t))}(t))[t,...a]=t;else for(const e of t)this.addHandler(e);else {if(function(t){return "object"==typeof t&&!Array.isArray(t)}(t)){let e=Array.isArray(t.command)||"string"==typeof t.command?t.command:this.moduleName(t);return t.aliases&&(e=[].concat(e).concat(t.aliases)),void this.addHandler(e,this.extractDesc(t),t.builder,t.handler,t.middlewares,t.deprecated)}if(k$1(s))return void this.addHandler([t].concat(a),e,s.builder,s.handler,s.middlewares,s.deprecated)}if("string"==typeof t){const n=o(t);a=a.map((t=>o(t).cmd));let l=!1;const c=[n.cmd].concat(a).filter((t=>!M$1.test(t)||(l=!0,!1)));0===c.length&&l&&c.push("$0"),l&&(n.cmd=c[0],a=c.slice(1),t=t.replace(M$1,n.cmd)),a.forEach((t=>{this.aliasMap[t]=n.cmd;})),!1!==e&&this.usage.command(t,e,l,a,r),this.handlers[n.cmd]={original:t,description:e,handler:i,builder:s||{},middlewares:h,deprecated:r,demanded:n.demanded,optional:n.optional},l&&(this.defaultCommand=this.handlers[n.cmd]);}}getCommandHandlers(){return this.handlers}getCommands(){return Object.keys(this.handlers).concat(Object.keys(this.aliasMap))}hasDefaultCommand(){return !!this.defaultCommand}runCommand(t,e,s,i,n,r){const o=this.handlers[t]||this.handlers[this.aliasMap[t]]||this.defaultCommand,a=e.getInternalMethods().getContext(),h=a.commands.slice(),l=!t;t&&(a.commands.push(t),a.fullCommands.push(o.original));const c=this.applyBuilderUpdateUsageAndParse(l,o,e,s.aliases,h,i,n,r);return f(c)?c.then((t=>this.applyMiddlewareAndGetResult(l,o,t.innerArgv,a,n,t.aliases,e))):this.applyMiddlewareAndGetResult(l,o,c.innerArgv,a,n,c.aliases,e)}applyBuilderUpdateUsageAndParse(t,e,s,i,n,r,o,a){const h=e.builder;let l=s;if(x$1(h)){s.getInternalMethods().getUsageInstance().freeze();const c=h(s.getInternalMethods().reset(i),a);if(f(c))return c.then((i=>{var a;return l=(a=i)&&"function"==typeof a.getInternalMethods?i:s,this.parseAndUpdateUsage(t,e,l,n,r,o)}))}else (function(t){return "object"==typeof t})(h)&&(s.getInternalMethods().getUsageInstance().freeze(),l=s.getInternalMethods().reset(i),Object.keys(e.builder).forEach((t=>{l.option(t,h[t]);})));return this.parseAndUpdateUsage(t,e,l,n,r,o)}parseAndUpdateUsage(t,e,s,i,n,r){t&&s.getInternalMethods().getUsageInstance().unfreeze(!0),this.shouldUpdateUsage(s)&&s.getInternalMethods().getUsageInstance().usage(this.usageFromParentCommandsCommandHandler(i,e),e.description);const o=s.getInternalMethods().runYargsParserAndExecuteCommands(null,void 0,!0,n,r);return f(o)?o.then((t=>({aliases:s.parsed.aliases,innerArgv:t}))):{aliases:s.parsed.aliases,innerArgv:o}}shouldUpdateUsage(t){return !t.getInternalMethods().getUsageInstance().getUsageDisabled()&&0===t.getInternalMethods().getUsageInstance().getUsage().length}usageFromParentCommandsCommandHandler(t,e){const s=M$1.test(e.original)?e.original.replace(M$1,"").trim():e.original,i=t.filter((t=>!M$1.test(t)));return i.push(s),`$0 ${i.join(" ")}`}handleValidationAndGetResult(t,e,s,i,n,r,o,a){if(!r.getInternalMethods().getHasOutput()){const e=r.getInternalMethods().runValidation(n,a,r.parsed.error,t);s=j$1(s,(t=>(e(t),t)));}if(e.handler&&!r.getInternalMethods().getHasOutput()){r.getInternalMethods().setHasOutput();const i=!!r.getOptions().configuration["populate--"];r.getInternalMethods().postProcess(s,i,!1,!1),s=j$1(s=C$1(s,r,o,!1),(t=>{const s=e.handler(t);return f(s)?s.then((()=>t)):t})),t||r.getInternalMethods().getUsageInstance().cacheHelpMessage(),f(s)&&!r.getInternalMethods().hasParseCallback()&&s.catch((t=>{try{r.getInternalMethods().getUsageInstance().fail(null,t);}catch(t){}}));}return t||(i.commands.pop(),i.fullCommands.pop()),s}applyMiddlewareAndGetResult(t,e,s,i,n,r,o){let a={};if(n)return s;o.getInternalMethods().getHasOutput()||(a=this.populatePositionals(e,s,i,o));const h=this.globalMiddleware.getMiddleware().slice(0).concat(e.middlewares),l=C$1(s,o,h,!0);return f(l)?l.then((s=>this.handleValidationAndGetResult(t,e,s,i,r,o,h,a))):this.handleValidationAndGetResult(t,e,l,i,r,o,h,a)}populatePositionals(t,e,s,i){e._=e._.slice(s.commands.length);const n=t.demanded.slice(0),r=t.optional.slice(0),o={};for(this.validation.positionalCount(n.length,e._.length);n.length;){const t=n.shift();this.populatePositional(t,e,o);}for(;r.length;){const t=r.shift();this.populatePositional(t,e,o);}return e._=s.commands.concat(e._.map((t=>""+t))),this.postProcessPositionals(e,o,this.cmdToParseOptions(t.original),i),o}populatePositional(t,e,s){const i=t.cmd[0];t.variadic?s[i]=e._.splice(0).map(String):e._.length&&(s[i]=[String(e._.shift())]);}cmdToParseOptions(t){const e={array:[],default:{},alias:{},demand:{}},s=o(t);return s.demanded.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i,e.demand[s]=!0;})),s.optional.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i;})),e}postProcessPositionals(t,e,s,i){const n=Object.assign({},i.getOptions());n.default=Object.assign(s.default,n.default);for(const t of Object.keys(s.alias))n.alias[t]=(n.alias[t]||[]).concat(s.alias[t]);n.array=n.array.concat(s.array),n.config={};const r=[];if(Object.keys(e).forEach((t=>{e[t].map((e=>{n.configuration["unknown-options-as-args"]&&(n.key[t]=!0),r.push(`--${t}`),r.push(e);}));})),!r.length)return;const o=Object.assign({},n.configuration,{"populate--":!1}),a=this.shim.Parser.detailed(r,Object.assign({},n,{configuration:o}));if(a.error)i.getInternalMethods().getUsageInstance().fail(a.error.message,a.error);else {const s=Object.keys(e);Object.keys(e).forEach((t=>{s.push(...a.aliases[t]);})),Object.keys(a.argv).forEach((n=>{s.includes(n)&&(e[n]||(e[n]=a.argv[n]),!this.isInConfigs(i,n)&&!this.isDefaulted(i,n)&&Object.prototype.hasOwnProperty.call(t,n)&&Object.prototype.hasOwnProperty.call(a.argv,n)&&(Array.isArray(t[n])||Array.isArray(a.argv[n]))?t[n]=[].concat(t[n],a.argv[n]):t[n]=a.argv[n]);}));}}isDefaulted(t,e){const{default:s}=t.getOptions();return Object.prototype.hasOwnProperty.call(s,e)||Object.prototype.hasOwnProperty.call(s,this.shim.Parser.camelCase(e))}isInConfigs(t,e){const{configObjects:s}=t.getOptions();return s.some((t=>Object.prototype.hasOwnProperty.call(t,e)))||s.some((t=>Object.prototype.hasOwnProperty.call(t,this.shim.Parser.camelCase(e))))}runDefaultBuilderOn(t){if(!this.defaultCommand)return;if(this.shouldUpdateUsage(t)){const e=M$1.test(this.defaultCommand.original)?this.defaultCommand.original:this.defaultCommand.original.replace(/^[^[\]<>]*/,"$0 ");t.getInternalMethods().getUsageInstance().usage(e,this.defaultCommand.description);}const e=this.defaultCommand.builder;if(x$1(e))return e(t,!0);k$1(e)||Object.keys(e).forEach((s=>{t.option(s,e[s]);}));}moduleName(t){const e=function(t){if("undefined"==typeof commonjsRequire)return null;for(let e,s=0,i=Object.keys(require.cache);s<i.length;s++)if(e=require.cache[i[s]],e.exports===t)return e;return null}(t);if(!e)throw new Error(`No command name given for module: ${this.shim.inspect(t)}`);return this.commandFromFilename(e.filename)}commandFromFilename(t){return this.shim.path.basename(t,this.shim.path.extname(t))}extractDesc({describe:t,description:e,desc:s}){for(const i of [t,e,s]){if("string"==typeof i||!1===i)return i;d(i,!0,this.shim);}return !1}freeze(){this.frozens.push({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand});}unfreeze(){const t=this.frozens.pop();d(t,void 0,this.shim),({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand}=t);}reset(){return this.handlers={},this.aliasMap={},this.defaultCommand=void 0,this.requireCache=new Set,this}};function k$1(t){return "object"==typeof t&&!!t.builder&&"function"==typeof t.handler}function x$1(t){return "function"==typeof t}function E$1(t){"undefined"!=typeof process&&[process.stdout,process.stderr].forEach((e=>{const s=e;s._handle&&s.isTTY&&"function"==typeof s._handle.setBlocking&&s._handle.setBlocking(t);}));}function A(t){return "boolean"==typeof t}function P(t,s){const i=s.y18n.__,n={},r=[];n.failFn=function(t){r.push(t);};let o=null,a=null,h=!0;n.showHelpOnFail=function(e=!0,s){const[i,r]="string"==typeof e?[!0,e]:[e,s];return t.getInternalMethods().isGlobalContext()&&(a=r),o=r,h=i,n};let l=!1;n.fail=function(s,i){const c=t.getInternalMethods().getLoggerInstance();if(!r.length){if(t.getExitProcess()&&E$1(!0),!l){l=!0,h&&(t.showHelp("error"),c.error()),(s||i)&&c.error(s||i);const e=o||a;e&&((s||i)&&c.error(""),c.error(e));}if(i=i||new e(s),t.getExitProcess())return t.exit(1);if(t.getInternalMethods().hasParseCallback())return t.exit(1,i);throw i}for(let t=r.length-1;t>=0;--t){const e=r[t];if(A(e)){if(i)throw i;if(s)throw Error(s)}else e(s,i,n);}};let c=[],f=!1;n.usage=(t,e)=>null===t?(f=!0,c=[],n):(f=!1,c.push([t,e||""]),n),n.getUsage=()=>c,n.getUsageDisabled=()=>f,n.getPositionalGroupName=()=>i("Positionals:");let d=[];n.example=(t,e)=>{d.push([t,e||""]);};let u=[];n.command=function(t,e,s,i,n=!1){s&&(u=u.map((t=>(t[2]=!1,t)))),u.push([t,e||"",s,i,n]);},n.getCommands=()=>u;let p={};n.describe=function(t,e){Array.isArray(t)?t.forEach((t=>{n.describe(t,e);})):"object"==typeof t?Object.keys(t).forEach((e=>{n.describe(e,t[e]);})):p[t]=e;},n.getDescriptions=()=>p;let m=[];n.epilog=t=>{m.push(t);};let y,b=!1;n.wrap=t=>{b=!0,y=t;},n.getWrap=()=>s.getEnv("YARGS_DISABLE_WRAP")?null:(b||(y=function(){const t=80;return s.process.stdColumns?Math.min(t,s.process.stdColumns):t}(),b=!0),y);const v="__yargsString__:";function O(t,e,i){let n=0;return Array.isArray(t)||(t=Object.values(t).map((t=>[t]))),t.forEach((t=>{n=Math.max(s.stringWidth(i?`${i} ${I(t[0])}`:I(t[0]))+$(t[0]),n);})),e&&(n=Math.min(n,parseInt((.5*e).toString(),10))),n}let w;function C(e){return t.getOptions().hiddenOptions.indexOf(e)<0||t.parsed.argv[t.getOptions().showHiddenOpt]}function j(t,e){let s=`[${i("default:")} `;if(void 0===t&&!e)return null;if(e)s+=e;else switch(typeof t){case"string":s+=`"${t}"`;break;case"object":s+=JSON.stringify(t);break;default:s+=t;}return `${s}]`}n.deferY18nLookup=t=>v+t,n.help=function(){if(w)return w;!function(){const e=t.getDemandedOptions(),s=t.getOptions();(Object.keys(s.alias)||[]).forEach((i=>{s.alias[i].forEach((r=>{p[r]&&n.describe(i,p[r]),r in e&&t.demandOption(i,e[r]),s.boolean.includes(r)&&t.boolean(i),s.count.includes(r)&&t.count(i),s.string.includes(r)&&t.string(i),s.normalize.includes(r)&&t.normalize(i),s.array.includes(r)&&t.array(i),s.number.includes(r)&&t.number(i);}));}));}();const e=t.customScriptName?t.$0:s.path.basename(t.$0),r=t.getDemandedOptions(),o=t.getDemandedCommands(),a=t.getDeprecatedOptions(),h=t.getGroups(),l=t.getOptions();let g=[];g=g.concat(Object.keys(p)),g=g.concat(Object.keys(r)),g=g.concat(Object.keys(o)),g=g.concat(Object.keys(l.default)),g=g.filter(C),g=Object.keys(g.reduce(((t,e)=>("_"!==e&&(t[e]=!0),t)),{}));const y=n.getWrap(),b=s.cliui({width:y,wrap:!!y});if(!f)if(c.length)c.forEach((t=>{b.div({text:`${t[0].replace(/\$0/g,e)}`}),t[1]&&b.div({text:`${t[1]}`,padding:[1,0,0,0]});})),b.div();else if(u.length){let t=null;t=o._?`${e} <${i("command")}>\n`:`${e} [${i("command")}]\n`,b.div(`${t}`);}if(u.length>1||1===u.length&&!u[0][2]){b.div(i("Commands:"));const s=t.getInternalMethods().getContext(),n=s.commands.length?`${s.commands.join(" ")} `:"";!0===t.getInternalMethods().getParserConfiguration()["sort-commands"]&&(u=u.sort(((t,e)=>t[0].localeCompare(e[0]))));const r=e?`${e} `:"";u.forEach((t=>{const s=`${r}${n}${t[0].replace(/^\$0 ?/,"")}`;b.span({text:s,padding:[0,2,0,2],width:O(u,y,`${e}${n}`)+4},{text:t[1]});const o=[];t[2]&&o.push(`[${i("default")}]`),t[3]&&t[3].length&&o.push(`[${i("aliases:")} ${t[3].join(", ")}]`),t[4]&&("string"==typeof t[4]?o.push(`[${i("deprecated: %s",t[4])}]`):o.push(`[${i("deprecated")}]`)),o.length?b.div({text:o.join(" "),padding:[0,0,0,2],align:"right"}):b.div();})),b.div();}const M=(Object.keys(l.alias)||[]).concat(Object.keys(t.parsed.newAliases)||[]);g=g.filter((e=>!t.parsed.newAliases[e]&&M.every((t=>-1===(l.alias[t]||[]).indexOf(e)))));const _=i("Options:");h[_]||(h[_]=[]),function(t,e,s,i){let n=[],r=null;Object.keys(s).forEach((t=>{n=n.concat(s[t]);})),t.forEach((t=>{r=[t].concat(e[t]),r.some((t=>-1!==n.indexOf(t)))||s[i].push(t);}));}(g,l.alias,h,_);const k=t=>/^--/.test(I(t)),x=Object.keys(h).filter((t=>h[t].length>0)).map((t=>({groupName:t,normalizedKeys:h[t].filter(C).map((t=>{if(M.includes(t))return t;for(let e,s=0;void 0!==(e=M[s]);s++)if((l.alias[e]||[]).includes(t))return e;return t}))}))).filter((({normalizedKeys:t})=>t.length>0)).map((({groupName:t,normalizedKeys:e})=>{const s=e.reduce(((e,s)=>(e[s]=[s].concat(l.alias[s]||[]).map((e=>t===n.getPositionalGroupName()?e:(/^[0-9]$/.test(e)?l.boolean.includes(s)?"-":"--":e.length>1?"--":"-")+e)).sort(((t,e)=>k(t)===k(e)?0:k(t)?1:-1)).join(", "),e)),{});return {groupName:t,normalizedKeys:e,switches:s}}));if(x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).some((({normalizedKeys:t,switches:e})=>!t.every((t=>k(e[t])))))&&x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).forEach((({normalizedKeys:t,switches:e})=>{t.forEach((t=>{var s,i;k(e[t])&&(e[t]=(s=e[t],i=4,S$1(s)?{text:s.text,indentation:s.indentation+i}:{text:s,indentation:i}));}));})),x.forEach((({groupName:e,normalizedKeys:s,switches:o})=>{b.div(e),s.forEach((e=>{const s=o[e];let h=p[e]||"",c=null;h.includes(v)&&(h=i(h.substring(16))),l.boolean.includes(e)&&(c=`[${i("boolean")}]`),l.count.includes(e)&&(c=`[${i("count")}]`),l.string.includes(e)&&(c=`[${i("string")}]`),l.normalize.includes(e)&&(c=`[${i("string")}]`),l.array.includes(e)&&(c=`[${i("array")}]`),l.number.includes(e)&&(c=`[${i("number")}]`);const f=[e in a?(d=a[e],"string"==typeof d?`[${i("deprecated: %s",d)}]`:`[${i("deprecated")}]`):null,c,e in r?`[${i("required")}]`:null,l.choices&&l.choices[e]?`[${i("choices:")} ${n.stringifiedValues(l.choices[e])}]`:null,j(l.default[e],l.defaultDescription[e])].filter(Boolean).join(" ");var d;b.span({text:I(s),padding:[0,2,0,2+$(s)],width:O(o,y)+4},h);const u=!0===t.getInternalMethods().getUsageConfiguration()["hide-types"];f&&!u?b.div({text:f,padding:[0,0,0,2],align:"right"}):b.div();})),b.div();})),d.length&&(b.div(i("Examples:")),d.forEach((t=>{t[0]=t[0].replace(/\$0/g,e);})),d.forEach((t=>{""===t[1]?b.div({text:t[0],padding:[0,2,0,2]}):b.div({text:t[0],padding:[0,2,0,2],width:O(d,y)+4},{text:t[1]});})),b.div()),m.length>0){const t=m.map((t=>t.replace(/\$0/g,e))).join("\n");b.div(`${t}\n`);}return b.toString().replace(/\s*$/,"")},n.cacheHelpMessage=function(){w=this.help();},n.clearCachedHelpMessage=function(){w=void 0;},n.hasCachedHelpMessage=function(){return !!w},n.showHelp=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(n.help());},n.functionDescription=t=>["(",t.name?s.Parser.decamelize(t.name,"-"):i("generated-value"),")"].join(""),n.stringifiedValues=function(t,e){let s="";const i=e||", ",n=[].concat(t);return t&&n.length?(n.forEach((t=>{s.length&&(s+=i),s+=JSON.stringify(t);})),s):s};let M=null;n.version=t=>{M=t;},n.showVersion=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(M);},n.reset=function(t){return o=null,l=!1,c=[],f=!1,m=[],d=[],u=[],p=g(p,(e=>!t[e])),n};const _=[];return n.freeze=function(){_.push({failMessage:o,failureOutput:l,usages:c,usageDisabled:f,epilogs:m,examples:d,commands:u,descriptions:p});},n.unfreeze=function(t=!1){const e=_.pop();e&&(t?(p={...e.descriptions,...p},u=[...e.commands,...u],c=[...e.usages,...c],d=[...e.examples,...d],m=[...e.epilogs,...m]):({failMessage:o,failureOutput:l,usages:c,usageDisabled:f,epilogs:m,examples:d,commands:u,descriptions:p}=e));},n}function S$1(t){return "object"==typeof t}function $(t){return S$1(t)?t.indentation:0}function I(t){return S$1(t)?t.text:t}let D$1 = class D{constructor(t,e,s,i){var n,r,o;this.yargs=t,this.usage=e,this.command=s,this.shim=i,this.completionKey="get-yargs-completions",this.aliases=null,this.customCompletionFunction=null,this.indexAfterLastReset=0,this.zshShell=null!==(o=(null===(n=this.shim.getEnv("SHELL"))||void 0===n?void 0:n.includes("zsh"))||(null===(r=this.shim.getEnv("ZSH_NAME"))||void 0===r?void 0:r.includes("zsh")))&&void 0!==o&&o;}defaultCompletion(t,e,s,i){const n=this.command.getCommandHandlers();for(let e=0,s=t.length;e<s;++e)if(n[t[e]]&&n[t[e]].builder){const s=n[t[e]].builder;if(x$1(s)){this.indexAfterLastReset=e+1;const t=this.yargs.getInternalMethods().reset();return s(t,!0),t.argv}}const r=[];this.commandCompletions(r,t,s),this.optionCompletions(r,t,e,s),this.choicesFromOptionsCompletions(r,t,e,s),this.choicesFromPositionalsCompletions(r,t,e,s),i(null,r);}commandCompletions(t,e,s){const i=this.yargs.getInternalMethods().getContext().commands;s.match(/^-/)||i[i.length-1]===s||this.previousArgHasChoices(e)||this.usage.getCommands().forEach((s=>{const i=o(s[0]).cmd;if(-1===e.indexOf(i))if(this.zshShell){const e=s[1]||"";t.push(i.replace(/:/g,"\\:")+":"+e);}else t.push(i);}));}optionCompletions(t,e,s,i){if((i.match(/^-/)||""===i&&0===t.length)&&!this.previousArgHasChoices(e)){const s=this.yargs.getOptions(),n=this.yargs.getGroups()[this.usage.getPositionalGroupName()]||[];Object.keys(s.key).forEach((r=>{const o=!!s.configuration["boolean-negation"]&&s.boolean.includes(r);n.includes(r)||s.hiddenOptions.includes(r)||this.argsContainKey(e,r,o)||this.completeOptionKey(r,t,i,o&&!!s.default[r]);}));}}choicesFromOptionsCompletions(t,e,s,i){if(this.previousArgHasChoices(e)){const s=this.getPreviousArgChoices(e);s&&s.length>0&&t.push(...s.map((t=>t.replace(/:/g,"\\:"))));}}choicesFromPositionalsCompletions(t,e,s,i){if(""===i&&t.length>0&&this.previousArgHasChoices(e))return;const n=this.yargs.getGroups()[this.usage.getPositionalGroupName()]||[],r=Math.max(this.indexAfterLastReset,this.yargs.getInternalMethods().getContext().commands.length+1),o=n[s._.length-r-1];if(!o)return;const a=this.yargs.getOptions().choices[o]||[];for(const e of a)e.startsWith(i)&&t.push(e.replace(/:/g,"\\:"));}getPreviousArgChoices(t){if(t.length<1)return;let e=t[t.length-1],s="";if(!e.startsWith("-")&&t.length>1&&(s=e,e=t[t.length-2]),!e.startsWith("-"))return;const i=e.replace(/^-+/,""),n=this.yargs.getOptions(),r=[i,...this.yargs.getAliases()[i]||[]];let o;for(const t of r)if(Object.prototype.hasOwnProperty.call(n.key,t)&&Array.isArray(n.choices[t])){o=n.choices[t];break}return o?o.filter((t=>!s||t.startsWith(s))):void 0}previousArgHasChoices(t){const e=this.getPreviousArgChoices(t);return void 0!==e&&e.length>0}argsContainKey(t,e,s){const i=e=>-1!==t.indexOf((/^[^0-9]$/.test(e)?"-":"--")+e);if(i(e))return !0;if(s&&i(`no-${e}`))return !0;if(this.aliases)for(const t of this.aliases[e])if(i(t))return !0;return !1}completeOptionKey(t,e,s,i){var n,r,o,a;let h=t;if(this.zshShell){const e=this.usage.getDescriptions(),s=null===(r=null===(n=null==this?void 0:this.aliases)||void 0===n?void 0:n[t])||void 0===r?void 0:r.find((t=>{const s=e[t];return "string"==typeof s&&s.length>0})),i=s?e[s]:void 0,l=null!==(a=null!==(o=e[t])&&void 0!==o?o:i)&&void 0!==a?a:"";h=`${t.replace(/:/g,"\\:")}:${l.replace("__yargsString__:","").replace(/(\r\n|\n|\r)/gm," ")}`;}const l=!/^--/.test(s)&&(t=>/^[^0-9]$/.test(t))(t)?"-":"--";e.push(l+h),i&&e.push(l+"no-"+h);}customCompletion(t,e,s,i){if(d(this.customCompletionFunction,null,this.shim),this.customCompletionFunction.length<3){const t=this.customCompletionFunction(s,e);return f(t)?t.then((t=>{this.shim.process.nextTick((()=>{i(null,t);}));})).catch((t=>{this.shim.process.nextTick((()=>{i(t,void 0);}));})):i(null,t)}return function(t){return t.length>3}(this.customCompletionFunction)?this.customCompletionFunction(s,e,((n=i)=>this.defaultCompletion(t,e,s,n)),(t=>{i(null,t);})):this.customCompletionFunction(s,e,(t=>{i(null,t);}))}getCompletion(t,e){const s=t.length?t[t.length-1]:"",i=this.yargs.parse(t,!0),n=this.customCompletionFunction?i=>this.customCompletion(t,i,s,e):i=>this.defaultCompletion(t,i,s,e);return f(i)?i.then(n):n(i)}generateCompletionScript(t,e){let s=this.zshShell?'#compdef {{app_name}}\n###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.zshrc\n#    or {{app_path}} {{completion_command}} >> ~/.zprofile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n  local reply\n  local si=$IFS\n  IFS=$\'\n\' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" {{app_path}} --get-yargs-completions "${words[@]}"))\n  IFS=$si\n  _describe \'values\' reply\n}\ncompdef _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n':'###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.bashrc\n#    or {{app_path}} {{completion_command}} >> ~/.bash_profile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n    local cur_word args type_list\n\n    cur_word="${COMP_WORDS[COMP_CWORD]}"\n    args=("${COMP_WORDS[@]}")\n\n    # ask yargs to generate completions.\n    type_list=$({{app_path}} --get-yargs-completions "${args[@]}")\n\n    COMPREPLY=( $(compgen -W "${type_list}" -- ${cur_word}) )\n\n    # if no match was found, fall back to filename completion\n    if [ ${#COMPREPLY[@]} -eq 0 ]; then\n      COMPREPLY=()\n    fi\n\n    return 0\n}\ncomplete -o bashdefault -o default -F _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n';const i=this.shim.path.basename(t);return t.match(/\.js$/)&&(t=`./${t}`),s=s.replace(/{{app_name}}/g,i),s=s.replace(/{{completion_command}}/g,e),s.replace(/{{app_path}}/g,t)}registerFunction(t){this.customCompletionFunction=t;}setParsed(t){this.aliases=t.aliases;}};function N$1(t,e){if(0===t.length)return e.length;if(0===e.length)return t.length;const s=[];let i,n;for(i=0;i<=e.length;i++)s[i]=[i];for(n=0;n<=t.length;n++)s[0][n]=n;for(i=1;i<=e.length;i++)for(n=1;n<=t.length;n++)e.charAt(i-1)===t.charAt(n-1)?s[i][n]=s[i-1][n-1]:i>1&&n>1&&e.charAt(i-2)===t.charAt(n-1)&&e.charAt(i-1)===t.charAt(n-2)?s[i][n]=s[i-2][n-2]+1:s[i][n]=Math.min(s[i-1][n-1]+1,Math.min(s[i][n-1]+1,s[i-1][n]+1));return s[e.length][t.length]}const H$1=["$0","--","_"];var z$1,W$1,q$1,U,F$1,L,V$1,G$1,R$1,T,B$1,Y$1,K$1,J$1,Z,X,Q$1,tt,et,st,it,nt,rt,ot,at,ht,lt,ct,ft,dt,ut,pt,gt,mt,yt;const bt=Symbol("copyDoubleDash"),vt=Symbol("copyDoubleDash"),Ot=Symbol("deleteFromParserHintObject"),wt=Symbol("emitWarning"),Ct=Symbol("freeze"),jt=Symbol("getDollarZero"),Mt=Symbol("getParserConfiguration"),_t=Symbol("getUsageConfiguration"),kt=Symbol("guessLocale"),xt=Symbol("guessVersion"),Et=Symbol("parsePositionalNumbers"),At=Symbol("pkgUp"),Pt=Symbol("populateParserHintArray"),St=Symbol("populateParserHintSingleValueDictionary"),$t=Symbol("populateParserHintArrayDictionary"),It=Symbol("populateParserHintDictionary"),Dt=Symbol("sanitizeKey"),Nt=Symbol("setKey"),Ht=Symbol("unfreeze"),zt=Symbol("validateAsync"),Wt=Symbol("getCommandInstance"),qt=Symbol("getContext"),Ut=Symbol("getHasOutput"),Ft=Symbol("getLoggerInstance"),Lt=Symbol("getParseContext"),Vt=Symbol("getUsageInstance"),Gt=Symbol("getValidationInstance"),Rt=Symbol("hasParseCallback"),Tt=Symbol("isGlobalContext"),Bt=Symbol("postProcess"),Yt=Symbol("rebase"),Kt=Symbol("reset"),Jt=Symbol("runYargsParserAndExecuteCommands"),Zt=Symbol("runValidation"),Xt=Symbol("setHasOutput"),Qt=Symbol("kTrackManuallySetKeys");let te$1 = class te{constructor(t=[],e,s,i){this.customScriptName=!1,this.parsed=!1,z$1.set(this,void 0),W$1.set(this,void 0),q$1.set(this,{commands:[],fullCommands:[]}),U.set(this,null),F$1.set(this,null),L.set(this,"show-hidden"),V$1.set(this,null),G$1.set(this,!0),R$1.set(this,{}),T.set(this,!0),B$1.set(this,[]),Y$1.set(this,void 0),K$1.set(this,{}),J$1.set(this,!1),Z.set(this,null),X.set(this,!0),Q$1.set(this,void 0),tt.set(this,""),et.set(this,void 0),st.set(this,void 0),it.set(this,{}),nt.set(this,null),rt.set(this,null),ot.set(this,{}),at.set(this,{}),ht.set(this,void 0),lt.set(this,!1),ct.set(this,void 0),ft.set(this,!1),dt.set(this,!1),ut.set(this,!1),pt.set(this,void 0),gt.set(this,{}),mt.set(this,null),yt.set(this,void 0),O(this,ct,i),O(this,ht,t),O(this,W$1,e),O(this,st,s),O(this,Y$1,new w$1(this)),this.$0=this[jt](),this[Kt](),O(this,z$1,v$1(this,z$1,"f")),O(this,pt,v$1(this,pt,"f")),O(this,yt,v$1(this,yt,"f")),O(this,et,v$1(this,et,"f")),v$1(this,et,"f").showHiddenOpt=v$1(this,L,"f"),O(this,Q$1,this[vt]());}addHelpOpt(t,e){return h("[string|boolean] [string]",[t,e],arguments.length),v$1(this,Z,"f")&&(this[Ot](v$1(this,Z,"f")),O(this,Z,null)),!1===t&&void 0===e||(O(this,Z,"string"==typeof t?t:"help"),this.boolean(v$1(this,Z,"f")),this.describe(v$1(this,Z,"f"),e||v$1(this,pt,"f").deferY18nLookup("Show help"))),this}help(t,e){return this.addHelpOpt(t,e)}addShowHiddenOpt(t,e){if(h("[string|boolean] [string]",[t,e],arguments.length),!1===t&&void 0===e)return this;const s="string"==typeof t?t:v$1(this,L,"f");return this.boolean(s),this.describe(s,e||v$1(this,pt,"f").deferY18nLookup("Show hidden options")),v$1(this,et,"f").showHiddenOpt=s,this}showHidden(t,e){return this.addShowHiddenOpt(t,e)}alias(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[$t](this.alias.bind(this),"alias",t,e),this}array(t){return h("<array|string>",[t],arguments.length),this[Pt]("array",t),this[Qt](t),this}boolean(t){return h("<array|string>",[t],arguments.length),this[Pt]("boolean",t),this[Qt](t),this}check(t,e){return h("<function> [boolean]",[t,e],arguments.length),this.middleware(((e,s)=>j$1((()=>t(e,s.getOptions())),(s=>(s?("string"==typeof s||s instanceof Error)&&v$1(this,pt,"f").fail(s.toString(),s):v$1(this,pt,"f").fail(v$1(this,ct,"f").y18n.__("Argument check failed: %s",t.toString())),e)),(t=>(v$1(this,pt,"f").fail(t.message?t.message:t.toString(),t),e)))),!1,e),this}choices(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[$t](this.choices.bind(this),"choices",t,e),this}coerce(t,s){if(h("<object|string|array> [function]",[t,s],arguments.length),Array.isArray(t)){if(!s)throw new e("coerce callback must be provided");for(const e of t)this.coerce(e,s);return this}if("object"==typeof t){for(const e of Object.keys(t))this.coerce(e,t[e]);return this}if(!s)throw new e("coerce callback must be provided");return v$1(this,et,"f").key[t]=!0,v$1(this,Y$1,"f").addCoerceMiddleware(((i,n)=>{let r;return Object.prototype.hasOwnProperty.call(i,t)?j$1((()=>(r=n.getAliases(),s(i[t]))),(e=>{i[t]=e;const s=n.getInternalMethods().getParserConfiguration()["strip-aliased"];if(r[t]&&!0!==s)for(const s of r[t])i[s]=e;return i}),(t=>{throw new e(t.message)})):i}),t),this}conflicts(t,e){return h("<string|object> [string|array]",[t,e],arguments.length),v$1(this,yt,"f").conflicts(t,e),this}config(t="config",e,s){return h("[object|string] [string|function] [function]",[t,e,s],arguments.length),"object"!=typeof t||Array.isArray(t)?("function"==typeof e&&(s=e,e=void 0),this.describe(t,e||v$1(this,pt,"f").deferY18nLookup("Path to JSON config file")),(Array.isArray(t)?t:[t]).forEach((t=>{v$1(this,et,"f").config[t]=s||!0;})),this):(t=n(t,v$1(this,W$1,"f"),this[Mt]()["deep-merge-config"]||!1,v$1(this,ct,"f")),v$1(this,et,"f").configObjects=(v$1(this,et,"f").configObjects||[]).concat(t),this)}completion(t,e,s){return h("[string] [string|boolean|function] [function]",[t,e,s],arguments.length),"function"==typeof e&&(s=e,e=void 0),O(this,F$1,t||v$1(this,F$1,"f")||"completion"),e||!1===e||(e="generate completion script"),this.command(v$1(this,F$1,"f"),e),s&&v$1(this,U,"f").registerFunction(s),this}command(t,e,s,i,n,r){return h("<string|array|object> [string|boolean] [function|object] [function] [array] [boolean|string]",[t,e,s,i,n,r],arguments.length),v$1(this,z$1,"f").addHandler(t,e,s,i,n,r),this}commands(t,e,s,i,n,r){return this.command(t,e,s,i,n,r)}commandDir(t,e){h("<string> [object]",[t,e],arguments.length);const s=v$1(this,st,"f")||v$1(this,ct,"f").require;return v$1(this,z$1,"f").addDirectory(t,s,v$1(this,ct,"f").getCallerFile(),e),this}count(t){return h("<array|string>",[t],arguments.length),this[Pt]("count",t),this[Qt](t),this}default(t,e,s){return h("<object|string|array> [*] [string]",[t,e,s],arguments.length),s&&(u(t,v$1(this,ct,"f")),v$1(this,et,"f").defaultDescription[t]=s),"function"==typeof e&&(u(t,v$1(this,ct,"f")),v$1(this,et,"f").defaultDescription[t]||(v$1(this,et,"f").defaultDescription[t]=v$1(this,pt,"f").functionDescription(e)),e=e.call()),this[St](this.default.bind(this),"default",t,e),this}defaults(t,e,s){return this.default(t,e,s)}demandCommand(t=1,e,s,i){return h("[number] [number|string] [string|null|undefined] [string|null|undefined]",[t,e,s,i],arguments.length),"number"!=typeof e&&(s=e,e=1/0),this.global("_",!1),v$1(this,et,"f").demandedCommands._={min:t,max:e,minMsg:s,maxMsg:i},this}demand(t,e,s){return Array.isArray(e)?(e.forEach((t=>{d(s,!0,v$1(this,ct,"f")),this.demandOption(t,s);})),e=1/0):"number"!=typeof e&&(s=e,e=1/0),"number"==typeof t?(d(s,!0,v$1(this,ct,"f")),this.demandCommand(t,e,s,s)):Array.isArray(t)?t.forEach((t=>{d(s,!0,v$1(this,ct,"f")),this.demandOption(t,s);})):"string"==typeof s?this.demandOption(t,s):!0!==s&&void 0!==s||this.demandOption(t),this}demandOption(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[St](this.demandOption.bind(this),"demandedOptions",t,e),this}deprecateOption(t,e){return h("<string> [string|boolean]",[t,e],arguments.length),v$1(this,et,"f").deprecatedOptions[t]=e,this}describe(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[Nt](t,!0),v$1(this,pt,"f").describe(t,e),this}detectLocale(t){return h("<boolean>",[t],arguments.length),O(this,G$1,t),this}env(t){return h("[string|boolean]",[t],arguments.length),!1===t?delete v$1(this,et,"f").envPrefix:v$1(this,et,"f").envPrefix=t||"",this}epilogue(t){return h("<string>",[t],arguments.length),v$1(this,pt,"f").epilog(t),this}epilog(t){return this.epilogue(t)}example(t,e){return h("<string|array> [string]",[t,e],arguments.length),Array.isArray(t)?t.forEach((t=>this.example(...t))):v$1(this,pt,"f").example(t,e),this}exit(t,e){O(this,J$1,!0),O(this,V$1,e),v$1(this,T,"f")&&v$1(this,ct,"f").process.exit(t);}exitProcess(t=!0){return h("[boolean]",[t],arguments.length),O(this,T,t),this}fail(t){if(h("<function|boolean>",[t],arguments.length),"boolean"==typeof t&&!1!==t)throw new e("Invalid first argument. Expected function or boolean 'false'");return v$1(this,pt,"f").failFn(t),this}getAliases(){return this.parsed?this.parsed.aliases:{}}async getCompletion(t,e){return h("<array> [function]",[t,e],arguments.length),e?v$1(this,U,"f").getCompletion(t,e):new Promise(((e,s)=>{v$1(this,U,"f").getCompletion(t,((t,i)=>{t?s(t):e(i);}));}))}getDemandedOptions(){return h([],0),v$1(this,et,"f").demandedOptions}getDemandedCommands(){return h([],0),v$1(this,et,"f").demandedCommands}getDeprecatedOptions(){return h([],0),v$1(this,et,"f").deprecatedOptions}getDetectLocale(){return v$1(this,G$1,"f")}getExitProcess(){return v$1(this,T,"f")}getGroups(){return Object.assign({},v$1(this,K$1,"f"),v$1(this,at,"f"))}getHelp(){if(O(this,J$1,!0),!v$1(this,pt,"f").hasCachedHelpMessage()){if(!this.parsed){const t=this[Jt](v$1(this,ht,"f"),void 0,void 0,0,!0);if(f(t))return t.then((()=>v$1(this,pt,"f").help()))}const t=v$1(this,z$1,"f").runDefaultBuilderOn(this);if(f(t))return t.then((()=>v$1(this,pt,"f").help()))}return Promise.resolve(v$1(this,pt,"f").help())}getOptions(){return v$1(this,et,"f")}getStrict(){return v$1(this,ft,"f")}getStrictCommands(){return v$1(this,dt,"f")}getStrictOptions(){return v$1(this,ut,"f")}global(t,e){return h("<string|array> [boolean]",[t,e],arguments.length),t=[].concat(t),!1!==e?v$1(this,et,"f").local=v$1(this,et,"f").local.filter((e=>-1===t.indexOf(e))):t.forEach((t=>{v$1(this,et,"f").local.includes(t)||v$1(this,et,"f").local.push(t);})),this}group(t,e){h("<string|array> <string>",[t,e],arguments.length);const s=v$1(this,at,"f")[e]||v$1(this,K$1,"f")[e];v$1(this,at,"f")[e]&&delete v$1(this,at,"f")[e];const i={};return v$1(this,K$1,"f")[e]=(s||[]).concat(t).filter((t=>!i[t]&&(i[t]=!0))),this}hide(t){return h("<string>",[t],arguments.length),v$1(this,et,"f").hiddenOptions.push(t),this}implies(t,e){return h("<string|object> [number|string|array]",[t,e],arguments.length),v$1(this,yt,"f").implies(t,e),this}locale(t){return h("[string]",[t],arguments.length),void 0===t?(this[kt](),v$1(this,ct,"f").y18n.getLocale()):(O(this,G$1,!1),v$1(this,ct,"f").y18n.setLocale(t),this)}middleware(t,e,s){return v$1(this,Y$1,"f").addMiddleware(t,!!e,s)}nargs(t,e){return h("<string|object|array> [number]",[t,e],arguments.length),this[St](this.nargs.bind(this),"narg",t,e),this}normalize(t){return h("<array|string>",[t],arguments.length),this[Pt]("normalize",t),this}number(t){return h("<array|string>",[t],arguments.length),this[Pt]("number",t),this[Qt](t),this}option(t,e){if(h("<string|object> [object]",[t,e],arguments.length),"object"==typeof t)Object.keys(t).forEach((e=>{this.options(e,t[e]);}));else {"object"!=typeof e&&(e={}),this[Qt](t),!v$1(this,mt,"f")||"version"!==t&&"version"!==(null==e?void 0:e.alias)||this[wt](['"version" is a reserved word.',"Please do one of the following:",'- Disable version with `yargs.version(false)` if using "version" as an option',"- Use the built-in `yargs.version` method instead (if applicable)","- Use a different option key","https://yargs.js.org/docs/#api-reference-version"].join("\n"),void 0,"versionWarning"),v$1(this,et,"f").key[t]=!0,e.alias&&this.alias(t,e.alias);const s=e.deprecate||e.deprecated;s&&this.deprecateOption(t,s);const i=e.demand||e.required||e.require;i&&this.demand(t,i),e.demandOption&&this.demandOption(t,"string"==typeof e.demandOption?e.demandOption:void 0),e.conflicts&&this.conflicts(t,e.conflicts),"default"in e&&this.default(t,e.default),void 0!==e.implies&&this.implies(t,e.implies),void 0!==e.nargs&&this.nargs(t,e.nargs),e.config&&this.config(t,e.configParser),e.normalize&&this.normalize(t),e.choices&&this.choices(t,e.choices),e.coerce&&this.coerce(t,e.coerce),e.group&&this.group(t,e.group),(e.boolean||"boolean"===e.type)&&(this.boolean(t),e.alias&&this.boolean(e.alias)),(e.array||"array"===e.type)&&(this.array(t),e.alias&&this.array(e.alias)),(e.number||"number"===e.type)&&(this.number(t),e.alias&&this.number(e.alias)),(e.string||"string"===e.type)&&(this.string(t),e.alias&&this.string(e.alias)),(e.count||"count"===e.type)&&this.count(t),"boolean"==typeof e.global&&this.global(t,e.global),e.defaultDescription&&(v$1(this,et,"f").defaultDescription[t]=e.defaultDescription),e.skipValidation&&this.skipValidation(t);const n=e.describe||e.description||e.desc,r=v$1(this,pt,"f").getDescriptions();Object.prototype.hasOwnProperty.call(r,t)&&"string"!=typeof n||this.describe(t,n),e.hidden&&this.hide(t),e.requiresArg&&this.requiresArg(t);}return this}options(t,e){return this.option(t,e)}parse(t,e,s){h("[string|array] [function|boolean|object] [function]",[t,e,s],arguments.length),this[Ct](),void 0===t&&(t=v$1(this,ht,"f")),"object"==typeof e&&(O(this,rt,e),e=s),"function"==typeof e&&(O(this,nt,e),e=!1),e||O(this,ht,t),v$1(this,nt,"f")&&O(this,T,!1);const i=this[Jt](t,!!e),n=this.parsed;return v$1(this,U,"f").setParsed(this.parsed),f(i)?i.then((t=>(v$1(this,nt,"f")&&v$1(this,nt,"f").call(this,v$1(this,V$1,"f"),t,v$1(this,tt,"f")),t))).catch((t=>{throw v$1(this,nt,"f")&&v$1(this,nt,"f")(t,this.parsed.argv,v$1(this,tt,"f")),t})).finally((()=>{this[Ht](),this.parsed=n;})):(v$1(this,nt,"f")&&v$1(this,nt,"f").call(this,v$1(this,V$1,"f"),i,v$1(this,tt,"f")),this[Ht](),this.parsed=n,i)}parseAsync(t,e,s){const i=this.parse(t,e,s);return f(i)?i:Promise.resolve(i)}parseSync(t,s,i){const n=this.parse(t,s,i);if(f(n))throw new e(".parseSync() must not be used with asynchronous builders, handlers, or middleware");return n}parserConfiguration(t){return h("<object>",[t],arguments.length),O(this,it,t),this}pkgConf(t,e){h("<string> [string]",[t,e],arguments.length);let s=null;const i=this[At](e||v$1(this,W$1,"f"));return i[t]&&"object"==typeof i[t]&&(s=n(i[t],e||v$1(this,W$1,"f"),this[Mt]()["deep-merge-config"]||!1,v$1(this,ct,"f")),v$1(this,et,"f").configObjects=(v$1(this,et,"f").configObjects||[]).concat(s)),this}positional(t,e){h("<string> <object>",[t,e],arguments.length);const s=["default","defaultDescription","implies","normalize","choices","conflicts","coerce","type","describe","desc","description","alias"];e=g(e,((t,e)=>!("type"===t&&!["string","number","boolean"].includes(e))&&s.includes(t)));const i=v$1(this,q$1,"f").fullCommands[v$1(this,q$1,"f").fullCommands.length-1],n=i?v$1(this,z$1,"f").cmdToParseOptions(i):{array:[],alias:{},default:{},demand:{}};return p(n).forEach((s=>{const i=n[s];Array.isArray(i)?-1!==i.indexOf(t)&&(e[s]=!0):i[t]&&!(s in e)&&(e[s]=i[t]);})),this.group(t,v$1(this,pt,"f").getPositionalGroupName()),this.option(t,e)}recommendCommands(t=!0){return h("[boolean]",[t],arguments.length),O(this,lt,t),this}required(t,e,s){return this.demand(t,e,s)}require(t,e,s){return this.demand(t,e,s)}requiresArg(t){return h("<array|string|object> [number]",[t],arguments.length),"string"==typeof t&&v$1(this,et,"f").narg[t]||this[St](this.requiresArg.bind(this),"narg",t,NaN),this}showCompletionScript(t,e){return h("[string] [string]",[t,e],arguments.length),t=t||this.$0,v$1(this,Q$1,"f").log(v$1(this,U,"f").generateCompletionScript(t,e||v$1(this,F$1,"f")||"completion")),this}showHelp(t){if(h("[string|function]",[t],arguments.length),O(this,J$1,!0),!v$1(this,pt,"f").hasCachedHelpMessage()){if(!this.parsed){const e=this[Jt](v$1(this,ht,"f"),void 0,void 0,0,!0);if(f(e))return e.then((()=>{v$1(this,pt,"f").showHelp(t);})),this}const e=v$1(this,z$1,"f").runDefaultBuilderOn(this);if(f(e))return e.then((()=>{v$1(this,pt,"f").showHelp(t);})),this}return v$1(this,pt,"f").showHelp(t),this}scriptName(t){return this.customScriptName=!0,this.$0=t,this}showHelpOnFail(t,e){return h("[boolean|string] [string]",[t,e],arguments.length),v$1(this,pt,"f").showHelpOnFail(t,e),this}showVersion(t){return h("[string|function]",[t],arguments.length),v$1(this,pt,"f").showVersion(t),this}skipValidation(t){return h("<array|string>",[t],arguments.length),this[Pt]("skipValidation",t),this}strict(t){return h("[boolean]",[t],arguments.length),O(this,ft,!1!==t),this}strictCommands(t){return h("[boolean]",[t],arguments.length),O(this,dt,!1!==t),this}strictOptions(t){return h("[boolean]",[t],arguments.length),O(this,ut,!1!==t),this}string(t){return h("<array|string>",[t],arguments.length),this[Pt]("string",t),this[Qt](t),this}terminalWidth(){return h([],0),v$1(this,ct,"f").process.stdColumns}updateLocale(t){return this.updateStrings(t)}updateStrings(t){return h("<object>",[t],arguments.length),O(this,G$1,!1),v$1(this,ct,"f").y18n.updateLocale(t),this}usage(t,s,i,n){if(h("<string|null|undefined> [string|boolean] [function|object] [function]",[t,s,i,n],arguments.length),void 0!==s){if(d(t,null,v$1(this,ct,"f")),(t||"").match(/^\$0( |$)/))return this.command(t,s,i,n);throw new e(".usage() description must start with $0 if being used as alias for .command()")}return v$1(this,pt,"f").usage(t),this}usageConfiguration(t){return h("<object>",[t],arguments.length),O(this,gt,t),this}version(t,e,s){const i="version";if(h("[boolean|string] [string] [string]",[t,e,s],arguments.length),v$1(this,mt,"f")&&(this[Ot](v$1(this,mt,"f")),v$1(this,pt,"f").version(void 0),O(this,mt,null)),0===arguments.length)s=this[xt](),t=i;else if(1===arguments.length){if(!1===t)return this;s=t,t=i;}else 2===arguments.length&&(s=e,e=void 0);return O(this,mt,"string"==typeof t?t:i),e=e||v$1(this,pt,"f").deferY18nLookup("Show version number"),v$1(this,pt,"f").version(s||void 0),this.boolean(v$1(this,mt,"f")),this.describe(v$1(this,mt,"f"),e),this}wrap(t){return h("<number|null|undefined>",[t],arguments.length),v$1(this,pt,"f").wrap(t),this}[(z$1=new WeakMap,W$1=new WeakMap,q$1=new WeakMap,U=new WeakMap,F$1=new WeakMap,L=new WeakMap,V$1=new WeakMap,G$1=new WeakMap,R$1=new WeakMap,T=new WeakMap,B$1=new WeakMap,Y$1=new WeakMap,K$1=new WeakMap,J$1=new WeakMap,Z=new WeakMap,X=new WeakMap,Q$1=new WeakMap,tt=new WeakMap,et=new WeakMap,st=new WeakMap,it=new WeakMap,nt=new WeakMap,rt=new WeakMap,ot=new WeakMap,at=new WeakMap,ht=new WeakMap,lt=new WeakMap,ct=new WeakMap,ft=new WeakMap,dt=new WeakMap,ut=new WeakMap,pt=new WeakMap,gt=new WeakMap,mt=new WeakMap,yt=new WeakMap,bt)](t){if(!t._||!t["--"])return t;t._.push.apply(t._,t["--"]);try{delete t["--"];}catch(t){}return t}[vt](){return {log:(...t)=>{this[Rt]()||console.log(...t),O(this,J$1,!0),v$1(this,tt,"f").length&&O(this,tt,v$1(this,tt,"f")+"\n"),O(this,tt,v$1(this,tt,"f")+t.join(" "));},error:(...t)=>{this[Rt]()||console.error(...t),O(this,J$1,!0),v$1(this,tt,"f").length&&O(this,tt,v$1(this,tt,"f")+"\n"),O(this,tt,v$1(this,tt,"f")+t.join(" "));}}}[Ot](t){p(v$1(this,et,"f")).forEach((e=>{if("configObjects"===e)return;const s=v$1(this,et,"f")[e];Array.isArray(s)?s.includes(t)&&s.splice(s.indexOf(t),1):"object"==typeof s&&delete s[t];})),delete v$1(this,pt,"f").getDescriptions()[t];}[wt](t,e,s){v$1(this,R$1,"f")[s]||(v$1(this,ct,"f").process.emitWarning(t,e),v$1(this,R$1,"f")[s]=!0);}[Ct](){v$1(this,B$1,"f").push({options:v$1(this,et,"f"),configObjects:v$1(this,et,"f").configObjects.slice(0),exitProcess:v$1(this,T,"f"),groups:v$1(this,K$1,"f"),strict:v$1(this,ft,"f"),strictCommands:v$1(this,dt,"f"),strictOptions:v$1(this,ut,"f"),completionCommand:v$1(this,F$1,"f"),output:v$1(this,tt,"f"),exitError:v$1(this,V$1,"f"),hasOutput:v$1(this,J$1,"f"),parsed:this.parsed,parseFn:v$1(this,nt,"f"),parseContext:v$1(this,rt,"f")}),v$1(this,pt,"f").freeze(),v$1(this,yt,"f").freeze(),v$1(this,z$1,"f").freeze(),v$1(this,Y$1,"f").freeze();}[jt](){let t,e="";return t=/\b(node|iojs|electron)(\.exe)?$/.test(v$1(this,ct,"f").process.argv()[0])?v$1(this,ct,"f").process.argv().slice(1,2):v$1(this,ct,"f").process.argv().slice(0,1),e=t.map((t=>{const e=this[Yt](v$1(this,W$1,"f"),t);return t.match(/^(\/|([a-zA-Z]:)?\\)/)&&e.length<t.length?e:t})).join(" ").trim(),v$1(this,ct,"f").getEnv("_")&&v$1(this,ct,"f").getProcessArgvBin()===v$1(this,ct,"f").getEnv("_")&&(e=v$1(this,ct,"f").getEnv("_").replace(`${v$1(this,ct,"f").path.dirname(v$1(this,ct,"f").process.execPath())}/`,"")),e}[Mt](){return v$1(this,it,"f")}[_t](){return v$1(this,gt,"f")}[kt](){if(!v$1(this,G$1,"f"))return;const t=v$1(this,ct,"f").getEnv("LC_ALL")||v$1(this,ct,"f").getEnv("LC_MESSAGES")||v$1(this,ct,"f").getEnv("LANG")||v$1(this,ct,"f").getEnv("LANGUAGE")||"en_US";this.locale(t.replace(/[.:].*/,""));}[xt](){return this[At]().version||"unknown"}[Et](t){const e=t["--"]?t["--"]:t._;for(let t,s=0;void 0!==(t=e[s]);s++)v$1(this,ct,"f").Parser.looksLikeNumber(t)&&Number.isSafeInteger(Math.floor(parseFloat(`${t}`)))&&(e[s]=Number(t));return t}[At](t){const e=t||"*";if(v$1(this,ot,"f")[e])return v$1(this,ot,"f")[e];let s={};try{let e=t||v$1(this,ct,"f").mainFilename;!t&&v$1(this,ct,"f").path.extname(e)&&(e=v$1(this,ct,"f").path.dirname(e));const i=v$1(this,ct,"f").findUp(e,((t,e)=>e.includes("package.json")?"package.json":void 0));d(i,void 0,v$1(this,ct,"f")),s=JSON.parse(v$1(this,ct,"f").readFileSync(i,"utf8"));}catch(t){}return v$1(this,ot,"f")[e]=s||{},v$1(this,ot,"f")[e]}[Pt](t,e){(e=[].concat(e)).forEach((e=>{e=this[Dt](e),v$1(this,et,"f")[t].push(e);}));}[St](t,e,s,i){this[It](t,e,s,i,((t,e,s)=>{v$1(this,et,"f")[t][e]=s;}));}[$t](t,e,s,i){this[It](t,e,s,i,((t,e,s)=>{v$1(this,et,"f")[t][e]=(v$1(this,et,"f")[t][e]||[]).concat(s);}));}[It](t,e,s,i,n){if(Array.isArray(s))s.forEach((e=>{t(e,i);}));else if((t=>"object"==typeof t)(s))for(const e of p(s))t(e,s[e]);else n(e,this[Dt](s),i);}[Dt](t){return "__proto__"===t?"___proto___":t}[Nt](t,e){return this[St](this[Nt].bind(this),"key",t,e),this}[Ht](){var t,e,s,i,n,r,o,a,h,l,c,f;const u=v$1(this,B$1,"f").pop();let p;d(u,void 0,v$1(this,ct,"f")),t=this,e=this,s=this,i=this,n=this,r=this,o=this,a=this,h=this,l=this,c=this,f=this,({options:{set value(e){O(t,et,e);}}.value,configObjects:p,exitProcess:{set value(t){O(e,T,t);}}.value,groups:{set value(t){O(s,K$1,t);}}.value,output:{set value(t){O(i,tt,t);}}.value,exitError:{set value(t){O(n,V$1,t);}}.value,hasOutput:{set value(t){O(r,J$1,t);}}.value,parsed:this.parsed,strict:{set value(t){O(o,ft,t);}}.value,strictCommands:{set value(t){O(a,dt,t);}}.value,strictOptions:{set value(t){O(h,ut,t);}}.value,completionCommand:{set value(t){O(l,F$1,t);}}.value,parseFn:{set value(t){O(c,nt,t);}}.value,parseContext:{set value(t){O(f,rt,t);}}.value}=u),v$1(this,et,"f").configObjects=p,v$1(this,pt,"f").unfreeze(),v$1(this,yt,"f").unfreeze(),v$1(this,z$1,"f").unfreeze(),v$1(this,Y$1,"f").unfreeze();}[zt](t,e){return j$1(e,(e=>(t(e),e)))}getInternalMethods(){return {getCommandInstance:this[Wt].bind(this),getContext:this[qt].bind(this),getHasOutput:this[Ut].bind(this),getLoggerInstance:this[Ft].bind(this),getParseContext:this[Lt].bind(this),getParserConfiguration:this[Mt].bind(this),getUsageConfiguration:this[_t].bind(this),getUsageInstance:this[Vt].bind(this),getValidationInstance:this[Gt].bind(this),hasParseCallback:this[Rt].bind(this),isGlobalContext:this[Tt].bind(this),postProcess:this[Bt].bind(this),reset:this[Kt].bind(this),runValidation:this[Zt].bind(this),runYargsParserAndExecuteCommands:this[Jt].bind(this),setHasOutput:this[Xt].bind(this)}}[Wt](){return v$1(this,z$1,"f")}[qt](){return v$1(this,q$1,"f")}[Ut](){return v$1(this,J$1,"f")}[Ft](){return v$1(this,Q$1,"f")}[Lt](){return v$1(this,rt,"f")||{}}[Vt](){return v$1(this,pt,"f")}[Gt](){return v$1(this,yt,"f")}[Rt](){return !!v$1(this,nt,"f")}[Tt](){return v$1(this,X,"f")}[Bt](t,e,s,i){if(s)return t;if(f(t))return t;e||(t=this[bt](t));return (this[Mt]()["parse-positional-numbers"]||void 0===this[Mt]()["parse-positional-numbers"])&&(t=this[Et](t)),i&&(t=C$1(t,this,v$1(this,Y$1,"f").getMiddleware(),!1)),t}[Kt](t={}){O(this,et,v$1(this,et,"f")||{});const e={};e.local=v$1(this,et,"f").local||[],e.configObjects=v$1(this,et,"f").configObjects||[];const s={};e.local.forEach((e=>{s[e]=!0,(t[e]||[]).forEach((t=>{s[t]=!0;}));})),Object.assign(v$1(this,at,"f"),Object.keys(v$1(this,K$1,"f")).reduce(((t,e)=>{const i=v$1(this,K$1,"f")[e].filter((t=>!(t in s)));return i.length>0&&(t[e]=i),t}),{})),O(this,K$1,{});return ["array","boolean","string","skipValidation","count","normalize","number","hiddenOptions"].forEach((t=>{e[t]=(v$1(this,et,"f")[t]||[]).filter((t=>!s[t]));})),["narg","key","alias","default","defaultDescription","config","choices","demandedOptions","demandedCommands","deprecatedOptions"].forEach((t=>{e[t]=g(v$1(this,et,"f")[t],(t=>!s[t]));})),e.envPrefix=v$1(this,et,"f").envPrefix,O(this,et,e),O(this,pt,v$1(this,pt,"f")?v$1(this,pt,"f").reset(s):P(this,v$1(this,ct,"f"))),O(this,yt,v$1(this,yt,"f")?v$1(this,yt,"f").reset(s):function(t,e,s){const i=s.y18n.__,n=s.y18n.__n,r={nonOptionCount:function(s){const i=t.getDemandedCommands(),r=s._.length+(s["--"]?s["--"].length:0)-t.getInternalMethods().getContext().commands.length;i._&&(r<i._.min||r>i._.max)&&(r<i._.min?void 0!==i._.minMsg?e.fail(i._.minMsg?i._.minMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.min.toString()):null):e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",r,r.toString(),i._.min.toString())):r>i._.max&&(void 0!==i._.maxMsg?e.fail(i._.maxMsg?i._.maxMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.max.toString()):null):e.fail(n("Too many non-option arguments: got %s, maximum of %s","Too many non-option arguments: got %s, maximum of %s",r,r.toString(),i._.max.toString()))));},positionalCount:function(t,s){s<t&&e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",s,s+"",t+""));},requiredArguments:function(t,s){let i=null;for(const e of Object.keys(s))Object.prototype.hasOwnProperty.call(t,e)&&void 0!==t[e]||(i=i||{},i[e]=s[e]);if(i){const t=[];for(const e of Object.keys(i)){const s=i[e];s&&t.indexOf(s)<0&&t.push(s);}const s=t.length?`\n${t.join("\n")}`:"";e.fail(n("Missing required argument: %s","Missing required arguments: %s",Object.keys(i).length,Object.keys(i).join(", ")+s));}},unknownArguments:function(s,i,o,a,h=!0){var l;const c=t.getInternalMethods().getCommandInstance().getCommands(),f=[],d=t.getInternalMethods().getContext();if(Object.keys(s).forEach((e=>{H$1.includes(e)||Object.prototype.hasOwnProperty.call(o,e)||Object.prototype.hasOwnProperty.call(t.getInternalMethods().getParseContext(),e)||r.isValidAndSomeAliasIsNotNew(e,i)||f.push(e);})),h&&(d.commands.length>0||c.length>0||a)&&s._.slice(d.commands.length).forEach((t=>{c.includes(""+t)||f.push(""+t);})),h){const e=(null===(l=t.getDemandedCommands()._)||void 0===l?void 0:l.max)||0,i=d.commands.length+e;i<s._.length&&s._.slice(i).forEach((t=>{t=String(t),d.commands.includes(t)||f.includes(t)||f.push(t);}));}f.length&&e.fail(n("Unknown argument: %s","Unknown arguments: %s",f.length,f.map((t=>t.trim()?t:`"${t}"`)).join(", ")));},unknownCommands:function(s){const i=t.getInternalMethods().getCommandInstance().getCommands(),r=[],o=t.getInternalMethods().getContext();return (o.commands.length>0||i.length>0)&&s._.slice(o.commands.length).forEach((t=>{i.includes(""+t)||r.push(""+t);})),r.length>0&&(e.fail(n("Unknown command: %s","Unknown commands: %s",r.length,r.join(", "))),!0)},isValidAndSomeAliasIsNotNew:function(e,s){if(!Object.prototype.hasOwnProperty.call(s,e))return !1;const i=t.parsed.newAliases;return [e,...s[e]].some((t=>!Object.prototype.hasOwnProperty.call(i,t)||!i[e]))},limitedChoices:function(s){const n=t.getOptions(),r={};if(!Object.keys(n.choices).length)return;Object.keys(s).forEach((t=>{-1===H$1.indexOf(t)&&Object.prototype.hasOwnProperty.call(n.choices,t)&&[].concat(s[t]).forEach((e=>{-1===n.choices[t].indexOf(e)&&void 0!==e&&(r[t]=(r[t]||[]).concat(e));}));}));const o=Object.keys(r);if(!o.length)return;let a=i("Invalid values:");o.forEach((t=>{a+=`\n  ${i("Argument: %s, Given: %s, Choices: %s",t,e.stringifiedValues(r[t]),e.stringifiedValues(n.choices[t]))}`;})),e.fail(a);}};let o={};function a(t,e){const s=Number(e);return "number"==typeof(e=isNaN(s)?e:s)?e=t._.length>=e:e.match(/^--no-.+/)?(e=e.match(/^--no-(.+)/)[1],e=!Object.prototype.hasOwnProperty.call(t,e)):e=Object.prototype.hasOwnProperty.call(t,e),e}r.implies=function(e,i){h("<string|object> [array|number|string]",[e,i],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.implies(t,e[t]);})):(t.global(e),o[e]||(o[e]=[]),Array.isArray(i)?i.forEach((t=>r.implies(e,t))):(d(i,void 0,s),o[e].push(i)));},r.getImplied=function(){return o},r.implications=function(t){const s=[];if(Object.keys(o).forEach((e=>{const i=e;(o[e]||[]).forEach((e=>{let n=i;const r=e;n=a(t,n),e=a(t,e),n&&!e&&s.push(` ${i} -> ${r}`);}));})),s.length){let t=`${i("Implications failed:")}\n`;s.forEach((e=>{t+=e;})),e.fail(t);}};let l={};r.conflicts=function(e,s){h("<string|object> [array|string]",[e,s],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.conflicts(t,e[t]);})):(t.global(e),l[e]||(l[e]=[]),Array.isArray(s)?s.forEach((t=>r.conflicts(e,t))):l[e].push(s));},r.getConflicting=()=>l,r.conflicting=function(n){Object.keys(n).forEach((t=>{l[t]&&l[t].forEach((s=>{s&&void 0!==n[t]&&void 0!==n[s]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,s));}));})),t.getInternalMethods().getParserConfiguration()["strip-dashed"]&&Object.keys(l).forEach((t=>{l[t].forEach((r=>{r&&void 0!==n[s.Parser.camelCase(t)]&&void 0!==n[s.Parser.camelCase(r)]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,r));}));}));},r.recommendCommands=function(t,s){s=s.sort(((t,e)=>e.length-t.length));let n=null,r=1/0;for(let e,i=0;void 0!==(e=s[i]);i++){const s=N$1(t,e);s<=3&&s<r&&(r=s,n=e);}n&&e.fail(i("Did you mean %s?",n));},r.reset=function(t){return o=g(o,(e=>!t[e])),l=g(l,(e=>!t[e])),r};const c=[];return r.freeze=function(){c.push({implied:o,conflicting:l});},r.unfreeze=function(){const t=c.pop();d(t,void 0,s),({implied:o,conflicting:l}=t);},r}(this,v$1(this,pt,"f"),v$1(this,ct,"f"))),O(this,z$1,v$1(this,z$1,"f")?v$1(this,z$1,"f").reset():function(t,e,s,i){return new _$1(t,e,s,i)}(v$1(this,pt,"f"),v$1(this,yt,"f"),v$1(this,Y$1,"f"),v$1(this,ct,"f"))),v$1(this,U,"f")||O(this,U,function(t,e,s,i){return new D$1(t,e,s,i)}(this,v$1(this,pt,"f"),v$1(this,z$1,"f"),v$1(this,ct,"f"))),v$1(this,Y$1,"f").reset(),O(this,F$1,null),O(this,tt,""),O(this,V$1,null),O(this,J$1,!1),this.parsed=!1,this}[Yt](t,e){return v$1(this,ct,"f").path.relative(t,e)}[Jt](t,s,i,n=0,r=!1){let o=!!i||r;t=t||v$1(this,ht,"f"),v$1(this,et,"f").__=v$1(this,ct,"f").y18n.__,v$1(this,et,"f").configuration=this[Mt]();const a=!!v$1(this,et,"f").configuration["populate--"],h=Object.assign({},v$1(this,et,"f").configuration,{"populate--":!0}),l=v$1(this,ct,"f").Parser.detailed(t,Object.assign({},v$1(this,et,"f"),{configuration:{"parse-positional-numbers":!1,...h}})),c=Object.assign(l.argv,v$1(this,rt,"f"));let d;const u=l.aliases;let p=!1,g=!1;Object.keys(c).forEach((t=>{t===v$1(this,Z,"f")&&c[t]?p=!0:t===v$1(this,mt,"f")&&c[t]&&(g=!0);})),c.$0=this.$0,this.parsed=l,0===n&&v$1(this,pt,"f").clearCachedHelpMessage();try{if(this[kt](),s)return this[Bt](c,a,!!i,!1);if(v$1(this,Z,"f")){[v$1(this,Z,"f")].concat(u[v$1(this,Z,"f")]||[]).filter((t=>t.length>1)).includes(""+c._[c._.length-1])&&(c._.pop(),p=!0);}O(this,X,!1,"f");const h=v$1(this,z$1,"f").getCommands(),m=v$1(this,U,"f").completionKey in c,y=p||m||r;if(c._.length){if(h.length){let t;for(let e,s=n||0;void 0!==c._[s];s++){if(e=String(c._[s]),h.includes(e)&&e!==v$1(this,F$1,"f")){const t=v$1(this,z$1,"f").runCommand(e,this,l,s+1,r,p||g||r);return this[Bt](t,a,!!i,!1)}if(!t&&e!==v$1(this,F$1,"f")){t=e;break}}!v$1(this,z$1,"f").hasDefaultCommand()&&v$1(this,lt,"f")&&t&&!y&&v$1(this,yt,"f").recommendCommands(t,h);}v$1(this,F$1,"f")&&c._.includes(v$1(this,F$1,"f"))&&!m&&(v$1(this,T,"f")&&E$1(!0),this.showCompletionScript(),this.exit(0));}if(v$1(this,z$1,"f").hasDefaultCommand()&&!y){const t=v$1(this,z$1,"f").runCommand(null,this,l,0,r,p||g||r);return this[Bt](t,a,!!i,!1)}if(m){v$1(this,T,"f")&&E$1(!0);const s=(t=[].concat(t)).slice(t.indexOf(`--${v$1(this,U,"f").completionKey}`)+1);return v$1(this,U,"f").getCompletion(s,((t,s)=>{if(t)throw new e(t.message);(s||[]).forEach((t=>{v$1(this,Q$1,"f").log(t);})),this.exit(0);})),this[Bt](c,!a,!!i,!1)}if(v$1(this,J$1,"f")||(p?(v$1(this,T,"f")&&E$1(!0),o=!0,this.showHelp("log"),this.exit(0)):g&&(v$1(this,T,"f")&&E$1(!0),o=!0,v$1(this,pt,"f").showVersion("log"),this.exit(0))),!o&&v$1(this,et,"f").skipValidation.length>0&&(o=Object.keys(c).some((t=>v$1(this,et,"f").skipValidation.indexOf(t)>=0&&!0===c[t]))),!o){if(l.error)throw new e(l.error.message);if(!m){const t=this[Zt](u,{},l.error);i||(d=C$1(c,this,v$1(this,Y$1,"f").getMiddleware(),!0)),d=this[zt](t,null!=d?d:c),f(d)&&!i&&(d=d.then((()=>C$1(c,this,v$1(this,Y$1,"f").getMiddleware(),!1))));}}}catch(t){if(!(t instanceof e))throw t;v$1(this,pt,"f").fail(t.message,t);}return this[Bt](null!=d?d:c,a,!!i,!0)}[Zt](t,s,i,n){const r={...this.getDemandedOptions()};return o=>{if(i)throw new e(i.message);v$1(this,yt,"f").nonOptionCount(o),v$1(this,yt,"f").requiredArguments(o,r);let a=!1;v$1(this,dt,"f")&&(a=v$1(this,yt,"f").unknownCommands(o)),v$1(this,ft,"f")&&!a?v$1(this,yt,"f").unknownArguments(o,t,s,!!n):v$1(this,ut,"f")&&v$1(this,yt,"f").unknownArguments(o,t,{},!1,!1),v$1(this,yt,"f").limitedChoices(o),v$1(this,yt,"f").implications(o),v$1(this,yt,"f").conflicting(o);}}[Xt](){O(this,J$1,!0);}[Qt](t){if("string"==typeof t)v$1(this,et,"f").key[t]=!0;else for(const e of t)v$1(this,et,"f").key[e]=!0;}};var ee$1,se$1;const{readFileSync:ie$1}=fs$n,{inspect:ne$1}=require$$1,{resolve:re$1}=path$f,oe$1=requireBuild$3(),ae$1=requireBuild$2();var he$1,le$1={assert:{notStrictEqual:t.notStrictEqual,strictEqual:t.strictEqual},cliui:requireBuild$1(),findUp:requireSync(),getEnv:t=>process.env[t],getCallerFile:requireGetCallerFile(),getProcessArgvBin:y$1,inspect:ne$1,mainFilename:null!==(se$1=null===(ee$1=null===commonjsRequire||void 0===commonjsRequire?void 0:require.main)||void 0===ee$1?void 0:ee$1.filename)&&void 0!==se$1?se$1:process.cwd(),Parser:ae$1,path:path$f,process:{argv:()=>process.argv,cwd:process.cwd,emitWarning:(t,e)=>process.emitWarning(t,e),execPath:()=>process.execPath,exit:t=>{process.exit(t);},nextTick:process.nextTick,stdColumns:void 0!==process.stdout.columns?process.stdout.columns:null},readFileSync:ie$1,require:commonjsRequire,requireDirectory:requireRequireDirectory(),stringWidth:stringWidthExports,y18n:oe$1({directory:re$1(__dirname,"../locales"),updateFiles:!1})};const ce$1=(null===(he$1=null===process||void 0===process?void 0:process.env)||void 0===he$1?void 0:he$1.YARGS_MIN_NODE_VERSION)?Number(process.env.YARGS_MIN_NODE_VERSION):12;if(process&&process.version){if(Number(process.version.match(/v([^.]+)/)[1])<ce$1)throw Error(`yargs supports a minimum Node.js version of ${ce$1}. Read our version support policy: https://github.com/yargs/yargs#supported-nodejs-versions`)}const fe$1=requireBuild$2();var de$1,ue$1={applyExtends:n,cjsPlatformShim:le$1,Yargs:(de$1=le$1,(t=[],e=de$1.process.cwd(),s)=>{const i=new te$1(t,e,s,de$1);return Object.defineProperty(i,"argv",{get:()=>i.parse(),enumerable:!0}),i.help(),i.version(),i}),argsert:h,isPromise:f,objFilter:g,parseCommand:o,Parser:fe$1,processArgv:b$1,YError:e};var build$1=ue$1;
 
 var pkg = /*@__PURE__*/getDefaultExportFromCjs(build$1);
 
@@ -87593,7 +87553,7 @@ let Limiter$1 = class Limiter {
 
 var limiter = Limiter$1;
 
-const zlib = zlib$2;
+const zlib = require$$1$3;
 
 const bufferUtil = bufferUtilExports;
 const Limiter = limiter;
@@ -88110,7 +88070,7 @@ var validation = {exports: {}};
 
 var isValidUTF8_1;
 
-const { isUtf8 } = require$$0$8;
+const { isUtf8 } = require$$0$7;
 
 //
 // Allowed token characters:
@@ -88241,7 +88201,7 @@ if (isUtf8) {
 
 var validationExports = validation.exports;
 
-const { Writable: Writable$1 } = require$$0$7;
+const { Writable } = require$$0$6;
 
 const PerMessageDeflate$2 = permessageDeflate;
 const {
@@ -88268,7 +88228,7 @@ const DEFER_EVENT = 6;
  *
  * @extends Writable
  */
-let Receiver$1 = class Receiver extends Writable$1 {
+let Receiver$1 = class Receiver extends Writable {
   /**
    * Creates a Receiver instance.
    *
@@ -89933,13 +89893,13 @@ var extension = { format: format$1, parse: parse$1 };
 
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "^Duplex|Readable$", "caughtErrors": "none" }] */
 
-const EventEmitter$2 = require$$0$5;
-const https$2 = require$$1$1;
-const http$2 = require$$0$9;
-const net = require$$0$a;
+const EventEmitter$3 = require$$0$4;
+const https = require$$1$1;
+const http = require$$0$8;
+const net = require$$0$9;
 const tls = require$$1$2;
 const { randomBytes, createHash } = require$$2;
-const { URL: URL$2 } = require$$5;
+const { URL: URL$1 } = require$$5;
 
 const PerMessageDeflate = permessageDeflate;
 const Receiver = receiver;
@@ -89971,7 +89931,7 @@ const subprotocolRegex = /^[!#$%&'*+\-.0-9A-Z^_`|a-z~]+$/;
  *
  * @extends EventEmitter
  */
-let WebSocket$1 = class WebSocket extends EventEmitter$2 {
+let WebSocket$1 = class WebSocket extends EventEmitter$3 {
   /**
    * Create a new `WebSocket`.
    *
@@ -90612,11 +90572,11 @@ function initAsClient(websocket, address, protocols, options) {
 
   let parsedUrl;
 
-  if (address instanceof URL$2) {
+  if (address instanceof URL$1) {
     parsedUrl = address;
   } else {
     try {
-      parsedUrl = new URL$2(address);
+      parsedUrl = new URL$1(address);
     } catch (e) {
       throw new SyntaxError(`Invalid URL: ${address}`);
     }
@@ -90657,7 +90617,7 @@ function initAsClient(websocket, address, protocols, options) {
 
   const defaultPort = isSecure ? 443 : 80;
   const key = randomBytes(16).toString('base64');
-  const request = isSecure ? https$2.request : http$2.request;
+  const request = isSecure ? https.request : http.request;
   const protocolSet = new Set();
   let perMessageDeflate;
 
@@ -90830,7 +90790,7 @@ function initAsClient(websocket, address, protocols, options) {
       let addr;
 
       try {
-        addr = new URL$2(location, address);
+        addr = new URL$1(location, address);
       } catch (e) {
         const err = new SyntaxError(`Invalid URL: ${location}`);
         emitErrorAndClose(websocket, err);
@@ -91357,12 +91317,12 @@ class PipeTransport {
         this.#subscriptions.use(new EventSubscription(pipeWrite, 'error', debugError));
     }
     send(message) {
-        assert$5(!this.#isClosed, '`PipeTransport` is closed.');
+        assert$4(!this.#isClosed, '`PipeTransport` is closed.');
         this.#pipeWrite.write(message);
         this.#pipeWrite.write('\0');
     }
     #dispatch(buffer) {
-        assert$5(!this.#isClosed, '`PipeTransport` is closed.');
+        assert$4(!this.#isClosed, '`PipeTransport` is closed.');
         let end = buffer.indexOf('\0');
         if (end === -1) {
             this.#pendingMessage += buffer.toString();
@@ -91729,7 +91689,7 @@ class ChromeLauncher extends ProductLauncher {
             return argument.startsWith('--remote-debugging-');
         })) {
             if (pipe) {
-                assert$5(!debuggingPort, 'Browser should be launched with either pipe or debugging port - not both.');
+                assert$4(!debuggingPort, 'Browser should be launched with either pipe or debugging port - not both.');
                 chromeArguments.push('--remote-debugging-pipe');
             }
             else {
@@ -91744,14 +91704,14 @@ class ChromeLauncher extends ProductLauncher {
         });
         if (userDataDirIndex < 0) {
             isTempUserDataDir = true;
-            chromeArguments.push(`--user-data-dir=${await require$$1$3.mkdtemp(this.getProfilePath())}`);
+            chromeArguments.push(`--user-data-dir=${await require$$1$4.mkdtemp(this.getProfilePath())}`);
             userDataDirIndex = chromeArguments.length - 1;
         }
         const userDataDir = chromeArguments[userDataDirIndex].split('=', 2)[1];
-        assert$5(typeof userDataDir === 'string', '`--user-data-dir` is malformed');
+        assert$4(typeof userDataDir === 'string', '`--user-data-dir` is malformed');
         let chromeExecutable = executablePath;
         if (!chromeExecutable) {
-            assert$5(channel || !this.puppeteer._isPuppeteerCore, `An \`executablePath\` or \`channel\` must be specified for \`puppeteer-core\``);
+            assert$4(channel || !this.puppeteer._isPuppeteerCore, `An \`executablePath\` or \`channel\` must be specified for \`puppeteer-core\``);
             chromeExecutable = this.executablePath(channel, options.headless ?? true);
         }
         return {
@@ -91992,7 +91952,7 @@ class FirefoxLauncher extends ProductLauncher {
             return argument.startsWith('--remote-debugging-');
         })) {
             if (pipe) {
-                assert$5(debuggingPort === null, 'Browser should be launched with either pipe or debugging port - not both.');
+                assert$4(debuggingPort === null, 'Browser should be launched with either pipe or debugging port - not both.');
             }
             firefoxArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
         }
@@ -92013,7 +91973,7 @@ class FirefoxLauncher extends ProductLauncher {
             isTempUserDataDir = false;
         }
         else {
-            userDataDir = await require$$1$3.mkdtemp(this.getProfilePath());
+            userDataDir = await require$$1$4.mkdtemp(this.getProfilePath());
             firefoxArguments.push('--profile');
             firefoxArguments.push(userDataDir);
         }
@@ -92023,7 +91983,7 @@ class FirefoxLauncher extends ProductLauncher {
         });
         let firefoxExecutable;
         if (this.puppeteer._isPuppeteerCore || executablePath) {
-            assert$5(executablePath, `An \`executablePath\` must be specified for \`puppeteer-core\``);
+            assert$4(executablePath, `An \`executablePath\` must be specified for \`puppeteer-core\``);
             firefoxExecutable = executablePath;
         }
         else {
@@ -92053,12 +92013,12 @@ class FirefoxLauncher extends ProductLauncher {
             try {
                 // When an existing user profile has been used remove the user
                 // preferences file and restore possibly backuped preferences.
-                await require$$1$3.unlink(path$f.join(userDataDir, 'user.js'));
+                await require$$1$4.unlink(path$f.join(userDataDir, 'user.js'));
                 const prefsBackupPath = path$f.join(userDataDir, 'prefs.js.puppeteer');
                 if (fs$n.existsSync(prefsBackupPath)) {
                     const prefsPath = path$f.join(userDataDir, 'prefs.js');
-                    await require$$1$3.unlink(prefsPath);
-                    await require$$1$3.rename(prefsBackupPath, prefsPath);
+                    await require$$1$4.unlink(prefsPath);
+                    await require$$1$4.rename(prefsBackupPath, prefsPath);
                 }
             }
             catch (error) {
@@ -92958,7 +92918,7 @@ function requireNode () {
 	if (hasRequiredNode) return node.exports;
 	hasRequiredNode = 1;
 	(function (module, exports) {
-		const tty = require$$0$4;
+		const tty = require$$0$3;
 		const util = require$$1;
 
 		/**
@@ -93233,11 +93193,11 @@ if (typeof process === 'undefined' || process.type === 'renderer' || process.bro
 }
 
 var srcExports = src.exports;
-var debug$2 = /*@__PURE__*/getDefaultExportFromCjs(srcExports);
+var debug = /*@__PURE__*/getDefaultExportFromCjs(srcExports);
 
 var index = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	default: debug$2
+	default: debug
 });
 
 /**
@@ -93285,12 +93245,12 @@ var __setFunctionName$2 = (undefined && undefined.__setFunctionName) || function
 };
 const CRF_VALUE = 30;
 const DEFAULT_FPS = 30;
-const debugFfmpeg = debug$2('puppeteer:ffmpeg');
+const debugFfmpeg = debug('puppeteer:ffmpeg');
 /**
  * @public
  */
 let ScreenRecorder = (() => {
-    let _classSuper = require$$0$7.PassThrough;
+    let _classSuper = require$$0$6.PassThrough;
     let _instanceExtraInitializers = [];
     let _private_writeFrame_decorators;
     let _private_writeFrame_descriptor;
@@ -93320,11 +93280,11 @@ let ScreenRecorder = (() => {
             super({ allowHalfOpen: false });
             path ??= 'ffmpeg';
             // Tests if `ffmpeg` exists.
-            const { error } = childProcess.spawnSync(path);
+            const { error } = childProcess$1.spawnSync(path);
             if (error) {
                 throw error;
             }
-            this.#process = childProcess.spawn(path, 
+            this.#process = childProcess$1.spawn(path, 
             // See https://trac.ffmpeg.org/wiki/Encode/VP9 for more information on flags.
             [
                 ['-loglevel', 'error'],
@@ -93465,9 +93425,9 @@ new PuppeteerNode({
     isPuppeteerCore: true,
 });
 
-var dist$1 = {};
+var dist = {};
 
-var defaults$1 = {};
+var defaults = {};
 
 var loaders = {};
 
@@ -93479,7 +93439,7 @@ function requireResolveFrom () {
 	if (hasRequiredResolveFrom) return resolveFrom.exports;
 	hasRequiredResolveFrom = 1;
 	const path = path$f;
-	const Module = require$$1$4;
+	const Module = require$$1$5;
 	const fs = fs$n;
 
 	const resolveFrom$1 = (fromDir, moduleId, silent) => {
@@ -99482,11 +99442,11 @@ function requireTimestamp () {
 	return timestamp;
 }
 
-var merge$2;
+var merge$1;
 var hasRequiredMerge;
 
 function requireMerge () {
-	if (hasRequiredMerge) return merge$2;
+	if (hasRequiredMerge) return merge$1;
 	hasRequiredMerge = 1;
 
 	var Type = requireType();
@@ -99495,11 +99455,11 @@ function requireMerge () {
 	  return data === '<<' || data === null;
 	}
 
-	merge$2 = new Type('tag:yaml.org,2002:merge', {
+	merge$1 = new Type('tag:yaml.org,2002:merge', {
 	  kind: 'scalar',
 	  resolve: resolveYamlMerge
 	});
-	return merge$2;
+	return merge$1;
 }
 
 var binary;
@@ -109418,7 +109378,7 @@ ${lanes.join("\n")}
 		          }
 		          let activeSession;
 		          let profilePath = "./profile.cpuprofile";
-		          const Buffer2 =   require$$0$8.Buffer;
+		          const Buffer2 =   require$$0$7.Buffer;
 		          const isLinuxOrMacOs = process.platform === "linux" || process.platform === "darwin";
 		          const platform = _os.platform();
 		          const useCaseSensitiveFileNames2 = isFileSystemCaseSensitive();
@@ -291430,7 +291390,7 @@ ${e.message}`;
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.loadTs = exports.loadTsSync = exports.loadYaml = exports.loadJson = exports.loadJs = exports.loadJsSync = void 0;
 	const fs_1 = fs$n;
-	const promises_1 = require$$1$3;
+	const promises_1 = require$$1$4;
 	const path_1 = __importDefault(path$f);
 	const url_1 = require$$5;
 	let importFresh;
@@ -291572,8 +291532,8 @@ ${e.message}`;
 	
 } (loaders));
 
-Object.defineProperty(defaults$1, "__esModule", { value: true });
-defaults$1.defaultLoadersSync = defaults$1.defaultLoaders = defaults$1.metaSearchPlaces = defaults$1.globalConfigSearchPlacesSync = defaults$1.globalConfigSearchPlaces = defaults$1.getDefaultSearchPlacesSync = defaults$1.getDefaultSearchPlaces = void 0;
+Object.defineProperty(defaults, "__esModule", { value: true });
+defaults.defaultLoadersSync = defaults.defaultLoaders = defaults.metaSearchPlaces = defaults.globalConfigSearchPlacesSync = defaults.globalConfigSearchPlaces = defaults.getDefaultSearchPlacesSync = defaults.getDefaultSearchPlaces = void 0;
 const loaders_1 = loaders;
 function getDefaultSearchPlaces(moduleName) {
     return [
@@ -291600,7 +291560,7 @@ function getDefaultSearchPlaces(moduleName) {
         `${moduleName}.config.mjs`,
     ];
 }
-defaults$1.getDefaultSearchPlaces = getDefaultSearchPlaces;
+defaults.getDefaultSearchPlaces = getDefaultSearchPlaces;
 function getDefaultSearchPlacesSync(moduleName) {
     return [
         'package.json',
@@ -291623,8 +291583,8 @@ function getDefaultSearchPlacesSync(moduleName) {
         `${moduleName}.config.cjs`,
     ];
 }
-defaults$1.getDefaultSearchPlacesSync = getDefaultSearchPlacesSync;
-defaults$1.globalConfigSearchPlaces = [
+defaults.getDefaultSearchPlacesSync = getDefaultSearchPlacesSync;
+defaults.globalConfigSearchPlaces = [
     'config',
     'config.json',
     'config.yaml',
@@ -291634,7 +291594,7 @@ defaults$1.globalConfigSearchPlaces = [
     'config.cjs',
     'config.mjs',
 ];
-defaults$1.globalConfigSearchPlacesSync = [
+defaults.globalConfigSearchPlacesSync = [
     'config',
     'config.json',
     'config.yaml',
@@ -291644,7 +291604,7 @@ defaults$1.globalConfigSearchPlacesSync = [
     'config.cjs',
 ];
 // this needs to be hardcoded, as this is intended for end users, who can't supply options at this point
-defaults$1.metaSearchPlaces = [
+defaults.metaSearchPlaces = [
     'package.json',
     'package.yaml',
     '.config/config.json',
@@ -291656,7 +291616,7 @@ defaults$1.metaSearchPlaces = [
     '.config/config.mjs',
 ];
 // do not allow mutation of default loaders. Make sure it is set inside options
-defaults$1.defaultLoaders = Object.freeze({
+defaults.defaultLoaders = Object.freeze({
     '.mjs': loaders_1.loadJs,
     '.cjs': loaders_1.loadJs,
     '.js': loaders_1.loadJs,
@@ -291666,7 +291626,7 @@ defaults$1.defaultLoaders = Object.freeze({
     '.yml': loaders_1.loadYaml,
     noExt: loaders_1.loadYaml,
 });
-defaults$1.defaultLoadersSync = Object.freeze({
+defaults.defaultLoadersSync = Object.freeze({
     '.cjs': loaders_1.loadJsSync,
     '.js': loaders_1.loadJsSync,
     '.ts': loaders_1.loadTsSync,
@@ -291758,7 +291718,7 @@ envPaths$1.exports.default = envPaths;
 
 var envPathsExports = envPaths$1.exports;
 
-var util$3 = {};
+var util = {};
 
 var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -291783,8 +291743,8 @@ var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (
     __setModuleDefault(result, mod);
     return result;
 };
-Object.defineProperty(util$3, "__esModule", { value: true });
-util$3.isDirectorySync = util$3.isDirectory = util$3.removeUndefinedValuesFromObject = util$3.getPropertyByPath = util$3.emplace = void 0;
+Object.defineProperty(util, "__esModule", { value: true });
+util.isDirectorySync = util.isDirectory = util.removeUndefinedValuesFromObject = util.getPropertyByPath = util.emplace = void 0;
 const fs_1$1 = __importStar(fs$n);
 /**
  * @internal
@@ -291798,7 +291758,7 @@ function emplace(map, key, fn) {
     map.set(key, result);
     return result;
 }
-util$3.emplace = emplace;
+util.emplace = emplace;
 // Resolves property names or property paths defined with period-delimited
 // strings or arrays of strings. Property names that are found on the source
 // object are used directly (even if they include a period).
@@ -291821,12 +291781,12 @@ function getPropertyByPath(source, path) {
         return previous[key];
     }, source);
 }
-util$3.getPropertyByPath = getPropertyByPath;
+util.getPropertyByPath = getPropertyByPath;
 /** @internal */
 function removeUndefinedValuesFromObject(options) {
     return Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined));
 }
-util$3.removeUndefinedValuesFromObject = removeUndefinedValuesFromObject;
+util.removeUndefinedValuesFromObject = removeUndefinedValuesFromObject;
 /** @internal */
 /* istanbul ignore next -- @preserve */
 async function isDirectory(path) {
@@ -291841,7 +291801,7 @@ async function isDirectory(path) {
         throw e;
     }
 }
-util$3.isDirectory = isDirectory;
+util.isDirectory = isDirectory;
 /** @internal */
 /* istanbul ignore next -- @preserve */
 function isDirectorySync(path) {
@@ -291856,7 +291816,7 @@ function isDirectorySync(path) {
         throw e;
     }
 }
-util$3.isDirectorySync = isDirectorySync;
+util.isDirectorySync = isDirectorySync;
 
 var __importDefault$3 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -291866,7 +291826,7 @@ ExplorerBase$1.getExtensionDescription = ExplorerBase$1.ExplorerBase = void 0;
 const env_paths_1 = __importDefault$3(envPathsExports);
 const os_1 = __importDefault$3(os$2);
 const path_1$2 = __importDefault$3(path$f);
-const util_js_1$2 = util$3;
+const util_js_1$2 = util;
 /**
  * @internal
  */
@@ -291983,7 +291943,7 @@ function getExtensionDescription(extension) {
 }
 ExplorerBase$1.getExtensionDescription = getExtensionDescription;
 
-var merge$1 = {};
+var merge = {};
 
 (function (exports) {
 	Object.defineProperty(exports, "__esModule", { value: true });
@@ -292025,19 +291985,19 @@ var merge$1 = {};
 	}
 	exports.mergeAll = mergeAll;
 	
-} (merge$1));
+} (merge));
 
 var __importDefault$2 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(Explorer$1, "__esModule", { value: true });
 Explorer$1.Explorer = void 0;
-const promises_1 = __importDefault$2(require$$1$3);
+const promises_1 = __importDefault$2(require$$1$4);
 const path_1$1 = __importDefault$2(path$f);
-const defaults_1$1 = defaults$1;
+const defaults_1$1 = defaults;
 const ExplorerBase_js_1$1 = ExplorerBase$1;
-const merge_1$1 = merge$1;
-const util_js_1$1 = util$3;
+const merge_1$1 = merge;
+const util_js_1$1 = util;
 /**
  * @internal
  */
@@ -292205,10 +292165,10 @@ Object.defineProperty(ExplorerSync$1, "__esModule", { value: true });
 ExplorerSync$1.ExplorerSync = void 0;
 const fs_1 = __importDefault$1(fs$n);
 const path_1 = __importDefault$1(path$f);
-const defaults_1 = defaults$1;
+const defaults_1 = defaults;
 const ExplorerBase_js_1 = ExplorerBase$1;
-const merge_1 = merge$1;
-const util_js_1 = util$3;
+const merge_1 = merge;
+const util_js_1 = util;
 /**
  * @internal
  */
@@ -292384,7 +292344,7 @@ ExplorerSync$1.ExplorerSync = ExplorerSync;
 (function (exports) {
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.defaultLoadersSync = exports.defaultLoaders = exports.globalConfigSearchPlacesSync = exports.globalConfigSearchPlaces = exports.getDefaultSearchPlacesSync = exports.getDefaultSearchPlaces = exports.cosmiconfigSync = exports.cosmiconfig = void 0;
-	const defaults_1 = defaults$1;
+	const defaults_1 = defaults;
 	Object.defineProperty(exports, "defaultLoaders", { enumerable: true, get: function () { return defaults_1.defaultLoaders; } });
 	Object.defineProperty(exports, "defaultLoadersSync", { enumerable: true, get: function () { return defaults_1.defaultLoadersSync; } });
 	Object.defineProperty(exports, "getDefaultSearchPlaces", { enumerable: true, get: function () { return defaults_1.getDefaultSearchPlaces; } });
@@ -292393,7 +292353,7 @@ ExplorerSync$1.ExplorerSync = ExplorerSync;
 	Object.defineProperty(exports, "globalConfigSearchPlacesSync", { enumerable: true, get: function () { return defaults_1.globalConfigSearchPlacesSync; } });
 	const Explorer_js_1 = Explorer$1;
 	const ExplorerSync_js_1 = ExplorerSync$1;
-	const util_1 = util$3;
+	const util_1 = util;
 	const identity = function identity(x) {
 	    return x;
 	};
@@ -292529,7 +292489,7 @@ ExplorerSync$1.ExplorerSync = ExplorerSync;
 	}
 	exports.cosmiconfigSync = cosmiconfigSync;
 	
-} (dist$1));
+} (dist));
 
 /**
  * @license
@@ -292567,7 +292527,7 @@ function isSupportedProduct(product) {
  * @internal
  */
 const getConfiguration = () => {
-    const result = dist$1.cosmiconfigSync('puppeteer', {
+    const result = dist.cosmiconfigSync('puppeteer', {
         searchStrategy: 'global',
     }).search();
     const configuration = result ? result.config : {};
@@ -292665,7 +292625,7 @@ const puppeteer = new PuppeteerNode({
     configuration,
 });
 
-const execPromise = require$$1.promisify(childProcess.exec);
+const execPromise = require$$1.promisify(childProcess$1.exec);
 const CHROME_OPTIONS = [
     "--no-default-browser-check",
     "--disable-background-timer-throttling",
@@ -292679,7 +292639,6 @@ const CHROME_OPTIONS = [
     "--disable-crash-reporter",
     "--disable-default-apps",
     "--disable-device-discovery-notifications",
-    "--disable-accelerated-2d-canvas",
     "--disable-setuid-sandbox",
     "--disable-dev-shm-usage",
     "--disable-accelerated-2d-canvas",
@@ -292687,23 +292646,20 @@ const CHROME_OPTIONS = [
     "--no-zygote",
     "--blink-settings=imagesEnabled=false",
     "--disable-features=PaintHolding",
-    // "--single-process",
     "--disable-software-rasterizer",
     "--disable-translate",
     // "--js-flags=--expose_gc",
     "--no-sandbox",
     `--window-size=1366,768`, // Same as RunBot
 ];
-let latestDebuggingPort = 9221;
-const findPortMutext = new Mutex$3();
-async function findFirstAvailablePort() {
-    for (let port = latestDebuggingPort + 1; true; port++) {
+let latestDebuggingPort = 9222;
+async function killPortsInRange(start = 9222, end = 9250) {
+    for (let port = start; port <= end; port++) {
         try {
-            await execPromise(`netstat -tuplen | grep ${port}`);
+            await execPromise(`fuser -k ${port}/tcp`);
         }
-        catch {
-            latestDebuggingPort = port;
-            return port;
+        catch (err) {
+            // Ignore errors if no process is using this port
         }
     }
 }
@@ -292712,8 +292668,11 @@ const clients = [];
 let launchDeferred;
 let setupCacheDeferred;
 async function launch(options) {
+    if (latestDebuggingPort === 9222) {
+        await killPortsInRange(9222, 9230);
+    }
     launchDeferred = new Deferred$3();
-    const port = await findPortMutext.exec(findFirstAvailablePort);
+    const port = ++latestDebuggingPort;
     const browser = await puppeteer.launch({
         ...options,
         args: [...CHROME_OPTIONS, `--remote-debugging-port=${port}`],
@@ -292722,20 +292681,19 @@ async function launch(options) {
         handleSIGTERM: false,
         handleSIGHUP: false,
     });
-    browsers.push(new WeakRef(browser));
+    browsers.push(browser);
     launchDeferred.resolve();
     return browser;
 }
 async function cleanup() {
     await oraPromise(async () => {
+        killPortsInRange(9222, latestDebuggingPort);
         await Promise.all([setupCacheDeferred, launchDeferred]);
         await Promise.all([
             ...clients.map((c) => c
-                .deref()
                 ?.detach()
                 ?.catch(() => { })),
             ...browsers.map((b) => b
-                .deref()
                 ?.close()
                 ?.catch(() => { })),
         ]);
@@ -292760,25 +292718,32 @@ function addHeader(ogHeaders, headers) {
 }
 /**
  * Cache responses to speed up reload time.
+ * TODO: better caching, especially for document. Check if XHR caching is OK.
  */
 async function setupCache(page, config) {
     setupCacheDeferred = new Deferred$3();
     const client = await page.target().createCDPSession();
-    clients.push(new WeakRef(client));
+    clients.push(client);
     await client.send("ServiceWorker.enable");
     await client.send("ServiceWorker.unregister", { scopeURL: config.serverURL });
     await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
     await client.send("Fetch.enable");
     client.on("Fetch.requestPaused", async (event) => {
         const { requestId } = event;
-        if (event.request.url in cache) {
-            const cached = cache[event.request.url];
+        let cacheUrl = event.request.url;
+        // Cache /web/tests document ignoring query string
+        if (event.resourceType === "Document" && event.request.url.includes("/web/tests")) {
+            const [base] = event.request.url.split("?");
+            cacheUrl = base;
+        }
+        if (cacheUrl in cache) {
+            const cached = cache[cacheUrl];
             await client.send("Fetch.fulfillRequest", {
                 requestId,
                 responseCode: cached.status,
                 responseHeaders: addHeader(cached.headers, [
                     ["Cache-Control", "public, max-age=31536000"],
-                    ["X-Warden-XHR-Cache", "TRUE"],
+                    ["X-Warden-Cache", "TRUE"],
                 ]),
                 body: cached.body.toString("base64"),
             });
@@ -292788,10 +292753,21 @@ async function setupCache(page, config) {
             await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
             return;
         }
-        if (event.resourceType === "XHR") {
+        if (event.resourceType === "XHR" && !event.request.url.includes("all_dependencies")) {
             try {
                 const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
                 cache[event.request.url] = {
+                    status: event.responseStatusCode,
+                    headers: event.responseHeaders,
+                    body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
+                };
+            }
+            catch (e) { }
+        }
+        if (event.resourceType === "Document" && event.request.url.includes("/web/tests")) {
+            try {
+                const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
+                cache[cacheUrl] = {
                     status: event.responseStatusCode,
                     headers: event.responseHeaders,
                     body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
@@ -292805,7 +292781,7 @@ async function setupCache(page, config) {
                 responseCode: event.responseStatusCode,
                 responseHeaders: addHeader(event.responseHeaders, [
                     ["Cache-Control", "public, max-age=31536000"],
-                    ["X-Warden-Cache-Control", "TRUE"],
+                    ["X-Warden-Cache", "TRUE"],
                 ]),
                 responsePhrase: event.responseStatusText,
             });
@@ -293318,7 +293294,7 @@ const _ETA = eta;
 const _Terminal$1 = terminal;
 const _formatter = formatter;
 const _options$2 = options;
-const _EventEmitter$1 = require$$0$5;
+const _EventEmitter$1 = require$$0$4;
 
 // Progress-Bar constructor
 var genericBar = class GenericBar extends _EventEmitter$1{
@@ -293694,7 +293670,7 @@ var singleBar = class SingleBar extends _GenericBar{
 const _Terminal = terminal;
 const _BarElement = genericBar;
 const _options = options;
-const _EventEmitter = require$$0$5;
+const _EventEmitter = require$$0$4;
 
 // Progress-Bar constructor
 var multiBar = class MultiBar extends _EventEmitter{
@@ -294243,6 +294219,9 @@ class Executor {
             }
             // 4. Let the runner process the result.
             yield { success };
+            if (this.config.once) {
+                return;
+            }
             previousResults.push(...(await cjs.lastValueFrom(testResults$)));
             await Promise.all(this.splits.map((s) => s.reload()));
         }
@@ -294285,7 +294264,7 @@ class Executor {
     }
 }
 
-var utils$3 = {};
+var utils$1 = {};
 
 var ansiColors = {exports: {}};
 
@@ -294369,7 +294348,7 @@ function requireSymbols$1 () {
 	return symbols.exports;
 }
 
-const isObject$4 = val => val !== null && typeof val === 'object' && !Array.isArray(val);
+const isObject = val => val !== null && typeof val === 'object' && !Array.isArray(val);
 
 /* eslint-disable no-control-regex */
 // this is a modified version of https://github.com/chalk/ansi-regex (MIT License)
@@ -294525,7 +294504,7 @@ const create = () => {
   };
 
   colors.theme = custom => {
-    if (!isObject$4(custom)) throw new TypeError('Expected theme to be an object');
+    if (!isObject(custom)) throw new TypeError('Expected theme to be an object');
     for (let name of Object.keys(custom)) {
       colors.alias(name, custom[name]);
     }
@@ -294833,7 +294812,7 @@ var ansiColorsExports = ansiColors.exports;
 	    }
 	  });
 	}; 
-} (utils$3));
+} (utils$1));
 
 var combos = {};
 
@@ -295259,14 +295238,14 @@ function requireTimer () {
 	return timer;
 }
 
-var state$1;
+var state;
 var hasRequiredState;
 
 function requireState () {
-	if (hasRequiredState) return state$1;
+	if (hasRequiredState) return state;
 	hasRequiredState = 1;
 
-	const { define, width } = utils$3;
+	const { define, width } = utils$1;
 
 	class State {
 	  constructor(prompt) {
@@ -295332,8 +295311,8 @@ function requireState () {
 	  }
 	}
 
-	state$1 = State;
-	return state$1;
+	state = State;
+	return state;
 }
 
 var styles_1;
@@ -295343,7 +295322,7 @@ function requireStyles () {
 	if (hasRequiredStyles) return styles_1;
 	hasRequiredStyles = 1;
 
-	const utils = utils$3;
+	const utils = utils$1;
 	const colors = ansiColorsExports;
 
 	const styles = {
@@ -295497,7 +295476,7 @@ function requireSymbols () {
 
 	const isWindows = process.platform === 'win32';
 	const colors = ansiColorsExports;
-	const utils = utils$3;
+	const utils = utils$1;
 
 	const symbols = {
 	  ...colors.symbols,
@@ -295570,7 +295549,7 @@ function requireTheme () {
 
 	const styles = requireStyles();
 	const symbols = requireSymbols();
-	const utils = utils$3;
+	const utils = utils$1;
 
 	theme = prompt => {
 	  prompt.options = utils.merge({}, prompt.options.theme, prompt.options);
@@ -295591,7 +295570,7 @@ function requireAnsi () {
 
 		const isTerm = process.env.TERM_PROGRAM === 'Apple_Terminal';
 		const stripAnsi = requireStripAnsi();
-		const utils = utils$3;
+		const utils = utils$1;
 		const ansi = module.exports = exports;
 		const ESC = '\u001b[';
 		const BEL = '\u0007';
@@ -295723,13 +295702,13 @@ function requirePrompt () {
 	if (hasRequiredPrompt) return prompt;
 	hasRequiredPrompt = 1;
 
-	const Events = require$$0$5;
+	const Events = require$$0$4;
 	const stripAnsi = requireStripAnsi();
 	const keypress = requireKeypress();
 	const timer = requireTimer();
 	const State = requireState();
 	const theme = requireTheme();
-	const utils = utils$3;
+	const utils = utils$1;
 	const ansi = requireAnsi();
 
 	/**
@@ -296230,7 +296209,7 @@ function requireRoles () {
 	if (hasRequiredRoles) return roles_1;
 	hasRequiredRoles = 1;
 
-	const utils = utils$3;
+	const utils = utils$1;
 	const roles = {
 	  default(prompt, choice) {
 	    return choice;
@@ -296287,7 +296266,7 @@ function requireArray () {
 	const stripAnsi = requireStripAnsi();
 	const Prompt = requirePrompt();
 	const roles = requireRoles();
-	const utils = utils$3;
+	const utils = utils$1;
 	const { reorder, scrollUp, scrollDown, isObject, swap } = utils;
 
 	class ArrayPrompt extends Prompt {
@@ -296957,7 +296936,7 @@ function requireSelect () {
 	hasRequiredSelect = 1;
 
 	const ArrayPrompt = requireArray();
-	const utils = utils$3;
+	const utils = utils$1;
 
 	class SelectPrompt extends ArrayPrompt {
 	  constructor(options) {
@@ -297229,7 +297208,7 @@ function requirePlaceholder () {
 	if (hasRequiredPlaceholder) return placeholder;
 	hasRequiredPlaceholder = 1;
 
-	const utils = utils$3;
+	const utils = utils$1;
 
 	/**
 	 * Render a placeholder value with cursor and styling based on the
@@ -297590,7 +297569,7 @@ function requireBoolean () {
 	hasRequiredBoolean = 1;
 
 	const Prompt = requirePrompt();
-	const { isPrimitive, hasColor } = utils$3;
+	const { isPrimitive, hasColor } = utils$1;
 
 	class BooleanPrompt extends Prompt {
 	  constructor(options) {
@@ -297852,7 +297831,7 @@ function requireString () {
 	const Prompt = requirePrompt();
 	const keypress = requireKeypress();
 	const placeholder = requirePlaceholder();
-	const { isPrimitive } = utils$3;
+	const { isPrimitive } = utils$1;
 
 	class StringPrompt extends Prompt {
 	  constructor(options) {
@@ -298403,7 +298382,7 @@ function requireScale () {
 
 	const stripAnsi = requireStripAnsi();
 	const ArrayPrompt = requireArray();
-	const utils = utils$3;
+	const utils = utils$1;
 
 	class LikertScale extends ArrayPrompt {
 	  constructor(options = {}) {
@@ -299501,7 +299480,7 @@ function requirePrompts () {
 	hasRequiredPrompts = 1;
 	(function (exports) {
 
-		const utils = utils$3;
+		const utils = utils$1;
 
 		const define = (key, fn) => {
 		  utils.defineExport(exports, key, fn);
@@ -299547,9 +299526,9 @@ function requireTypes () {
 	return types;
 }
 
-const assert$3 = require$$0$6;
-const Events = require$$0$5;
-const utils$2 = utils$3;
+const assert$2 = require$$0$5;
+const Events = require$$0$4;
+const utils = utils$1;
 
 /**
  * Create an instance of `Enquirer`.
@@ -299567,7 +299546,7 @@ const utils$2 = utils$3;
 class Enquirer extends Events {
   constructor(options, answers) {
     super();
-    this.options = utils$2.merge({}, options);
+    this.options = utils.merge({}, options);
     this.answers = { ...answers };
   }
 
@@ -299587,12 +299566,12 @@ class Enquirer extends Events {
    */
 
   register(type, fn) {
-    if (utils$2.isObject(type)) {
+    if (utils.isObject(type)) {
       for (let key of Object.keys(type)) this.register(key, type[key]);
       return this;
     }
 
-    assert$3.equal(typeof fn, 'function', 'expected a function');
+    assert$2.equal(typeof fn, 'function', 'expected a function');
     const name = type.toLowerCase();
 
     if (fn.prototype instanceof this.Prompt) {
@@ -299629,7 +299608,7 @@ class Enquirer extends Events {
     for (let question of [].concat(questions)) {
       try {
         if (typeof question === 'function') question = await question.call(this);
-        await this.ask(utils$2.merge({}, this.options, question));
+        await this.ask(utils.merge({}, this.options, question));
       } catch (err) {
         return Promise.reject(err);
       }
@@ -299642,9 +299621,9 @@ class Enquirer extends Events {
       question = await question.call(this);
     }
 
-    let opts = utils$2.merge({}, this.options, question);
+    let opts = utils.merge({}, this.options, question);
     let { type, name } = question;
-    let { set, get } = utils$2;
+    let { set, get } = utils;
 
     if (typeof type === 'function') {
       type = await type.call(this, question, this.answers);
@@ -299653,7 +299632,7 @@ class Enquirer extends Events {
     if (!type) return this.answers[name];
     if (type === 'number') type = 'numeral';
 
-    assert$3(this.prompts[type], `Prompt "${type}" is not registered`);
+    assert$2(this.prompts[type], `Prompt "${type}" is not registered`);
 
     let prompt = new this.prompts[type](opts);
     let value = get(this.answers, name);
@@ -299768,12 +299747,12 @@ class Enquirer extends Events {
       };
       return enquirer.prompt(questions);
     };
-    utils$2.mixinEmitter(fn, new Events());
+    utils.mixinEmitter(fn, new Events());
     return fn;
   }
 }
 
-utils$2.mixinEmitter(Enquirer, new Events());
+utils.mixinEmitter(Enquirer, new Events());
 const prompts = Enquirer.prompts;
 
 for (let name of Object.keys(prompts)) {
@@ -299789,7 +299768,7 @@ for (let name of Object.keys(prompts)) {
 }
 
 const define = name => {
-  utils$2.defineExport(Enquirer, name, () => Enquirer.types[name]);
+  utils.defineExport(Enquirer, name, () => Enquirer.types[name]);
 };
 
 define('ArrayPrompt');
@@ -299851,7 +299830,7 @@ class TestSuiteRunner {
         if (toDelete.length === 0) {
             return;
         }
-        return oraPromise(async () => Promise.all(toDelete.map((f) => require$$1$3.rm(f, { recursive: true }))), {
+        return oraPromise(async () => Promise.all(toDelete.map((f) => require$$1$4.rm(f, { recursive: true }))), {
             text: formatter$1.info(`Cleaning up fail folder: ${this.config.failFolderPath}`),
             successText: formatter$1.info(`Cleaned up ${toDelete.length} old results`),
             failText: formatter$1.error("Failed to clean up fail folder"),
@@ -299878,17556 +299857,6 @@ class TestSuiteRunner {
     }
 }
 
-function bind(fn, thisArg) {
-  return function wrap() {
-    return fn.apply(thisArg, arguments);
-  };
-}
-
-// utils is a library of generic helper functions non-specific to axios
-
-const {toString: toString$1} = Object.prototype;
-const {getPrototypeOf} = Object;
-
-const kindOf = (cache => thing => {
-    const str = toString$1.call(thing);
-    return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
-})(Object.create(null));
-
-const kindOfTest = (type) => {
-  type = type.toLowerCase();
-  return (thing) => kindOf(thing) === type
-};
-
-const typeOfTest = type => thing => typeof thing === type;
-
-/**
- * Determine if a value is an Array
- *
- * @param {Object} val The value to test
- *
- * @returns {boolean} True if value is an Array, otherwise false
- */
-const {isArray} = Array;
-
-/**
- * Determine if a value is undefined
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if the value is undefined, otherwise false
- */
-const isUndefined = typeOfTest('undefined');
-
-/**
- * Determine if a value is a Buffer
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a Buffer, otherwise false
- */
-function isBuffer$1(val) {
-  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
-    && isFunction$2(val.constructor.isBuffer) && val.constructor.isBuffer(val);
-}
-
-/**
- * Determine if a value is an ArrayBuffer
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is an ArrayBuffer, otherwise false
- */
-const isArrayBuffer = kindOfTest('ArrayBuffer');
-
-
-/**
- * Determine if a value is a view on an ArrayBuffer
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
- */
-function isArrayBufferView(val) {
-  let result;
-  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
-    result = ArrayBuffer.isView(val);
-  } else {
-    result = (val) && (val.buffer) && (isArrayBuffer(val.buffer));
-  }
-  return result;
-}
-
-/**
- * Determine if a value is a String
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a String, otherwise false
- */
-const isString$2 = typeOfTest('string');
-
-/**
- * Determine if a value is a Function
- *
- * @param {*} val The value to test
- * @returns {boolean} True if value is a Function, otherwise false
- */
-const isFunction$2 = typeOfTest('function');
-
-/**
- * Determine if a value is a Number
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a Number, otherwise false
- */
-const isNumber$1 = typeOfTest('number');
-
-/**
- * Determine if a value is an Object
- *
- * @param {*} thing The value to test
- *
- * @returns {boolean} True if value is an Object, otherwise false
- */
-const isObject$3 = (thing) => thing !== null && typeof thing === 'object';
-
-/**
- * Determine if a value is a Boolean
- *
- * @param {*} thing The value to test
- * @returns {boolean} True if value is a Boolean, otherwise false
- */
-const isBoolean$1 = thing => thing === true || thing === false;
-
-/**
- * Determine if a value is a plain Object
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a plain Object, otherwise false
- */
-const isPlainObject$1 = (val) => {
-  if (kindOf(val) !== 'object') {
-    return false;
-  }
-
-  const prototype = getPrototypeOf(val);
-  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
-};
-
-/**
- * Determine if a value is a Date
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a Date, otherwise false
- */
-const isDate = kindOfTest('Date');
-
-/**
- * Determine if a value is a File
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a File, otherwise false
- */
-const isFile = kindOfTest('File');
-
-/**
- * Determine if a value is a Blob
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a Blob, otherwise false
- */
-const isBlob = kindOfTest('Blob');
-
-/**
- * Determine if a value is a FileList
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a File, otherwise false
- */
-const isFileList = kindOfTest('FileList');
-
-/**
- * Determine if a value is a Stream
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a Stream, otherwise false
- */
-const isStream = (val) => isObject$3(val) && isFunction$2(val.pipe);
-
-/**
- * Determine if a value is a FormData
- *
- * @param {*} thing The value to test
- *
- * @returns {boolean} True if value is an FormData, otherwise false
- */
-const isFormData = (thing) => {
-  let kind;
-  return thing && (
-    (typeof FormData === 'function' && thing instanceof FormData) || (
-      isFunction$2(thing.append) && (
-        (kind = kindOf(thing)) === 'formdata' ||
-        // detect form-data instance
-        (kind === 'object' && isFunction$2(thing.toString) && thing.toString() === '[object FormData]')
-      )
-    )
-  )
-};
-
-/**
- * Determine if a value is a URLSearchParams object
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a URLSearchParams object, otherwise false
- */
-const isURLSearchParams = kindOfTest('URLSearchParams');
-
-const [isReadableStream, isRequest, isResponse, isHeaders] = ['ReadableStream', 'Request', 'Response', 'Headers'].map(kindOfTest);
-
-/**
- * Trim excess whitespace off the beginning and end of a string
- *
- * @param {String} str The String to trim
- *
- * @returns {String} The String freed of excess whitespace
- */
-const trim = (str) => str.trim ?
-  str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-
-/**
- * Iterate over an Array or an Object invoking a function for each item.
- *
- * If `obj` is an Array callback will be called passing
- * the value, index, and complete array for each item.
- *
- * If 'obj' is an Object callback will be called passing
- * the value, key, and complete object for each property.
- *
- * @param {Object|Array} obj The object to iterate
- * @param {Function} fn The callback to invoke for each item
- *
- * @param {Boolean} [allOwnKeys = false]
- * @returns {any}
- */
-function forEach(obj, fn, {allOwnKeys = false} = {}) {
-  // Don't bother if no value provided
-  if (obj === null || typeof obj === 'undefined') {
-    return;
-  }
-
-  let i;
-  let l;
-
-  // Force an array if not already something iterable
-  if (typeof obj !== 'object') {
-    /*eslint no-param-reassign:0*/
-    obj = [obj];
-  }
-
-  if (isArray(obj)) {
-    // Iterate over array values
-    for (i = 0, l = obj.length; i < l; i++) {
-      fn.call(null, obj[i], i, obj);
-    }
-  } else {
-    // Iterate over object keys
-    const keys = allOwnKeys ? Object.getOwnPropertyNames(obj) : Object.keys(obj);
-    const len = keys.length;
-    let key;
-
-    for (i = 0; i < len; i++) {
-      key = keys[i];
-      fn.call(null, obj[key], key, obj);
-    }
-  }
-}
-
-function findKey(obj, key) {
-  key = key.toLowerCase();
-  const keys = Object.keys(obj);
-  let i = keys.length;
-  let _key;
-  while (i-- > 0) {
-    _key = keys[i];
-    if (key === _key.toLowerCase()) {
-      return _key;
-    }
-  }
-  return null;
-}
-
-const _global = (() => {
-  /*eslint no-undef:0*/
-  if (typeof globalThis !== "undefined") return globalThis;
-  return typeof self !== "undefined" ? self : (typeof window !== 'undefined' ? window : global)
-})();
-
-const isContextDefined = (context) => !isUndefined(context) && context !== _global;
-
-/**
- * Accepts varargs expecting each argument to be an object, then
- * immutably merges the properties of each object and returns result.
- *
- * When multiple objects contain the same key the later object in
- * the arguments list will take precedence.
- *
- * Example:
- *
- * ```js
- * var result = merge({foo: 123}, {foo: 456});
- * console.log(result.foo); // outputs 456
- * ```
- *
- * @param {Object} obj1 Object to merge
- *
- * @returns {Object} Result of all merge properties
- */
-function merge(/* obj1, obj2, obj3, ... */) {
-  const {caseless} = isContextDefined(this) && this || {};
-  const result = {};
-  const assignValue = (val, key) => {
-    const targetKey = caseless && findKey(result, key) || key;
-    if (isPlainObject$1(result[targetKey]) && isPlainObject$1(val)) {
-      result[targetKey] = merge(result[targetKey], val);
-    } else if (isPlainObject$1(val)) {
-      result[targetKey] = merge({}, val);
-    } else if (isArray(val)) {
-      result[targetKey] = val.slice();
-    } else {
-      result[targetKey] = val;
-    }
-  };
-
-  for (let i = 0, l = arguments.length; i < l; i++) {
-    arguments[i] && forEach(arguments[i], assignValue);
-  }
-  return result;
-}
-
-/**
- * Extends object a by mutably adding to it the properties of object b.
- *
- * @param {Object} a The object to be extended
- * @param {Object} b The object to copy properties from
- * @param {Object} thisArg The object to bind function to
- *
- * @param {Boolean} [allOwnKeys]
- * @returns {Object} The resulting value of object a
- */
-const extend = (a, b, thisArg, {allOwnKeys}= {}) => {
-  forEach(b, (val, key) => {
-    if (thisArg && isFunction$2(val)) {
-      a[key] = bind(val, thisArg);
-    } else {
-      a[key] = val;
-    }
-  }, {allOwnKeys});
-  return a;
-};
-
-/**
- * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
- *
- * @param {string} content with BOM
- *
- * @returns {string} content value without BOM
- */
-const stripBOM = (content) => {
-  if (content.charCodeAt(0) === 0xFEFF) {
-    content = content.slice(1);
-  }
-  return content;
-};
-
-/**
- * Inherit the prototype methods from one constructor into another
- * @param {function} constructor
- * @param {function} superConstructor
- * @param {object} [props]
- * @param {object} [descriptors]
- *
- * @returns {void}
- */
-const inherits = (constructor, superConstructor, props, descriptors) => {
-  constructor.prototype = Object.create(superConstructor.prototype, descriptors);
-  constructor.prototype.constructor = constructor;
-  Object.defineProperty(constructor, 'super', {
-    value: superConstructor.prototype
-  });
-  props && Object.assign(constructor.prototype, props);
-};
-
-/**
- * Resolve object with deep prototype chain to a flat object
- * @param {Object} sourceObj source object
- * @param {Object} [destObj]
- * @param {Function|Boolean} [filter]
- * @param {Function} [propFilter]
- *
- * @returns {Object}
- */
-const toFlatObject = (sourceObj, destObj, filter, propFilter) => {
-  let props;
-  let i;
-  let prop;
-  const merged = {};
-
-  destObj = destObj || {};
-  // eslint-disable-next-line no-eq-null,eqeqeq
-  if (sourceObj == null) return destObj;
-
-  do {
-    props = Object.getOwnPropertyNames(sourceObj);
-    i = props.length;
-    while (i-- > 0) {
-      prop = props[i];
-      if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
-        destObj[prop] = sourceObj[prop];
-        merged[prop] = true;
-      }
-    }
-    sourceObj = filter !== false && getPrototypeOf(sourceObj);
-  } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
-
-  return destObj;
-};
-
-/**
- * Determines whether a string ends with the characters of a specified string
- *
- * @param {String} str
- * @param {String} searchString
- * @param {Number} [position= 0]
- *
- * @returns {boolean}
- */
-const endsWith = (str, searchString, position) => {
-  str = String(str);
-  if (position === undefined || position > str.length) {
-    position = str.length;
-  }
-  position -= searchString.length;
-  const lastIndex = str.indexOf(searchString, position);
-  return lastIndex !== -1 && lastIndex === position;
-};
-
-
-/**
- * Returns new array from array like object or null if failed
- *
- * @param {*} [thing]
- *
- * @returns {?Array}
- */
-const toArray = (thing) => {
-  if (!thing) return null;
-  if (isArray(thing)) return thing;
-  let i = thing.length;
-  if (!isNumber$1(i)) return null;
-  const arr = new Array(i);
-  while (i-- > 0) {
-    arr[i] = thing[i];
-  }
-  return arr;
-};
-
-/**
- * Checking if the Uint8Array exists and if it does, it returns a function that checks if the
- * thing passed in is an instance of Uint8Array
- *
- * @param {TypedArray}
- *
- * @returns {Array}
- */
-// eslint-disable-next-line func-names
-const isTypedArray = (TypedArray => {
-  // eslint-disable-next-line func-names
-  return thing => {
-    return TypedArray && thing instanceof TypedArray;
-  };
-})(typeof Uint8Array !== 'undefined' && getPrototypeOf(Uint8Array));
-
-/**
- * For each entry in the object, call the function with the key and value.
- *
- * @param {Object<any, any>} obj - The object to iterate over.
- * @param {Function} fn - The function to call for each entry.
- *
- * @returns {void}
- */
-const forEachEntry = (obj, fn) => {
-  const generator = obj && obj[Symbol.iterator];
-
-  const iterator = generator.call(obj);
-
-  let result;
-
-  while ((result = iterator.next()) && !result.done) {
-    const pair = result.value;
-    fn.call(obj, pair[0], pair[1]);
-  }
-};
-
-/**
- * It takes a regular expression and a string, and returns an array of all the matches
- *
- * @param {string} regExp - The regular expression to match against.
- * @param {string} str - The string to search.
- *
- * @returns {Array<boolean>}
- */
-const matchAll = (regExp, str) => {
-  let matches;
-  const arr = [];
-
-  while ((matches = regExp.exec(str)) !== null) {
-    arr.push(matches);
-  }
-
-  return arr;
-};
-
-/* Checking if the kindOfTest function returns true when passed an HTMLFormElement. */
-const isHTMLForm = kindOfTest('HTMLFormElement');
-
-const toCamelCase = str => {
-  return str.toLowerCase().replace(/[-_\s]([a-z\d])(\w*)/g,
-    function replacer(m, p1, p2) {
-      return p1.toUpperCase() + p2;
-    }
-  );
-};
-
-/* Creating a function that will check if an object has a property. */
-const hasOwnProperty$1 = (({hasOwnProperty}) => (obj, prop) => hasOwnProperty.call(obj, prop))(Object.prototype);
-
-/**
- * Determine if a value is a RegExp object
- *
- * @param {*} val The value to test
- *
- * @returns {boolean} True if value is a RegExp object, otherwise false
- */
-const isRegExp = kindOfTest('RegExp');
-
-const reduceDescriptors = (obj, reducer) => {
-  const descriptors = Object.getOwnPropertyDescriptors(obj);
-  const reducedDescriptors = {};
-
-  forEach(descriptors, (descriptor, name) => {
-    let ret;
-    if ((ret = reducer(descriptor, name, obj)) !== false) {
-      reducedDescriptors[name] = ret || descriptor;
-    }
-  });
-
-  Object.defineProperties(obj, reducedDescriptors);
-};
-
-/**
- * Makes all methods read-only
- * @param {Object} obj
- */
-
-const freezeMethods = (obj) => {
-  reduceDescriptors(obj, (descriptor, name) => {
-    // skip restricted props in strict mode
-    if (isFunction$2(obj) && ['arguments', 'caller', 'callee'].indexOf(name) !== -1) {
-      return false;
-    }
-
-    const value = obj[name];
-
-    if (!isFunction$2(value)) return;
-
-    descriptor.enumerable = false;
-
-    if ('writable' in descriptor) {
-      descriptor.writable = false;
-      return;
-    }
-
-    if (!descriptor.set) {
-      descriptor.set = () => {
-        throw Error('Can not rewrite read-only method \'' + name + '\'');
-      };
-    }
-  });
-};
-
-const toObjectSet = (arrayOrString, delimiter) => {
-  const obj = {};
-
-  const define = (arr) => {
-    arr.forEach(value => {
-      obj[value] = true;
-    });
-  };
-
-  isArray(arrayOrString) ? define(arrayOrString) : define(String(arrayOrString).split(delimiter));
-
-  return obj;
-};
-
-const noop$1 = () => {};
-
-const toFiniteNumber = (value, defaultValue) => {
-  return value != null && Number.isFinite(value = +value) ? value : defaultValue;
-};
-
-const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
-
-const DIGIT = '0123456789';
-
-const ALPHABET = {
-  DIGIT,
-  ALPHA,
-  ALPHA_DIGIT: ALPHA + ALPHA.toUpperCase() + DIGIT
-};
-
-const generateString = (size = 16, alphabet = ALPHABET.ALPHA_DIGIT) => {
-  let str = '';
-  const {length} = alphabet;
-  while (size--) {
-    str += alphabet[Math.random() * length|0];
-  }
-
-  return str;
-};
-
-/**
- * If the thing is a FormData object, return true, otherwise return false.
- *
- * @param {unknown} thing - The thing to check.
- *
- * @returns {boolean}
- */
-function isSpecCompliantForm(thing) {
-  return !!(thing && isFunction$2(thing.append) && thing[Symbol.toStringTag] === 'FormData' && thing[Symbol.iterator]);
-}
-
-const toJSONObject = (obj) => {
-  const stack = new Array(10);
-
-  const visit = (source, i) => {
-
-    if (isObject$3(source)) {
-      if (stack.indexOf(source) >= 0) {
-        return;
-      }
-
-      if(!('toJSON' in source)) {
-        stack[i] = source;
-        const target = isArray(source) ? [] : {};
-
-        forEach(source, (value, key) => {
-          const reducedValue = visit(value, i + 1);
-          !isUndefined(reducedValue) && (target[key] = reducedValue);
-        });
-
-        stack[i] = undefined;
-
-        return target;
-      }
-    }
-
-    return source;
-  };
-
-  return visit(obj, 0);
-};
-
-const isAsyncFn = kindOfTest('AsyncFunction');
-
-const isThenable = (thing) =>
-  thing && (isObject$3(thing) || isFunction$2(thing)) && isFunction$2(thing.then) && isFunction$2(thing.catch);
-
-// original code
-// https://github.com/DigitalBrainJS/AxiosPromise/blob/16deab13710ec09779922131f3fa5954320f83ab/lib/utils.js#L11-L34
-
-const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
-  if (setImmediateSupported) {
-    return setImmediate;
-  }
-
-  return postMessageSupported ? ((token, callbacks) => {
-    _global.addEventListener("message", ({source, data}) => {
-      if (source === _global && data === token) {
-        callbacks.length && callbacks.shift()();
-      }
-    }, false);
-
-    return (cb) => {
-      callbacks.push(cb);
-      _global.postMessage(token, "*");
-    }
-  })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
-})(
-  typeof setImmediate === 'function',
-  isFunction$2(_global.postMessage)
-);
-
-const asap = typeof queueMicrotask !== 'undefined' ?
-  queueMicrotask.bind(_global) : ( typeof process !== 'undefined' && process.nextTick || _setImmediate);
-
-// *********************
-
-var utils$1 = {
-  isArray,
-  isArrayBuffer,
-  isBuffer: isBuffer$1,
-  isFormData,
-  isArrayBufferView,
-  isString: isString$2,
-  isNumber: isNumber$1,
-  isBoolean: isBoolean$1,
-  isObject: isObject$3,
-  isPlainObject: isPlainObject$1,
-  isReadableStream,
-  isRequest,
-  isResponse,
-  isHeaders,
-  isUndefined,
-  isDate,
-  isFile,
-  isBlob,
-  isRegExp,
-  isFunction: isFunction$2,
-  isStream,
-  isURLSearchParams,
-  isTypedArray,
-  isFileList,
-  forEach,
-  merge,
-  extend,
-  trim,
-  stripBOM,
-  inherits,
-  toFlatObject,
-  kindOf,
-  kindOfTest,
-  endsWith,
-  toArray,
-  forEachEntry,
-  matchAll,
-  isHTMLForm,
-  hasOwnProperty: hasOwnProperty$1,
-  hasOwnProp: hasOwnProperty$1, // an alias to avoid ESLint no-prototype-builtins detection
-  reduceDescriptors,
-  freezeMethods,
-  toObjectSet,
-  toCamelCase,
-  noop: noop$1,
-  toFiniteNumber,
-  findKey,
-  global: _global,
-  isContextDefined,
-  ALPHABET,
-  generateString,
-  isSpecCompliantForm,
-  toJSONObject,
-  isAsyncFn,
-  isThenable,
-  setImmediate: _setImmediate,
-  asap
-};
-
-/**
- * Create an Error with the specified message, config, error code, request and response.
- *
- * @param {string} message The error message.
- * @param {string} [code] The error code (for example, 'ECONNABORTED').
- * @param {Object} [config] The config.
- * @param {Object} [request] The request.
- * @param {Object} [response] The response.
- *
- * @returns {Error} The created error.
- */
-function AxiosError(message, code, config, request, response) {
-  Error.call(this);
-
-  if (Error.captureStackTrace) {
-    Error.captureStackTrace(this, this.constructor);
-  } else {
-    this.stack = (new Error()).stack;
-  }
-
-  this.message = message;
-  this.name = 'AxiosError';
-  code && (this.code = code);
-  config && (this.config = config);
-  request && (this.request = request);
-  if (response) {
-    this.response = response;
-    this.status = response.status ? response.status : null;
-  }
-}
-
-utils$1.inherits(AxiosError, Error, {
-  toJSON: function toJSON() {
-    return {
-      // Standard
-      message: this.message,
-      name: this.name,
-      // Microsoft
-      description: this.description,
-      number: this.number,
-      // Mozilla
-      fileName: this.fileName,
-      lineNumber: this.lineNumber,
-      columnNumber: this.columnNumber,
-      stack: this.stack,
-      // Axios
-      config: utils$1.toJSONObject(this.config),
-      code: this.code,
-      status: this.status
-    };
-  }
-});
-
-const prototype$1 = AxiosError.prototype;
-const descriptors = {};
-
-[
-  'ERR_BAD_OPTION_VALUE',
-  'ERR_BAD_OPTION',
-  'ECONNABORTED',
-  'ETIMEDOUT',
-  'ERR_NETWORK',
-  'ERR_FR_TOO_MANY_REDIRECTS',
-  'ERR_DEPRECATED',
-  'ERR_BAD_RESPONSE',
-  'ERR_BAD_REQUEST',
-  'ERR_CANCELED',
-  'ERR_NOT_SUPPORT',
-  'ERR_INVALID_URL'
-// eslint-disable-next-line func-names
-].forEach(code => {
-  descriptors[code] = {value: code};
-});
-
-Object.defineProperties(AxiosError, descriptors);
-Object.defineProperty(prototype$1, 'isAxiosError', {value: true});
-
-// eslint-disable-next-line func-names
-AxiosError.from = (error, code, config, request, response, customProps) => {
-  const axiosError = Object.create(prototype$1);
-
-  utils$1.toFlatObject(error, axiosError, function filter(obj) {
-    return obj !== Error.prototype;
-  }, prop => {
-    return prop !== 'isAxiosError';
-  });
-
-  AxiosError.call(axiosError, error.message, code, config, request, response);
-
-  axiosError.cause = error;
-
-  axiosError.name = error.name;
-
-  customProps && Object.assign(axiosError, customProps);
-
-  return axiosError;
-};
-
-var Stream$2 = require$$0$7.Stream;
-var util$2 = require$$1;
-
-var delayed_stream = DelayedStream$1;
-function DelayedStream$1() {
-  this.source = null;
-  this.dataSize = 0;
-  this.maxDataSize = 1024 * 1024;
-  this.pauseStream = true;
-
-  this._maxDataSizeExceeded = false;
-  this._released = false;
-  this._bufferedEvents = [];
-}
-util$2.inherits(DelayedStream$1, Stream$2);
-
-DelayedStream$1.create = function(source, options) {
-  var delayedStream = new this();
-
-  options = options || {};
-  for (var option in options) {
-    delayedStream[option] = options[option];
-  }
-
-  delayedStream.source = source;
-
-  var realEmit = source.emit;
-  source.emit = function() {
-    delayedStream._handleEmit(arguments);
-    return realEmit.apply(source, arguments);
-  };
-
-  source.on('error', function() {});
-  if (delayedStream.pauseStream) {
-    source.pause();
-  }
-
-  return delayedStream;
-};
-
-Object.defineProperty(DelayedStream$1.prototype, 'readable', {
-  configurable: true,
-  enumerable: true,
-  get: function() {
-    return this.source.readable;
-  }
-});
-
-DelayedStream$1.prototype.setEncoding = function() {
-  return this.source.setEncoding.apply(this.source, arguments);
-};
-
-DelayedStream$1.prototype.resume = function() {
-  if (!this._released) {
-    this.release();
-  }
-
-  this.source.resume();
-};
-
-DelayedStream$1.prototype.pause = function() {
-  this.source.pause();
-};
-
-DelayedStream$1.prototype.release = function() {
-  this._released = true;
-
-  this._bufferedEvents.forEach(function(args) {
-    this.emit.apply(this, args);
-  }.bind(this));
-  this._bufferedEvents = [];
-};
-
-DelayedStream$1.prototype.pipe = function() {
-  var r = Stream$2.prototype.pipe.apply(this, arguments);
-  this.resume();
-  return r;
-};
-
-DelayedStream$1.prototype._handleEmit = function(args) {
-  if (this._released) {
-    this.emit.apply(this, args);
-    return;
-  }
-
-  if (args[0] === 'data') {
-    this.dataSize += args[1].length;
-    this._checkIfMaxDataSizeExceeded();
-  }
-
-  this._bufferedEvents.push(args);
-};
-
-DelayedStream$1.prototype._checkIfMaxDataSizeExceeded = function() {
-  if (this._maxDataSizeExceeded) {
-    return;
-  }
-
-  if (this.dataSize <= this.maxDataSize) {
-    return;
-  }
-
-  this._maxDataSizeExceeded = true;
-  var message =
-    'DelayedStream#maxDataSize of ' + this.maxDataSize + ' bytes exceeded.';
-  this.emit('error', new Error(message));
-};
-
-var util$1 = require$$1;
-var Stream$1 = require$$0$7.Stream;
-var DelayedStream = delayed_stream;
-
-var combined_stream = CombinedStream$1;
-function CombinedStream$1() {
-  this.writable = false;
-  this.readable = true;
-  this.dataSize = 0;
-  this.maxDataSize = 2 * 1024 * 1024;
-  this.pauseStreams = true;
-
-  this._released = false;
-  this._streams = [];
-  this._currentStream = null;
-  this._insideLoop = false;
-  this._pendingNext = false;
-}
-util$1.inherits(CombinedStream$1, Stream$1);
-
-CombinedStream$1.create = function(options) {
-  var combinedStream = new this();
-
-  options = options || {};
-  for (var option in options) {
-    combinedStream[option] = options[option];
-  }
-
-  return combinedStream;
-};
-
-CombinedStream$1.isStreamLike = function(stream) {
-  return (typeof stream !== 'function')
-    && (typeof stream !== 'string')
-    && (typeof stream !== 'boolean')
-    && (typeof stream !== 'number')
-    && (!Buffer.isBuffer(stream));
-};
-
-CombinedStream$1.prototype.append = function(stream) {
-  var isStreamLike = CombinedStream$1.isStreamLike(stream);
-
-  if (isStreamLike) {
-    if (!(stream instanceof DelayedStream)) {
-      var newStream = DelayedStream.create(stream, {
-        maxDataSize: Infinity,
-        pauseStream: this.pauseStreams,
-      });
-      stream.on('data', this._checkDataSize.bind(this));
-      stream = newStream;
-    }
-
-    this._handleErrors(stream);
-
-    if (this.pauseStreams) {
-      stream.pause();
-    }
-  }
-
-  this._streams.push(stream);
-  return this;
-};
-
-CombinedStream$1.prototype.pipe = function(dest, options) {
-  Stream$1.prototype.pipe.call(this, dest, options);
-  this.resume();
-  return dest;
-};
-
-CombinedStream$1.prototype._getNext = function() {
-  this._currentStream = null;
-
-  if (this._insideLoop) {
-    this._pendingNext = true;
-    return; // defer call
-  }
-
-  this._insideLoop = true;
-  try {
-    do {
-      this._pendingNext = false;
-      this._realGetNext();
-    } while (this._pendingNext);
-  } finally {
-    this._insideLoop = false;
-  }
-};
-
-CombinedStream$1.prototype._realGetNext = function() {
-  var stream = this._streams.shift();
-
-
-  if (typeof stream == 'undefined') {
-    this.end();
-    return;
-  }
-
-  if (typeof stream !== 'function') {
-    this._pipeNext(stream);
-    return;
-  }
-
-  var getStream = stream;
-  getStream(function(stream) {
-    var isStreamLike = CombinedStream$1.isStreamLike(stream);
-    if (isStreamLike) {
-      stream.on('data', this._checkDataSize.bind(this));
-      this._handleErrors(stream);
-    }
-
-    this._pipeNext(stream);
-  }.bind(this));
-};
-
-CombinedStream$1.prototype._pipeNext = function(stream) {
-  this._currentStream = stream;
-
-  var isStreamLike = CombinedStream$1.isStreamLike(stream);
-  if (isStreamLike) {
-    stream.on('end', this._getNext.bind(this));
-    stream.pipe(this, {end: false});
-    return;
-  }
-
-  var value = stream;
-  this.write(value);
-  this._getNext();
-};
-
-CombinedStream$1.prototype._handleErrors = function(stream) {
-  var self = this;
-  stream.on('error', function(err) {
-    self._emitError(err);
-  });
-};
-
-CombinedStream$1.prototype.write = function(data) {
-  this.emit('data', data);
-};
-
-CombinedStream$1.prototype.pause = function() {
-  if (!this.pauseStreams) {
-    return;
-  }
-
-  if(this.pauseStreams && this._currentStream && typeof(this._currentStream.pause) == 'function') this._currentStream.pause();
-  this.emit('pause');
-};
-
-CombinedStream$1.prototype.resume = function() {
-  if (!this._released) {
-    this._released = true;
-    this.writable = true;
-    this._getNext();
-  }
-
-  if(this.pauseStreams && this._currentStream && typeof(this._currentStream.resume) == 'function') this._currentStream.resume();
-  this.emit('resume');
-};
-
-CombinedStream$1.prototype.end = function() {
-  this._reset();
-  this.emit('end');
-};
-
-CombinedStream$1.prototype.destroy = function() {
-  this._reset();
-  this.emit('close');
-};
-
-CombinedStream$1.prototype._reset = function() {
-  this.writable = false;
-  this._streams = [];
-  this._currentStream = null;
-};
-
-CombinedStream$1.prototype._checkDataSize = function() {
-  this._updateDataSize();
-  if (this.dataSize <= this.maxDataSize) {
-    return;
-  }
-
-  var message =
-    'DelayedStream#maxDataSize of ' + this.maxDataSize + ' bytes exceeded.';
-  this._emitError(new Error(message));
-};
-
-CombinedStream$1.prototype._updateDataSize = function() {
-  this.dataSize = 0;
-
-  var self = this;
-  this._streams.forEach(function(stream) {
-    if (!stream.dataSize) {
-      return;
-    }
-
-    self.dataSize += stream.dataSize;
-  });
-
-  if (this._currentStream && this._currentStream.dataSize) {
-    this.dataSize += this._currentStream.dataSize;
-  }
-};
-
-CombinedStream$1.prototype._emitError = function(err) {
-  this._reset();
-  this.emit('error', err);
-};
-
-var mimeTypes = {};
-
-var require$$0$1 = {
-	"application/1d-interleaved-parityfec": {
-	source: "iana"
-},
-	"application/3gpdash-qoe-report+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/3gpp-ims+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/3gpphal+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/3gpphalforms+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/a2l": {
-	source: "iana"
-},
-	"application/ace+cbor": {
-	source: "iana"
-},
-	"application/activemessage": {
-	source: "iana"
-},
-	"application/activity+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-costmap+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-costmapfilter+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-directory+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-endpointcost+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-endpointcostparams+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-endpointprop+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-endpointpropparams+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-error+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-networkmap+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-networkmapfilter+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-updatestreamcontrol+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/alto-updatestreamparams+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/aml": {
-	source: "iana"
-},
-	"application/andrew-inset": {
-	source: "iana",
-	extensions: [
-		"ez"
-	]
-},
-	"application/applefile": {
-	source: "iana"
-},
-	"application/applixware": {
-	source: "apache",
-	extensions: [
-		"aw"
-	]
-},
-	"application/at+jwt": {
-	source: "iana"
-},
-	"application/atf": {
-	source: "iana"
-},
-	"application/atfx": {
-	source: "iana"
-},
-	"application/atom+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"atom"
-	]
-},
-	"application/atomcat+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"atomcat"
-	]
-},
-	"application/atomdeleted+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"atomdeleted"
-	]
-},
-	"application/atomicmail": {
-	source: "iana"
-},
-	"application/atomsvc+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"atomsvc"
-	]
-},
-	"application/atsc-dwd+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"dwd"
-	]
-},
-	"application/atsc-dynamic-event-message": {
-	source: "iana"
-},
-	"application/atsc-held+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"held"
-	]
-},
-	"application/atsc-rdt+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/atsc-rsat+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rsat"
-	]
-},
-	"application/atxml": {
-	source: "iana"
-},
-	"application/auth-policy+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/bacnet-xdd+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/batch-smtp": {
-	source: "iana"
-},
-	"application/bdoc": {
-	compressible: false,
-	extensions: [
-		"bdoc"
-	]
-},
-	"application/beep+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/calendar+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/calendar+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xcs"
-	]
-},
-	"application/call-completion": {
-	source: "iana"
-},
-	"application/cals-1840": {
-	source: "iana"
-},
-	"application/captive+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/cbor": {
-	source: "iana"
-},
-	"application/cbor-seq": {
-	source: "iana"
-},
-	"application/cccex": {
-	source: "iana"
-},
-	"application/ccmp+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/ccxml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"ccxml"
-	]
-},
-	"application/cdfx+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"cdfx"
-	]
-},
-	"application/cdmi-capability": {
-	source: "iana",
-	extensions: [
-		"cdmia"
-	]
-},
-	"application/cdmi-container": {
-	source: "iana",
-	extensions: [
-		"cdmic"
-	]
-},
-	"application/cdmi-domain": {
-	source: "iana",
-	extensions: [
-		"cdmid"
-	]
-},
-	"application/cdmi-object": {
-	source: "iana",
-	extensions: [
-		"cdmio"
-	]
-},
-	"application/cdmi-queue": {
-	source: "iana",
-	extensions: [
-		"cdmiq"
-	]
-},
-	"application/cdni": {
-	source: "iana"
-},
-	"application/cea": {
-	source: "iana"
-},
-	"application/cea-2018+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/cellml+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/cfw": {
-	source: "iana"
-},
-	"application/city+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/clr": {
-	source: "iana"
-},
-	"application/clue+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/clue_info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/cms": {
-	source: "iana"
-},
-	"application/cnrp+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/coap-group+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/coap-payload": {
-	source: "iana"
-},
-	"application/commonground": {
-	source: "iana"
-},
-	"application/conference-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/cose": {
-	source: "iana"
-},
-	"application/cose-key": {
-	source: "iana"
-},
-	"application/cose-key-set": {
-	source: "iana"
-},
-	"application/cpl+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"cpl"
-	]
-},
-	"application/csrattrs": {
-	source: "iana"
-},
-	"application/csta+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/cstadata+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/csvm+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/cu-seeme": {
-	source: "apache",
-	extensions: [
-		"cu"
-	]
-},
-	"application/cwt": {
-	source: "iana"
-},
-	"application/cybercash": {
-	source: "iana"
-},
-	"application/dart": {
-	compressible: true
-},
-	"application/dash+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mpd"
-	]
-},
-	"application/dash-patch+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mpp"
-	]
-},
-	"application/dashdelta": {
-	source: "iana"
-},
-	"application/davmount+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"davmount"
-	]
-},
-	"application/dca-rft": {
-	source: "iana"
-},
-	"application/dcd": {
-	source: "iana"
-},
-	"application/dec-dx": {
-	source: "iana"
-},
-	"application/dialog-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/dicom": {
-	source: "iana"
-},
-	"application/dicom+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/dicom+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/dii": {
-	source: "iana"
-},
-	"application/dit": {
-	source: "iana"
-},
-	"application/dns": {
-	source: "iana"
-},
-	"application/dns+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/dns-message": {
-	source: "iana"
-},
-	"application/docbook+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"dbk"
-	]
-},
-	"application/dots+cbor": {
-	source: "iana"
-},
-	"application/dskpp+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/dssc+der": {
-	source: "iana",
-	extensions: [
-		"dssc"
-	]
-},
-	"application/dssc+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xdssc"
-	]
-},
-	"application/dvcs": {
-	source: "iana"
-},
-	"application/ecmascript": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"es",
-		"ecma"
-	]
-},
-	"application/edi-consent": {
-	source: "iana"
-},
-	"application/edi-x12": {
-	source: "iana",
-	compressible: false
-},
-	"application/edifact": {
-	source: "iana",
-	compressible: false
-},
-	"application/efi": {
-	source: "iana"
-},
-	"application/elm+json": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/elm+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/emergencycalldata.cap+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/emergencycalldata.comment+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/emergencycalldata.control+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/emergencycalldata.deviceinfo+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/emergencycalldata.ecall.msd": {
-	source: "iana"
-},
-	"application/emergencycalldata.providerinfo+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/emergencycalldata.serviceinfo+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/emergencycalldata.subscriberinfo+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/emergencycalldata.veds+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/emma+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"emma"
-	]
-},
-	"application/emotionml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"emotionml"
-	]
-},
-	"application/encaprtp": {
-	source: "iana"
-},
-	"application/epp+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/epub+zip": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"epub"
-	]
-},
-	"application/eshop": {
-	source: "iana"
-},
-	"application/exi": {
-	source: "iana",
-	extensions: [
-		"exi"
-	]
-},
-	"application/expect-ct-report+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/express": {
-	source: "iana",
-	extensions: [
-		"exp"
-	]
-},
-	"application/fastinfoset": {
-	source: "iana"
-},
-	"application/fastsoap": {
-	source: "iana"
-},
-	"application/fdt+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"fdt"
-	]
-},
-	"application/fhir+json": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/fhir+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/fido.trusted-apps+json": {
-	compressible: true
-},
-	"application/fits": {
-	source: "iana"
-},
-	"application/flexfec": {
-	source: "iana"
-},
-	"application/font-sfnt": {
-	source: "iana"
-},
-	"application/font-tdpfr": {
-	source: "iana",
-	extensions: [
-		"pfr"
-	]
-},
-	"application/font-woff": {
-	source: "iana",
-	compressible: false
-},
-	"application/framework-attributes+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/geo+json": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"geojson"
-	]
-},
-	"application/geo+json-seq": {
-	source: "iana"
-},
-	"application/geopackage+sqlite3": {
-	source: "iana"
-},
-	"application/geoxacml+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/gltf-buffer": {
-	source: "iana"
-},
-	"application/gml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"gml"
-	]
-},
-	"application/gpx+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"gpx"
-	]
-},
-	"application/gxf": {
-	source: "apache",
-	extensions: [
-		"gxf"
-	]
-},
-	"application/gzip": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"gz"
-	]
-},
-	"application/h224": {
-	source: "iana"
-},
-	"application/held+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/hjson": {
-	extensions: [
-		"hjson"
-	]
-},
-	"application/http": {
-	source: "iana"
-},
-	"application/hyperstudio": {
-	source: "iana",
-	extensions: [
-		"stk"
-	]
-},
-	"application/ibe-key-request+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/ibe-pkg-reply+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/ibe-pp-data": {
-	source: "iana"
-},
-	"application/iges": {
-	source: "iana"
-},
-	"application/im-iscomposing+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/index": {
-	source: "iana"
-},
-	"application/index.cmd": {
-	source: "iana"
-},
-	"application/index.obj": {
-	source: "iana"
-},
-	"application/index.response": {
-	source: "iana"
-},
-	"application/index.vnd": {
-	source: "iana"
-},
-	"application/inkml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"ink",
-		"inkml"
-	]
-},
-	"application/iotp": {
-	source: "iana"
-},
-	"application/ipfix": {
-	source: "iana",
-	extensions: [
-		"ipfix"
-	]
-},
-	"application/ipp": {
-	source: "iana"
-},
-	"application/isup": {
-	source: "iana"
-},
-	"application/its+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"its"
-	]
-},
-	"application/java-archive": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"jar",
-		"war",
-		"ear"
-	]
-},
-	"application/java-serialized-object": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"ser"
-	]
-},
-	"application/java-vm": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"class"
-	]
-},
-	"application/javascript": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true,
-	extensions: [
-		"js",
-		"mjs"
-	]
-},
-	"application/jf2feed+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/jose": {
-	source: "iana"
-},
-	"application/jose+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/jrd+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/jscalendar+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/json": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true,
-	extensions: [
-		"json",
-		"map"
-	]
-},
-	"application/json-patch+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/json-seq": {
-	source: "iana"
-},
-	"application/json5": {
-	extensions: [
-		"json5"
-	]
-},
-	"application/jsonml+json": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"jsonml"
-	]
-},
-	"application/jwk+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/jwk-set+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/jwt": {
-	source: "iana"
-},
-	"application/kpml-request+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/kpml-response+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/ld+json": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"jsonld"
-	]
-},
-	"application/lgr+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"lgr"
-	]
-},
-	"application/link-format": {
-	source: "iana"
-},
-	"application/load-control+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/lost+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"lostxml"
-	]
-},
-	"application/lostsync+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/lpf+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/lxf": {
-	source: "iana"
-},
-	"application/mac-binhex40": {
-	source: "iana",
-	extensions: [
-		"hqx"
-	]
-},
-	"application/mac-compactpro": {
-	source: "apache",
-	extensions: [
-		"cpt"
-	]
-},
-	"application/macwriteii": {
-	source: "iana"
-},
-	"application/mads+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mads"
-	]
-},
-	"application/manifest+json": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true,
-	extensions: [
-		"webmanifest"
-	]
-},
-	"application/marc": {
-	source: "iana",
-	extensions: [
-		"mrc"
-	]
-},
-	"application/marcxml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mrcx"
-	]
-},
-	"application/mathematica": {
-	source: "iana",
-	extensions: [
-		"ma",
-		"nb",
-		"mb"
-	]
-},
-	"application/mathml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mathml"
-	]
-},
-	"application/mathml-content+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mathml-presentation+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-associated-procedure-description+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-deregister+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-envelope+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-msk+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-msk-response+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-protection-description+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-reception-report+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-register+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-register-response+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-schedule+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbms-user-service-description+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mbox": {
-	source: "iana",
-	extensions: [
-		"mbox"
-	]
-},
-	"application/media-policy-dataset+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mpf"
-	]
-},
-	"application/media_control+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mediaservercontrol+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mscml"
-	]
-},
-	"application/merge-patch+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/metalink+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"metalink"
-	]
-},
-	"application/metalink4+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"meta4"
-	]
-},
-	"application/mets+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mets"
-	]
-},
-	"application/mf4": {
-	source: "iana"
-},
-	"application/mikey": {
-	source: "iana"
-},
-	"application/mipc": {
-	source: "iana"
-},
-	"application/missing-blocks+cbor-seq": {
-	source: "iana"
-},
-	"application/mmt-aei+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"maei"
-	]
-},
-	"application/mmt-usd+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"musd"
-	]
-},
-	"application/mods+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mods"
-	]
-},
-	"application/moss-keys": {
-	source: "iana"
-},
-	"application/moss-signature": {
-	source: "iana"
-},
-	"application/mosskey-data": {
-	source: "iana"
-},
-	"application/mosskey-request": {
-	source: "iana"
-},
-	"application/mp21": {
-	source: "iana",
-	extensions: [
-		"m21",
-		"mp21"
-	]
-},
-	"application/mp4": {
-	source: "iana",
-	extensions: [
-		"mp4s",
-		"m4p"
-	]
-},
-	"application/mpeg4-generic": {
-	source: "iana"
-},
-	"application/mpeg4-iod": {
-	source: "iana"
-},
-	"application/mpeg4-iod-xmt": {
-	source: "iana"
-},
-	"application/mrb-consumer+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/mrb-publish+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/msc-ivr+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/msc-mixer+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/msword": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"doc",
-		"dot"
-	]
-},
-	"application/mud+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/multipart-core": {
-	source: "iana"
-},
-	"application/mxf": {
-	source: "iana",
-	extensions: [
-		"mxf"
-	]
-},
-	"application/n-quads": {
-	source: "iana",
-	extensions: [
-		"nq"
-	]
-},
-	"application/n-triples": {
-	source: "iana",
-	extensions: [
-		"nt"
-	]
-},
-	"application/nasdata": {
-	source: "iana"
-},
-	"application/news-checkgroups": {
-	source: "iana",
-	charset: "US-ASCII"
-},
-	"application/news-groupinfo": {
-	source: "iana",
-	charset: "US-ASCII"
-},
-	"application/news-transmission": {
-	source: "iana"
-},
-	"application/nlsml+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/node": {
-	source: "iana",
-	extensions: [
-		"cjs"
-	]
-},
-	"application/nss": {
-	source: "iana"
-},
-	"application/oauth-authz-req+jwt": {
-	source: "iana"
-},
-	"application/oblivious-dns-message": {
-	source: "iana"
-},
-	"application/ocsp-request": {
-	source: "iana"
-},
-	"application/ocsp-response": {
-	source: "iana"
-},
-	"application/octet-stream": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"bin",
-		"dms",
-		"lrf",
-		"mar",
-		"so",
-		"dist",
-		"distz",
-		"pkg",
-		"bpk",
-		"dump",
-		"elc",
-		"deploy",
-		"exe",
-		"dll",
-		"deb",
-		"dmg",
-		"iso",
-		"img",
-		"msi",
-		"msp",
-		"msm",
-		"buffer"
-	]
-},
-	"application/oda": {
-	source: "iana",
-	extensions: [
-		"oda"
-	]
-},
-	"application/odm+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/odx": {
-	source: "iana"
-},
-	"application/oebps-package+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"opf"
-	]
-},
-	"application/ogg": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"ogx"
-	]
-},
-	"application/omdoc+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"omdoc"
-	]
-},
-	"application/onenote": {
-	source: "apache",
-	extensions: [
-		"onetoc",
-		"onetoc2",
-		"onetmp",
-		"onepkg"
-	]
-},
-	"application/opc-nodeset+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/oscore": {
-	source: "iana"
-},
-	"application/oxps": {
-	source: "iana",
-	extensions: [
-		"oxps"
-	]
-},
-	"application/p21": {
-	source: "iana"
-},
-	"application/p21+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/p2p-overlay+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"relo"
-	]
-},
-	"application/parityfec": {
-	source: "iana"
-},
-	"application/passport": {
-	source: "iana"
-},
-	"application/patch-ops-error+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xer"
-	]
-},
-	"application/pdf": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"pdf"
-	]
-},
-	"application/pdx": {
-	source: "iana"
-},
-	"application/pem-certificate-chain": {
-	source: "iana"
-},
-	"application/pgp-encrypted": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"pgp"
-	]
-},
-	"application/pgp-keys": {
-	source: "iana",
-	extensions: [
-		"asc"
-	]
-},
-	"application/pgp-signature": {
-	source: "iana",
-	extensions: [
-		"asc",
-		"sig"
-	]
-},
-	"application/pics-rules": {
-	source: "apache",
-	extensions: [
-		"prf"
-	]
-},
-	"application/pidf+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/pidf-diff+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/pkcs10": {
-	source: "iana",
-	extensions: [
-		"p10"
-	]
-},
-	"application/pkcs12": {
-	source: "iana"
-},
-	"application/pkcs7-mime": {
-	source: "iana",
-	extensions: [
-		"p7m",
-		"p7c"
-	]
-},
-	"application/pkcs7-signature": {
-	source: "iana",
-	extensions: [
-		"p7s"
-	]
-},
-	"application/pkcs8": {
-	source: "iana",
-	extensions: [
-		"p8"
-	]
-},
-	"application/pkcs8-encrypted": {
-	source: "iana"
-},
-	"application/pkix-attr-cert": {
-	source: "iana",
-	extensions: [
-		"ac"
-	]
-},
-	"application/pkix-cert": {
-	source: "iana",
-	extensions: [
-		"cer"
-	]
-},
-	"application/pkix-crl": {
-	source: "iana",
-	extensions: [
-		"crl"
-	]
-},
-	"application/pkix-pkipath": {
-	source: "iana",
-	extensions: [
-		"pkipath"
-	]
-},
-	"application/pkixcmp": {
-	source: "iana",
-	extensions: [
-		"pki"
-	]
-},
-	"application/pls+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"pls"
-	]
-},
-	"application/poc-settings+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/postscript": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"ai",
-		"eps",
-		"ps"
-	]
-},
-	"application/ppsp-tracker+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/problem+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/problem+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/provenance+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"provx"
-	]
-},
-	"application/prs.alvestrand.titrax-sheet": {
-	source: "iana"
-},
-	"application/prs.cww": {
-	source: "iana",
-	extensions: [
-		"cww"
-	]
-},
-	"application/prs.cyn": {
-	source: "iana",
-	charset: "7-BIT"
-},
-	"application/prs.hpub+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/prs.nprend": {
-	source: "iana"
-},
-	"application/prs.plucker": {
-	source: "iana"
-},
-	"application/prs.rdf-xml-crypt": {
-	source: "iana"
-},
-	"application/prs.xsf+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/pskc+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"pskcxml"
-	]
-},
-	"application/pvd+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/qsig": {
-	source: "iana"
-},
-	"application/raml+yaml": {
-	compressible: true,
-	extensions: [
-		"raml"
-	]
-},
-	"application/raptorfec": {
-	source: "iana"
-},
-	"application/rdap+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/rdf+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rdf",
-		"owl"
-	]
-},
-	"application/reginfo+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rif"
-	]
-},
-	"application/relax-ng-compact-syntax": {
-	source: "iana",
-	extensions: [
-		"rnc"
-	]
-},
-	"application/remote-printing": {
-	source: "iana"
-},
-	"application/reputon+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/resource-lists+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rl"
-	]
-},
-	"application/resource-lists-diff+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rld"
-	]
-},
-	"application/rfc+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/riscos": {
-	source: "iana"
-},
-	"application/rlmi+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/rls-services+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rs"
-	]
-},
-	"application/route-apd+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rapd"
-	]
-},
-	"application/route-s-tsid+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"sls"
-	]
-},
-	"application/route-usd+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rusd"
-	]
-},
-	"application/rpki-ghostbusters": {
-	source: "iana",
-	extensions: [
-		"gbr"
-	]
-},
-	"application/rpki-manifest": {
-	source: "iana",
-	extensions: [
-		"mft"
-	]
-},
-	"application/rpki-publication": {
-	source: "iana"
-},
-	"application/rpki-roa": {
-	source: "iana",
-	extensions: [
-		"roa"
-	]
-},
-	"application/rpki-updown": {
-	source: "iana"
-},
-	"application/rsd+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"rsd"
-	]
-},
-	"application/rss+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"rss"
-	]
-},
-	"application/rtf": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rtf"
-	]
-},
-	"application/rtploopback": {
-	source: "iana"
-},
-	"application/rtx": {
-	source: "iana"
-},
-	"application/samlassertion+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/samlmetadata+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/sarif+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/sarif-external-properties+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/sbe": {
-	source: "iana"
-},
-	"application/sbml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"sbml"
-	]
-},
-	"application/scaip+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/scim+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/scvp-cv-request": {
-	source: "iana",
-	extensions: [
-		"scq"
-	]
-},
-	"application/scvp-cv-response": {
-	source: "iana",
-	extensions: [
-		"scs"
-	]
-},
-	"application/scvp-vp-request": {
-	source: "iana",
-	extensions: [
-		"spq"
-	]
-},
-	"application/scvp-vp-response": {
-	source: "iana",
-	extensions: [
-		"spp"
-	]
-},
-	"application/sdp": {
-	source: "iana",
-	extensions: [
-		"sdp"
-	]
-},
-	"application/secevent+jwt": {
-	source: "iana"
-},
-	"application/senml+cbor": {
-	source: "iana"
-},
-	"application/senml+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/senml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"senmlx"
-	]
-},
-	"application/senml-etch+cbor": {
-	source: "iana"
-},
-	"application/senml-etch+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/senml-exi": {
-	source: "iana"
-},
-	"application/sensml+cbor": {
-	source: "iana"
-},
-	"application/sensml+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/sensml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"sensmlx"
-	]
-},
-	"application/sensml-exi": {
-	source: "iana"
-},
-	"application/sep+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/sep-exi": {
-	source: "iana"
-},
-	"application/session-info": {
-	source: "iana"
-},
-	"application/set-payment": {
-	source: "iana"
-},
-	"application/set-payment-initiation": {
-	source: "iana",
-	extensions: [
-		"setpay"
-	]
-},
-	"application/set-registration": {
-	source: "iana"
-},
-	"application/set-registration-initiation": {
-	source: "iana",
-	extensions: [
-		"setreg"
-	]
-},
-	"application/sgml": {
-	source: "iana"
-},
-	"application/sgml-open-catalog": {
-	source: "iana"
-},
-	"application/shf+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"shf"
-	]
-},
-	"application/sieve": {
-	source: "iana",
-	extensions: [
-		"siv",
-		"sieve"
-	]
-},
-	"application/simple-filter+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/simple-message-summary": {
-	source: "iana"
-},
-	"application/simplesymbolcontainer": {
-	source: "iana"
-},
-	"application/sipc": {
-	source: "iana"
-},
-	"application/slate": {
-	source: "iana"
-},
-	"application/smil": {
-	source: "iana"
-},
-	"application/smil+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"smi",
-		"smil"
-	]
-},
-	"application/smpte336m": {
-	source: "iana"
-},
-	"application/soap+fastinfoset": {
-	source: "iana"
-},
-	"application/soap+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/sparql-query": {
-	source: "iana",
-	extensions: [
-		"rq"
-	]
-},
-	"application/sparql-results+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"srx"
-	]
-},
-	"application/spdx+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/spirits-event+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/sql": {
-	source: "iana"
-},
-	"application/srgs": {
-	source: "iana",
-	extensions: [
-		"gram"
-	]
-},
-	"application/srgs+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"grxml"
-	]
-},
-	"application/sru+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"sru"
-	]
-},
-	"application/ssdl+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"ssdl"
-	]
-},
-	"application/ssml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"ssml"
-	]
-},
-	"application/stix+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/swid+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"swidtag"
-	]
-},
-	"application/tamp-apex-update": {
-	source: "iana"
-},
-	"application/tamp-apex-update-confirm": {
-	source: "iana"
-},
-	"application/tamp-community-update": {
-	source: "iana"
-},
-	"application/tamp-community-update-confirm": {
-	source: "iana"
-},
-	"application/tamp-error": {
-	source: "iana"
-},
-	"application/tamp-sequence-adjust": {
-	source: "iana"
-},
-	"application/tamp-sequence-adjust-confirm": {
-	source: "iana"
-},
-	"application/tamp-status-query": {
-	source: "iana"
-},
-	"application/tamp-status-response": {
-	source: "iana"
-},
-	"application/tamp-update": {
-	source: "iana"
-},
-	"application/tamp-update-confirm": {
-	source: "iana"
-},
-	"application/tar": {
-	compressible: true
-},
-	"application/taxii+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/td+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/tei+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"tei",
-		"teicorpus"
-	]
-},
-	"application/tetra_isi": {
-	source: "iana"
-},
-	"application/thraud+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"tfi"
-	]
-},
-	"application/timestamp-query": {
-	source: "iana"
-},
-	"application/timestamp-reply": {
-	source: "iana"
-},
-	"application/timestamped-data": {
-	source: "iana",
-	extensions: [
-		"tsd"
-	]
-},
-	"application/tlsrpt+gzip": {
-	source: "iana"
-},
-	"application/tlsrpt+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/tnauthlist": {
-	source: "iana"
-},
-	"application/token-introspection+jwt": {
-	source: "iana"
-},
-	"application/toml": {
-	compressible: true,
-	extensions: [
-		"toml"
-	]
-},
-	"application/trickle-ice-sdpfrag": {
-	source: "iana"
-},
-	"application/trig": {
-	source: "iana",
-	extensions: [
-		"trig"
-	]
-},
-	"application/ttml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"ttml"
-	]
-},
-	"application/tve-trigger": {
-	source: "iana"
-},
-	"application/tzif": {
-	source: "iana"
-},
-	"application/tzif-leap": {
-	source: "iana"
-},
-	"application/ubjson": {
-	compressible: false,
-	extensions: [
-		"ubj"
-	]
-},
-	"application/ulpfec": {
-	source: "iana"
-},
-	"application/urc-grpsheet+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/urc-ressheet+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rsheet"
-	]
-},
-	"application/urc-targetdesc+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"td"
-	]
-},
-	"application/urc-uisocketdesc+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vcard+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vcard+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vemmi": {
-	source: "iana"
-},
-	"application/vividence.scriptfile": {
-	source: "apache"
-},
-	"application/vnd.1000minds.decision-model+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"1km"
-	]
-},
-	"application/vnd.3gpp-prose+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp-prose-pc3ch+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp-v2x-local-service-information": {
-	source: "iana"
-},
-	"application/vnd.3gpp.5gnas": {
-	source: "iana"
-},
-	"application/vnd.3gpp.access-transfer-events+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.bsf+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.gmop+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.gtpc": {
-	source: "iana"
-},
-	"application/vnd.3gpp.interworking-data": {
-	source: "iana"
-},
-	"application/vnd.3gpp.lpp": {
-	source: "iana"
-},
-	"application/vnd.3gpp.mc-signalling-ear": {
-	source: "iana"
-},
-	"application/vnd.3gpp.mcdata-affiliation-command+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcdata-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcdata-payload": {
-	source: "iana"
-},
-	"application/vnd.3gpp.mcdata-service-config+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcdata-signalling": {
-	source: "iana"
-},
-	"application/vnd.3gpp.mcdata-ue-config+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcdata-user-profile+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-affiliation-command+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-floor-request+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-location-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-mbms-usage-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-service-config+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-signed+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-ue-config+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-ue-init-config+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcptt-user-profile+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcvideo-affiliation-command+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcvideo-affiliation-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcvideo-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcvideo-location-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcvideo-mbms-usage-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcvideo-service-config+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcvideo-transmission-request+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcvideo-ue-config+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mcvideo-user-profile+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.mid-call+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.ngap": {
-	source: "iana"
-},
-	"application/vnd.3gpp.pfcp": {
-	source: "iana"
-},
-	"application/vnd.3gpp.pic-bw-large": {
-	source: "iana",
-	extensions: [
-		"plb"
-	]
-},
-	"application/vnd.3gpp.pic-bw-small": {
-	source: "iana",
-	extensions: [
-		"psb"
-	]
-},
-	"application/vnd.3gpp.pic-bw-var": {
-	source: "iana",
-	extensions: [
-		"pvb"
-	]
-},
-	"application/vnd.3gpp.s1ap": {
-	source: "iana"
-},
-	"application/vnd.3gpp.sms": {
-	source: "iana"
-},
-	"application/vnd.3gpp.sms+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.srvcc-ext+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.srvcc-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.state-and-event-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp.ussd+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp2.bcmcsinfo+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.3gpp2.sms": {
-	source: "iana"
-},
-	"application/vnd.3gpp2.tcap": {
-	source: "iana",
-	extensions: [
-		"tcap"
-	]
-},
-	"application/vnd.3lightssoftware.imagescal": {
-	source: "iana"
-},
-	"application/vnd.3m.post-it-notes": {
-	source: "iana",
-	extensions: [
-		"pwn"
-	]
-},
-	"application/vnd.accpac.simply.aso": {
-	source: "iana",
-	extensions: [
-		"aso"
-	]
-},
-	"application/vnd.accpac.simply.imp": {
-	source: "iana",
-	extensions: [
-		"imp"
-	]
-},
-	"application/vnd.acucobol": {
-	source: "iana",
-	extensions: [
-		"acu"
-	]
-},
-	"application/vnd.acucorp": {
-	source: "iana",
-	extensions: [
-		"atc",
-		"acutc"
-	]
-},
-	"application/vnd.adobe.air-application-installer-package+zip": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"air"
-	]
-},
-	"application/vnd.adobe.flash.movie": {
-	source: "iana"
-},
-	"application/vnd.adobe.formscentral.fcdt": {
-	source: "iana",
-	extensions: [
-		"fcdt"
-	]
-},
-	"application/vnd.adobe.fxp": {
-	source: "iana",
-	extensions: [
-		"fxp",
-		"fxpl"
-	]
-},
-	"application/vnd.adobe.partial-upload": {
-	source: "iana"
-},
-	"application/vnd.adobe.xdp+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xdp"
-	]
-},
-	"application/vnd.adobe.xfdf": {
-	source: "iana",
-	extensions: [
-		"xfdf"
-	]
-},
-	"application/vnd.aether.imp": {
-	source: "iana"
-},
-	"application/vnd.afpc.afplinedata": {
-	source: "iana"
-},
-	"application/vnd.afpc.afplinedata-pagedef": {
-	source: "iana"
-},
-	"application/vnd.afpc.cmoca-cmresource": {
-	source: "iana"
-},
-	"application/vnd.afpc.foca-charset": {
-	source: "iana"
-},
-	"application/vnd.afpc.foca-codedfont": {
-	source: "iana"
-},
-	"application/vnd.afpc.foca-codepage": {
-	source: "iana"
-},
-	"application/vnd.afpc.modca": {
-	source: "iana"
-},
-	"application/vnd.afpc.modca-cmtable": {
-	source: "iana"
-},
-	"application/vnd.afpc.modca-formdef": {
-	source: "iana"
-},
-	"application/vnd.afpc.modca-mediummap": {
-	source: "iana"
-},
-	"application/vnd.afpc.modca-objectcontainer": {
-	source: "iana"
-},
-	"application/vnd.afpc.modca-overlay": {
-	source: "iana"
-},
-	"application/vnd.afpc.modca-pagesegment": {
-	source: "iana"
-},
-	"application/vnd.age": {
-	source: "iana",
-	extensions: [
-		"age"
-	]
-},
-	"application/vnd.ah-barcode": {
-	source: "iana"
-},
-	"application/vnd.ahead.space": {
-	source: "iana",
-	extensions: [
-		"ahead"
-	]
-},
-	"application/vnd.airzip.filesecure.azf": {
-	source: "iana",
-	extensions: [
-		"azf"
-	]
-},
-	"application/vnd.airzip.filesecure.azs": {
-	source: "iana",
-	extensions: [
-		"azs"
-	]
-},
-	"application/vnd.amadeus+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.amazon.ebook": {
-	source: "apache",
-	extensions: [
-		"azw"
-	]
-},
-	"application/vnd.amazon.mobi8-ebook": {
-	source: "iana"
-},
-	"application/vnd.americandynamics.acc": {
-	source: "iana",
-	extensions: [
-		"acc"
-	]
-},
-	"application/vnd.amiga.ami": {
-	source: "iana",
-	extensions: [
-		"ami"
-	]
-},
-	"application/vnd.amundsen.maze+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.android.ota": {
-	source: "iana"
-},
-	"application/vnd.android.package-archive": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"apk"
-	]
-},
-	"application/vnd.anki": {
-	source: "iana"
-},
-	"application/vnd.anser-web-certificate-issue-initiation": {
-	source: "iana",
-	extensions: [
-		"cii"
-	]
-},
-	"application/vnd.anser-web-funds-transfer-initiation": {
-	source: "apache",
-	extensions: [
-		"fti"
-	]
-},
-	"application/vnd.antix.game-component": {
-	source: "iana",
-	extensions: [
-		"atx"
-	]
-},
-	"application/vnd.apache.arrow.file": {
-	source: "iana"
-},
-	"application/vnd.apache.arrow.stream": {
-	source: "iana"
-},
-	"application/vnd.apache.thrift.binary": {
-	source: "iana"
-},
-	"application/vnd.apache.thrift.compact": {
-	source: "iana"
-},
-	"application/vnd.apache.thrift.json": {
-	source: "iana"
-},
-	"application/vnd.api+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.aplextor.warrp+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.apothekende.reservation+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.apple.installer+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mpkg"
-	]
-},
-	"application/vnd.apple.keynote": {
-	source: "iana",
-	extensions: [
-		"key"
-	]
-},
-	"application/vnd.apple.mpegurl": {
-	source: "iana",
-	extensions: [
-		"m3u8"
-	]
-},
-	"application/vnd.apple.numbers": {
-	source: "iana",
-	extensions: [
-		"numbers"
-	]
-},
-	"application/vnd.apple.pages": {
-	source: "iana",
-	extensions: [
-		"pages"
-	]
-},
-	"application/vnd.apple.pkpass": {
-	compressible: false,
-	extensions: [
-		"pkpass"
-	]
-},
-	"application/vnd.arastra.swi": {
-	source: "iana"
-},
-	"application/vnd.aristanetworks.swi": {
-	source: "iana",
-	extensions: [
-		"swi"
-	]
-},
-	"application/vnd.artisan+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.artsquare": {
-	source: "iana"
-},
-	"application/vnd.astraea-software.iota": {
-	source: "iana",
-	extensions: [
-		"iota"
-	]
-},
-	"application/vnd.audiograph": {
-	source: "iana",
-	extensions: [
-		"aep"
-	]
-},
-	"application/vnd.autopackage": {
-	source: "iana"
-},
-	"application/vnd.avalon+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.avistar+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.balsamiq.bmml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"bmml"
-	]
-},
-	"application/vnd.balsamiq.bmpr": {
-	source: "iana"
-},
-	"application/vnd.banana-accounting": {
-	source: "iana"
-},
-	"application/vnd.bbf.usp.error": {
-	source: "iana"
-},
-	"application/vnd.bbf.usp.msg": {
-	source: "iana"
-},
-	"application/vnd.bbf.usp.msg+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.bekitzur-stech+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.bint.med-content": {
-	source: "iana"
-},
-	"application/vnd.biopax.rdf+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.blink-idb-value-wrapper": {
-	source: "iana"
-},
-	"application/vnd.blueice.multipass": {
-	source: "iana",
-	extensions: [
-		"mpm"
-	]
-},
-	"application/vnd.bluetooth.ep.oob": {
-	source: "iana"
-},
-	"application/vnd.bluetooth.le.oob": {
-	source: "iana"
-},
-	"application/vnd.bmi": {
-	source: "iana",
-	extensions: [
-		"bmi"
-	]
-},
-	"application/vnd.bpf": {
-	source: "iana"
-},
-	"application/vnd.bpf3": {
-	source: "iana"
-},
-	"application/vnd.businessobjects": {
-	source: "iana",
-	extensions: [
-		"rep"
-	]
-},
-	"application/vnd.byu.uapi+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.cab-jscript": {
-	source: "iana"
-},
-	"application/vnd.canon-cpdl": {
-	source: "iana"
-},
-	"application/vnd.canon-lips": {
-	source: "iana"
-},
-	"application/vnd.capasystems-pg+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.cendio.thinlinc.clientconf": {
-	source: "iana"
-},
-	"application/vnd.century-systems.tcp_stream": {
-	source: "iana"
-},
-	"application/vnd.chemdraw+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"cdxml"
-	]
-},
-	"application/vnd.chess-pgn": {
-	source: "iana"
-},
-	"application/vnd.chipnuts.karaoke-mmd": {
-	source: "iana",
-	extensions: [
-		"mmd"
-	]
-},
-	"application/vnd.ciedi": {
-	source: "iana"
-},
-	"application/vnd.cinderella": {
-	source: "iana",
-	extensions: [
-		"cdy"
-	]
-},
-	"application/vnd.cirpack.isdn-ext": {
-	source: "iana"
-},
-	"application/vnd.citationstyles.style+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"csl"
-	]
-},
-	"application/vnd.claymore": {
-	source: "iana",
-	extensions: [
-		"cla"
-	]
-},
-	"application/vnd.cloanto.rp9": {
-	source: "iana",
-	extensions: [
-		"rp9"
-	]
-},
-	"application/vnd.clonk.c4group": {
-	source: "iana",
-	extensions: [
-		"c4g",
-		"c4d",
-		"c4f",
-		"c4p",
-		"c4u"
-	]
-},
-	"application/vnd.cluetrust.cartomobile-config": {
-	source: "iana",
-	extensions: [
-		"c11amc"
-	]
-},
-	"application/vnd.cluetrust.cartomobile-config-pkg": {
-	source: "iana",
-	extensions: [
-		"c11amz"
-	]
-},
-	"application/vnd.coffeescript": {
-	source: "iana"
-},
-	"application/vnd.collabio.xodocuments.document": {
-	source: "iana"
-},
-	"application/vnd.collabio.xodocuments.document-template": {
-	source: "iana"
-},
-	"application/vnd.collabio.xodocuments.presentation": {
-	source: "iana"
-},
-	"application/vnd.collabio.xodocuments.presentation-template": {
-	source: "iana"
-},
-	"application/vnd.collabio.xodocuments.spreadsheet": {
-	source: "iana"
-},
-	"application/vnd.collabio.xodocuments.spreadsheet-template": {
-	source: "iana"
-},
-	"application/vnd.collection+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.collection.doc+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.collection.next+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.comicbook+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.comicbook-rar": {
-	source: "iana"
-},
-	"application/vnd.commerce-battelle": {
-	source: "iana"
-},
-	"application/vnd.commonspace": {
-	source: "iana",
-	extensions: [
-		"csp"
-	]
-},
-	"application/vnd.contact.cmsg": {
-	source: "iana",
-	extensions: [
-		"cdbcmsg"
-	]
-},
-	"application/vnd.coreos.ignition+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.cosmocaller": {
-	source: "iana",
-	extensions: [
-		"cmc"
-	]
-},
-	"application/vnd.crick.clicker": {
-	source: "iana",
-	extensions: [
-		"clkx"
-	]
-},
-	"application/vnd.crick.clicker.keyboard": {
-	source: "iana",
-	extensions: [
-		"clkk"
-	]
-},
-	"application/vnd.crick.clicker.palette": {
-	source: "iana",
-	extensions: [
-		"clkp"
-	]
-},
-	"application/vnd.crick.clicker.template": {
-	source: "iana",
-	extensions: [
-		"clkt"
-	]
-},
-	"application/vnd.crick.clicker.wordbank": {
-	source: "iana",
-	extensions: [
-		"clkw"
-	]
-},
-	"application/vnd.criticaltools.wbs+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"wbs"
-	]
-},
-	"application/vnd.cryptii.pipe+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.crypto-shade-file": {
-	source: "iana"
-},
-	"application/vnd.cryptomator.encrypted": {
-	source: "iana"
-},
-	"application/vnd.cryptomator.vault": {
-	source: "iana"
-},
-	"application/vnd.ctc-posml": {
-	source: "iana",
-	extensions: [
-		"pml"
-	]
-},
-	"application/vnd.ctct.ws+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.cups-pdf": {
-	source: "iana"
-},
-	"application/vnd.cups-postscript": {
-	source: "iana"
-},
-	"application/vnd.cups-ppd": {
-	source: "iana",
-	extensions: [
-		"ppd"
-	]
-},
-	"application/vnd.cups-raster": {
-	source: "iana"
-},
-	"application/vnd.cups-raw": {
-	source: "iana"
-},
-	"application/vnd.curl": {
-	source: "iana"
-},
-	"application/vnd.curl.car": {
-	source: "apache",
-	extensions: [
-		"car"
-	]
-},
-	"application/vnd.curl.pcurl": {
-	source: "apache",
-	extensions: [
-		"pcurl"
-	]
-},
-	"application/vnd.cyan.dean.root+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.cybank": {
-	source: "iana"
-},
-	"application/vnd.cyclonedx+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.cyclonedx+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.d2l.coursepackage1p0+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.d3m-dataset": {
-	source: "iana"
-},
-	"application/vnd.d3m-problem": {
-	source: "iana"
-},
-	"application/vnd.dart": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"dart"
-	]
-},
-	"application/vnd.data-vision.rdz": {
-	source: "iana",
-	extensions: [
-		"rdz"
-	]
-},
-	"application/vnd.datapackage+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dataresource+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dbf": {
-	source: "iana",
-	extensions: [
-		"dbf"
-	]
-},
-	"application/vnd.debian.binary-package": {
-	source: "iana"
-},
-	"application/vnd.dece.data": {
-	source: "iana",
-	extensions: [
-		"uvf",
-		"uvvf",
-		"uvd",
-		"uvvd"
-	]
-},
-	"application/vnd.dece.ttml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"uvt",
-		"uvvt"
-	]
-},
-	"application/vnd.dece.unspecified": {
-	source: "iana",
-	extensions: [
-		"uvx",
-		"uvvx"
-	]
-},
-	"application/vnd.dece.zip": {
-	source: "iana",
-	extensions: [
-		"uvz",
-		"uvvz"
-	]
-},
-	"application/vnd.denovo.fcselayout-link": {
-	source: "iana",
-	extensions: [
-		"fe_launch"
-	]
-},
-	"application/vnd.desmume.movie": {
-	source: "iana"
-},
-	"application/vnd.dir-bi.plate-dl-nosuffix": {
-	source: "iana"
-},
-	"application/vnd.dm.delegation+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dna": {
-	source: "iana",
-	extensions: [
-		"dna"
-	]
-},
-	"application/vnd.document+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dolby.mlp": {
-	source: "apache",
-	extensions: [
-		"mlp"
-	]
-},
-	"application/vnd.dolby.mobile.1": {
-	source: "iana"
-},
-	"application/vnd.dolby.mobile.2": {
-	source: "iana"
-},
-	"application/vnd.doremir.scorecloud-binary-document": {
-	source: "iana"
-},
-	"application/vnd.dpgraph": {
-	source: "iana",
-	extensions: [
-		"dpg"
-	]
-},
-	"application/vnd.dreamfactory": {
-	source: "iana",
-	extensions: [
-		"dfac"
-	]
-},
-	"application/vnd.drive+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ds-keypoint": {
-	source: "apache",
-	extensions: [
-		"kpxx"
-	]
-},
-	"application/vnd.dtg.local": {
-	source: "iana"
-},
-	"application/vnd.dtg.local.flash": {
-	source: "iana"
-},
-	"application/vnd.dtg.local.html": {
-	source: "iana"
-},
-	"application/vnd.dvb.ait": {
-	source: "iana",
-	extensions: [
-		"ait"
-	]
-},
-	"application/vnd.dvb.dvbisl+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dvb.dvbj": {
-	source: "iana"
-},
-	"application/vnd.dvb.esgcontainer": {
-	source: "iana"
-},
-	"application/vnd.dvb.ipdcdftnotifaccess": {
-	source: "iana"
-},
-	"application/vnd.dvb.ipdcesgaccess": {
-	source: "iana"
-},
-	"application/vnd.dvb.ipdcesgaccess2": {
-	source: "iana"
-},
-	"application/vnd.dvb.ipdcesgpdd": {
-	source: "iana"
-},
-	"application/vnd.dvb.ipdcroaming": {
-	source: "iana"
-},
-	"application/vnd.dvb.iptv.alfec-base": {
-	source: "iana"
-},
-	"application/vnd.dvb.iptv.alfec-enhancement": {
-	source: "iana"
-},
-	"application/vnd.dvb.notif-aggregate-root+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dvb.notif-container+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dvb.notif-generic+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dvb.notif-ia-msglist+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dvb.notif-ia-registration-request+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dvb.notif-ia-registration-response+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dvb.notif-init+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.dvb.pfr": {
-	source: "iana"
-},
-	"application/vnd.dvb.service": {
-	source: "iana",
-	extensions: [
-		"svc"
-	]
-},
-	"application/vnd.dxr": {
-	source: "iana"
-},
-	"application/vnd.dynageo": {
-	source: "iana",
-	extensions: [
-		"geo"
-	]
-},
-	"application/vnd.dzr": {
-	source: "iana"
-},
-	"application/vnd.easykaraoke.cdgdownload": {
-	source: "iana"
-},
-	"application/vnd.ecdis-update": {
-	source: "iana"
-},
-	"application/vnd.ecip.rlp": {
-	source: "iana"
-},
-	"application/vnd.eclipse.ditto+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ecowin.chart": {
-	source: "iana",
-	extensions: [
-		"mag"
-	]
-},
-	"application/vnd.ecowin.filerequest": {
-	source: "iana"
-},
-	"application/vnd.ecowin.fileupdate": {
-	source: "iana"
-},
-	"application/vnd.ecowin.series": {
-	source: "iana"
-},
-	"application/vnd.ecowin.seriesrequest": {
-	source: "iana"
-},
-	"application/vnd.ecowin.seriesupdate": {
-	source: "iana"
-},
-	"application/vnd.efi.img": {
-	source: "iana"
-},
-	"application/vnd.efi.iso": {
-	source: "iana"
-},
-	"application/vnd.emclient.accessrequest+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.enliven": {
-	source: "iana",
-	extensions: [
-		"nml"
-	]
-},
-	"application/vnd.enphase.envoy": {
-	source: "iana"
-},
-	"application/vnd.eprints.data+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.epson.esf": {
-	source: "iana",
-	extensions: [
-		"esf"
-	]
-},
-	"application/vnd.epson.msf": {
-	source: "iana",
-	extensions: [
-		"msf"
-	]
-},
-	"application/vnd.epson.quickanime": {
-	source: "iana",
-	extensions: [
-		"qam"
-	]
-},
-	"application/vnd.epson.salt": {
-	source: "iana",
-	extensions: [
-		"slt"
-	]
-},
-	"application/vnd.epson.ssf": {
-	source: "iana",
-	extensions: [
-		"ssf"
-	]
-},
-	"application/vnd.ericsson.quickcall": {
-	source: "iana"
-},
-	"application/vnd.espass-espass+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.eszigno3+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"es3",
-		"et3"
-	]
-},
-	"application/vnd.etsi.aoc+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.asic-e+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.etsi.asic-s+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.etsi.cug+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.iptvcommand+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.iptvdiscovery+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.iptvprofile+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.iptvsad-bc+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.iptvsad-cod+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.iptvsad-npvr+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.iptvservice+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.iptvsync+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.iptvueprofile+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.mcid+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.mheg5": {
-	source: "iana"
-},
-	"application/vnd.etsi.overload-control-policy-dataset+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.pstn+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.sci+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.simservs+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.timestamp-token": {
-	source: "iana"
-},
-	"application/vnd.etsi.tsl+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.etsi.tsl.der": {
-	source: "iana"
-},
-	"application/vnd.eu.kasparian.car+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.eudora.data": {
-	source: "iana"
-},
-	"application/vnd.evolv.ecig.profile": {
-	source: "iana"
-},
-	"application/vnd.evolv.ecig.settings": {
-	source: "iana"
-},
-	"application/vnd.evolv.ecig.theme": {
-	source: "iana"
-},
-	"application/vnd.exstream-empower+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.exstream-package": {
-	source: "iana"
-},
-	"application/vnd.ezpix-album": {
-	source: "iana",
-	extensions: [
-		"ez2"
-	]
-},
-	"application/vnd.ezpix-package": {
-	source: "iana",
-	extensions: [
-		"ez3"
-	]
-},
-	"application/vnd.f-secure.mobile": {
-	source: "iana"
-},
-	"application/vnd.familysearch.gedcom+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.fastcopy-disk-image": {
-	source: "iana"
-},
-	"application/vnd.fdf": {
-	source: "iana",
-	extensions: [
-		"fdf"
-	]
-},
-	"application/vnd.fdsn.mseed": {
-	source: "iana",
-	extensions: [
-		"mseed"
-	]
-},
-	"application/vnd.fdsn.seed": {
-	source: "iana",
-	extensions: [
-		"seed",
-		"dataless"
-	]
-},
-	"application/vnd.ffsns": {
-	source: "iana"
-},
-	"application/vnd.ficlab.flb+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.filmit.zfc": {
-	source: "iana"
-},
-	"application/vnd.fints": {
-	source: "iana"
-},
-	"application/vnd.firemonkeys.cloudcell": {
-	source: "iana"
-},
-	"application/vnd.flographit": {
-	source: "iana",
-	extensions: [
-		"gph"
-	]
-},
-	"application/vnd.fluxtime.clip": {
-	source: "iana",
-	extensions: [
-		"ftc"
-	]
-},
-	"application/vnd.font-fontforge-sfd": {
-	source: "iana"
-},
-	"application/vnd.framemaker": {
-	source: "iana",
-	extensions: [
-		"fm",
-		"frame",
-		"maker",
-		"book"
-	]
-},
-	"application/vnd.frogans.fnc": {
-	source: "iana",
-	extensions: [
-		"fnc"
-	]
-},
-	"application/vnd.frogans.ltf": {
-	source: "iana",
-	extensions: [
-		"ltf"
-	]
-},
-	"application/vnd.fsc.weblaunch": {
-	source: "iana",
-	extensions: [
-		"fsc"
-	]
-},
-	"application/vnd.fujifilm.fb.docuworks": {
-	source: "iana"
-},
-	"application/vnd.fujifilm.fb.docuworks.binder": {
-	source: "iana"
-},
-	"application/vnd.fujifilm.fb.docuworks.container": {
-	source: "iana"
-},
-	"application/vnd.fujifilm.fb.jfi+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.fujitsu.oasys": {
-	source: "iana",
-	extensions: [
-		"oas"
-	]
-},
-	"application/vnd.fujitsu.oasys2": {
-	source: "iana",
-	extensions: [
-		"oa2"
-	]
-},
-	"application/vnd.fujitsu.oasys3": {
-	source: "iana",
-	extensions: [
-		"oa3"
-	]
-},
-	"application/vnd.fujitsu.oasysgp": {
-	source: "iana",
-	extensions: [
-		"fg5"
-	]
-},
-	"application/vnd.fujitsu.oasysprs": {
-	source: "iana",
-	extensions: [
-		"bh2"
-	]
-},
-	"application/vnd.fujixerox.art-ex": {
-	source: "iana"
-},
-	"application/vnd.fujixerox.art4": {
-	source: "iana"
-},
-	"application/vnd.fujixerox.ddd": {
-	source: "iana",
-	extensions: [
-		"ddd"
-	]
-},
-	"application/vnd.fujixerox.docuworks": {
-	source: "iana",
-	extensions: [
-		"xdw"
-	]
-},
-	"application/vnd.fujixerox.docuworks.binder": {
-	source: "iana",
-	extensions: [
-		"xbd"
-	]
-},
-	"application/vnd.fujixerox.docuworks.container": {
-	source: "iana"
-},
-	"application/vnd.fujixerox.hbpl": {
-	source: "iana"
-},
-	"application/vnd.fut-misnet": {
-	source: "iana"
-},
-	"application/vnd.futoin+cbor": {
-	source: "iana"
-},
-	"application/vnd.futoin+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.fuzzysheet": {
-	source: "iana",
-	extensions: [
-		"fzs"
-	]
-},
-	"application/vnd.genomatix.tuxedo": {
-	source: "iana",
-	extensions: [
-		"txd"
-	]
-},
-	"application/vnd.gentics.grd+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.geo+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.geocube+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.geogebra.file": {
-	source: "iana",
-	extensions: [
-		"ggb"
-	]
-},
-	"application/vnd.geogebra.slides": {
-	source: "iana"
-},
-	"application/vnd.geogebra.tool": {
-	source: "iana",
-	extensions: [
-		"ggt"
-	]
-},
-	"application/vnd.geometry-explorer": {
-	source: "iana",
-	extensions: [
-		"gex",
-		"gre"
-	]
-},
-	"application/vnd.geonext": {
-	source: "iana",
-	extensions: [
-		"gxt"
-	]
-},
-	"application/vnd.geoplan": {
-	source: "iana",
-	extensions: [
-		"g2w"
-	]
-},
-	"application/vnd.geospace": {
-	source: "iana",
-	extensions: [
-		"g3w"
-	]
-},
-	"application/vnd.gerber": {
-	source: "iana"
-},
-	"application/vnd.globalplatform.card-content-mgt": {
-	source: "iana"
-},
-	"application/vnd.globalplatform.card-content-mgt-response": {
-	source: "iana"
-},
-	"application/vnd.gmx": {
-	source: "iana",
-	extensions: [
-		"gmx"
-	]
-},
-	"application/vnd.google-apps.document": {
-	compressible: false,
-	extensions: [
-		"gdoc"
-	]
-},
-	"application/vnd.google-apps.presentation": {
-	compressible: false,
-	extensions: [
-		"gslides"
-	]
-},
-	"application/vnd.google-apps.spreadsheet": {
-	compressible: false,
-	extensions: [
-		"gsheet"
-	]
-},
-	"application/vnd.google-earth.kml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"kml"
-	]
-},
-	"application/vnd.google-earth.kmz": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"kmz"
-	]
-},
-	"application/vnd.gov.sk.e-form+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.gov.sk.e-form+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.gov.sk.xmldatacontainer+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.grafeq": {
-	source: "iana",
-	extensions: [
-		"gqf",
-		"gqs"
-	]
-},
-	"application/vnd.gridmp": {
-	source: "iana"
-},
-	"application/vnd.groove-account": {
-	source: "iana",
-	extensions: [
-		"gac"
-	]
-},
-	"application/vnd.groove-help": {
-	source: "iana",
-	extensions: [
-		"ghf"
-	]
-},
-	"application/vnd.groove-identity-message": {
-	source: "iana",
-	extensions: [
-		"gim"
-	]
-},
-	"application/vnd.groove-injector": {
-	source: "iana",
-	extensions: [
-		"grv"
-	]
-},
-	"application/vnd.groove-tool-message": {
-	source: "iana",
-	extensions: [
-		"gtm"
-	]
-},
-	"application/vnd.groove-tool-template": {
-	source: "iana",
-	extensions: [
-		"tpl"
-	]
-},
-	"application/vnd.groove-vcard": {
-	source: "iana",
-	extensions: [
-		"vcg"
-	]
-},
-	"application/vnd.hal+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.hal+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"hal"
-	]
-},
-	"application/vnd.handheld-entertainment+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"zmm"
-	]
-},
-	"application/vnd.hbci": {
-	source: "iana",
-	extensions: [
-		"hbci"
-	]
-},
-	"application/vnd.hc+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.hcl-bireports": {
-	source: "iana"
-},
-	"application/vnd.hdt": {
-	source: "iana"
-},
-	"application/vnd.heroku+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.hhe.lesson-player": {
-	source: "iana",
-	extensions: [
-		"les"
-	]
-},
-	"application/vnd.hl7cda+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/vnd.hl7v2+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/vnd.hp-hpgl": {
-	source: "iana",
-	extensions: [
-		"hpgl"
-	]
-},
-	"application/vnd.hp-hpid": {
-	source: "iana",
-	extensions: [
-		"hpid"
-	]
-},
-	"application/vnd.hp-hps": {
-	source: "iana",
-	extensions: [
-		"hps"
-	]
-},
-	"application/vnd.hp-jlyt": {
-	source: "iana",
-	extensions: [
-		"jlt"
-	]
-},
-	"application/vnd.hp-pcl": {
-	source: "iana",
-	extensions: [
-		"pcl"
-	]
-},
-	"application/vnd.hp-pclxl": {
-	source: "iana",
-	extensions: [
-		"pclxl"
-	]
-},
-	"application/vnd.httphone": {
-	source: "iana"
-},
-	"application/vnd.hydrostatix.sof-data": {
-	source: "iana",
-	extensions: [
-		"sfd-hdstx"
-	]
-},
-	"application/vnd.hyper+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.hyper-item+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.hyperdrive+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.hzn-3d-crossword": {
-	source: "iana"
-},
-	"application/vnd.ibm.afplinedata": {
-	source: "iana"
-},
-	"application/vnd.ibm.electronic-media": {
-	source: "iana"
-},
-	"application/vnd.ibm.minipay": {
-	source: "iana",
-	extensions: [
-		"mpy"
-	]
-},
-	"application/vnd.ibm.modcap": {
-	source: "iana",
-	extensions: [
-		"afp",
-		"listafp",
-		"list3820"
-	]
-},
-	"application/vnd.ibm.rights-management": {
-	source: "iana",
-	extensions: [
-		"irm"
-	]
-},
-	"application/vnd.ibm.secure-container": {
-	source: "iana",
-	extensions: [
-		"sc"
-	]
-},
-	"application/vnd.iccprofile": {
-	source: "iana",
-	extensions: [
-		"icc",
-		"icm"
-	]
-},
-	"application/vnd.ieee.1905": {
-	source: "iana"
-},
-	"application/vnd.igloader": {
-	source: "iana",
-	extensions: [
-		"igl"
-	]
-},
-	"application/vnd.imagemeter.folder+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.imagemeter.image+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.immervision-ivp": {
-	source: "iana",
-	extensions: [
-		"ivp"
-	]
-},
-	"application/vnd.immervision-ivu": {
-	source: "iana",
-	extensions: [
-		"ivu"
-	]
-},
-	"application/vnd.ims.imsccv1p1": {
-	source: "iana"
-},
-	"application/vnd.ims.imsccv1p2": {
-	source: "iana"
-},
-	"application/vnd.ims.imsccv1p3": {
-	source: "iana"
-},
-	"application/vnd.ims.lis.v2.result+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ims.lti.v2.toolconsumerprofile+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ims.lti.v2.toolproxy+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ims.lti.v2.toolproxy.id+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ims.lti.v2.toolsettings+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ims.lti.v2.toolsettings.simple+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.informedcontrol.rms+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.informix-visionary": {
-	source: "iana"
-},
-	"application/vnd.infotech.project": {
-	source: "iana"
-},
-	"application/vnd.infotech.project+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.innopath.wamp.notification": {
-	source: "iana"
-},
-	"application/vnd.insors.igm": {
-	source: "iana",
-	extensions: [
-		"igm"
-	]
-},
-	"application/vnd.intercon.formnet": {
-	source: "iana",
-	extensions: [
-		"xpw",
-		"xpx"
-	]
-},
-	"application/vnd.intergeo": {
-	source: "iana",
-	extensions: [
-		"i2g"
-	]
-},
-	"application/vnd.intertrust.digibox": {
-	source: "iana"
-},
-	"application/vnd.intertrust.nncp": {
-	source: "iana"
-},
-	"application/vnd.intu.qbo": {
-	source: "iana",
-	extensions: [
-		"qbo"
-	]
-},
-	"application/vnd.intu.qfx": {
-	source: "iana",
-	extensions: [
-		"qfx"
-	]
-},
-	"application/vnd.iptc.g2.catalogitem+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.iptc.g2.conceptitem+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.iptc.g2.knowledgeitem+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.iptc.g2.newsitem+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.iptc.g2.newsmessage+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.iptc.g2.packageitem+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.iptc.g2.planningitem+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ipunplugged.rcprofile": {
-	source: "iana",
-	extensions: [
-		"rcprofile"
-	]
-},
-	"application/vnd.irepository.package+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"irp"
-	]
-},
-	"application/vnd.is-xpr": {
-	source: "iana",
-	extensions: [
-		"xpr"
-	]
-},
-	"application/vnd.isac.fcs": {
-	source: "iana",
-	extensions: [
-		"fcs"
-	]
-},
-	"application/vnd.iso11783-10+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.jam": {
-	source: "iana",
-	extensions: [
-		"jam"
-	]
-},
-	"application/vnd.japannet-directory-service": {
-	source: "iana"
-},
-	"application/vnd.japannet-jpnstore-wakeup": {
-	source: "iana"
-},
-	"application/vnd.japannet-payment-wakeup": {
-	source: "iana"
-},
-	"application/vnd.japannet-registration": {
-	source: "iana"
-},
-	"application/vnd.japannet-registration-wakeup": {
-	source: "iana"
-},
-	"application/vnd.japannet-setstore-wakeup": {
-	source: "iana"
-},
-	"application/vnd.japannet-verification": {
-	source: "iana"
-},
-	"application/vnd.japannet-verification-wakeup": {
-	source: "iana"
-},
-	"application/vnd.jcp.javame.midlet-rms": {
-	source: "iana",
-	extensions: [
-		"rms"
-	]
-},
-	"application/vnd.jisp": {
-	source: "iana",
-	extensions: [
-		"jisp"
-	]
-},
-	"application/vnd.joost.joda-archive": {
-	source: "iana",
-	extensions: [
-		"joda"
-	]
-},
-	"application/vnd.jsk.isdn-ngn": {
-	source: "iana"
-},
-	"application/vnd.kahootz": {
-	source: "iana",
-	extensions: [
-		"ktz",
-		"ktr"
-	]
-},
-	"application/vnd.kde.karbon": {
-	source: "iana",
-	extensions: [
-		"karbon"
-	]
-},
-	"application/vnd.kde.kchart": {
-	source: "iana",
-	extensions: [
-		"chrt"
-	]
-},
-	"application/vnd.kde.kformula": {
-	source: "iana",
-	extensions: [
-		"kfo"
-	]
-},
-	"application/vnd.kde.kivio": {
-	source: "iana",
-	extensions: [
-		"flw"
-	]
-},
-	"application/vnd.kde.kontour": {
-	source: "iana",
-	extensions: [
-		"kon"
-	]
-},
-	"application/vnd.kde.kpresenter": {
-	source: "iana",
-	extensions: [
-		"kpr",
-		"kpt"
-	]
-},
-	"application/vnd.kde.kspread": {
-	source: "iana",
-	extensions: [
-		"ksp"
-	]
-},
-	"application/vnd.kde.kword": {
-	source: "iana",
-	extensions: [
-		"kwd",
-		"kwt"
-	]
-},
-	"application/vnd.kenameaapp": {
-	source: "iana",
-	extensions: [
-		"htke"
-	]
-},
-	"application/vnd.kidspiration": {
-	source: "iana",
-	extensions: [
-		"kia"
-	]
-},
-	"application/vnd.kinar": {
-	source: "iana",
-	extensions: [
-		"kne",
-		"knp"
-	]
-},
-	"application/vnd.koan": {
-	source: "iana",
-	extensions: [
-		"skp",
-		"skd",
-		"skt",
-		"skm"
-	]
-},
-	"application/vnd.kodak-descriptor": {
-	source: "iana",
-	extensions: [
-		"sse"
-	]
-},
-	"application/vnd.las": {
-	source: "iana"
-},
-	"application/vnd.las.las+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.las.las+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"lasxml"
-	]
-},
-	"application/vnd.laszip": {
-	source: "iana"
-},
-	"application/vnd.leap+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.liberty-request+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.llamagraphics.life-balance.desktop": {
-	source: "iana",
-	extensions: [
-		"lbd"
-	]
-},
-	"application/vnd.llamagraphics.life-balance.exchange+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"lbe"
-	]
-},
-	"application/vnd.logipipe.circuit+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.loom": {
-	source: "iana"
-},
-	"application/vnd.lotus-1-2-3": {
-	source: "iana",
-	extensions: [
-		"123"
-	]
-},
-	"application/vnd.lotus-approach": {
-	source: "iana",
-	extensions: [
-		"apr"
-	]
-},
-	"application/vnd.lotus-freelance": {
-	source: "iana",
-	extensions: [
-		"pre"
-	]
-},
-	"application/vnd.lotus-notes": {
-	source: "iana",
-	extensions: [
-		"nsf"
-	]
-},
-	"application/vnd.lotus-organizer": {
-	source: "iana",
-	extensions: [
-		"org"
-	]
-},
-	"application/vnd.lotus-screencam": {
-	source: "iana",
-	extensions: [
-		"scm"
-	]
-},
-	"application/vnd.lotus-wordpro": {
-	source: "iana",
-	extensions: [
-		"lwp"
-	]
-},
-	"application/vnd.macports.portpkg": {
-	source: "iana",
-	extensions: [
-		"portpkg"
-	]
-},
-	"application/vnd.mapbox-vector-tile": {
-	source: "iana",
-	extensions: [
-		"mvt"
-	]
-},
-	"application/vnd.marlin.drm.actiontoken+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.marlin.drm.conftoken+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.marlin.drm.license+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.marlin.drm.mdcf": {
-	source: "iana"
-},
-	"application/vnd.mason+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.maxar.archive.3tz+zip": {
-	source: "iana",
-	compressible: false
-},
-	"application/vnd.maxmind.maxmind-db": {
-	source: "iana"
-},
-	"application/vnd.mcd": {
-	source: "iana",
-	extensions: [
-		"mcd"
-	]
-},
-	"application/vnd.medcalcdata": {
-	source: "iana",
-	extensions: [
-		"mc1"
-	]
-},
-	"application/vnd.mediastation.cdkey": {
-	source: "iana",
-	extensions: [
-		"cdkey"
-	]
-},
-	"application/vnd.meridian-slingshot": {
-	source: "iana"
-},
-	"application/vnd.mfer": {
-	source: "iana",
-	extensions: [
-		"mwf"
-	]
-},
-	"application/vnd.mfmp": {
-	source: "iana",
-	extensions: [
-		"mfm"
-	]
-},
-	"application/vnd.micro+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.micrografx.flo": {
-	source: "iana",
-	extensions: [
-		"flo"
-	]
-},
-	"application/vnd.micrografx.igx": {
-	source: "iana",
-	extensions: [
-		"igx"
-	]
-},
-	"application/vnd.microsoft.portable-executable": {
-	source: "iana"
-},
-	"application/vnd.microsoft.windows.thumbnail-cache": {
-	source: "iana"
-},
-	"application/vnd.miele+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.mif": {
-	source: "iana",
-	extensions: [
-		"mif"
-	]
-},
-	"application/vnd.minisoft-hp3000-save": {
-	source: "iana"
-},
-	"application/vnd.mitsubishi.misty-guard.trustweb": {
-	source: "iana"
-},
-	"application/vnd.mobius.daf": {
-	source: "iana",
-	extensions: [
-		"daf"
-	]
-},
-	"application/vnd.mobius.dis": {
-	source: "iana",
-	extensions: [
-		"dis"
-	]
-},
-	"application/vnd.mobius.mbk": {
-	source: "iana",
-	extensions: [
-		"mbk"
-	]
-},
-	"application/vnd.mobius.mqy": {
-	source: "iana",
-	extensions: [
-		"mqy"
-	]
-},
-	"application/vnd.mobius.msl": {
-	source: "iana",
-	extensions: [
-		"msl"
-	]
-},
-	"application/vnd.mobius.plc": {
-	source: "iana",
-	extensions: [
-		"plc"
-	]
-},
-	"application/vnd.mobius.txf": {
-	source: "iana",
-	extensions: [
-		"txf"
-	]
-},
-	"application/vnd.mophun.application": {
-	source: "iana",
-	extensions: [
-		"mpn"
-	]
-},
-	"application/vnd.mophun.certificate": {
-	source: "iana",
-	extensions: [
-		"mpc"
-	]
-},
-	"application/vnd.motorola.flexsuite": {
-	source: "iana"
-},
-	"application/vnd.motorola.flexsuite.adsi": {
-	source: "iana"
-},
-	"application/vnd.motorola.flexsuite.fis": {
-	source: "iana"
-},
-	"application/vnd.motorola.flexsuite.gotap": {
-	source: "iana"
-},
-	"application/vnd.motorola.flexsuite.kmr": {
-	source: "iana"
-},
-	"application/vnd.motorola.flexsuite.ttc": {
-	source: "iana"
-},
-	"application/vnd.motorola.flexsuite.wem": {
-	source: "iana"
-},
-	"application/vnd.motorola.iprm": {
-	source: "iana"
-},
-	"application/vnd.mozilla.xul+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xul"
-	]
-},
-	"application/vnd.ms-3mfdocument": {
-	source: "iana"
-},
-	"application/vnd.ms-artgalry": {
-	source: "iana",
-	extensions: [
-		"cil"
-	]
-},
-	"application/vnd.ms-asf": {
-	source: "iana"
-},
-	"application/vnd.ms-cab-compressed": {
-	source: "iana",
-	extensions: [
-		"cab"
-	]
-},
-	"application/vnd.ms-color.iccprofile": {
-	source: "apache"
-},
-	"application/vnd.ms-excel": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"xls",
-		"xlm",
-		"xla",
-		"xlc",
-		"xlt",
-		"xlw"
-	]
-},
-	"application/vnd.ms-excel.addin.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"xlam"
-	]
-},
-	"application/vnd.ms-excel.sheet.binary.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"xlsb"
-	]
-},
-	"application/vnd.ms-excel.sheet.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"xlsm"
-	]
-},
-	"application/vnd.ms-excel.template.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"xltm"
-	]
-},
-	"application/vnd.ms-fontobject": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"eot"
-	]
-},
-	"application/vnd.ms-htmlhelp": {
-	source: "iana",
-	extensions: [
-		"chm"
-	]
-},
-	"application/vnd.ms-ims": {
-	source: "iana",
-	extensions: [
-		"ims"
-	]
-},
-	"application/vnd.ms-lrm": {
-	source: "iana",
-	extensions: [
-		"lrm"
-	]
-},
-	"application/vnd.ms-office.activex+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ms-officetheme": {
-	source: "iana",
-	extensions: [
-		"thmx"
-	]
-},
-	"application/vnd.ms-opentype": {
-	source: "apache",
-	compressible: true
-},
-	"application/vnd.ms-outlook": {
-	compressible: false,
-	extensions: [
-		"msg"
-	]
-},
-	"application/vnd.ms-package.obfuscated-opentype": {
-	source: "apache"
-},
-	"application/vnd.ms-pki.seccat": {
-	source: "apache",
-	extensions: [
-		"cat"
-	]
-},
-	"application/vnd.ms-pki.stl": {
-	source: "apache",
-	extensions: [
-		"stl"
-	]
-},
-	"application/vnd.ms-playready.initiator+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ms-powerpoint": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"ppt",
-		"pps",
-		"pot"
-	]
-},
-	"application/vnd.ms-powerpoint.addin.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"ppam"
-	]
-},
-	"application/vnd.ms-powerpoint.presentation.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"pptm"
-	]
-},
-	"application/vnd.ms-powerpoint.slide.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"sldm"
-	]
-},
-	"application/vnd.ms-powerpoint.slideshow.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"ppsm"
-	]
-},
-	"application/vnd.ms-powerpoint.template.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"potm"
-	]
-},
-	"application/vnd.ms-printdevicecapabilities+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ms-printing.printticket+xml": {
-	source: "apache",
-	compressible: true
-},
-	"application/vnd.ms-printschematicket+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ms-project": {
-	source: "iana",
-	extensions: [
-		"mpp",
-		"mpt"
-	]
-},
-	"application/vnd.ms-tnef": {
-	source: "iana"
-},
-	"application/vnd.ms-windows.devicepairing": {
-	source: "iana"
-},
-	"application/vnd.ms-windows.nwprinting.oob": {
-	source: "iana"
-},
-	"application/vnd.ms-windows.printerpairing": {
-	source: "iana"
-},
-	"application/vnd.ms-windows.wsd.oob": {
-	source: "iana"
-},
-	"application/vnd.ms-wmdrm.lic-chlg-req": {
-	source: "iana"
-},
-	"application/vnd.ms-wmdrm.lic-resp": {
-	source: "iana"
-},
-	"application/vnd.ms-wmdrm.meter-chlg-req": {
-	source: "iana"
-},
-	"application/vnd.ms-wmdrm.meter-resp": {
-	source: "iana"
-},
-	"application/vnd.ms-word.document.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"docm"
-	]
-},
-	"application/vnd.ms-word.template.macroenabled.12": {
-	source: "iana",
-	extensions: [
-		"dotm"
-	]
-},
-	"application/vnd.ms-works": {
-	source: "iana",
-	extensions: [
-		"wps",
-		"wks",
-		"wcm",
-		"wdb"
-	]
-},
-	"application/vnd.ms-wpl": {
-	source: "iana",
-	extensions: [
-		"wpl"
-	]
-},
-	"application/vnd.ms-xpsdocument": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"xps"
-	]
-},
-	"application/vnd.msa-disk-image": {
-	source: "iana"
-},
-	"application/vnd.mseq": {
-	source: "iana",
-	extensions: [
-		"mseq"
-	]
-},
-	"application/vnd.msign": {
-	source: "iana"
-},
-	"application/vnd.multiad.creator": {
-	source: "iana"
-},
-	"application/vnd.multiad.creator.cif": {
-	source: "iana"
-},
-	"application/vnd.music-niff": {
-	source: "iana"
-},
-	"application/vnd.musician": {
-	source: "iana",
-	extensions: [
-		"mus"
-	]
-},
-	"application/vnd.muvee.style": {
-	source: "iana",
-	extensions: [
-		"msty"
-	]
-},
-	"application/vnd.mynfc": {
-	source: "iana",
-	extensions: [
-		"taglet"
-	]
-},
-	"application/vnd.nacamar.ybrid+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.ncd.control": {
-	source: "iana"
-},
-	"application/vnd.ncd.reference": {
-	source: "iana"
-},
-	"application/vnd.nearst.inv+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.nebumind.line": {
-	source: "iana"
-},
-	"application/vnd.nervana": {
-	source: "iana"
-},
-	"application/vnd.netfpx": {
-	source: "iana"
-},
-	"application/vnd.neurolanguage.nlu": {
-	source: "iana",
-	extensions: [
-		"nlu"
-	]
-},
-	"application/vnd.nimn": {
-	source: "iana"
-},
-	"application/vnd.nintendo.nitro.rom": {
-	source: "iana"
-},
-	"application/vnd.nintendo.snes.rom": {
-	source: "iana"
-},
-	"application/vnd.nitf": {
-	source: "iana",
-	extensions: [
-		"ntf",
-		"nitf"
-	]
-},
-	"application/vnd.noblenet-directory": {
-	source: "iana",
-	extensions: [
-		"nnd"
-	]
-},
-	"application/vnd.noblenet-sealer": {
-	source: "iana",
-	extensions: [
-		"nns"
-	]
-},
-	"application/vnd.noblenet-web": {
-	source: "iana",
-	extensions: [
-		"nnw"
-	]
-},
-	"application/vnd.nokia.catalogs": {
-	source: "iana"
-},
-	"application/vnd.nokia.conml+wbxml": {
-	source: "iana"
-},
-	"application/vnd.nokia.conml+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.nokia.iptv.config+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.nokia.isds-radio-presets": {
-	source: "iana"
-},
-	"application/vnd.nokia.landmark+wbxml": {
-	source: "iana"
-},
-	"application/vnd.nokia.landmark+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.nokia.landmarkcollection+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.nokia.n-gage.ac+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"ac"
-	]
-},
-	"application/vnd.nokia.n-gage.data": {
-	source: "iana",
-	extensions: [
-		"ngdat"
-	]
-},
-	"application/vnd.nokia.n-gage.symbian.install": {
-	source: "iana",
-	extensions: [
-		"n-gage"
-	]
-},
-	"application/vnd.nokia.ncd": {
-	source: "iana"
-},
-	"application/vnd.nokia.pcd+wbxml": {
-	source: "iana"
-},
-	"application/vnd.nokia.pcd+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.nokia.radio-preset": {
-	source: "iana",
-	extensions: [
-		"rpst"
-	]
-},
-	"application/vnd.nokia.radio-presets": {
-	source: "iana",
-	extensions: [
-		"rpss"
-	]
-},
-	"application/vnd.novadigm.edm": {
-	source: "iana",
-	extensions: [
-		"edm"
-	]
-},
-	"application/vnd.novadigm.edx": {
-	source: "iana",
-	extensions: [
-		"edx"
-	]
-},
-	"application/vnd.novadigm.ext": {
-	source: "iana",
-	extensions: [
-		"ext"
-	]
-},
-	"application/vnd.ntt-local.content-share": {
-	source: "iana"
-},
-	"application/vnd.ntt-local.file-transfer": {
-	source: "iana"
-},
-	"application/vnd.ntt-local.ogw_remote-access": {
-	source: "iana"
-},
-	"application/vnd.ntt-local.sip-ta_remote": {
-	source: "iana"
-},
-	"application/vnd.ntt-local.sip-ta_tcp_stream": {
-	source: "iana"
-},
-	"application/vnd.oasis.opendocument.chart": {
-	source: "iana",
-	extensions: [
-		"odc"
-	]
-},
-	"application/vnd.oasis.opendocument.chart-template": {
-	source: "iana",
-	extensions: [
-		"otc"
-	]
-},
-	"application/vnd.oasis.opendocument.database": {
-	source: "iana",
-	extensions: [
-		"odb"
-	]
-},
-	"application/vnd.oasis.opendocument.formula": {
-	source: "iana",
-	extensions: [
-		"odf"
-	]
-},
-	"application/vnd.oasis.opendocument.formula-template": {
-	source: "iana",
-	extensions: [
-		"odft"
-	]
-},
-	"application/vnd.oasis.opendocument.graphics": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"odg"
-	]
-},
-	"application/vnd.oasis.opendocument.graphics-template": {
-	source: "iana",
-	extensions: [
-		"otg"
-	]
-},
-	"application/vnd.oasis.opendocument.image": {
-	source: "iana",
-	extensions: [
-		"odi"
-	]
-},
-	"application/vnd.oasis.opendocument.image-template": {
-	source: "iana",
-	extensions: [
-		"oti"
-	]
-},
-	"application/vnd.oasis.opendocument.presentation": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"odp"
-	]
-},
-	"application/vnd.oasis.opendocument.presentation-template": {
-	source: "iana",
-	extensions: [
-		"otp"
-	]
-},
-	"application/vnd.oasis.opendocument.spreadsheet": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"ods"
-	]
-},
-	"application/vnd.oasis.opendocument.spreadsheet-template": {
-	source: "iana",
-	extensions: [
-		"ots"
-	]
-},
-	"application/vnd.oasis.opendocument.text": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"odt"
-	]
-},
-	"application/vnd.oasis.opendocument.text-master": {
-	source: "iana",
-	extensions: [
-		"odm"
-	]
-},
-	"application/vnd.oasis.opendocument.text-template": {
-	source: "iana",
-	extensions: [
-		"ott"
-	]
-},
-	"application/vnd.oasis.opendocument.text-web": {
-	source: "iana",
-	extensions: [
-		"oth"
-	]
-},
-	"application/vnd.obn": {
-	source: "iana"
-},
-	"application/vnd.ocf+cbor": {
-	source: "iana"
-},
-	"application/vnd.oci.image.manifest.v1+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oftn.l10n+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oipf.contentaccessdownload+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oipf.contentaccessstreaming+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oipf.cspg-hexbinary": {
-	source: "iana"
-},
-	"application/vnd.oipf.dae.svg+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oipf.dae.xhtml+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oipf.mippvcontrolmessage+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oipf.pae.gem": {
-	source: "iana"
-},
-	"application/vnd.oipf.spdiscovery+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oipf.spdlist+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oipf.ueprofile+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oipf.userprofile+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.olpc-sugar": {
-	source: "iana",
-	extensions: [
-		"xo"
-	]
-},
-	"application/vnd.oma-scws-config": {
-	source: "iana"
-},
-	"application/vnd.oma-scws-http-request": {
-	source: "iana"
-},
-	"application/vnd.oma-scws-http-response": {
-	source: "iana"
-},
-	"application/vnd.oma.bcast.associated-procedure-parameter+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.bcast.drm-trigger+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.bcast.imd+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.bcast.ltkm": {
-	source: "iana"
-},
-	"application/vnd.oma.bcast.notification+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.bcast.provisioningtrigger": {
-	source: "iana"
-},
-	"application/vnd.oma.bcast.sgboot": {
-	source: "iana"
-},
-	"application/vnd.oma.bcast.sgdd+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.bcast.sgdu": {
-	source: "iana"
-},
-	"application/vnd.oma.bcast.simple-symbol-container": {
-	source: "iana"
-},
-	"application/vnd.oma.bcast.smartcard-trigger+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.bcast.sprov+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.bcast.stkm": {
-	source: "iana"
-},
-	"application/vnd.oma.cab-address-book+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.cab-feature-handler+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.cab-pcc+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.cab-subs-invite+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.cab-user-prefs+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.dcd": {
-	source: "iana"
-},
-	"application/vnd.oma.dcdc": {
-	source: "iana"
-},
-	"application/vnd.oma.dd2+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"dd2"
-	]
-},
-	"application/vnd.oma.drm.risd+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.group-usage-list+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.lwm2m+cbor": {
-	source: "iana"
-},
-	"application/vnd.oma.lwm2m+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.lwm2m+tlv": {
-	source: "iana"
-},
-	"application/vnd.oma.pal+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.poc.detailed-progress-report+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.poc.final-report+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.poc.groups+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.poc.invocation-descriptor+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.poc.optimized-progress-report+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.push": {
-	source: "iana"
-},
-	"application/vnd.oma.scidm.messages+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oma.xcap-directory+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.omads-email+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/vnd.omads-file+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/vnd.omads-folder+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/vnd.omaloc-supl-init": {
-	source: "iana"
-},
-	"application/vnd.onepager": {
-	source: "iana"
-},
-	"application/vnd.onepagertamp": {
-	source: "iana"
-},
-	"application/vnd.onepagertamx": {
-	source: "iana"
-},
-	"application/vnd.onepagertat": {
-	source: "iana"
-},
-	"application/vnd.onepagertatp": {
-	source: "iana"
-},
-	"application/vnd.onepagertatx": {
-	source: "iana"
-},
-	"application/vnd.openblox.game+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"obgx"
-	]
-},
-	"application/vnd.openblox.game-binary": {
-	source: "iana"
-},
-	"application/vnd.openeye.oeb": {
-	source: "iana"
-},
-	"application/vnd.openofficeorg.extension": {
-	source: "apache",
-	extensions: [
-		"oxt"
-	]
-},
-	"application/vnd.openstreetmap.data+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"osm"
-	]
-},
-	"application/vnd.opentimestamps.ots": {
-	source: "iana"
-},
-	"application/vnd.openxmlformats-officedocument.custom-properties+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.customxmlproperties+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.drawing+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.drawingml.chart+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.drawingml.chartshapes+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.drawingml.diagramcolors+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.drawingml.diagramdata+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.drawingml.diagramlayout+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.drawingml.diagramstyle+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.extended-properties+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.commentauthors+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.comments+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.handoutmaster+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.notesmaster+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.notesslide+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.presentation": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"pptx"
-	]
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.presprops+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.slide": {
-	source: "iana",
-	extensions: [
-		"sldx"
-	]
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.slide+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.slidelayout+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.slidemaster+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.slideshow": {
-	source: "iana",
-	extensions: [
-		"ppsx"
-	]
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.slideupdateinfo+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.tablestyles+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.tags+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.template": {
-	source: "iana",
-	extensions: [
-		"potx"
-	]
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.template.main+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.presentationml.viewprops+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.calcchain+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.chartsheet+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.dialogsheet+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.externallink+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotcachedefinition+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotcacherecords+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.pivottable+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.querytable+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.revisionheaders+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.revisionlog+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedstrings+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"xlsx"
-	]
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheetmetadata+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.tablesinglecells+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.template": {
-	source: "iana",
-	extensions: [
-		"xltx"
-	]
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.usernames+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.volatiledependencies+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.theme+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.themeoverride+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.vmldrawing": {
-	source: "iana"
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"docx"
-	]
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.fonttable+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.template": {
-	source: "iana",
-	extensions: [
-		"dotx"
-	]
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.websettings+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-package.core-properties+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.openxmlformats-package.relationships+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oracle.resource+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.orange.indata": {
-	source: "iana"
-},
-	"application/vnd.osa.netdeploy": {
-	source: "iana"
-},
-	"application/vnd.osgeo.mapguide.package": {
-	source: "iana",
-	extensions: [
-		"mgp"
-	]
-},
-	"application/vnd.osgi.bundle": {
-	source: "iana"
-},
-	"application/vnd.osgi.dp": {
-	source: "iana",
-	extensions: [
-		"dp"
-	]
-},
-	"application/vnd.osgi.subsystem": {
-	source: "iana",
-	extensions: [
-		"esa"
-	]
-},
-	"application/vnd.otps.ct-kip+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.oxli.countgraph": {
-	source: "iana"
-},
-	"application/vnd.pagerduty+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.palm": {
-	source: "iana",
-	extensions: [
-		"pdb",
-		"pqa",
-		"oprc"
-	]
-},
-	"application/vnd.panoply": {
-	source: "iana"
-},
-	"application/vnd.paos.xml": {
-	source: "iana"
-},
-	"application/vnd.patentdive": {
-	source: "iana"
-},
-	"application/vnd.patientecommsdoc": {
-	source: "iana"
-},
-	"application/vnd.pawaafile": {
-	source: "iana",
-	extensions: [
-		"paw"
-	]
-},
-	"application/vnd.pcos": {
-	source: "iana"
-},
-	"application/vnd.pg.format": {
-	source: "iana",
-	extensions: [
-		"str"
-	]
-},
-	"application/vnd.pg.osasli": {
-	source: "iana",
-	extensions: [
-		"ei6"
-	]
-},
-	"application/vnd.piaccess.application-licence": {
-	source: "iana"
-},
-	"application/vnd.picsel": {
-	source: "iana",
-	extensions: [
-		"efif"
-	]
-},
-	"application/vnd.pmi.widget": {
-	source: "iana",
-	extensions: [
-		"wg"
-	]
-},
-	"application/vnd.poc.group-advertisement+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.pocketlearn": {
-	source: "iana",
-	extensions: [
-		"plf"
-	]
-},
-	"application/vnd.powerbuilder6": {
-	source: "iana",
-	extensions: [
-		"pbd"
-	]
-},
-	"application/vnd.powerbuilder6-s": {
-	source: "iana"
-},
-	"application/vnd.powerbuilder7": {
-	source: "iana"
-},
-	"application/vnd.powerbuilder7-s": {
-	source: "iana"
-},
-	"application/vnd.powerbuilder75": {
-	source: "iana"
-},
-	"application/vnd.powerbuilder75-s": {
-	source: "iana"
-},
-	"application/vnd.preminet": {
-	source: "iana"
-},
-	"application/vnd.previewsystems.box": {
-	source: "iana",
-	extensions: [
-		"box"
-	]
-},
-	"application/vnd.proteus.magazine": {
-	source: "iana",
-	extensions: [
-		"mgz"
-	]
-},
-	"application/vnd.psfs": {
-	source: "iana"
-},
-	"application/vnd.publishare-delta-tree": {
-	source: "iana",
-	extensions: [
-		"qps"
-	]
-},
-	"application/vnd.pvi.ptid1": {
-	source: "iana",
-	extensions: [
-		"ptid"
-	]
-},
-	"application/vnd.pwg-multiplexed": {
-	source: "iana"
-},
-	"application/vnd.pwg-xhtml-print+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.qualcomm.brew-app-res": {
-	source: "iana"
-},
-	"application/vnd.quarantainenet": {
-	source: "iana"
-},
-	"application/vnd.quark.quarkxpress": {
-	source: "iana",
-	extensions: [
-		"qxd",
-		"qxt",
-		"qwd",
-		"qwt",
-		"qxl",
-		"qxb"
-	]
-},
-	"application/vnd.quobject-quoxdocument": {
-	source: "iana"
-},
-	"application/vnd.radisys.moml+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-audit+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-audit-conf+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-audit-conn+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-audit-dialog+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-audit-stream+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-conf+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-dialog+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-dialog-base+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-dialog-fax-detect+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-dialog-fax-sendrecv+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-dialog-group+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-dialog-speech+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.radisys.msml-dialog-transform+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.rainstor.data": {
-	source: "iana"
-},
-	"application/vnd.rapid": {
-	source: "iana"
-},
-	"application/vnd.rar": {
-	source: "iana",
-	extensions: [
-		"rar"
-	]
-},
-	"application/vnd.realvnc.bed": {
-	source: "iana",
-	extensions: [
-		"bed"
-	]
-},
-	"application/vnd.recordare.musicxml": {
-	source: "iana",
-	extensions: [
-		"mxl"
-	]
-},
-	"application/vnd.recordare.musicxml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"musicxml"
-	]
-},
-	"application/vnd.renlearn.rlprint": {
-	source: "iana"
-},
-	"application/vnd.resilient.logic": {
-	source: "iana"
-},
-	"application/vnd.restful+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.rig.cryptonote": {
-	source: "iana",
-	extensions: [
-		"cryptonote"
-	]
-},
-	"application/vnd.rim.cod": {
-	source: "apache",
-	extensions: [
-		"cod"
-	]
-},
-	"application/vnd.rn-realmedia": {
-	source: "apache",
-	extensions: [
-		"rm"
-	]
-},
-	"application/vnd.rn-realmedia-vbr": {
-	source: "apache",
-	extensions: [
-		"rmvb"
-	]
-},
-	"application/vnd.route66.link66+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"link66"
-	]
-},
-	"application/vnd.rs-274x": {
-	source: "iana"
-},
-	"application/vnd.ruckus.download": {
-	source: "iana"
-},
-	"application/vnd.s3sms": {
-	source: "iana"
-},
-	"application/vnd.sailingtracker.track": {
-	source: "iana",
-	extensions: [
-		"st"
-	]
-},
-	"application/vnd.sar": {
-	source: "iana"
-},
-	"application/vnd.sbm.cid": {
-	source: "iana"
-},
-	"application/vnd.sbm.mid2": {
-	source: "iana"
-},
-	"application/vnd.scribus": {
-	source: "iana"
-},
-	"application/vnd.sealed.3df": {
-	source: "iana"
-},
-	"application/vnd.sealed.csf": {
-	source: "iana"
-},
-	"application/vnd.sealed.doc": {
-	source: "iana"
-},
-	"application/vnd.sealed.eml": {
-	source: "iana"
-},
-	"application/vnd.sealed.mht": {
-	source: "iana"
-},
-	"application/vnd.sealed.net": {
-	source: "iana"
-},
-	"application/vnd.sealed.ppt": {
-	source: "iana"
-},
-	"application/vnd.sealed.tiff": {
-	source: "iana"
-},
-	"application/vnd.sealed.xls": {
-	source: "iana"
-},
-	"application/vnd.sealedmedia.softseal.html": {
-	source: "iana"
-},
-	"application/vnd.sealedmedia.softseal.pdf": {
-	source: "iana"
-},
-	"application/vnd.seemail": {
-	source: "iana",
-	extensions: [
-		"see"
-	]
-},
-	"application/vnd.seis+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.sema": {
-	source: "iana",
-	extensions: [
-		"sema"
-	]
-},
-	"application/vnd.semd": {
-	source: "iana",
-	extensions: [
-		"semd"
-	]
-},
-	"application/vnd.semf": {
-	source: "iana",
-	extensions: [
-		"semf"
-	]
-},
-	"application/vnd.shade-save-file": {
-	source: "iana"
-},
-	"application/vnd.shana.informed.formdata": {
-	source: "iana",
-	extensions: [
-		"ifm"
-	]
-},
-	"application/vnd.shana.informed.formtemplate": {
-	source: "iana",
-	extensions: [
-		"itp"
-	]
-},
-	"application/vnd.shana.informed.interchange": {
-	source: "iana",
-	extensions: [
-		"iif"
-	]
-},
-	"application/vnd.shana.informed.package": {
-	source: "iana",
-	extensions: [
-		"ipk"
-	]
-},
-	"application/vnd.shootproof+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.shopkick+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.shp": {
-	source: "iana"
-},
-	"application/vnd.shx": {
-	source: "iana"
-},
-	"application/vnd.sigrok.session": {
-	source: "iana"
-},
-	"application/vnd.simtech-mindmapper": {
-	source: "iana",
-	extensions: [
-		"twd",
-		"twds"
-	]
-},
-	"application/vnd.siren+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.smaf": {
-	source: "iana",
-	extensions: [
-		"mmf"
-	]
-},
-	"application/vnd.smart.notebook": {
-	source: "iana"
-},
-	"application/vnd.smart.teacher": {
-	source: "iana",
-	extensions: [
-		"teacher"
-	]
-},
-	"application/vnd.snesdev-page-table": {
-	source: "iana"
-},
-	"application/vnd.software602.filler.form+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"fo"
-	]
-},
-	"application/vnd.software602.filler.form-xml-zip": {
-	source: "iana"
-},
-	"application/vnd.solent.sdkm+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"sdkm",
-		"sdkd"
-	]
-},
-	"application/vnd.spotfire.dxp": {
-	source: "iana",
-	extensions: [
-		"dxp"
-	]
-},
-	"application/vnd.spotfire.sfs": {
-	source: "iana",
-	extensions: [
-		"sfs"
-	]
-},
-	"application/vnd.sqlite3": {
-	source: "iana"
-},
-	"application/vnd.sss-cod": {
-	source: "iana"
-},
-	"application/vnd.sss-dtf": {
-	source: "iana"
-},
-	"application/vnd.sss-ntf": {
-	source: "iana"
-},
-	"application/vnd.stardivision.calc": {
-	source: "apache",
-	extensions: [
-		"sdc"
-	]
-},
-	"application/vnd.stardivision.draw": {
-	source: "apache",
-	extensions: [
-		"sda"
-	]
-},
-	"application/vnd.stardivision.impress": {
-	source: "apache",
-	extensions: [
-		"sdd"
-	]
-},
-	"application/vnd.stardivision.math": {
-	source: "apache",
-	extensions: [
-		"smf"
-	]
-},
-	"application/vnd.stardivision.writer": {
-	source: "apache",
-	extensions: [
-		"sdw",
-		"vor"
-	]
-},
-	"application/vnd.stardivision.writer-global": {
-	source: "apache",
-	extensions: [
-		"sgl"
-	]
-},
-	"application/vnd.stepmania.package": {
-	source: "iana",
-	extensions: [
-		"smzip"
-	]
-},
-	"application/vnd.stepmania.stepchart": {
-	source: "iana",
-	extensions: [
-		"sm"
-	]
-},
-	"application/vnd.street-stream": {
-	source: "iana"
-},
-	"application/vnd.sun.wadl+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"wadl"
-	]
-},
-	"application/vnd.sun.xml.calc": {
-	source: "apache",
-	extensions: [
-		"sxc"
-	]
-},
-	"application/vnd.sun.xml.calc.template": {
-	source: "apache",
-	extensions: [
-		"stc"
-	]
-},
-	"application/vnd.sun.xml.draw": {
-	source: "apache",
-	extensions: [
-		"sxd"
-	]
-},
-	"application/vnd.sun.xml.draw.template": {
-	source: "apache",
-	extensions: [
-		"std"
-	]
-},
-	"application/vnd.sun.xml.impress": {
-	source: "apache",
-	extensions: [
-		"sxi"
-	]
-},
-	"application/vnd.sun.xml.impress.template": {
-	source: "apache",
-	extensions: [
-		"sti"
-	]
-},
-	"application/vnd.sun.xml.math": {
-	source: "apache",
-	extensions: [
-		"sxm"
-	]
-},
-	"application/vnd.sun.xml.writer": {
-	source: "apache",
-	extensions: [
-		"sxw"
-	]
-},
-	"application/vnd.sun.xml.writer.global": {
-	source: "apache",
-	extensions: [
-		"sxg"
-	]
-},
-	"application/vnd.sun.xml.writer.template": {
-	source: "apache",
-	extensions: [
-		"stw"
-	]
-},
-	"application/vnd.sus-calendar": {
-	source: "iana",
-	extensions: [
-		"sus",
-		"susp"
-	]
-},
-	"application/vnd.svd": {
-	source: "iana",
-	extensions: [
-		"svd"
-	]
-},
-	"application/vnd.swiftview-ics": {
-	source: "iana"
-},
-	"application/vnd.sycle+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.syft+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.symbian.install": {
-	source: "apache",
-	extensions: [
-		"sis",
-		"sisx"
-	]
-},
-	"application/vnd.syncml+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true,
-	extensions: [
-		"xsm"
-	]
-},
-	"application/vnd.syncml.dm+wbxml": {
-	source: "iana",
-	charset: "UTF-8",
-	extensions: [
-		"bdm"
-	]
-},
-	"application/vnd.syncml.dm+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true,
-	extensions: [
-		"xdm"
-	]
-},
-	"application/vnd.syncml.dm.notification": {
-	source: "iana"
-},
-	"application/vnd.syncml.dmddf+wbxml": {
-	source: "iana"
-},
-	"application/vnd.syncml.dmddf+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true,
-	extensions: [
-		"ddf"
-	]
-},
-	"application/vnd.syncml.dmtnds+wbxml": {
-	source: "iana"
-},
-	"application/vnd.syncml.dmtnds+xml": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true
-},
-	"application/vnd.syncml.ds.notification": {
-	source: "iana"
-},
-	"application/vnd.tableschema+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.tao.intent-module-archive": {
-	source: "iana",
-	extensions: [
-		"tao"
-	]
-},
-	"application/vnd.tcpdump.pcap": {
-	source: "iana",
-	extensions: [
-		"pcap",
-		"cap",
-		"dmp"
-	]
-},
-	"application/vnd.think-cell.ppttc+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.tmd.mediaflex.api+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.tml": {
-	source: "iana"
-},
-	"application/vnd.tmobile-livetv": {
-	source: "iana",
-	extensions: [
-		"tmo"
-	]
-},
-	"application/vnd.tri.onesource": {
-	source: "iana"
-},
-	"application/vnd.trid.tpt": {
-	source: "iana",
-	extensions: [
-		"tpt"
-	]
-},
-	"application/vnd.triscape.mxs": {
-	source: "iana",
-	extensions: [
-		"mxs"
-	]
-},
-	"application/vnd.trueapp": {
-	source: "iana",
-	extensions: [
-		"tra"
-	]
-},
-	"application/vnd.truedoc": {
-	source: "iana"
-},
-	"application/vnd.ubisoft.webplayer": {
-	source: "iana"
-},
-	"application/vnd.ufdl": {
-	source: "iana",
-	extensions: [
-		"ufd",
-		"ufdl"
-	]
-},
-	"application/vnd.uiq.theme": {
-	source: "iana",
-	extensions: [
-		"utz"
-	]
-},
-	"application/vnd.umajin": {
-	source: "iana",
-	extensions: [
-		"umj"
-	]
-},
-	"application/vnd.unity": {
-	source: "iana",
-	extensions: [
-		"unityweb"
-	]
-},
-	"application/vnd.uoml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"uoml"
-	]
-},
-	"application/vnd.uplanet.alert": {
-	source: "iana"
-},
-	"application/vnd.uplanet.alert-wbxml": {
-	source: "iana"
-},
-	"application/vnd.uplanet.bearer-choice": {
-	source: "iana"
-},
-	"application/vnd.uplanet.bearer-choice-wbxml": {
-	source: "iana"
-},
-	"application/vnd.uplanet.cacheop": {
-	source: "iana"
-},
-	"application/vnd.uplanet.cacheop-wbxml": {
-	source: "iana"
-},
-	"application/vnd.uplanet.channel": {
-	source: "iana"
-},
-	"application/vnd.uplanet.channel-wbxml": {
-	source: "iana"
-},
-	"application/vnd.uplanet.list": {
-	source: "iana"
-},
-	"application/vnd.uplanet.list-wbxml": {
-	source: "iana"
-},
-	"application/vnd.uplanet.listcmd": {
-	source: "iana"
-},
-	"application/vnd.uplanet.listcmd-wbxml": {
-	source: "iana"
-},
-	"application/vnd.uplanet.signal": {
-	source: "iana"
-},
-	"application/vnd.uri-map": {
-	source: "iana"
-},
-	"application/vnd.valve.source.material": {
-	source: "iana"
-},
-	"application/vnd.vcx": {
-	source: "iana",
-	extensions: [
-		"vcx"
-	]
-},
-	"application/vnd.vd-study": {
-	source: "iana"
-},
-	"application/vnd.vectorworks": {
-	source: "iana"
-},
-	"application/vnd.vel+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.verimatrix.vcas": {
-	source: "iana"
-},
-	"application/vnd.veritone.aion+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.veryant.thin": {
-	source: "iana"
-},
-	"application/vnd.ves.encrypted": {
-	source: "iana"
-},
-	"application/vnd.vidsoft.vidconference": {
-	source: "iana"
-},
-	"application/vnd.visio": {
-	source: "iana",
-	extensions: [
-		"vsd",
-		"vst",
-		"vss",
-		"vsw"
-	]
-},
-	"application/vnd.visionary": {
-	source: "iana",
-	extensions: [
-		"vis"
-	]
-},
-	"application/vnd.vividence.scriptfile": {
-	source: "iana"
-},
-	"application/vnd.vsf": {
-	source: "iana",
-	extensions: [
-		"vsf"
-	]
-},
-	"application/vnd.wap.sic": {
-	source: "iana"
-},
-	"application/vnd.wap.slc": {
-	source: "iana"
-},
-	"application/vnd.wap.wbxml": {
-	source: "iana",
-	charset: "UTF-8",
-	extensions: [
-		"wbxml"
-	]
-},
-	"application/vnd.wap.wmlc": {
-	source: "iana",
-	extensions: [
-		"wmlc"
-	]
-},
-	"application/vnd.wap.wmlscriptc": {
-	source: "iana",
-	extensions: [
-		"wmlsc"
-	]
-},
-	"application/vnd.webturbo": {
-	source: "iana",
-	extensions: [
-		"wtb"
-	]
-},
-	"application/vnd.wfa.dpp": {
-	source: "iana"
-},
-	"application/vnd.wfa.p2p": {
-	source: "iana"
-},
-	"application/vnd.wfa.wsc": {
-	source: "iana"
-},
-	"application/vnd.windows.devicepairing": {
-	source: "iana"
-},
-	"application/vnd.wmc": {
-	source: "iana"
-},
-	"application/vnd.wmf.bootstrap": {
-	source: "iana"
-},
-	"application/vnd.wolfram.mathematica": {
-	source: "iana"
-},
-	"application/vnd.wolfram.mathematica.package": {
-	source: "iana"
-},
-	"application/vnd.wolfram.player": {
-	source: "iana",
-	extensions: [
-		"nbp"
-	]
-},
-	"application/vnd.wordperfect": {
-	source: "iana",
-	extensions: [
-		"wpd"
-	]
-},
-	"application/vnd.wqd": {
-	source: "iana",
-	extensions: [
-		"wqd"
-	]
-},
-	"application/vnd.wrq-hp3000-labelled": {
-	source: "iana"
-},
-	"application/vnd.wt.stf": {
-	source: "iana",
-	extensions: [
-		"stf"
-	]
-},
-	"application/vnd.wv.csp+wbxml": {
-	source: "iana"
-},
-	"application/vnd.wv.csp+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.wv.ssp+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.xacml+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.xara": {
-	source: "iana",
-	extensions: [
-		"xar"
-	]
-},
-	"application/vnd.xfdl": {
-	source: "iana",
-	extensions: [
-		"xfdl"
-	]
-},
-	"application/vnd.xfdl.webform": {
-	source: "iana"
-},
-	"application/vnd.xmi+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/vnd.xmpie.cpkg": {
-	source: "iana"
-},
-	"application/vnd.xmpie.dpkg": {
-	source: "iana"
-},
-	"application/vnd.xmpie.plan": {
-	source: "iana"
-},
-	"application/vnd.xmpie.ppkg": {
-	source: "iana"
-},
-	"application/vnd.xmpie.xlim": {
-	source: "iana"
-},
-	"application/vnd.yamaha.hv-dic": {
-	source: "iana",
-	extensions: [
-		"hvd"
-	]
-},
-	"application/vnd.yamaha.hv-script": {
-	source: "iana",
-	extensions: [
-		"hvs"
-	]
-},
-	"application/vnd.yamaha.hv-voice": {
-	source: "iana",
-	extensions: [
-		"hvp"
-	]
-},
-	"application/vnd.yamaha.openscoreformat": {
-	source: "iana",
-	extensions: [
-		"osf"
-	]
-},
-	"application/vnd.yamaha.openscoreformat.osfpvg+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"osfpvg"
-	]
-},
-	"application/vnd.yamaha.remote-setup": {
-	source: "iana"
-},
-	"application/vnd.yamaha.smaf-audio": {
-	source: "iana",
-	extensions: [
-		"saf"
-	]
-},
-	"application/vnd.yamaha.smaf-phrase": {
-	source: "iana",
-	extensions: [
-		"spf"
-	]
-},
-	"application/vnd.yamaha.through-ngn": {
-	source: "iana"
-},
-	"application/vnd.yamaha.tunnel-udpencap": {
-	source: "iana"
-},
-	"application/vnd.yaoweme": {
-	source: "iana"
-},
-	"application/vnd.yellowriver-custom-menu": {
-	source: "iana",
-	extensions: [
-		"cmp"
-	]
-},
-	"application/vnd.youtube.yt": {
-	source: "iana"
-},
-	"application/vnd.zul": {
-	source: "iana",
-	extensions: [
-		"zir",
-		"zirz"
-	]
-},
-	"application/vnd.zzazz.deck+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"zaz"
-	]
-},
-	"application/voicexml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"vxml"
-	]
-},
-	"application/voucher-cms+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/vq-rtcpxr": {
-	source: "iana"
-},
-	"application/wasm": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"wasm"
-	]
-},
-	"application/watcherinfo+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"wif"
-	]
-},
-	"application/webpush-options+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/whoispp-query": {
-	source: "iana"
-},
-	"application/whoispp-response": {
-	source: "iana"
-},
-	"application/widget": {
-	source: "iana",
-	extensions: [
-		"wgt"
-	]
-},
-	"application/winhlp": {
-	source: "apache",
-	extensions: [
-		"hlp"
-	]
-},
-	"application/wita": {
-	source: "iana"
-},
-	"application/wordperfect5.1": {
-	source: "iana"
-},
-	"application/wsdl+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"wsdl"
-	]
-},
-	"application/wspolicy+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"wspolicy"
-	]
-},
-	"application/x-7z-compressed": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"7z"
-	]
-},
-	"application/x-abiword": {
-	source: "apache",
-	extensions: [
-		"abw"
-	]
-},
-	"application/x-ace-compressed": {
-	source: "apache",
-	extensions: [
-		"ace"
-	]
-},
-	"application/x-amf": {
-	source: "apache"
-},
-	"application/x-apple-diskimage": {
-	source: "apache",
-	extensions: [
-		"dmg"
-	]
-},
-	"application/x-arj": {
-	compressible: false,
-	extensions: [
-		"arj"
-	]
-},
-	"application/x-authorware-bin": {
-	source: "apache",
-	extensions: [
-		"aab",
-		"x32",
-		"u32",
-		"vox"
-	]
-},
-	"application/x-authorware-map": {
-	source: "apache",
-	extensions: [
-		"aam"
-	]
-},
-	"application/x-authorware-seg": {
-	source: "apache",
-	extensions: [
-		"aas"
-	]
-},
-	"application/x-bcpio": {
-	source: "apache",
-	extensions: [
-		"bcpio"
-	]
-},
-	"application/x-bdoc": {
-	compressible: false,
-	extensions: [
-		"bdoc"
-	]
-},
-	"application/x-bittorrent": {
-	source: "apache",
-	extensions: [
-		"torrent"
-	]
-},
-	"application/x-blorb": {
-	source: "apache",
-	extensions: [
-		"blb",
-		"blorb"
-	]
-},
-	"application/x-bzip": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"bz"
-	]
-},
-	"application/x-bzip2": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"bz2",
-		"boz"
-	]
-},
-	"application/x-cbr": {
-	source: "apache",
-	extensions: [
-		"cbr",
-		"cba",
-		"cbt",
-		"cbz",
-		"cb7"
-	]
-},
-	"application/x-cdlink": {
-	source: "apache",
-	extensions: [
-		"vcd"
-	]
-},
-	"application/x-cfs-compressed": {
-	source: "apache",
-	extensions: [
-		"cfs"
-	]
-},
-	"application/x-chat": {
-	source: "apache",
-	extensions: [
-		"chat"
-	]
-},
-	"application/x-chess-pgn": {
-	source: "apache",
-	extensions: [
-		"pgn"
-	]
-},
-	"application/x-chrome-extension": {
-	extensions: [
-		"crx"
-	]
-},
-	"application/x-cocoa": {
-	source: "nginx",
-	extensions: [
-		"cco"
-	]
-},
-	"application/x-compress": {
-	source: "apache"
-},
-	"application/x-conference": {
-	source: "apache",
-	extensions: [
-		"nsc"
-	]
-},
-	"application/x-cpio": {
-	source: "apache",
-	extensions: [
-		"cpio"
-	]
-},
-	"application/x-csh": {
-	source: "apache",
-	extensions: [
-		"csh"
-	]
-},
-	"application/x-deb": {
-	compressible: false
-},
-	"application/x-debian-package": {
-	source: "apache",
-	extensions: [
-		"deb",
-		"udeb"
-	]
-},
-	"application/x-dgc-compressed": {
-	source: "apache",
-	extensions: [
-		"dgc"
-	]
-},
-	"application/x-director": {
-	source: "apache",
-	extensions: [
-		"dir",
-		"dcr",
-		"dxr",
-		"cst",
-		"cct",
-		"cxt",
-		"w3d",
-		"fgd",
-		"swa"
-	]
-},
-	"application/x-doom": {
-	source: "apache",
-	extensions: [
-		"wad"
-	]
-},
-	"application/x-dtbncx+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"ncx"
-	]
-},
-	"application/x-dtbook+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"dtb"
-	]
-},
-	"application/x-dtbresource+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"res"
-	]
-},
-	"application/x-dvi": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"dvi"
-	]
-},
-	"application/x-envoy": {
-	source: "apache",
-	extensions: [
-		"evy"
-	]
-},
-	"application/x-eva": {
-	source: "apache",
-	extensions: [
-		"eva"
-	]
-},
-	"application/x-font-bdf": {
-	source: "apache",
-	extensions: [
-		"bdf"
-	]
-},
-	"application/x-font-dos": {
-	source: "apache"
-},
-	"application/x-font-framemaker": {
-	source: "apache"
-},
-	"application/x-font-ghostscript": {
-	source: "apache",
-	extensions: [
-		"gsf"
-	]
-},
-	"application/x-font-libgrx": {
-	source: "apache"
-},
-	"application/x-font-linux-psf": {
-	source: "apache",
-	extensions: [
-		"psf"
-	]
-},
-	"application/x-font-pcf": {
-	source: "apache",
-	extensions: [
-		"pcf"
-	]
-},
-	"application/x-font-snf": {
-	source: "apache",
-	extensions: [
-		"snf"
-	]
-},
-	"application/x-font-speedo": {
-	source: "apache"
-},
-	"application/x-font-sunos-news": {
-	source: "apache"
-},
-	"application/x-font-type1": {
-	source: "apache",
-	extensions: [
-		"pfa",
-		"pfb",
-		"pfm",
-		"afm"
-	]
-},
-	"application/x-font-vfont": {
-	source: "apache"
-},
-	"application/x-freearc": {
-	source: "apache",
-	extensions: [
-		"arc"
-	]
-},
-	"application/x-futuresplash": {
-	source: "apache",
-	extensions: [
-		"spl"
-	]
-},
-	"application/x-gca-compressed": {
-	source: "apache",
-	extensions: [
-		"gca"
-	]
-},
-	"application/x-glulx": {
-	source: "apache",
-	extensions: [
-		"ulx"
-	]
-},
-	"application/x-gnumeric": {
-	source: "apache",
-	extensions: [
-		"gnumeric"
-	]
-},
-	"application/x-gramps-xml": {
-	source: "apache",
-	extensions: [
-		"gramps"
-	]
-},
-	"application/x-gtar": {
-	source: "apache",
-	extensions: [
-		"gtar"
-	]
-},
-	"application/x-gzip": {
-	source: "apache"
-},
-	"application/x-hdf": {
-	source: "apache",
-	extensions: [
-		"hdf"
-	]
-},
-	"application/x-httpd-php": {
-	compressible: true,
-	extensions: [
-		"php"
-	]
-},
-	"application/x-install-instructions": {
-	source: "apache",
-	extensions: [
-		"install"
-	]
-},
-	"application/x-iso9660-image": {
-	source: "apache",
-	extensions: [
-		"iso"
-	]
-},
-	"application/x-iwork-keynote-sffkey": {
-	extensions: [
-		"key"
-	]
-},
-	"application/x-iwork-numbers-sffnumbers": {
-	extensions: [
-		"numbers"
-	]
-},
-	"application/x-iwork-pages-sffpages": {
-	extensions: [
-		"pages"
-	]
-},
-	"application/x-java-archive-diff": {
-	source: "nginx",
-	extensions: [
-		"jardiff"
-	]
-},
-	"application/x-java-jnlp-file": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"jnlp"
-	]
-},
-	"application/x-javascript": {
-	compressible: true
-},
-	"application/x-keepass2": {
-	extensions: [
-		"kdbx"
-	]
-},
-	"application/x-latex": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"latex"
-	]
-},
-	"application/x-lua-bytecode": {
-	extensions: [
-		"luac"
-	]
-},
-	"application/x-lzh-compressed": {
-	source: "apache",
-	extensions: [
-		"lzh",
-		"lha"
-	]
-},
-	"application/x-makeself": {
-	source: "nginx",
-	extensions: [
-		"run"
-	]
-},
-	"application/x-mie": {
-	source: "apache",
-	extensions: [
-		"mie"
-	]
-},
-	"application/x-mobipocket-ebook": {
-	source: "apache",
-	extensions: [
-		"prc",
-		"mobi"
-	]
-},
-	"application/x-mpegurl": {
-	compressible: false
-},
-	"application/x-ms-application": {
-	source: "apache",
-	extensions: [
-		"application"
-	]
-},
-	"application/x-ms-shortcut": {
-	source: "apache",
-	extensions: [
-		"lnk"
-	]
-},
-	"application/x-ms-wmd": {
-	source: "apache",
-	extensions: [
-		"wmd"
-	]
-},
-	"application/x-ms-wmz": {
-	source: "apache",
-	extensions: [
-		"wmz"
-	]
-},
-	"application/x-ms-xbap": {
-	source: "apache",
-	extensions: [
-		"xbap"
-	]
-},
-	"application/x-msaccess": {
-	source: "apache",
-	extensions: [
-		"mdb"
-	]
-},
-	"application/x-msbinder": {
-	source: "apache",
-	extensions: [
-		"obd"
-	]
-},
-	"application/x-mscardfile": {
-	source: "apache",
-	extensions: [
-		"crd"
-	]
-},
-	"application/x-msclip": {
-	source: "apache",
-	extensions: [
-		"clp"
-	]
-},
-	"application/x-msdos-program": {
-	extensions: [
-		"exe"
-	]
-},
-	"application/x-msdownload": {
-	source: "apache",
-	extensions: [
-		"exe",
-		"dll",
-		"com",
-		"bat",
-		"msi"
-	]
-},
-	"application/x-msmediaview": {
-	source: "apache",
-	extensions: [
-		"mvb",
-		"m13",
-		"m14"
-	]
-},
-	"application/x-msmetafile": {
-	source: "apache",
-	extensions: [
-		"wmf",
-		"wmz",
-		"emf",
-		"emz"
-	]
-},
-	"application/x-msmoney": {
-	source: "apache",
-	extensions: [
-		"mny"
-	]
-},
-	"application/x-mspublisher": {
-	source: "apache",
-	extensions: [
-		"pub"
-	]
-},
-	"application/x-msschedule": {
-	source: "apache",
-	extensions: [
-		"scd"
-	]
-},
-	"application/x-msterminal": {
-	source: "apache",
-	extensions: [
-		"trm"
-	]
-},
-	"application/x-mswrite": {
-	source: "apache",
-	extensions: [
-		"wri"
-	]
-},
-	"application/x-netcdf": {
-	source: "apache",
-	extensions: [
-		"nc",
-		"cdf"
-	]
-},
-	"application/x-ns-proxy-autoconfig": {
-	compressible: true,
-	extensions: [
-		"pac"
-	]
-},
-	"application/x-nzb": {
-	source: "apache",
-	extensions: [
-		"nzb"
-	]
-},
-	"application/x-perl": {
-	source: "nginx",
-	extensions: [
-		"pl",
-		"pm"
-	]
-},
-	"application/x-pilot": {
-	source: "nginx",
-	extensions: [
-		"prc",
-		"pdb"
-	]
-},
-	"application/x-pkcs12": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"p12",
-		"pfx"
-	]
-},
-	"application/x-pkcs7-certificates": {
-	source: "apache",
-	extensions: [
-		"p7b",
-		"spc"
-	]
-},
-	"application/x-pkcs7-certreqresp": {
-	source: "apache",
-	extensions: [
-		"p7r"
-	]
-},
-	"application/x-pki-message": {
-	source: "iana"
-},
-	"application/x-rar-compressed": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"rar"
-	]
-},
-	"application/x-redhat-package-manager": {
-	source: "nginx",
-	extensions: [
-		"rpm"
-	]
-},
-	"application/x-research-info-systems": {
-	source: "apache",
-	extensions: [
-		"ris"
-	]
-},
-	"application/x-sea": {
-	source: "nginx",
-	extensions: [
-		"sea"
-	]
-},
-	"application/x-sh": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"sh"
-	]
-},
-	"application/x-shar": {
-	source: "apache",
-	extensions: [
-		"shar"
-	]
-},
-	"application/x-shockwave-flash": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"swf"
-	]
-},
-	"application/x-silverlight-app": {
-	source: "apache",
-	extensions: [
-		"xap"
-	]
-},
-	"application/x-sql": {
-	source: "apache",
-	extensions: [
-		"sql"
-	]
-},
-	"application/x-stuffit": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"sit"
-	]
-},
-	"application/x-stuffitx": {
-	source: "apache",
-	extensions: [
-		"sitx"
-	]
-},
-	"application/x-subrip": {
-	source: "apache",
-	extensions: [
-		"srt"
-	]
-},
-	"application/x-sv4cpio": {
-	source: "apache",
-	extensions: [
-		"sv4cpio"
-	]
-},
-	"application/x-sv4crc": {
-	source: "apache",
-	extensions: [
-		"sv4crc"
-	]
-},
-	"application/x-t3vm-image": {
-	source: "apache",
-	extensions: [
-		"t3"
-	]
-},
-	"application/x-tads": {
-	source: "apache",
-	extensions: [
-		"gam"
-	]
-},
-	"application/x-tar": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"tar"
-	]
-},
-	"application/x-tcl": {
-	source: "apache",
-	extensions: [
-		"tcl",
-		"tk"
-	]
-},
-	"application/x-tex": {
-	source: "apache",
-	extensions: [
-		"tex"
-	]
-},
-	"application/x-tex-tfm": {
-	source: "apache",
-	extensions: [
-		"tfm"
-	]
-},
-	"application/x-texinfo": {
-	source: "apache",
-	extensions: [
-		"texinfo",
-		"texi"
-	]
-},
-	"application/x-tgif": {
-	source: "apache",
-	extensions: [
-		"obj"
-	]
-},
-	"application/x-ustar": {
-	source: "apache",
-	extensions: [
-		"ustar"
-	]
-},
-	"application/x-virtualbox-hdd": {
-	compressible: true,
-	extensions: [
-		"hdd"
-	]
-},
-	"application/x-virtualbox-ova": {
-	compressible: true,
-	extensions: [
-		"ova"
-	]
-},
-	"application/x-virtualbox-ovf": {
-	compressible: true,
-	extensions: [
-		"ovf"
-	]
-},
-	"application/x-virtualbox-vbox": {
-	compressible: true,
-	extensions: [
-		"vbox"
-	]
-},
-	"application/x-virtualbox-vbox-extpack": {
-	compressible: false,
-	extensions: [
-		"vbox-extpack"
-	]
-},
-	"application/x-virtualbox-vdi": {
-	compressible: true,
-	extensions: [
-		"vdi"
-	]
-},
-	"application/x-virtualbox-vhd": {
-	compressible: true,
-	extensions: [
-		"vhd"
-	]
-},
-	"application/x-virtualbox-vmdk": {
-	compressible: true,
-	extensions: [
-		"vmdk"
-	]
-},
-	"application/x-wais-source": {
-	source: "apache",
-	extensions: [
-		"src"
-	]
-},
-	"application/x-web-app-manifest+json": {
-	compressible: true,
-	extensions: [
-		"webapp"
-	]
-},
-	"application/x-www-form-urlencoded": {
-	source: "iana",
-	compressible: true
-},
-	"application/x-x509-ca-cert": {
-	source: "iana",
-	extensions: [
-		"der",
-		"crt",
-		"pem"
-	]
-},
-	"application/x-x509-ca-ra-cert": {
-	source: "iana"
-},
-	"application/x-x509-next-ca-cert": {
-	source: "iana"
-},
-	"application/x-xfig": {
-	source: "apache",
-	extensions: [
-		"fig"
-	]
-},
-	"application/x-xliff+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"xlf"
-	]
-},
-	"application/x-xpinstall": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"xpi"
-	]
-},
-	"application/x-xz": {
-	source: "apache",
-	extensions: [
-		"xz"
-	]
-},
-	"application/x-zmachine": {
-	source: "apache",
-	extensions: [
-		"z1",
-		"z2",
-		"z3",
-		"z4",
-		"z5",
-		"z6",
-		"z7",
-		"z8"
-	]
-},
-	"application/x400-bp": {
-	source: "iana"
-},
-	"application/xacml+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/xaml+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"xaml"
-	]
-},
-	"application/xcap-att+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xav"
-	]
-},
-	"application/xcap-caps+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xca"
-	]
-},
-	"application/xcap-diff+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xdf"
-	]
-},
-	"application/xcap-el+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xel"
-	]
-},
-	"application/xcap-error+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/xcap-ns+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xns"
-	]
-},
-	"application/xcon-conference-info+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/xcon-conference-info-diff+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/xenc+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xenc"
-	]
-},
-	"application/xhtml+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xhtml",
-		"xht"
-	]
-},
-	"application/xhtml-voice+xml": {
-	source: "apache",
-	compressible: true
-},
-	"application/xliff+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xlf"
-	]
-},
-	"application/xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xml",
-		"xsl",
-		"xsd",
-		"rng"
-	]
-},
-	"application/xml-dtd": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"dtd"
-	]
-},
-	"application/xml-external-parsed-entity": {
-	source: "iana"
-},
-	"application/xml-patch+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/xmpp+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/xop+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xop"
-	]
-},
-	"application/xproc+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"xpl"
-	]
-},
-	"application/xslt+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xsl",
-		"xslt"
-	]
-},
-	"application/xspf+xml": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"xspf"
-	]
-},
-	"application/xv+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"mxml",
-		"xhvml",
-		"xvml",
-		"xvm"
-	]
-},
-	"application/yang": {
-	source: "iana",
-	extensions: [
-		"yang"
-	]
-},
-	"application/yang-data+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/yang-data+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/yang-patch+json": {
-	source: "iana",
-	compressible: true
-},
-	"application/yang-patch+xml": {
-	source: "iana",
-	compressible: true
-},
-	"application/yin+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"yin"
-	]
-},
-	"application/zip": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"zip"
-	]
-},
-	"application/zlib": {
-	source: "iana"
-},
-	"application/zstd": {
-	source: "iana"
-},
-	"audio/1d-interleaved-parityfec": {
-	source: "iana"
-},
-	"audio/32kadpcm": {
-	source: "iana"
-},
-	"audio/3gpp": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"3gpp"
-	]
-},
-	"audio/3gpp2": {
-	source: "iana"
-},
-	"audio/aac": {
-	source: "iana"
-},
-	"audio/ac3": {
-	source: "iana"
-},
-	"audio/adpcm": {
-	source: "apache",
-	extensions: [
-		"adp"
-	]
-},
-	"audio/amr": {
-	source: "iana",
-	extensions: [
-		"amr"
-	]
-},
-	"audio/amr-wb": {
-	source: "iana"
-},
-	"audio/amr-wb+": {
-	source: "iana"
-},
-	"audio/aptx": {
-	source: "iana"
-},
-	"audio/asc": {
-	source: "iana"
-},
-	"audio/atrac-advanced-lossless": {
-	source: "iana"
-},
-	"audio/atrac-x": {
-	source: "iana"
-},
-	"audio/atrac3": {
-	source: "iana"
-},
-	"audio/basic": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"au",
-		"snd"
-	]
-},
-	"audio/bv16": {
-	source: "iana"
-},
-	"audio/bv32": {
-	source: "iana"
-},
-	"audio/clearmode": {
-	source: "iana"
-},
-	"audio/cn": {
-	source: "iana"
-},
-	"audio/dat12": {
-	source: "iana"
-},
-	"audio/dls": {
-	source: "iana"
-},
-	"audio/dsr-es201108": {
-	source: "iana"
-},
-	"audio/dsr-es202050": {
-	source: "iana"
-},
-	"audio/dsr-es202211": {
-	source: "iana"
-},
-	"audio/dsr-es202212": {
-	source: "iana"
-},
-	"audio/dv": {
-	source: "iana"
-},
-	"audio/dvi4": {
-	source: "iana"
-},
-	"audio/eac3": {
-	source: "iana"
-},
-	"audio/encaprtp": {
-	source: "iana"
-},
-	"audio/evrc": {
-	source: "iana"
-},
-	"audio/evrc-qcp": {
-	source: "iana"
-},
-	"audio/evrc0": {
-	source: "iana"
-},
-	"audio/evrc1": {
-	source: "iana"
-},
-	"audio/evrcb": {
-	source: "iana"
-},
-	"audio/evrcb0": {
-	source: "iana"
-},
-	"audio/evrcb1": {
-	source: "iana"
-},
-	"audio/evrcnw": {
-	source: "iana"
-},
-	"audio/evrcnw0": {
-	source: "iana"
-},
-	"audio/evrcnw1": {
-	source: "iana"
-},
-	"audio/evrcwb": {
-	source: "iana"
-},
-	"audio/evrcwb0": {
-	source: "iana"
-},
-	"audio/evrcwb1": {
-	source: "iana"
-},
-	"audio/evs": {
-	source: "iana"
-},
-	"audio/flexfec": {
-	source: "iana"
-},
-	"audio/fwdred": {
-	source: "iana"
-},
-	"audio/g711-0": {
-	source: "iana"
-},
-	"audio/g719": {
-	source: "iana"
-},
-	"audio/g722": {
-	source: "iana"
-},
-	"audio/g7221": {
-	source: "iana"
-},
-	"audio/g723": {
-	source: "iana"
-},
-	"audio/g726-16": {
-	source: "iana"
-},
-	"audio/g726-24": {
-	source: "iana"
-},
-	"audio/g726-32": {
-	source: "iana"
-},
-	"audio/g726-40": {
-	source: "iana"
-},
-	"audio/g728": {
-	source: "iana"
-},
-	"audio/g729": {
-	source: "iana"
-},
-	"audio/g7291": {
-	source: "iana"
-},
-	"audio/g729d": {
-	source: "iana"
-},
-	"audio/g729e": {
-	source: "iana"
-},
-	"audio/gsm": {
-	source: "iana"
-},
-	"audio/gsm-efr": {
-	source: "iana"
-},
-	"audio/gsm-hr-08": {
-	source: "iana"
-},
-	"audio/ilbc": {
-	source: "iana"
-},
-	"audio/ip-mr_v2.5": {
-	source: "iana"
-},
-	"audio/isac": {
-	source: "apache"
-},
-	"audio/l16": {
-	source: "iana"
-},
-	"audio/l20": {
-	source: "iana"
-},
-	"audio/l24": {
-	source: "iana",
-	compressible: false
-},
-	"audio/l8": {
-	source: "iana"
-},
-	"audio/lpc": {
-	source: "iana"
-},
-	"audio/melp": {
-	source: "iana"
-},
-	"audio/melp1200": {
-	source: "iana"
-},
-	"audio/melp2400": {
-	source: "iana"
-},
-	"audio/melp600": {
-	source: "iana"
-},
-	"audio/mhas": {
-	source: "iana"
-},
-	"audio/midi": {
-	source: "apache",
-	extensions: [
-		"mid",
-		"midi",
-		"kar",
-		"rmi"
-	]
-},
-	"audio/mobile-xmf": {
-	source: "iana",
-	extensions: [
-		"mxmf"
-	]
-},
-	"audio/mp3": {
-	compressible: false,
-	extensions: [
-		"mp3"
-	]
-},
-	"audio/mp4": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"m4a",
-		"mp4a"
-	]
-},
-	"audio/mp4a-latm": {
-	source: "iana"
-},
-	"audio/mpa": {
-	source: "iana"
-},
-	"audio/mpa-robust": {
-	source: "iana"
-},
-	"audio/mpeg": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"mpga",
-		"mp2",
-		"mp2a",
-		"mp3",
-		"m2a",
-		"m3a"
-	]
-},
-	"audio/mpeg4-generic": {
-	source: "iana"
-},
-	"audio/musepack": {
-	source: "apache"
-},
-	"audio/ogg": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"oga",
-		"ogg",
-		"spx",
-		"opus"
-	]
-},
-	"audio/opus": {
-	source: "iana"
-},
-	"audio/parityfec": {
-	source: "iana"
-},
-	"audio/pcma": {
-	source: "iana"
-},
-	"audio/pcma-wb": {
-	source: "iana"
-},
-	"audio/pcmu": {
-	source: "iana"
-},
-	"audio/pcmu-wb": {
-	source: "iana"
-},
-	"audio/prs.sid": {
-	source: "iana"
-},
-	"audio/qcelp": {
-	source: "iana"
-},
-	"audio/raptorfec": {
-	source: "iana"
-},
-	"audio/red": {
-	source: "iana"
-},
-	"audio/rtp-enc-aescm128": {
-	source: "iana"
-},
-	"audio/rtp-midi": {
-	source: "iana"
-},
-	"audio/rtploopback": {
-	source: "iana"
-},
-	"audio/rtx": {
-	source: "iana"
-},
-	"audio/s3m": {
-	source: "apache",
-	extensions: [
-		"s3m"
-	]
-},
-	"audio/scip": {
-	source: "iana"
-},
-	"audio/silk": {
-	source: "apache",
-	extensions: [
-		"sil"
-	]
-},
-	"audio/smv": {
-	source: "iana"
-},
-	"audio/smv-qcp": {
-	source: "iana"
-},
-	"audio/smv0": {
-	source: "iana"
-},
-	"audio/sofa": {
-	source: "iana"
-},
-	"audio/sp-midi": {
-	source: "iana"
-},
-	"audio/speex": {
-	source: "iana"
-},
-	"audio/t140c": {
-	source: "iana"
-},
-	"audio/t38": {
-	source: "iana"
-},
-	"audio/telephone-event": {
-	source: "iana"
-},
-	"audio/tetra_acelp": {
-	source: "iana"
-},
-	"audio/tetra_acelp_bb": {
-	source: "iana"
-},
-	"audio/tone": {
-	source: "iana"
-},
-	"audio/tsvcis": {
-	source: "iana"
-},
-	"audio/uemclip": {
-	source: "iana"
-},
-	"audio/ulpfec": {
-	source: "iana"
-},
-	"audio/usac": {
-	source: "iana"
-},
-	"audio/vdvi": {
-	source: "iana"
-},
-	"audio/vmr-wb": {
-	source: "iana"
-},
-	"audio/vnd.3gpp.iufp": {
-	source: "iana"
-},
-	"audio/vnd.4sb": {
-	source: "iana"
-},
-	"audio/vnd.audiokoz": {
-	source: "iana"
-},
-	"audio/vnd.celp": {
-	source: "iana"
-},
-	"audio/vnd.cisco.nse": {
-	source: "iana"
-},
-	"audio/vnd.cmles.radio-events": {
-	source: "iana"
-},
-	"audio/vnd.cns.anp1": {
-	source: "iana"
-},
-	"audio/vnd.cns.inf1": {
-	source: "iana"
-},
-	"audio/vnd.dece.audio": {
-	source: "iana",
-	extensions: [
-		"uva",
-		"uvva"
-	]
-},
-	"audio/vnd.digital-winds": {
-	source: "iana",
-	extensions: [
-		"eol"
-	]
-},
-	"audio/vnd.dlna.adts": {
-	source: "iana"
-},
-	"audio/vnd.dolby.heaac.1": {
-	source: "iana"
-},
-	"audio/vnd.dolby.heaac.2": {
-	source: "iana"
-},
-	"audio/vnd.dolby.mlp": {
-	source: "iana"
-},
-	"audio/vnd.dolby.mps": {
-	source: "iana"
-},
-	"audio/vnd.dolby.pl2": {
-	source: "iana"
-},
-	"audio/vnd.dolby.pl2x": {
-	source: "iana"
-},
-	"audio/vnd.dolby.pl2z": {
-	source: "iana"
-},
-	"audio/vnd.dolby.pulse.1": {
-	source: "iana"
-},
-	"audio/vnd.dra": {
-	source: "iana",
-	extensions: [
-		"dra"
-	]
-},
-	"audio/vnd.dts": {
-	source: "iana",
-	extensions: [
-		"dts"
-	]
-},
-	"audio/vnd.dts.hd": {
-	source: "iana",
-	extensions: [
-		"dtshd"
-	]
-},
-	"audio/vnd.dts.uhd": {
-	source: "iana"
-},
-	"audio/vnd.dvb.file": {
-	source: "iana"
-},
-	"audio/vnd.everad.plj": {
-	source: "iana"
-},
-	"audio/vnd.hns.audio": {
-	source: "iana"
-},
-	"audio/vnd.lucent.voice": {
-	source: "iana",
-	extensions: [
-		"lvp"
-	]
-},
-	"audio/vnd.ms-playready.media.pya": {
-	source: "iana",
-	extensions: [
-		"pya"
-	]
-},
-	"audio/vnd.nokia.mobile-xmf": {
-	source: "iana"
-},
-	"audio/vnd.nortel.vbk": {
-	source: "iana"
-},
-	"audio/vnd.nuera.ecelp4800": {
-	source: "iana",
-	extensions: [
-		"ecelp4800"
-	]
-},
-	"audio/vnd.nuera.ecelp7470": {
-	source: "iana",
-	extensions: [
-		"ecelp7470"
-	]
-},
-	"audio/vnd.nuera.ecelp9600": {
-	source: "iana",
-	extensions: [
-		"ecelp9600"
-	]
-},
-	"audio/vnd.octel.sbc": {
-	source: "iana"
-},
-	"audio/vnd.presonus.multitrack": {
-	source: "iana"
-},
-	"audio/vnd.qcelp": {
-	source: "iana"
-},
-	"audio/vnd.rhetorex.32kadpcm": {
-	source: "iana"
-},
-	"audio/vnd.rip": {
-	source: "iana",
-	extensions: [
-		"rip"
-	]
-},
-	"audio/vnd.rn-realaudio": {
-	compressible: false
-},
-	"audio/vnd.sealedmedia.softseal.mpeg": {
-	source: "iana"
-},
-	"audio/vnd.vmx.cvsd": {
-	source: "iana"
-},
-	"audio/vnd.wave": {
-	compressible: false
-},
-	"audio/vorbis": {
-	source: "iana",
-	compressible: false
-},
-	"audio/vorbis-config": {
-	source: "iana"
-},
-	"audio/wav": {
-	compressible: false,
-	extensions: [
-		"wav"
-	]
-},
-	"audio/wave": {
-	compressible: false,
-	extensions: [
-		"wav"
-	]
-},
-	"audio/webm": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"weba"
-	]
-},
-	"audio/x-aac": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"aac"
-	]
-},
-	"audio/x-aiff": {
-	source: "apache",
-	extensions: [
-		"aif",
-		"aiff",
-		"aifc"
-	]
-},
-	"audio/x-caf": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"caf"
-	]
-},
-	"audio/x-flac": {
-	source: "apache",
-	extensions: [
-		"flac"
-	]
-},
-	"audio/x-m4a": {
-	source: "nginx",
-	extensions: [
-		"m4a"
-	]
-},
-	"audio/x-matroska": {
-	source: "apache",
-	extensions: [
-		"mka"
-	]
-},
-	"audio/x-mpegurl": {
-	source: "apache",
-	extensions: [
-		"m3u"
-	]
-},
-	"audio/x-ms-wax": {
-	source: "apache",
-	extensions: [
-		"wax"
-	]
-},
-	"audio/x-ms-wma": {
-	source: "apache",
-	extensions: [
-		"wma"
-	]
-},
-	"audio/x-pn-realaudio": {
-	source: "apache",
-	extensions: [
-		"ram",
-		"ra"
-	]
-},
-	"audio/x-pn-realaudio-plugin": {
-	source: "apache",
-	extensions: [
-		"rmp"
-	]
-},
-	"audio/x-realaudio": {
-	source: "nginx",
-	extensions: [
-		"ra"
-	]
-},
-	"audio/x-tta": {
-	source: "apache"
-},
-	"audio/x-wav": {
-	source: "apache",
-	extensions: [
-		"wav"
-	]
-},
-	"audio/xm": {
-	source: "apache",
-	extensions: [
-		"xm"
-	]
-},
-	"chemical/x-cdx": {
-	source: "apache",
-	extensions: [
-		"cdx"
-	]
-},
-	"chemical/x-cif": {
-	source: "apache",
-	extensions: [
-		"cif"
-	]
-},
-	"chemical/x-cmdf": {
-	source: "apache",
-	extensions: [
-		"cmdf"
-	]
-},
-	"chemical/x-cml": {
-	source: "apache",
-	extensions: [
-		"cml"
-	]
-},
-	"chemical/x-csml": {
-	source: "apache",
-	extensions: [
-		"csml"
-	]
-},
-	"chemical/x-pdb": {
-	source: "apache"
-},
-	"chemical/x-xyz": {
-	source: "apache",
-	extensions: [
-		"xyz"
-	]
-},
-	"font/collection": {
-	source: "iana",
-	extensions: [
-		"ttc"
-	]
-},
-	"font/otf": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"otf"
-	]
-},
-	"font/sfnt": {
-	source: "iana"
-},
-	"font/ttf": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"ttf"
-	]
-},
-	"font/woff": {
-	source: "iana",
-	extensions: [
-		"woff"
-	]
-},
-	"font/woff2": {
-	source: "iana",
-	extensions: [
-		"woff2"
-	]
-},
-	"image/aces": {
-	source: "iana",
-	extensions: [
-		"exr"
-	]
-},
-	"image/apng": {
-	compressible: false,
-	extensions: [
-		"apng"
-	]
-},
-	"image/avci": {
-	source: "iana",
-	extensions: [
-		"avci"
-	]
-},
-	"image/avcs": {
-	source: "iana",
-	extensions: [
-		"avcs"
-	]
-},
-	"image/avif": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"avif"
-	]
-},
-	"image/bmp": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"bmp"
-	]
-},
-	"image/cgm": {
-	source: "iana",
-	extensions: [
-		"cgm"
-	]
-},
-	"image/dicom-rle": {
-	source: "iana",
-	extensions: [
-		"drle"
-	]
-},
-	"image/emf": {
-	source: "iana",
-	extensions: [
-		"emf"
-	]
-},
-	"image/fits": {
-	source: "iana",
-	extensions: [
-		"fits"
-	]
-},
-	"image/g3fax": {
-	source: "iana",
-	extensions: [
-		"g3"
-	]
-},
-	"image/gif": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"gif"
-	]
-},
-	"image/heic": {
-	source: "iana",
-	extensions: [
-		"heic"
-	]
-},
-	"image/heic-sequence": {
-	source: "iana",
-	extensions: [
-		"heics"
-	]
-},
-	"image/heif": {
-	source: "iana",
-	extensions: [
-		"heif"
-	]
-},
-	"image/heif-sequence": {
-	source: "iana",
-	extensions: [
-		"heifs"
-	]
-},
-	"image/hej2k": {
-	source: "iana",
-	extensions: [
-		"hej2"
-	]
-},
-	"image/hsj2": {
-	source: "iana",
-	extensions: [
-		"hsj2"
-	]
-},
-	"image/ief": {
-	source: "iana",
-	extensions: [
-		"ief"
-	]
-},
-	"image/jls": {
-	source: "iana",
-	extensions: [
-		"jls"
-	]
-},
-	"image/jp2": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"jp2",
-		"jpg2"
-	]
-},
-	"image/jpeg": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"jpeg",
-		"jpg",
-		"jpe"
-	]
-},
-	"image/jph": {
-	source: "iana",
-	extensions: [
-		"jph"
-	]
-},
-	"image/jphc": {
-	source: "iana",
-	extensions: [
-		"jhc"
-	]
-},
-	"image/jpm": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"jpm"
-	]
-},
-	"image/jpx": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"jpx",
-		"jpf"
-	]
-},
-	"image/jxr": {
-	source: "iana",
-	extensions: [
-		"jxr"
-	]
-},
-	"image/jxra": {
-	source: "iana",
-	extensions: [
-		"jxra"
-	]
-},
-	"image/jxrs": {
-	source: "iana",
-	extensions: [
-		"jxrs"
-	]
-},
-	"image/jxs": {
-	source: "iana",
-	extensions: [
-		"jxs"
-	]
-},
-	"image/jxsc": {
-	source: "iana",
-	extensions: [
-		"jxsc"
-	]
-},
-	"image/jxsi": {
-	source: "iana",
-	extensions: [
-		"jxsi"
-	]
-},
-	"image/jxss": {
-	source: "iana",
-	extensions: [
-		"jxss"
-	]
-},
-	"image/ktx": {
-	source: "iana",
-	extensions: [
-		"ktx"
-	]
-},
-	"image/ktx2": {
-	source: "iana",
-	extensions: [
-		"ktx2"
-	]
-},
-	"image/naplps": {
-	source: "iana"
-},
-	"image/pjpeg": {
-	compressible: false
-},
-	"image/png": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"png"
-	]
-},
-	"image/prs.btif": {
-	source: "iana",
-	extensions: [
-		"btif"
-	]
-},
-	"image/prs.pti": {
-	source: "iana",
-	extensions: [
-		"pti"
-	]
-},
-	"image/pwg-raster": {
-	source: "iana"
-},
-	"image/sgi": {
-	source: "apache",
-	extensions: [
-		"sgi"
-	]
-},
-	"image/svg+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"svg",
-		"svgz"
-	]
-},
-	"image/t38": {
-	source: "iana",
-	extensions: [
-		"t38"
-	]
-},
-	"image/tiff": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"tif",
-		"tiff"
-	]
-},
-	"image/tiff-fx": {
-	source: "iana",
-	extensions: [
-		"tfx"
-	]
-},
-	"image/vnd.adobe.photoshop": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"psd"
-	]
-},
-	"image/vnd.airzip.accelerator.azv": {
-	source: "iana",
-	extensions: [
-		"azv"
-	]
-},
-	"image/vnd.cns.inf2": {
-	source: "iana"
-},
-	"image/vnd.dece.graphic": {
-	source: "iana",
-	extensions: [
-		"uvi",
-		"uvvi",
-		"uvg",
-		"uvvg"
-	]
-},
-	"image/vnd.djvu": {
-	source: "iana",
-	extensions: [
-		"djvu",
-		"djv"
-	]
-},
-	"image/vnd.dvb.subtitle": {
-	source: "iana",
-	extensions: [
-		"sub"
-	]
-},
-	"image/vnd.dwg": {
-	source: "iana",
-	extensions: [
-		"dwg"
-	]
-},
-	"image/vnd.dxf": {
-	source: "iana",
-	extensions: [
-		"dxf"
-	]
-},
-	"image/vnd.fastbidsheet": {
-	source: "iana",
-	extensions: [
-		"fbs"
-	]
-},
-	"image/vnd.fpx": {
-	source: "iana",
-	extensions: [
-		"fpx"
-	]
-},
-	"image/vnd.fst": {
-	source: "iana",
-	extensions: [
-		"fst"
-	]
-},
-	"image/vnd.fujixerox.edmics-mmr": {
-	source: "iana",
-	extensions: [
-		"mmr"
-	]
-},
-	"image/vnd.fujixerox.edmics-rlc": {
-	source: "iana",
-	extensions: [
-		"rlc"
-	]
-},
-	"image/vnd.globalgraphics.pgb": {
-	source: "iana"
-},
-	"image/vnd.microsoft.icon": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"ico"
-	]
-},
-	"image/vnd.mix": {
-	source: "iana"
-},
-	"image/vnd.mozilla.apng": {
-	source: "iana"
-},
-	"image/vnd.ms-dds": {
-	compressible: true,
-	extensions: [
-		"dds"
-	]
-},
-	"image/vnd.ms-modi": {
-	source: "iana",
-	extensions: [
-		"mdi"
-	]
-},
-	"image/vnd.ms-photo": {
-	source: "apache",
-	extensions: [
-		"wdp"
-	]
-},
-	"image/vnd.net-fpx": {
-	source: "iana",
-	extensions: [
-		"npx"
-	]
-},
-	"image/vnd.pco.b16": {
-	source: "iana",
-	extensions: [
-		"b16"
-	]
-},
-	"image/vnd.radiance": {
-	source: "iana"
-},
-	"image/vnd.sealed.png": {
-	source: "iana"
-},
-	"image/vnd.sealedmedia.softseal.gif": {
-	source: "iana"
-},
-	"image/vnd.sealedmedia.softseal.jpg": {
-	source: "iana"
-},
-	"image/vnd.svf": {
-	source: "iana"
-},
-	"image/vnd.tencent.tap": {
-	source: "iana",
-	extensions: [
-		"tap"
-	]
-},
-	"image/vnd.valve.source.texture": {
-	source: "iana",
-	extensions: [
-		"vtf"
-	]
-},
-	"image/vnd.wap.wbmp": {
-	source: "iana",
-	extensions: [
-		"wbmp"
-	]
-},
-	"image/vnd.xiff": {
-	source: "iana",
-	extensions: [
-		"xif"
-	]
-},
-	"image/vnd.zbrush.pcx": {
-	source: "iana",
-	extensions: [
-		"pcx"
-	]
-},
-	"image/webp": {
-	source: "apache",
-	extensions: [
-		"webp"
-	]
-},
-	"image/wmf": {
-	source: "iana",
-	extensions: [
-		"wmf"
-	]
-},
-	"image/x-3ds": {
-	source: "apache",
-	extensions: [
-		"3ds"
-	]
-},
-	"image/x-cmu-raster": {
-	source: "apache",
-	extensions: [
-		"ras"
-	]
-},
-	"image/x-cmx": {
-	source: "apache",
-	extensions: [
-		"cmx"
-	]
-},
-	"image/x-freehand": {
-	source: "apache",
-	extensions: [
-		"fh",
-		"fhc",
-		"fh4",
-		"fh5",
-		"fh7"
-	]
-},
-	"image/x-icon": {
-	source: "apache",
-	compressible: true,
-	extensions: [
-		"ico"
-	]
-},
-	"image/x-jng": {
-	source: "nginx",
-	extensions: [
-		"jng"
-	]
-},
-	"image/x-mrsid-image": {
-	source: "apache",
-	extensions: [
-		"sid"
-	]
-},
-	"image/x-ms-bmp": {
-	source: "nginx",
-	compressible: true,
-	extensions: [
-		"bmp"
-	]
-},
-	"image/x-pcx": {
-	source: "apache",
-	extensions: [
-		"pcx"
-	]
-},
-	"image/x-pict": {
-	source: "apache",
-	extensions: [
-		"pic",
-		"pct"
-	]
-},
-	"image/x-portable-anymap": {
-	source: "apache",
-	extensions: [
-		"pnm"
-	]
-},
-	"image/x-portable-bitmap": {
-	source: "apache",
-	extensions: [
-		"pbm"
-	]
-},
-	"image/x-portable-graymap": {
-	source: "apache",
-	extensions: [
-		"pgm"
-	]
-},
-	"image/x-portable-pixmap": {
-	source: "apache",
-	extensions: [
-		"ppm"
-	]
-},
-	"image/x-rgb": {
-	source: "apache",
-	extensions: [
-		"rgb"
-	]
-},
-	"image/x-tga": {
-	source: "apache",
-	extensions: [
-		"tga"
-	]
-},
-	"image/x-xbitmap": {
-	source: "apache",
-	extensions: [
-		"xbm"
-	]
-},
-	"image/x-xcf": {
-	compressible: false
-},
-	"image/x-xpixmap": {
-	source: "apache",
-	extensions: [
-		"xpm"
-	]
-},
-	"image/x-xwindowdump": {
-	source: "apache",
-	extensions: [
-		"xwd"
-	]
-},
-	"message/cpim": {
-	source: "iana"
-},
-	"message/delivery-status": {
-	source: "iana"
-},
-	"message/disposition-notification": {
-	source: "iana",
-	extensions: [
-		"disposition-notification"
-	]
-},
-	"message/external-body": {
-	source: "iana"
-},
-	"message/feedback-report": {
-	source: "iana"
-},
-	"message/global": {
-	source: "iana",
-	extensions: [
-		"u8msg"
-	]
-},
-	"message/global-delivery-status": {
-	source: "iana",
-	extensions: [
-		"u8dsn"
-	]
-},
-	"message/global-disposition-notification": {
-	source: "iana",
-	extensions: [
-		"u8mdn"
-	]
-},
-	"message/global-headers": {
-	source: "iana",
-	extensions: [
-		"u8hdr"
-	]
-},
-	"message/http": {
-	source: "iana",
-	compressible: false
-},
-	"message/imdn+xml": {
-	source: "iana",
-	compressible: true
-},
-	"message/news": {
-	source: "iana"
-},
-	"message/partial": {
-	source: "iana",
-	compressible: false
-},
-	"message/rfc822": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"eml",
-		"mime"
-	]
-},
-	"message/s-http": {
-	source: "iana"
-},
-	"message/sip": {
-	source: "iana"
-},
-	"message/sipfrag": {
-	source: "iana"
-},
-	"message/tracking-status": {
-	source: "iana"
-},
-	"message/vnd.si.simp": {
-	source: "iana"
-},
-	"message/vnd.wfa.wsc": {
-	source: "iana",
-	extensions: [
-		"wsc"
-	]
-},
-	"model/3mf": {
-	source: "iana",
-	extensions: [
-		"3mf"
-	]
-},
-	"model/e57": {
-	source: "iana"
-},
-	"model/gltf+json": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"gltf"
-	]
-},
-	"model/gltf-binary": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"glb"
-	]
-},
-	"model/iges": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"igs",
-		"iges"
-	]
-},
-	"model/mesh": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"msh",
-		"mesh",
-		"silo"
-	]
-},
-	"model/mtl": {
-	source: "iana",
-	extensions: [
-		"mtl"
-	]
-},
-	"model/obj": {
-	source: "iana",
-	extensions: [
-		"obj"
-	]
-},
-	"model/step": {
-	source: "iana"
-},
-	"model/step+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"stpx"
-	]
-},
-	"model/step+zip": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"stpz"
-	]
-},
-	"model/step-xml+zip": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"stpxz"
-	]
-},
-	"model/stl": {
-	source: "iana",
-	extensions: [
-		"stl"
-	]
-},
-	"model/vnd.collada+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"dae"
-	]
-},
-	"model/vnd.dwf": {
-	source: "iana",
-	extensions: [
-		"dwf"
-	]
-},
-	"model/vnd.flatland.3dml": {
-	source: "iana"
-},
-	"model/vnd.gdl": {
-	source: "iana",
-	extensions: [
-		"gdl"
-	]
-},
-	"model/vnd.gs-gdl": {
-	source: "apache"
-},
-	"model/vnd.gs.gdl": {
-	source: "iana"
-},
-	"model/vnd.gtw": {
-	source: "iana",
-	extensions: [
-		"gtw"
-	]
-},
-	"model/vnd.moml+xml": {
-	source: "iana",
-	compressible: true
-},
-	"model/vnd.mts": {
-	source: "iana",
-	extensions: [
-		"mts"
-	]
-},
-	"model/vnd.opengex": {
-	source: "iana",
-	extensions: [
-		"ogex"
-	]
-},
-	"model/vnd.parasolid.transmit.binary": {
-	source: "iana",
-	extensions: [
-		"x_b"
-	]
-},
-	"model/vnd.parasolid.transmit.text": {
-	source: "iana",
-	extensions: [
-		"x_t"
-	]
-},
-	"model/vnd.pytha.pyox": {
-	source: "iana"
-},
-	"model/vnd.rosette.annotated-data-model": {
-	source: "iana"
-},
-	"model/vnd.sap.vds": {
-	source: "iana",
-	extensions: [
-		"vds"
-	]
-},
-	"model/vnd.usdz+zip": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"usdz"
-	]
-},
-	"model/vnd.valve.source.compiled-map": {
-	source: "iana",
-	extensions: [
-		"bsp"
-	]
-},
-	"model/vnd.vtu": {
-	source: "iana",
-	extensions: [
-		"vtu"
-	]
-},
-	"model/vrml": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"wrl",
-		"vrml"
-	]
-},
-	"model/x3d+binary": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"x3db",
-		"x3dbz"
-	]
-},
-	"model/x3d+fastinfoset": {
-	source: "iana",
-	extensions: [
-		"x3db"
-	]
-},
-	"model/x3d+vrml": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"x3dv",
-		"x3dvz"
-	]
-},
-	"model/x3d+xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"x3d",
-		"x3dz"
-	]
-},
-	"model/x3d-vrml": {
-	source: "iana",
-	extensions: [
-		"x3dv"
-	]
-},
-	"multipart/alternative": {
-	source: "iana",
-	compressible: false
-},
-	"multipart/appledouble": {
-	source: "iana"
-},
-	"multipart/byteranges": {
-	source: "iana"
-},
-	"multipart/digest": {
-	source: "iana"
-},
-	"multipart/encrypted": {
-	source: "iana",
-	compressible: false
-},
-	"multipart/form-data": {
-	source: "iana",
-	compressible: false
-},
-	"multipart/header-set": {
-	source: "iana"
-},
-	"multipart/mixed": {
-	source: "iana"
-},
-	"multipart/multilingual": {
-	source: "iana"
-},
-	"multipart/parallel": {
-	source: "iana"
-},
-	"multipart/related": {
-	source: "iana",
-	compressible: false
-},
-	"multipart/report": {
-	source: "iana"
-},
-	"multipart/signed": {
-	source: "iana",
-	compressible: false
-},
-	"multipart/vnd.bint.med-plus": {
-	source: "iana"
-},
-	"multipart/voice-message": {
-	source: "iana"
-},
-	"multipart/x-mixed-replace": {
-	source: "iana"
-},
-	"text/1d-interleaved-parityfec": {
-	source: "iana"
-},
-	"text/cache-manifest": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"appcache",
-		"manifest"
-	]
-},
-	"text/calendar": {
-	source: "iana",
-	extensions: [
-		"ics",
-		"ifb"
-	]
-},
-	"text/calender": {
-	compressible: true
-},
-	"text/cmd": {
-	compressible: true
-},
-	"text/coffeescript": {
-	extensions: [
-		"coffee",
-		"litcoffee"
-	]
-},
-	"text/cql": {
-	source: "iana"
-},
-	"text/cql-expression": {
-	source: "iana"
-},
-	"text/cql-identifier": {
-	source: "iana"
-},
-	"text/css": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true,
-	extensions: [
-		"css"
-	]
-},
-	"text/csv": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"csv"
-	]
-},
-	"text/csv-schema": {
-	source: "iana"
-},
-	"text/directory": {
-	source: "iana"
-},
-	"text/dns": {
-	source: "iana"
-},
-	"text/ecmascript": {
-	source: "iana"
-},
-	"text/encaprtp": {
-	source: "iana"
-},
-	"text/enriched": {
-	source: "iana"
-},
-	"text/fhirpath": {
-	source: "iana"
-},
-	"text/flexfec": {
-	source: "iana"
-},
-	"text/fwdred": {
-	source: "iana"
-},
-	"text/gff3": {
-	source: "iana"
-},
-	"text/grammar-ref-list": {
-	source: "iana"
-},
-	"text/html": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"html",
-		"htm",
-		"shtml"
-	]
-},
-	"text/jade": {
-	extensions: [
-		"jade"
-	]
-},
-	"text/javascript": {
-	source: "iana",
-	compressible: true
-},
-	"text/jcr-cnd": {
-	source: "iana"
-},
-	"text/jsx": {
-	compressible: true,
-	extensions: [
-		"jsx"
-	]
-},
-	"text/less": {
-	compressible: true,
-	extensions: [
-		"less"
-	]
-},
-	"text/markdown": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"markdown",
-		"md"
-	]
-},
-	"text/mathml": {
-	source: "nginx",
-	extensions: [
-		"mml"
-	]
-},
-	"text/mdx": {
-	compressible: true,
-	extensions: [
-		"mdx"
-	]
-},
-	"text/mizar": {
-	source: "iana"
-},
-	"text/n3": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true,
-	extensions: [
-		"n3"
-	]
-},
-	"text/parameters": {
-	source: "iana",
-	charset: "UTF-8"
-},
-	"text/parityfec": {
-	source: "iana"
-},
-	"text/plain": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"txt",
-		"text",
-		"conf",
-		"def",
-		"list",
-		"log",
-		"in",
-		"ini"
-	]
-},
-	"text/provenance-notation": {
-	source: "iana",
-	charset: "UTF-8"
-},
-	"text/prs.fallenstein.rst": {
-	source: "iana"
-},
-	"text/prs.lines.tag": {
-	source: "iana",
-	extensions: [
-		"dsc"
-	]
-},
-	"text/prs.prop.logic": {
-	source: "iana"
-},
-	"text/raptorfec": {
-	source: "iana"
-},
-	"text/red": {
-	source: "iana"
-},
-	"text/rfc822-headers": {
-	source: "iana"
-},
-	"text/richtext": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rtx"
-	]
-},
-	"text/rtf": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"rtf"
-	]
-},
-	"text/rtp-enc-aescm128": {
-	source: "iana"
-},
-	"text/rtploopback": {
-	source: "iana"
-},
-	"text/rtx": {
-	source: "iana"
-},
-	"text/sgml": {
-	source: "iana",
-	extensions: [
-		"sgml",
-		"sgm"
-	]
-},
-	"text/shaclc": {
-	source: "iana"
-},
-	"text/shex": {
-	source: "iana",
-	extensions: [
-		"shex"
-	]
-},
-	"text/slim": {
-	extensions: [
-		"slim",
-		"slm"
-	]
-},
-	"text/spdx": {
-	source: "iana",
-	extensions: [
-		"spdx"
-	]
-},
-	"text/strings": {
-	source: "iana"
-},
-	"text/stylus": {
-	extensions: [
-		"stylus",
-		"styl"
-	]
-},
-	"text/t140": {
-	source: "iana"
-},
-	"text/tab-separated-values": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"tsv"
-	]
-},
-	"text/troff": {
-	source: "iana",
-	extensions: [
-		"t",
-		"tr",
-		"roff",
-		"man",
-		"me",
-		"ms"
-	]
-},
-	"text/turtle": {
-	source: "iana",
-	charset: "UTF-8",
-	extensions: [
-		"ttl"
-	]
-},
-	"text/ulpfec": {
-	source: "iana"
-},
-	"text/uri-list": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"uri",
-		"uris",
-		"urls"
-	]
-},
-	"text/vcard": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"vcard"
-	]
-},
-	"text/vnd.a": {
-	source: "iana"
-},
-	"text/vnd.abc": {
-	source: "iana"
-},
-	"text/vnd.ascii-art": {
-	source: "iana"
-},
-	"text/vnd.curl": {
-	source: "iana",
-	extensions: [
-		"curl"
-	]
-},
-	"text/vnd.curl.dcurl": {
-	source: "apache",
-	extensions: [
-		"dcurl"
-	]
-},
-	"text/vnd.curl.mcurl": {
-	source: "apache",
-	extensions: [
-		"mcurl"
-	]
-},
-	"text/vnd.curl.scurl": {
-	source: "apache",
-	extensions: [
-		"scurl"
-	]
-},
-	"text/vnd.debian.copyright": {
-	source: "iana",
-	charset: "UTF-8"
-},
-	"text/vnd.dmclientscript": {
-	source: "iana"
-},
-	"text/vnd.dvb.subtitle": {
-	source: "iana",
-	extensions: [
-		"sub"
-	]
-},
-	"text/vnd.esmertec.theme-descriptor": {
-	source: "iana",
-	charset: "UTF-8"
-},
-	"text/vnd.familysearch.gedcom": {
-	source: "iana",
-	extensions: [
-		"ged"
-	]
-},
-	"text/vnd.ficlab.flt": {
-	source: "iana"
-},
-	"text/vnd.fly": {
-	source: "iana",
-	extensions: [
-		"fly"
-	]
-},
-	"text/vnd.fmi.flexstor": {
-	source: "iana",
-	extensions: [
-		"flx"
-	]
-},
-	"text/vnd.gml": {
-	source: "iana"
-},
-	"text/vnd.graphviz": {
-	source: "iana",
-	extensions: [
-		"gv"
-	]
-},
-	"text/vnd.hans": {
-	source: "iana"
-},
-	"text/vnd.hgl": {
-	source: "iana"
-},
-	"text/vnd.in3d.3dml": {
-	source: "iana",
-	extensions: [
-		"3dml"
-	]
-},
-	"text/vnd.in3d.spot": {
-	source: "iana",
-	extensions: [
-		"spot"
-	]
-},
-	"text/vnd.iptc.newsml": {
-	source: "iana"
-},
-	"text/vnd.iptc.nitf": {
-	source: "iana"
-},
-	"text/vnd.latex-z": {
-	source: "iana"
-},
-	"text/vnd.motorola.reflex": {
-	source: "iana"
-},
-	"text/vnd.ms-mediapackage": {
-	source: "iana"
-},
-	"text/vnd.net2phone.commcenter.command": {
-	source: "iana"
-},
-	"text/vnd.radisys.msml-basic-layout": {
-	source: "iana"
-},
-	"text/vnd.senx.warpscript": {
-	source: "iana"
-},
-	"text/vnd.si.uricatalogue": {
-	source: "iana"
-},
-	"text/vnd.sosi": {
-	source: "iana"
-},
-	"text/vnd.sun.j2me.app-descriptor": {
-	source: "iana",
-	charset: "UTF-8",
-	extensions: [
-		"jad"
-	]
-},
-	"text/vnd.trolltech.linguist": {
-	source: "iana",
-	charset: "UTF-8"
-},
-	"text/vnd.wap.si": {
-	source: "iana"
-},
-	"text/vnd.wap.sl": {
-	source: "iana"
-},
-	"text/vnd.wap.wml": {
-	source: "iana",
-	extensions: [
-		"wml"
-	]
-},
-	"text/vnd.wap.wmlscript": {
-	source: "iana",
-	extensions: [
-		"wmls"
-	]
-},
-	"text/vtt": {
-	source: "iana",
-	charset: "UTF-8",
-	compressible: true,
-	extensions: [
-		"vtt"
-	]
-},
-	"text/x-asm": {
-	source: "apache",
-	extensions: [
-		"s",
-		"asm"
-	]
-},
-	"text/x-c": {
-	source: "apache",
-	extensions: [
-		"c",
-		"cc",
-		"cxx",
-		"cpp",
-		"h",
-		"hh",
-		"dic"
-	]
-},
-	"text/x-component": {
-	source: "nginx",
-	extensions: [
-		"htc"
-	]
-},
-	"text/x-fortran": {
-	source: "apache",
-	extensions: [
-		"f",
-		"for",
-		"f77",
-		"f90"
-	]
-},
-	"text/x-gwt-rpc": {
-	compressible: true
-},
-	"text/x-handlebars-template": {
-	extensions: [
-		"hbs"
-	]
-},
-	"text/x-java-source": {
-	source: "apache",
-	extensions: [
-		"java"
-	]
-},
-	"text/x-jquery-tmpl": {
-	compressible: true
-},
-	"text/x-lua": {
-	extensions: [
-		"lua"
-	]
-},
-	"text/x-markdown": {
-	compressible: true,
-	extensions: [
-		"mkd"
-	]
-},
-	"text/x-nfo": {
-	source: "apache",
-	extensions: [
-		"nfo"
-	]
-},
-	"text/x-opml": {
-	source: "apache",
-	extensions: [
-		"opml"
-	]
-},
-	"text/x-org": {
-	compressible: true,
-	extensions: [
-		"org"
-	]
-},
-	"text/x-pascal": {
-	source: "apache",
-	extensions: [
-		"p",
-		"pas"
-	]
-},
-	"text/x-processing": {
-	compressible: true,
-	extensions: [
-		"pde"
-	]
-},
-	"text/x-sass": {
-	extensions: [
-		"sass"
-	]
-},
-	"text/x-scss": {
-	extensions: [
-		"scss"
-	]
-},
-	"text/x-setext": {
-	source: "apache",
-	extensions: [
-		"etx"
-	]
-},
-	"text/x-sfv": {
-	source: "apache",
-	extensions: [
-		"sfv"
-	]
-},
-	"text/x-suse-ymp": {
-	compressible: true,
-	extensions: [
-		"ymp"
-	]
-},
-	"text/x-uuencode": {
-	source: "apache",
-	extensions: [
-		"uu"
-	]
-},
-	"text/x-vcalendar": {
-	source: "apache",
-	extensions: [
-		"vcs"
-	]
-},
-	"text/x-vcard": {
-	source: "apache",
-	extensions: [
-		"vcf"
-	]
-},
-	"text/xml": {
-	source: "iana",
-	compressible: true,
-	extensions: [
-		"xml"
-	]
-},
-	"text/xml-external-parsed-entity": {
-	source: "iana"
-},
-	"text/yaml": {
-	compressible: true,
-	extensions: [
-		"yaml",
-		"yml"
-	]
-},
-	"video/1d-interleaved-parityfec": {
-	source: "iana"
-},
-	"video/3gpp": {
-	source: "iana",
-	extensions: [
-		"3gp",
-		"3gpp"
-	]
-},
-	"video/3gpp-tt": {
-	source: "iana"
-},
-	"video/3gpp2": {
-	source: "iana",
-	extensions: [
-		"3g2"
-	]
-},
-	"video/av1": {
-	source: "iana"
-},
-	"video/bmpeg": {
-	source: "iana"
-},
-	"video/bt656": {
-	source: "iana"
-},
-	"video/celb": {
-	source: "iana"
-},
-	"video/dv": {
-	source: "iana"
-},
-	"video/encaprtp": {
-	source: "iana"
-},
-	"video/ffv1": {
-	source: "iana"
-},
-	"video/flexfec": {
-	source: "iana"
-},
-	"video/h261": {
-	source: "iana",
-	extensions: [
-		"h261"
-	]
-},
-	"video/h263": {
-	source: "iana",
-	extensions: [
-		"h263"
-	]
-},
-	"video/h263-1998": {
-	source: "iana"
-},
-	"video/h263-2000": {
-	source: "iana"
-},
-	"video/h264": {
-	source: "iana",
-	extensions: [
-		"h264"
-	]
-},
-	"video/h264-rcdo": {
-	source: "iana"
-},
-	"video/h264-svc": {
-	source: "iana"
-},
-	"video/h265": {
-	source: "iana"
-},
-	"video/iso.segment": {
-	source: "iana",
-	extensions: [
-		"m4s"
-	]
-},
-	"video/jpeg": {
-	source: "iana",
-	extensions: [
-		"jpgv"
-	]
-},
-	"video/jpeg2000": {
-	source: "iana"
-},
-	"video/jpm": {
-	source: "apache",
-	extensions: [
-		"jpm",
-		"jpgm"
-	]
-},
-	"video/jxsv": {
-	source: "iana"
-},
-	"video/mj2": {
-	source: "iana",
-	extensions: [
-		"mj2",
-		"mjp2"
-	]
-},
-	"video/mp1s": {
-	source: "iana"
-},
-	"video/mp2p": {
-	source: "iana"
-},
-	"video/mp2t": {
-	source: "iana",
-	extensions: [
-		"ts"
-	]
-},
-	"video/mp4": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"mp4",
-		"mp4v",
-		"mpg4"
-	]
-},
-	"video/mp4v-es": {
-	source: "iana"
-},
-	"video/mpeg": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"mpeg",
-		"mpg",
-		"mpe",
-		"m1v",
-		"m2v"
-	]
-},
-	"video/mpeg4-generic": {
-	source: "iana"
-},
-	"video/mpv": {
-	source: "iana"
-},
-	"video/nv": {
-	source: "iana"
-},
-	"video/ogg": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"ogv"
-	]
-},
-	"video/parityfec": {
-	source: "iana"
-},
-	"video/pointer": {
-	source: "iana"
-},
-	"video/quicktime": {
-	source: "iana",
-	compressible: false,
-	extensions: [
-		"qt",
-		"mov"
-	]
-},
-	"video/raptorfec": {
-	source: "iana"
-},
-	"video/raw": {
-	source: "iana"
-},
-	"video/rtp-enc-aescm128": {
-	source: "iana"
-},
-	"video/rtploopback": {
-	source: "iana"
-},
-	"video/rtx": {
-	source: "iana"
-},
-	"video/scip": {
-	source: "iana"
-},
-	"video/smpte291": {
-	source: "iana"
-},
-	"video/smpte292m": {
-	source: "iana"
-},
-	"video/ulpfec": {
-	source: "iana"
-},
-	"video/vc1": {
-	source: "iana"
-},
-	"video/vc2": {
-	source: "iana"
-},
-	"video/vnd.cctv": {
-	source: "iana"
-},
-	"video/vnd.dece.hd": {
-	source: "iana",
-	extensions: [
-		"uvh",
-		"uvvh"
-	]
-},
-	"video/vnd.dece.mobile": {
-	source: "iana",
-	extensions: [
-		"uvm",
-		"uvvm"
-	]
-},
-	"video/vnd.dece.mp4": {
-	source: "iana"
-},
-	"video/vnd.dece.pd": {
-	source: "iana",
-	extensions: [
-		"uvp",
-		"uvvp"
-	]
-},
-	"video/vnd.dece.sd": {
-	source: "iana",
-	extensions: [
-		"uvs",
-		"uvvs"
-	]
-},
-	"video/vnd.dece.video": {
-	source: "iana",
-	extensions: [
-		"uvv",
-		"uvvv"
-	]
-},
-	"video/vnd.directv.mpeg": {
-	source: "iana"
-},
-	"video/vnd.directv.mpeg-tts": {
-	source: "iana"
-},
-	"video/vnd.dlna.mpeg-tts": {
-	source: "iana"
-},
-	"video/vnd.dvb.file": {
-	source: "iana",
-	extensions: [
-		"dvb"
-	]
-},
-	"video/vnd.fvt": {
-	source: "iana",
-	extensions: [
-		"fvt"
-	]
-},
-	"video/vnd.hns.video": {
-	source: "iana"
-},
-	"video/vnd.iptvforum.1dparityfec-1010": {
-	source: "iana"
-},
-	"video/vnd.iptvforum.1dparityfec-2005": {
-	source: "iana"
-},
-	"video/vnd.iptvforum.2dparityfec-1010": {
-	source: "iana"
-},
-	"video/vnd.iptvforum.2dparityfec-2005": {
-	source: "iana"
-},
-	"video/vnd.iptvforum.ttsavc": {
-	source: "iana"
-},
-	"video/vnd.iptvforum.ttsmpeg2": {
-	source: "iana"
-},
-	"video/vnd.motorola.video": {
-	source: "iana"
-},
-	"video/vnd.motorola.videop": {
-	source: "iana"
-},
-	"video/vnd.mpegurl": {
-	source: "iana",
-	extensions: [
-		"mxu",
-		"m4u"
-	]
-},
-	"video/vnd.ms-playready.media.pyv": {
-	source: "iana",
-	extensions: [
-		"pyv"
-	]
-},
-	"video/vnd.nokia.interleaved-multimedia": {
-	source: "iana"
-},
-	"video/vnd.nokia.mp4vr": {
-	source: "iana"
-},
-	"video/vnd.nokia.videovoip": {
-	source: "iana"
-},
-	"video/vnd.objectvideo": {
-	source: "iana"
-},
-	"video/vnd.radgamettools.bink": {
-	source: "iana"
-},
-	"video/vnd.radgamettools.smacker": {
-	source: "iana"
-},
-	"video/vnd.sealed.mpeg1": {
-	source: "iana"
-},
-	"video/vnd.sealed.mpeg4": {
-	source: "iana"
-},
-	"video/vnd.sealed.swf": {
-	source: "iana"
-},
-	"video/vnd.sealedmedia.softseal.mov": {
-	source: "iana"
-},
-	"video/vnd.uvvu.mp4": {
-	source: "iana",
-	extensions: [
-		"uvu",
-		"uvvu"
-	]
-},
-	"video/vnd.vivo": {
-	source: "iana",
-	extensions: [
-		"viv"
-	]
-},
-	"video/vnd.youtube.yt": {
-	source: "iana"
-},
-	"video/vp8": {
-	source: "iana"
-},
-	"video/vp9": {
-	source: "iana"
-},
-	"video/webm": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"webm"
-	]
-},
-	"video/x-f4v": {
-	source: "apache",
-	extensions: [
-		"f4v"
-	]
-},
-	"video/x-fli": {
-	source: "apache",
-	extensions: [
-		"fli"
-	]
-},
-	"video/x-flv": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"flv"
-	]
-},
-	"video/x-m4v": {
-	source: "apache",
-	extensions: [
-		"m4v"
-	]
-},
-	"video/x-matroska": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"mkv",
-		"mk3d",
-		"mks"
-	]
-},
-	"video/x-mng": {
-	source: "apache",
-	extensions: [
-		"mng"
-	]
-},
-	"video/x-ms-asf": {
-	source: "apache",
-	extensions: [
-		"asf",
-		"asx"
-	]
-},
-	"video/x-ms-vob": {
-	source: "apache",
-	extensions: [
-		"vob"
-	]
-},
-	"video/x-ms-wm": {
-	source: "apache",
-	extensions: [
-		"wm"
-	]
-},
-	"video/x-ms-wmv": {
-	source: "apache",
-	compressible: false,
-	extensions: [
-		"wmv"
-	]
-},
-	"video/x-ms-wmx": {
-	source: "apache",
-	extensions: [
-		"wmx"
-	]
-},
-	"video/x-ms-wvx": {
-	source: "apache",
-	extensions: [
-		"wvx"
-	]
-},
-	"video/x-msvideo": {
-	source: "apache",
-	extensions: [
-		"avi"
-	]
-},
-	"video/x-sgi-movie": {
-	source: "apache",
-	extensions: [
-		"movie"
-	]
-},
-	"video/x-smv": {
-	source: "apache",
-	extensions: [
-		"smv"
-	]
-},
-	"x-conference/x-cooltalk": {
-	source: "apache",
-	extensions: [
-		"ice"
-	]
-},
-	"x-shader/x-fragment": {
-	compressible: true
-},
-	"x-shader/x-vertex": {
-	compressible: true
-}
-};
-
-/*!
- * mime-db
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2015-2022 Douglas Christopher Wilson
- * MIT Licensed
- */
-
-/**
- * Module exports.
- */
-
-var mimeDb = require$$0$1;
-
-/*!
- * mime-types
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2015 Douglas Christopher Wilson
- * MIT Licensed
- */
-
-(function (exports) {
-
-	/**
-	 * Module dependencies.
-	 * @private
-	 */
-
-	var db = mimeDb;
-	var extname = path$f.extname;
-
-	/**
-	 * Module variables.
-	 * @private
-	 */
-
-	var EXTRACT_TYPE_REGEXP = /^\s*([^;\s]*)(?:;|\s|$)/;
-	var TEXT_TYPE_REGEXP = /^text\//i;
-
-	/**
-	 * Module exports.
-	 * @public
-	 */
-
-	exports.charset = charset;
-	exports.charsets = { lookup: charset };
-	exports.contentType = contentType;
-	exports.extension = extension;
-	exports.extensions = Object.create(null);
-	exports.lookup = lookup;
-	exports.types = Object.create(null);
-
-	// Populate the extensions/types maps
-	populateMaps(exports.extensions, exports.types);
-
-	/**
-	 * Get the default charset for a MIME type.
-	 *
-	 * @param {string} type
-	 * @return {boolean|string}
-	 */
-
-	function charset (type) {
-	  if (!type || typeof type !== 'string') {
-	    return false
-	  }
-
-	  // TODO: use media-typer
-	  var match = EXTRACT_TYPE_REGEXP.exec(type);
-	  var mime = match && db[match[1].toLowerCase()];
-
-	  if (mime && mime.charset) {
-	    return mime.charset
-	  }
-
-	  // default text/* to utf-8
-	  if (match && TEXT_TYPE_REGEXP.test(match[1])) {
-	    return 'UTF-8'
-	  }
-
-	  return false
-	}
-
-	/**
-	 * Create a full Content-Type header given a MIME type or extension.
-	 *
-	 * @param {string} str
-	 * @return {boolean|string}
-	 */
-
-	function contentType (str) {
-	  // TODO: should this even be in this module?
-	  if (!str || typeof str !== 'string') {
-	    return false
-	  }
-
-	  var mime = str.indexOf('/') === -1
-	    ? exports.lookup(str)
-	    : str;
-
-	  if (!mime) {
-	    return false
-	  }
-
-	  // TODO: use content-type or other module
-	  if (mime.indexOf('charset') === -1) {
-	    var charset = exports.charset(mime);
-	    if (charset) mime += '; charset=' + charset.toLowerCase();
-	  }
-
-	  return mime
-	}
-
-	/**
-	 * Get the default extension for a MIME type.
-	 *
-	 * @param {string} type
-	 * @return {boolean|string}
-	 */
-
-	function extension (type) {
-	  if (!type || typeof type !== 'string') {
-	    return false
-	  }
-
-	  // TODO: use media-typer
-	  var match = EXTRACT_TYPE_REGEXP.exec(type);
-
-	  // get extensions
-	  var exts = match && exports.extensions[match[1].toLowerCase()];
-
-	  if (!exts || !exts.length) {
-	    return false
-	  }
-
-	  return exts[0]
-	}
-
-	/**
-	 * Lookup the MIME type for a file path/extension.
-	 *
-	 * @param {string} path
-	 * @return {boolean|string}
-	 */
-
-	function lookup (path) {
-	  if (!path || typeof path !== 'string') {
-	    return false
-	  }
-
-	  // get the extension ("ext" or ".ext" or full path)
-	  var extension = extname('x.' + path)
-	    .toLowerCase()
-	    .substr(1);
-
-	  if (!extension) {
-	    return false
-	  }
-
-	  return exports.types[extension] || false
-	}
-
-	/**
-	 * Populate the extensions and types maps.
-	 * @private
-	 */
-
-	function populateMaps (extensions, types) {
-	  // source preference (least -> most)
-	  var preference = ['nginx', 'apache', undefined, 'iana'];
-
-	  Object.keys(db).forEach(function forEachMimeType (type) {
-	    var mime = db[type];
-	    var exts = mime.extensions;
-
-	    if (!exts || !exts.length) {
-	      return
-	    }
-
-	    // mime -> extensions
-	    extensions[type] = exts;
-
-	    // extension -> mime
-	    for (var i = 0; i < exts.length; i++) {
-	      var extension = exts[i];
-
-	      if (types[extension]) {
-	        var from = preference.indexOf(db[types[extension]].source);
-	        var to = preference.indexOf(mime.source);
-
-	        if (types[extension] !== 'application/octet-stream' &&
-	          (from > to || (from === to && types[extension].substr(0, 12) === 'application/'))) {
-	          // skip the remapping
-	          continue
-	        }
-	      }
-
-	      // set the extension -> mime
-	      types[extension] = type;
-	    }
-	  });
-	} 
-} (mimeTypes));
-
-var defer_1 = defer$1;
-
-/**
- * Runs provided function on next iteration of the event loop
- *
- * @param {function} fn - function to run
- */
-function defer$1(fn)
-{
-  var nextTick = typeof setImmediate == 'function'
-    ? setImmediate
-    : (
-      typeof process == 'object' && typeof process.nextTick == 'function'
-      ? process.nextTick
-      : null
-    );
-
-  if (nextTick)
-  {
-    nextTick(fn);
-  }
-  else
-  {
-    setTimeout(fn, 0);
-  }
-}
-
-var defer = defer_1;
-
-// API
-var async_1 = async$2;
-
-/**
- * Runs provided callback asynchronously
- * even if callback itself is not
- *
- * @param   {function} callback - callback to invoke
- * @returns {function} - augmented callback
- */
-function async$2(callback)
-{
-  var isAsync = false;
-
-  // check if async happened
-  defer(function() { isAsync = true; });
-
-  return function async_callback(err, result)
-  {
-    if (isAsync)
-    {
-      callback(err, result);
-    }
-    else
-    {
-      defer(function nextTick_callback()
-      {
-        callback(err, result);
-      });
-    }
-  };
-}
-
-// API
-var abort_1 = abort$2;
-
-/**
- * Aborts leftover active jobs
- *
- * @param {object} state - current state object
- */
-function abort$2(state)
-{
-  Object.keys(state.jobs).forEach(clean.bind(state));
-
-  // reset leftover jobs
-  state.jobs = {};
-}
-
-/**
- * Cleans up leftover job by invoking abort function for the provided job id
- *
- * @this  state
- * @param {string|number} key - job id to abort
- */
-function clean(key)
-{
-  if (typeof this.jobs[key] == 'function')
-  {
-    this.jobs[key]();
-  }
-}
-
-var async$1 = async_1
-  , abort$1 = abort_1
-  ;
-
-// API
-var iterate_1 = iterate$2;
-
-/**
- * Iterates over each job object
- *
- * @param {array|object} list - array or object (named list) to iterate over
- * @param {function} iterator - iterator to run
- * @param {object} state - current job status
- * @param {function} callback - invoked when all elements processed
- */
-function iterate$2(list, iterator, state, callback)
-{
-  // store current index
-  var key = state['keyedList'] ? state['keyedList'][state.index] : state.index;
-
-  state.jobs[key] = runJob(iterator, key, list[key], function(error, output)
-  {
-    // don't repeat yourself
-    // skip secondary callbacks
-    if (!(key in state.jobs))
-    {
-      return;
-    }
-
-    // clean up jobs
-    delete state.jobs[key];
-
-    if (error)
-    {
-      // don't process rest of the results
-      // stop still active jobs
-      // and reset the list
-      abort$1(state);
-    }
-    else
-    {
-      state.results[key] = output;
-    }
-
-    // return salvaged results
-    callback(error, state.results);
-  });
-}
-
-/**
- * Runs iterator over provided job element
- *
- * @param   {function} iterator - iterator to invoke
- * @param   {string|number} key - key/index of the element in the list of jobs
- * @param   {mixed} item - job description
- * @param   {function} callback - invoked after iterator is done with the job
- * @returns {function|mixed} - job abort function or something else
- */
-function runJob(iterator, key, item, callback)
-{
-  var aborter;
-
-  // allow shortcut if iterator expects only two arguments
-  if (iterator.length == 2)
-  {
-    aborter = iterator(item, async$1(callback));
-  }
-  // otherwise go with full three arguments
-  else
-  {
-    aborter = iterator(item, key, async$1(callback));
-  }
-
-  return aborter;
-}
-
-// API
-var state_1 = state;
-
-/**
- * Creates initial state object
- * for iteration over list
- *
- * @param   {array|object} list - list to iterate over
- * @param   {function|null} sortMethod - function to use for keys sort,
- *                                     or `null` to keep them as is
- * @returns {object} - initial state object
- */
-function state(list, sortMethod)
-{
-  var isNamedList = !Array.isArray(list)
-    , initState =
-    {
-      index    : 0,
-      keyedList: isNamedList || sortMethod ? Object.keys(list) : null,
-      jobs     : {},
-      results  : isNamedList ? {} : [],
-      size     : isNamedList ? Object.keys(list).length : list.length
-    }
-    ;
-
-  if (sortMethod)
-  {
-    // sort array keys based on it's values
-    // sort object's keys just on own merit
-    initState.keyedList.sort(isNamedList ? sortMethod : function(a, b)
-    {
-      return sortMethod(list[a], list[b]);
-    });
-  }
-
-  return initState;
-}
-
-var abort = abort_1
-  , async = async_1
-  ;
-
-// API
-var terminator_1 = terminator$2;
-
-/**
- * Terminates jobs in the attached state context
- *
- * @this  AsyncKitState#
- * @param {function} callback - final callback to invoke after termination
- */
-function terminator$2(callback)
-{
-  if (!Object.keys(this.jobs).length)
-  {
-    return;
-  }
-
-  // fast forward iteration index
-  this.index = this.size;
-
-  // abort jobs
-  abort(this);
-
-  // send back results we have so far
-  async(callback)(null, this.results);
-}
-
-var iterate$1    = iterate_1
-  , initState$1  = state_1
-  , terminator$1 = terminator_1
-  ;
-
-// Public API
-var parallel_1 = parallel;
-
-/**
- * Runs iterator over provided array elements in parallel
- *
- * @param   {array|object} list - array or object (named list) to iterate over
- * @param   {function} iterator - iterator to run
- * @param   {function} callback - invoked when all elements processed
- * @returns {function} - jobs terminator
- */
-function parallel(list, iterator, callback)
-{
-  var state = initState$1(list);
-
-  while (state.index < (state['keyedList'] || list).length)
-  {
-    iterate$1(list, iterator, state, function(error, result)
-    {
-      if (error)
-      {
-        callback(error, result);
-        return;
-      }
-
-      // looks like it's the last one
-      if (Object.keys(state.jobs).length === 0)
-      {
-        callback(null, state.results);
-        return;
-      }
-    });
-
-    state.index++;
-  }
-
-  return terminator$1.bind(state, callback);
-}
-
-var serialOrdered$2 = {exports: {}};
-
-var iterate    = iterate_1
-  , initState  = state_1
-  , terminator = terminator_1
-  ;
-
-// Public API
-serialOrdered$2.exports = serialOrdered$1;
-// sorting helpers
-serialOrdered$2.exports.ascending  = ascending;
-serialOrdered$2.exports.descending = descending;
-
-/**
- * Runs iterator over provided sorted array elements in series
- *
- * @param   {array|object} list - array or object (named list) to iterate over
- * @param   {function} iterator - iterator to run
- * @param   {function} sortMethod - custom sort function
- * @param   {function} callback - invoked when all elements processed
- * @returns {function} - jobs terminator
- */
-function serialOrdered$1(list, iterator, sortMethod, callback)
-{
-  var state = initState(list, sortMethod);
-
-  iterate(list, iterator, state, function iteratorHandler(error, result)
-  {
-    if (error)
-    {
-      callback(error, result);
-      return;
-    }
-
-    state.index++;
-
-    // are we there yet?
-    if (state.index < (state['keyedList'] || list).length)
-    {
-      iterate(list, iterator, state, iteratorHandler);
-      return;
-    }
-
-    // done here
-    callback(null, state.results);
-  });
-
-  return terminator.bind(state, callback);
-}
-
-/*
- * -- Sort methods
- */
-
-/**
- * sort helper to sort array elements in ascending order
- *
- * @param   {mixed} a - an item to compare
- * @param   {mixed} b - an item to compare
- * @returns {number} - comparison result
- */
-function ascending(a, b)
-{
-  return a < b ? -1 : a > b ? 1 : 0;
-}
-
-/**
- * sort helper to sort array elements in descending order
- *
- * @param   {mixed} a - an item to compare
- * @param   {mixed} b - an item to compare
- * @returns {number} - comparison result
- */
-function descending(a, b)
-{
-  return -1 * ascending(a, b);
-}
-
-var serialOrderedExports = serialOrdered$2.exports;
-
-var serialOrdered = serialOrderedExports;
-
-// Public API
-var serial_1 = serial;
-
-/**
- * Runs iterator over provided array elements in series
- *
- * @param   {array|object} list - array or object (named list) to iterate over
- * @param   {function} iterator - iterator to run
- * @param   {function} callback - invoked when all elements processed
- * @returns {function} - jobs terminator
- */
-function serial(list, iterator, callback)
-{
-  return serialOrdered(list, iterator, null, callback);
-}
-
-var asynckit$1 =
-{
-  parallel      : parallel_1,
-  serial        : serial_1,
-  serialOrdered : serialOrderedExports
-};
-
-// populates missing values
-var populate$1 = function(dst, src) {
-
-  Object.keys(src).forEach(function(prop)
-  {
-    dst[prop] = dst[prop] || src[prop];
-  });
-
-  return dst;
-};
-
-var CombinedStream = combined_stream;
-var util = require$$1;
-var path = path$f;
-var http$1 = require$$0$9;
-var https$1 = require$$1$1;
-var parseUrl$1 = require$$5.parse;
-var fs = fs$n;
-var Stream = require$$0$7.Stream;
-var mime = mimeTypes;
-var asynckit = asynckit$1;
-var populate = populate$1;
-
-// Public API
-var form_data = FormData$1;
-
-// make it a Stream
-util.inherits(FormData$1, CombinedStream);
-
-/**
- * Create readable "multipart/form-data" streams.
- * Can be used to submit forms
- * and file uploads to other web applications.
- *
- * @constructor
- * @param {Object} options - Properties to be added/overriden for FormData and CombinedStream
- */
-function FormData$1(options) {
-  if (!(this instanceof FormData$1)) {
-    return new FormData$1(options);
-  }
-
-  this._overheadLength = 0;
-  this._valueLength = 0;
-  this._valuesToMeasure = [];
-
-  CombinedStream.call(this);
-
-  options = options || {};
-  for (var option in options) {
-    this[option] = options[option];
-  }
-}
-
-FormData$1.LINE_BREAK = '\r\n';
-FormData$1.DEFAULT_CONTENT_TYPE = 'application/octet-stream';
-
-FormData$1.prototype.append = function(field, value, options) {
-
-  options = options || {};
-
-  // allow filename as single option
-  if (typeof options == 'string') {
-    options = {filename: options};
-  }
-
-  var append = CombinedStream.prototype.append.bind(this);
-
-  // all that streamy business can't handle numbers
-  if (typeof value == 'number') {
-    value = '' + value;
-  }
-
-  // https://github.com/felixge/node-form-data/issues/38
-  if (util.isArray(value)) {
-    // Please convert your array into string
-    // the way web server expects it
-    this._error(new Error('Arrays are not supported.'));
-    return;
-  }
-
-  var header = this._multiPartHeader(field, value, options);
-  var footer = this._multiPartFooter();
-
-  append(header);
-  append(value);
-  append(footer);
-
-  // pass along options.knownLength
-  this._trackLength(header, value, options);
-};
-
-FormData$1.prototype._trackLength = function(header, value, options) {
-  var valueLength = 0;
-
-  // used w/ getLengthSync(), when length is known.
-  // e.g. for streaming directly from a remote server,
-  // w/ a known file a size, and not wanting to wait for
-  // incoming file to finish to get its size.
-  if (options.knownLength != null) {
-    valueLength += +options.knownLength;
-  } else if (Buffer.isBuffer(value)) {
-    valueLength = value.length;
-  } else if (typeof value === 'string') {
-    valueLength = Buffer.byteLength(value);
-  }
-
-  this._valueLength += valueLength;
-
-  // @check why add CRLF? does this account for custom/multiple CRLFs?
-  this._overheadLength +=
-    Buffer.byteLength(header) +
-    FormData$1.LINE_BREAK.length;
-
-  // empty or either doesn't have path or not an http response or not a stream
-  if (!value || ( !value.path && !(value.readable && value.hasOwnProperty('httpVersion')) && !(value instanceof Stream))) {
-    return;
-  }
-
-  // no need to bother with the length
-  if (!options.knownLength) {
-    this._valuesToMeasure.push(value);
-  }
-};
-
-FormData$1.prototype._lengthRetriever = function(value, callback) {
-
-  if (value.hasOwnProperty('fd')) {
-
-    // take read range into a account
-    // `end` = Infinity –> read file till the end
-    //
-    // TODO: Looks like there is bug in Node fs.createReadStream
-    // it doesn't respect `end` options without `start` options
-    // Fix it when node fixes it.
-    // https://github.com/joyent/node/issues/7819
-    if (value.end != undefined && value.end != Infinity && value.start != undefined) {
-
-      // when end specified
-      // no need to calculate range
-      // inclusive, starts with 0
-      callback(null, value.end + 1 - (value.start ? value.start : 0));
-
-    // not that fast snoopy
-    } else {
-      // still need to fetch file size from fs
-      fs.stat(value.path, function(err, stat) {
-
-        var fileSize;
-
-        if (err) {
-          callback(err);
-          return;
-        }
-
-        // update final size based on the range options
-        fileSize = stat.size - (value.start ? value.start : 0);
-        callback(null, fileSize);
-      });
-    }
-
-  // or http response
-  } else if (value.hasOwnProperty('httpVersion')) {
-    callback(null, +value.headers['content-length']);
-
-  // or request stream http://github.com/mikeal/request
-  } else if (value.hasOwnProperty('httpModule')) {
-    // wait till response come back
-    value.on('response', function(response) {
-      value.pause();
-      callback(null, +response.headers['content-length']);
-    });
-    value.resume();
-
-  // something else
-  } else {
-    callback('Unknown stream');
-  }
-};
-
-FormData$1.prototype._multiPartHeader = function(field, value, options) {
-  // custom header specified (as string)?
-  // it becomes responsible for boundary
-  // (e.g. to handle extra CRLFs on .NET servers)
-  if (typeof options.header == 'string') {
-    return options.header;
-  }
-
-  var contentDisposition = this._getContentDisposition(value, options);
-  var contentType = this._getContentType(value, options);
-
-  var contents = '';
-  var headers  = {
-    // add custom disposition as third element or keep it two elements if not
-    'Content-Disposition': ['form-data', 'name="' + field + '"'].concat(contentDisposition || []),
-    // if no content type. allow it to be empty array
-    'Content-Type': [].concat(contentType || [])
-  };
-
-  // allow custom headers.
-  if (typeof options.header == 'object') {
-    populate(headers, options.header);
-  }
-
-  var header;
-  for (var prop in headers) {
-    if (!headers.hasOwnProperty(prop)) continue;
-    header = headers[prop];
-
-    // skip nullish headers.
-    if (header == null) {
-      continue;
-    }
-
-    // convert all headers to arrays.
-    if (!Array.isArray(header)) {
-      header = [header];
-    }
-
-    // add non-empty headers.
-    if (header.length) {
-      contents += prop + ': ' + header.join('; ') + FormData$1.LINE_BREAK;
-    }
-  }
-
-  return '--' + this.getBoundary() + FormData$1.LINE_BREAK + contents + FormData$1.LINE_BREAK;
-};
-
-FormData$1.prototype._getContentDisposition = function(value, options) {
-
-  var filename
-    , contentDisposition
-    ;
-
-  if (typeof options.filepath === 'string') {
-    // custom filepath for relative paths
-    filename = path.normalize(options.filepath).replace(/\\/g, '/');
-  } else if (options.filename || value.name || value.path) {
-    // custom filename take precedence
-    // formidable and the browser add a name property
-    // fs- and request- streams have path property
-    filename = path.basename(options.filename || value.name || value.path);
-  } else if (value.readable && value.hasOwnProperty('httpVersion')) {
-    // or try http response
-    filename = path.basename(value.client._httpMessage.path || '');
-  }
-
-  if (filename) {
-    contentDisposition = 'filename="' + filename + '"';
-  }
-
-  return contentDisposition;
-};
-
-FormData$1.prototype._getContentType = function(value, options) {
-
-  // use custom content-type above all
-  var contentType = options.contentType;
-
-  // or try `name` from formidable, browser
-  if (!contentType && value.name) {
-    contentType = mime.lookup(value.name);
-  }
-
-  // or try `path` from fs-, request- streams
-  if (!contentType && value.path) {
-    contentType = mime.lookup(value.path);
-  }
-
-  // or if it's http-reponse
-  if (!contentType && value.readable && value.hasOwnProperty('httpVersion')) {
-    contentType = value.headers['content-type'];
-  }
-
-  // or guess it from the filepath or filename
-  if (!contentType && (options.filepath || options.filename)) {
-    contentType = mime.lookup(options.filepath || options.filename);
-  }
-
-  // fallback to the default content type if `value` is not simple value
-  if (!contentType && typeof value == 'object') {
-    contentType = FormData$1.DEFAULT_CONTENT_TYPE;
-  }
-
-  return contentType;
-};
-
-FormData$1.prototype._multiPartFooter = function() {
-  return function(next) {
-    var footer = FormData$1.LINE_BREAK;
-
-    var lastPart = (this._streams.length === 0);
-    if (lastPart) {
-      footer += this._lastBoundary();
-    }
-
-    next(footer);
-  }.bind(this);
-};
-
-FormData$1.prototype._lastBoundary = function() {
-  return '--' + this.getBoundary() + '--' + FormData$1.LINE_BREAK;
-};
-
-FormData$1.prototype.getHeaders = function(userHeaders) {
-  var header;
-  var formHeaders = {
-    'content-type': 'multipart/form-data; boundary=' + this.getBoundary()
-  };
-
-  for (header in userHeaders) {
-    if (userHeaders.hasOwnProperty(header)) {
-      formHeaders[header.toLowerCase()] = userHeaders[header];
-    }
-  }
-
-  return formHeaders;
-};
-
-FormData$1.prototype.setBoundary = function(boundary) {
-  this._boundary = boundary;
-};
-
-FormData$1.prototype.getBoundary = function() {
-  if (!this._boundary) {
-    this._generateBoundary();
-  }
-
-  return this._boundary;
-};
-
-FormData$1.prototype.getBuffer = function() {
-  var dataBuffer = new Buffer.alloc( 0 );
-  var boundary = this.getBoundary();
-
-  // Create the form content. Add Line breaks to the end of data.
-  for (var i = 0, len = this._streams.length; i < len; i++) {
-    if (typeof this._streams[i] !== 'function') {
-
-      // Add content to the buffer.
-      if(Buffer.isBuffer(this._streams[i])) {
-        dataBuffer = Buffer.concat( [dataBuffer, this._streams[i]]);
-      }else {
-        dataBuffer = Buffer.concat( [dataBuffer, Buffer.from(this._streams[i])]);
-      }
-
-      // Add break after content.
-      if (typeof this._streams[i] !== 'string' || this._streams[i].substring( 2, boundary.length + 2 ) !== boundary) {
-        dataBuffer = Buffer.concat( [dataBuffer, Buffer.from(FormData$1.LINE_BREAK)] );
-      }
-    }
-  }
-
-  // Add the footer and return the Buffer object.
-  return Buffer.concat( [dataBuffer, Buffer.from(this._lastBoundary())] );
-};
-
-FormData$1.prototype._generateBoundary = function() {
-  // This generates a 50 character boundary similar to those used by Firefox.
-  // They are optimized for boyer-moore parsing.
-  var boundary = '--------------------------';
-  for (var i = 0; i < 24; i++) {
-    boundary += Math.floor(Math.random() * 10).toString(16);
-  }
-
-  this._boundary = boundary;
-};
-
-// Note: getLengthSync DOESN'T calculate streams length
-// As workaround one can calculate file size manually
-// and add it as knownLength option
-FormData$1.prototype.getLengthSync = function() {
-  var knownLength = this._overheadLength + this._valueLength;
-
-  // Don't get confused, there are 3 "internal" streams for each keyval pair
-  // so it basically checks if there is any value added to the form
-  if (this._streams.length) {
-    knownLength += this._lastBoundary().length;
-  }
-
-  // https://github.com/form-data/form-data/issues/40
-  if (!this.hasKnownLength()) {
-    // Some async length retrievers are present
-    // therefore synchronous length calculation is false.
-    // Please use getLength(callback) to get proper length
-    this._error(new Error('Cannot calculate proper length in synchronous way.'));
-  }
-
-  return knownLength;
-};
-
-// Public API to check if length of added values is known
-// https://github.com/form-data/form-data/issues/196
-// https://github.com/form-data/form-data/issues/262
-FormData$1.prototype.hasKnownLength = function() {
-  var hasKnownLength = true;
-
-  if (this._valuesToMeasure.length) {
-    hasKnownLength = false;
-  }
-
-  return hasKnownLength;
-};
-
-FormData$1.prototype.getLength = function(cb) {
-  var knownLength = this._overheadLength + this._valueLength;
-
-  if (this._streams.length) {
-    knownLength += this._lastBoundary().length;
-  }
-
-  if (!this._valuesToMeasure.length) {
-    process.nextTick(cb.bind(this, null, knownLength));
-    return;
-  }
-
-  asynckit.parallel(this._valuesToMeasure, this._lengthRetriever, function(err, values) {
-    if (err) {
-      cb(err);
-      return;
-    }
-
-    values.forEach(function(length) {
-      knownLength += length;
-    });
-
-    cb(null, knownLength);
-  });
-};
-
-FormData$1.prototype.submit = function(params, cb) {
-  var request
-    , options
-    , defaults = {method: 'post'}
-    ;
-
-  // parse provided url if it's string
-  // or treat it as options object
-  if (typeof params == 'string') {
-
-    params = parseUrl$1(params);
-    options = populate({
-      port: params.port,
-      path: params.pathname,
-      host: params.hostname,
-      protocol: params.protocol
-    }, defaults);
-
-  // use custom params
-  } else {
-
-    options = populate(params, defaults);
-    // if no port provided use default one
-    if (!options.port) {
-      options.port = options.protocol == 'https:' ? 443 : 80;
-    }
-  }
-
-  // put that good code in getHeaders to some use
-  options.headers = this.getHeaders(params.headers);
-
-  // https if specified, fallback to http in any other case
-  if (options.protocol == 'https:') {
-    request = https$1.request(options);
-  } else {
-    request = http$1.request(options);
-  }
-
-  // get content length and fire away
-  this.getLength(function(err, length) {
-    if (err && err !== 'Unknown stream') {
-      this._error(err);
-      return;
-    }
-
-    // add content length
-    if (length) {
-      request.setHeader('Content-Length', length);
-    }
-
-    this.pipe(request);
-    if (cb) {
-      var onResponse;
-
-      var callback = function (error, responce) {
-        request.removeListener('error', callback);
-        request.removeListener('response', onResponse);
-
-        return cb.call(this, error, responce);
-      };
-
-      onResponse = callback.bind(this, null);
-
-      request.on('error', callback);
-      request.on('response', onResponse);
-    }
-  }.bind(this));
-
-  return request;
-};
-
-FormData$1.prototype._error = function(err) {
-  if (!this.error) {
-    this.error = err;
-    this.pause();
-    this.emit('error', err);
-  }
-};
-
-FormData$1.prototype.toString = function () {
-  return '[object FormData]';
-};
-
-var FormData$2 = /*@__PURE__*/getDefaultExportFromCjs(form_data);
-
-/**
- * Determines if the given thing is a array or js object.
- *
- * @param {string} thing - The object or array to be visited.
- *
- * @returns {boolean}
- */
-function isVisitable(thing) {
-  return utils$1.isPlainObject(thing) || utils$1.isArray(thing);
-}
-
-/**
- * It removes the brackets from the end of a string
- *
- * @param {string} key - The key of the parameter.
- *
- * @returns {string} the key without the brackets.
- */
-function removeBrackets(key) {
-  return utils$1.endsWith(key, '[]') ? key.slice(0, -2) : key;
-}
-
-/**
- * It takes a path, a key, and a boolean, and returns a string
- *
- * @param {string} path - The path to the current key.
- * @param {string} key - The key of the current object being iterated over.
- * @param {string} dots - If true, the key will be rendered with dots instead of brackets.
- *
- * @returns {string} The path to the current key.
- */
-function renderKey(path, key, dots) {
-  if (!path) return key;
-  return path.concat(key).map(function each(token, i) {
-    // eslint-disable-next-line no-param-reassign
-    token = removeBrackets(token);
-    return !dots && i ? '[' + token + ']' : token;
-  }).join(dots ? '.' : '');
-}
-
-/**
- * If the array is an array and none of its elements are visitable, then it's a flat array.
- *
- * @param {Array<any>} arr - The array to check
- *
- * @returns {boolean}
- */
-function isFlatArray(arr) {
-  return utils$1.isArray(arr) && !arr.some(isVisitable);
-}
-
-const predicates = utils$1.toFlatObject(utils$1, {}, null, function filter(prop) {
-  return /^is[A-Z]/.test(prop);
-});
-
-/**
- * Convert a data object to FormData
- *
- * @param {Object} obj
- * @param {?Object} [formData]
- * @param {?Object} [options]
- * @param {Function} [options.visitor]
- * @param {Boolean} [options.metaTokens = true]
- * @param {Boolean} [options.dots = false]
- * @param {?Boolean} [options.indexes = false]
- *
- * @returns {Object}
- **/
-
-/**
- * It converts an object into a FormData object
- *
- * @param {Object<any, any>} obj - The object to convert to form data.
- * @param {string} formData - The FormData object to append to.
- * @param {Object<string, any>} options
- *
- * @returns
- */
-function toFormData(obj, formData, options) {
-  if (!utils$1.isObject(obj)) {
-    throw new TypeError('target must be an object');
-  }
-
-  // eslint-disable-next-line no-param-reassign
-  formData = formData || new (FormData$2 || FormData)();
-
-  // eslint-disable-next-line no-param-reassign
-  options = utils$1.toFlatObject(options, {
-    metaTokens: true,
-    dots: false,
-    indexes: false
-  }, false, function defined(option, source) {
-    // eslint-disable-next-line no-eq-null,eqeqeq
-    return !utils$1.isUndefined(source[option]);
-  });
-
-  const metaTokens = options.metaTokens;
-  // eslint-disable-next-line no-use-before-define
-  const visitor = options.visitor || defaultVisitor;
-  const dots = options.dots;
-  const indexes = options.indexes;
-  const _Blob = options.Blob || typeof Blob !== 'undefined' && Blob;
-  const useBlob = _Blob && utils$1.isSpecCompliantForm(formData);
-
-  if (!utils$1.isFunction(visitor)) {
-    throw new TypeError('visitor must be a function');
-  }
-
-  function convertValue(value) {
-    if (value === null) return '';
-
-    if (utils$1.isDate(value)) {
-      return value.toISOString();
-    }
-
-    if (!useBlob && utils$1.isBlob(value)) {
-      throw new AxiosError('Blob is not supported. Use a Buffer instead.');
-    }
-
-    if (utils$1.isArrayBuffer(value) || utils$1.isTypedArray(value)) {
-      return useBlob && typeof Blob === 'function' ? new Blob([value]) : Buffer.from(value);
-    }
-
-    return value;
-  }
-
-  /**
-   * Default visitor.
-   *
-   * @param {*} value
-   * @param {String|Number} key
-   * @param {Array<String|Number>} path
-   * @this {FormData}
-   *
-   * @returns {boolean} return true to visit the each prop of the value recursively
-   */
-  function defaultVisitor(value, key, path) {
-    let arr = value;
-
-    if (value && !path && typeof value === 'object') {
-      if (utils$1.endsWith(key, '{}')) {
-        // eslint-disable-next-line no-param-reassign
-        key = metaTokens ? key : key.slice(0, -2);
-        // eslint-disable-next-line no-param-reassign
-        value = JSON.stringify(value);
-      } else if (
-        (utils$1.isArray(value) && isFlatArray(value)) ||
-        ((utils$1.isFileList(value) || utils$1.endsWith(key, '[]')) && (arr = utils$1.toArray(value))
-        )) {
-        // eslint-disable-next-line no-param-reassign
-        key = removeBrackets(key);
-
-        arr.forEach(function each(el, index) {
-          !(utils$1.isUndefined(el) || el === null) && formData.append(
-            // eslint-disable-next-line no-nested-ternary
-            indexes === true ? renderKey([key], index, dots) : (indexes === null ? key : key + '[]'),
-            convertValue(el)
-          );
-        });
-        return false;
-      }
-    }
-
-    if (isVisitable(value)) {
-      return true;
-    }
-
-    formData.append(renderKey(path, key, dots), convertValue(value));
-
-    return false;
-  }
-
-  const stack = [];
-
-  const exposedHelpers = Object.assign(predicates, {
-    defaultVisitor,
-    convertValue,
-    isVisitable
-  });
-
-  function build(value, path) {
-    if (utils$1.isUndefined(value)) return;
-
-    if (stack.indexOf(value) !== -1) {
-      throw Error('Circular reference detected in ' + path.join('.'));
-    }
-
-    stack.push(value);
-
-    utils$1.forEach(value, function each(el, key) {
-      const result = !(utils$1.isUndefined(el) || el === null) && visitor.call(
-        formData, el, utils$1.isString(key) ? key.trim() : key, path, exposedHelpers
-      );
-
-      if (result === true) {
-        build(el, path ? path.concat(key) : [key]);
-      }
-    });
-
-    stack.pop();
-  }
-
-  if (!utils$1.isObject(obj)) {
-    throw new TypeError('data must be an object');
-  }
-
-  build(obj);
-
-  return formData;
-}
-
-/**
- * It encodes a string by replacing all characters that are not in the unreserved set with
- * their percent-encoded equivalents
- *
- * @param {string} str - The string to encode.
- *
- * @returns {string} The encoded string.
- */
-function encode$1(str) {
-  const charMap = {
-    '!': '%21',
-    "'": '%27',
-    '(': '%28',
-    ')': '%29',
-    '~': '%7E',
-    '%20': '+',
-    '%00': '\x00'
-  };
-  return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer(match) {
-    return charMap[match];
-  });
-}
-
-/**
- * It takes a params object and converts it to a FormData object
- *
- * @param {Object<string, any>} params - The parameters to be converted to a FormData object.
- * @param {Object<string, any>} options - The options object passed to the Axios constructor.
- *
- * @returns {void}
- */
-function AxiosURLSearchParams(params, options) {
-  this._pairs = [];
-
-  params && toFormData(params, this, options);
-}
-
-const prototype = AxiosURLSearchParams.prototype;
-
-prototype.append = function append(name, value) {
-  this._pairs.push([name, value]);
-};
-
-prototype.toString = function toString(encoder) {
-  const _encode = encoder ? function(value) {
-    return encoder.call(this, value, encode$1);
-  } : encode$1;
-
-  return this._pairs.map(function each(pair) {
-    return _encode(pair[0]) + '=' + _encode(pair[1]);
-  }, '').join('&');
-};
-
-/**
- * It replaces all instances of the characters `:`, `$`, `,`, `+`, `[`, and `]` with their
- * URI encoded counterparts
- *
- * @param {string} val The value to be encoded.
- *
- * @returns {string} The encoded value.
- */
-function encode(val) {
-  return encodeURIComponent(val).
-    replace(/%3A/gi, ':').
-    replace(/%24/g, '$').
-    replace(/%2C/gi, ',').
-    replace(/%20/g, '+').
-    replace(/%5B/gi, '[').
-    replace(/%5D/gi, ']');
-}
-
-/**
- * Build a URL by appending params to the end
- *
- * @param {string} url The base of the url (e.g., http://www.google.com)
- * @param {object} [params] The params to be appended
- * @param {?object} options
- *
- * @returns {string} The formatted url
- */
-function buildURL(url, params, options) {
-  /*eslint no-param-reassign:0*/
-  if (!params) {
-    return url;
-  }
-  
-  const _encode = options && options.encode || encode;
-
-  const serializeFn = options && options.serialize;
-
-  let serializedParams;
-
-  if (serializeFn) {
-    serializedParams = serializeFn(params, options);
-  } else {
-    serializedParams = utils$1.isURLSearchParams(params) ?
-      params.toString() :
-      new AxiosURLSearchParams(params, options).toString(_encode);
-  }
-
-  if (serializedParams) {
-    const hashmarkIndex = url.indexOf("#");
-
-    if (hashmarkIndex !== -1) {
-      url = url.slice(0, hashmarkIndex);
-    }
-    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
-  }
-
-  return url;
-}
-
-class InterceptorManager {
-  constructor() {
-    this.handlers = [];
-  }
-
-  /**
-   * Add a new interceptor to the stack
-   *
-   * @param {Function} fulfilled The function to handle `then` for a `Promise`
-   * @param {Function} rejected The function to handle `reject` for a `Promise`
-   *
-   * @return {Number} An ID used to remove interceptor later
-   */
-  use(fulfilled, rejected, options) {
-    this.handlers.push({
-      fulfilled,
-      rejected,
-      synchronous: options ? options.synchronous : false,
-      runWhen: options ? options.runWhen : null
-    });
-    return this.handlers.length - 1;
-  }
-
-  /**
-   * Remove an interceptor from the stack
-   *
-   * @param {Number} id The ID that was returned by `use`
-   *
-   * @returns {Boolean} `true` if the interceptor was removed, `false` otherwise
-   */
-  eject(id) {
-    if (this.handlers[id]) {
-      this.handlers[id] = null;
-    }
-  }
-
-  /**
-   * Clear all interceptors from the stack
-   *
-   * @returns {void}
-   */
-  clear() {
-    if (this.handlers) {
-      this.handlers = [];
-    }
-  }
-
-  /**
-   * Iterate over all the registered interceptors
-   *
-   * This method is particularly useful for skipping over any
-   * interceptors that may have become `null` calling `eject`.
-   *
-   * @param {Function} fn The function to call for each interceptor
-   *
-   * @returns {void}
-   */
-  forEach(fn) {
-    utils$1.forEach(this.handlers, function forEachHandler(h) {
-      if (h !== null) {
-        fn(h);
-      }
-    });
-  }
-}
-
-var transitionalDefaults = {
-  silentJSONParsing: true,
-  forcedJSONParsing: true,
-  clarifyTimeoutError: false
-};
-
-var URLSearchParams = require$$5.URLSearchParams;
-
-var platform$1 = {
-  isNode: true,
-  classes: {
-    URLSearchParams,
-    FormData: FormData$2,
-    Blob: typeof Blob !== 'undefined' && Blob || null
-  },
-  protocols: [ 'http', 'https', 'file', 'data' ]
-};
-
-const hasBrowserEnv = typeof window !== 'undefined' && typeof document !== 'undefined';
-
-const _navigator = typeof navigator === 'object' && navigator || undefined;
-
-/**
- * Determine if we're running in a standard browser environment
- *
- * This allows axios to run in a web worker, and react-native.
- * Both environments support XMLHttpRequest, but not fully standard globals.
- *
- * web workers:
- *  typeof window -> undefined
- *  typeof document -> undefined
- *
- * react-native:
- *  navigator.product -> 'ReactNative'
- * nativescript
- *  navigator.product -> 'NativeScript' or 'NS'
- *
- * @returns {boolean}
- */
-const hasStandardBrowserEnv = hasBrowserEnv &&
-  (!_navigator || ['ReactNative', 'NativeScript', 'NS'].indexOf(_navigator.product) < 0);
-
-/**
- * Determine if we're running in a standard browser webWorker environment
- *
- * Although the `isStandardBrowserEnv` method indicates that
- * `allows axios to run in a web worker`, the WebWorker will still be
- * filtered out due to its judgment standard
- * `typeof window !== 'undefined' && typeof document !== 'undefined'`.
- * This leads to a problem when axios post `FormData` in webWorker
- */
-const hasStandardBrowserWebWorkerEnv = (() => {
-  return (
-    typeof WorkerGlobalScope !== 'undefined' &&
-    // eslint-disable-next-line no-undef
-    self instanceof WorkerGlobalScope &&
-    typeof self.importScripts === 'function'
-  );
-})();
-
-const origin = hasBrowserEnv && window.location.href || 'http://localhost';
-
-var utils = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	hasBrowserEnv: hasBrowserEnv,
-	hasStandardBrowserEnv: hasStandardBrowserEnv,
-	hasStandardBrowserWebWorkerEnv: hasStandardBrowserWebWorkerEnv,
-	navigator: _navigator,
-	origin: origin
-});
-
-var platform = {
-  ...utils,
-  ...platform$1
-};
-
-function toURLEncodedForm(data, options) {
-  return toFormData(data, new platform.classes.URLSearchParams(), Object.assign({
-    visitor: function(value, key, path, helpers) {
-      if (platform.isNode && utils$1.isBuffer(value)) {
-        this.append(key, value.toString('base64'));
-        return false;
-      }
-
-      return helpers.defaultVisitor.apply(this, arguments);
-    }
-  }, options));
-}
-
-/**
- * It takes a string like `foo[x][y][z]` and returns an array like `['foo', 'x', 'y', 'z']
- *
- * @param {string} name - The name of the property to get.
- *
- * @returns An array of strings.
- */
-function parsePropPath(name) {
-  // foo[x][y][z]
-  // foo.x.y.z
-  // foo-x-y-z
-  // foo x y z
-  return utils$1.matchAll(/\w+|\[(\w*)]/g, name).map(match => {
-    return match[0] === '[]' ? '' : match[1] || match[0];
-  });
-}
-
-/**
- * Convert an array to an object.
- *
- * @param {Array<any>} arr - The array to convert to an object.
- *
- * @returns An object with the same keys and values as the array.
- */
-function arrayToObject(arr) {
-  const obj = {};
-  const keys = Object.keys(arr);
-  let i;
-  const len = keys.length;
-  let key;
-  for (i = 0; i < len; i++) {
-    key = keys[i];
-    obj[key] = arr[key];
-  }
-  return obj;
-}
-
-/**
- * It takes a FormData object and returns a JavaScript object
- *
- * @param {string} formData The FormData object to convert to JSON.
- *
- * @returns {Object<string, any> | null} The converted object.
- */
-function formDataToJSON(formData) {
-  function buildPath(path, value, target, index) {
-    let name = path[index++];
-
-    if (name === '__proto__') return true;
-
-    const isNumericKey = Number.isFinite(+name);
-    const isLast = index >= path.length;
-    name = !name && utils$1.isArray(target) ? target.length : name;
-
-    if (isLast) {
-      if (utils$1.hasOwnProp(target, name)) {
-        target[name] = [target[name], value];
-      } else {
-        target[name] = value;
-      }
-
-      return !isNumericKey;
-    }
-
-    if (!target[name] || !utils$1.isObject(target[name])) {
-      target[name] = [];
-    }
-
-    const result = buildPath(path, value, target[name], index);
-
-    if (result && utils$1.isArray(target[name])) {
-      target[name] = arrayToObject(target[name]);
-    }
-
-    return !isNumericKey;
-  }
-
-  if (utils$1.isFormData(formData) && utils$1.isFunction(formData.entries)) {
-    const obj = {};
-
-    utils$1.forEachEntry(formData, (name, value) => {
-      buildPath(parsePropPath(name), value, obj, 0);
-    });
-
-    return obj;
-  }
-
-  return null;
-}
-
-/**
- * It takes a string, tries to parse it, and if it fails, it returns the stringified version
- * of the input
- *
- * @param {any} rawValue - The value to be stringified.
- * @param {Function} parser - A function that parses a string into a JavaScript object.
- * @param {Function} encoder - A function that takes a value and returns a string.
- *
- * @returns {string} A stringified version of the rawValue.
- */
-function stringifySafely(rawValue, parser, encoder) {
-  if (utils$1.isString(rawValue)) {
-    try {
-      (parser || JSON.parse)(rawValue);
-      return utils$1.trim(rawValue);
-    } catch (e) {
-      if (e.name !== 'SyntaxError') {
-        throw e;
-      }
-    }
-  }
-
-  return (0, JSON.stringify)(rawValue);
-}
-
-const defaults = {
-
-  transitional: transitionalDefaults,
-
-  adapter: ['xhr', 'http', 'fetch'],
-
-  transformRequest: [function transformRequest(data, headers) {
-    const contentType = headers.getContentType() || '';
-    const hasJSONContentType = contentType.indexOf('application/json') > -1;
-    const isObjectPayload = utils$1.isObject(data);
-
-    if (isObjectPayload && utils$1.isHTMLForm(data)) {
-      data = new FormData(data);
-    }
-
-    const isFormData = utils$1.isFormData(data);
-
-    if (isFormData) {
-      return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
-    }
-
-    if (utils$1.isArrayBuffer(data) ||
-      utils$1.isBuffer(data) ||
-      utils$1.isStream(data) ||
-      utils$1.isFile(data) ||
-      utils$1.isBlob(data) ||
-      utils$1.isReadableStream(data)
-    ) {
-      return data;
-    }
-    if (utils$1.isArrayBufferView(data)) {
-      return data.buffer;
-    }
-    if (utils$1.isURLSearchParams(data)) {
-      headers.setContentType('application/x-www-form-urlencoded;charset=utf-8', false);
-      return data.toString();
-    }
-
-    let isFileList;
-
-    if (isObjectPayload) {
-      if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
-        return toURLEncodedForm(data, this.formSerializer).toString();
-      }
-
-      if ((isFileList = utils$1.isFileList(data)) || contentType.indexOf('multipart/form-data') > -1) {
-        const _FormData = this.env && this.env.FormData;
-
-        return toFormData(
-          isFileList ? {'files[]': data} : data,
-          _FormData && new _FormData(),
-          this.formSerializer
-        );
-      }
-    }
-
-    if (isObjectPayload || hasJSONContentType ) {
-      headers.setContentType('application/json', false);
-      return stringifySafely(data);
-    }
-
-    return data;
-  }],
-
-  transformResponse: [function transformResponse(data) {
-    const transitional = this.transitional || defaults.transitional;
-    const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
-    const JSONRequested = this.responseType === 'json';
-
-    if (utils$1.isResponse(data) || utils$1.isReadableStream(data)) {
-      return data;
-    }
-
-    if (data && utils$1.isString(data) && ((forcedJSONParsing && !this.responseType) || JSONRequested)) {
-      const silentJSONParsing = transitional && transitional.silentJSONParsing;
-      const strictJSONParsing = !silentJSONParsing && JSONRequested;
-
-      try {
-        return JSON.parse(data);
-      } catch (e) {
-        if (strictJSONParsing) {
-          if (e.name === 'SyntaxError') {
-            throw AxiosError.from(e, AxiosError.ERR_BAD_RESPONSE, this, null, this.response);
-          }
-          throw e;
-        }
-      }
-    }
-
-    return data;
-  }],
-
-  /**
-   * A timeout in milliseconds to abort a request. If set to 0 (default) a
-   * timeout is not created.
-   */
-  timeout: 0,
-
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
-
-  maxContentLength: -1,
-  maxBodyLength: -1,
-
-  env: {
-    FormData: platform.classes.FormData,
-    Blob: platform.classes.Blob
-  },
-
-  validateStatus: function validateStatus(status) {
-    return status >= 200 && status < 300;
-  },
-
-  headers: {
-    common: {
-      'Accept': 'application/json, text/plain, */*',
-      'Content-Type': undefined
-    }
-  }
-};
-
-utils$1.forEach(['delete', 'get', 'head', 'post', 'put', 'patch'], (method) => {
-  defaults.headers[method] = {};
-});
-
-// RawAxiosHeaders whose duplicates are ignored by node
-// c.f. https://nodejs.org/api/http.html#http_message_headers
-const ignoreDuplicateOf = utils$1.toObjectSet([
-  'age', 'authorization', 'content-length', 'content-type', 'etag',
-  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
-  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
-  'referer', 'retry-after', 'user-agent'
-]);
-
-/**
- * Parse headers into an object
- *
- * ```
- * Date: Wed, 27 Aug 2014 08:58:49 GMT
- * Content-Type: application/json
- * Connection: keep-alive
- * Transfer-Encoding: chunked
- * ```
- *
- * @param {String} rawHeaders Headers needing to be parsed
- *
- * @returns {Object} Headers parsed into an object
- */
-var parseHeaders = rawHeaders => {
-  const parsed = {};
-  let key;
-  let val;
-  let i;
-
-  rawHeaders && rawHeaders.split('\n').forEach(function parser(line) {
-    i = line.indexOf(':');
-    key = line.substring(0, i).trim().toLowerCase();
-    val = line.substring(i + 1).trim();
-
-    if (!key || (parsed[key] && ignoreDuplicateOf[key])) {
-      return;
-    }
-
-    if (key === 'set-cookie') {
-      if (parsed[key]) {
-        parsed[key].push(val);
-      } else {
-        parsed[key] = [val];
-      }
-    } else {
-      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
-    }
-  });
-
-  return parsed;
-};
-
-const $internals = Symbol('internals');
-
-function normalizeHeader(header) {
-  return header && String(header).trim().toLowerCase();
-}
-
-function normalizeValue(value) {
-  if (value === false || value == null) {
-    return value;
-  }
-
-  return utils$1.isArray(value) ? value.map(normalizeValue) : String(value);
-}
-
-function parseTokens(str) {
-  const tokens = Object.create(null);
-  const tokensRE = /([^\s,;=]+)\s*(?:=\s*([^,;]+))?/g;
-  let match;
-
-  while ((match = tokensRE.exec(str))) {
-    tokens[match[1]] = match[2];
-  }
-
-  return tokens;
-}
-
-const isValidHeaderName = (str) => /^[-_a-zA-Z0-9^`|~,!#$%&'*+.]+$/.test(str.trim());
-
-function matchHeaderValue(context, value, header, filter, isHeaderNameFilter) {
-  if (utils$1.isFunction(filter)) {
-    return filter.call(this, value, header);
-  }
-
-  if (isHeaderNameFilter) {
-    value = header;
-  }
-
-  if (!utils$1.isString(value)) return;
-
-  if (utils$1.isString(filter)) {
-    return value.indexOf(filter) !== -1;
-  }
-
-  if (utils$1.isRegExp(filter)) {
-    return filter.test(value);
-  }
-}
-
-function formatHeader(header) {
-  return header.trim()
-    .toLowerCase().replace(/([a-z\d])(\w*)/g, (w, char, str) => {
-      return char.toUpperCase() + str;
-    });
-}
-
-function buildAccessors(obj, header) {
-  const accessorName = utils$1.toCamelCase(' ' + header);
-
-  ['get', 'set', 'has'].forEach(methodName => {
-    Object.defineProperty(obj, methodName + accessorName, {
-      value: function(arg1, arg2, arg3) {
-        return this[methodName].call(this, header, arg1, arg2, arg3);
-      },
-      configurable: true
-    });
-  });
-}
-
-class AxiosHeaders {
-  constructor(headers) {
-    headers && this.set(headers);
-  }
-
-  set(header, valueOrRewrite, rewrite) {
-    const self = this;
-
-    function setHeader(_value, _header, _rewrite) {
-      const lHeader = normalizeHeader(_header);
-
-      if (!lHeader) {
-        throw new Error('header name must be a non-empty string');
-      }
-
-      const key = utils$1.findKey(self, lHeader);
-
-      if(!key || self[key] === undefined || _rewrite === true || (_rewrite === undefined && self[key] !== false)) {
-        self[key || _header] = normalizeValue(_value);
-      }
-    }
-
-    const setHeaders = (headers, _rewrite) =>
-      utils$1.forEach(headers, (_value, _header) => setHeader(_value, _header, _rewrite));
-
-    if (utils$1.isPlainObject(header) || header instanceof this.constructor) {
-      setHeaders(header, valueOrRewrite);
-    } else if(utils$1.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
-      setHeaders(parseHeaders(header), valueOrRewrite);
-    } else if (utils$1.isHeaders(header)) {
-      for (const [key, value] of header.entries()) {
-        setHeader(value, key, rewrite);
-      }
-    } else {
-      header != null && setHeader(valueOrRewrite, header, rewrite);
-    }
-
-    return this;
-  }
-
-  get(header, parser) {
-    header = normalizeHeader(header);
-
-    if (header) {
-      const key = utils$1.findKey(this, header);
-
-      if (key) {
-        const value = this[key];
-
-        if (!parser) {
-          return value;
-        }
-
-        if (parser === true) {
-          return parseTokens(value);
-        }
-
-        if (utils$1.isFunction(parser)) {
-          return parser.call(this, value, key);
-        }
-
-        if (utils$1.isRegExp(parser)) {
-          return parser.exec(value);
-        }
-
-        throw new TypeError('parser must be boolean|regexp|function');
-      }
-    }
-  }
-
-  has(header, matcher) {
-    header = normalizeHeader(header);
-
-    if (header) {
-      const key = utils$1.findKey(this, header);
-
-      return !!(key && this[key] !== undefined && (!matcher || matchHeaderValue(this, this[key], key, matcher)));
-    }
-
-    return false;
-  }
-
-  delete(header, matcher) {
-    const self = this;
-    let deleted = false;
-
-    function deleteHeader(_header) {
-      _header = normalizeHeader(_header);
-
-      if (_header) {
-        const key = utils$1.findKey(self, _header);
-
-        if (key && (!matcher || matchHeaderValue(self, self[key], key, matcher))) {
-          delete self[key];
-
-          deleted = true;
-        }
-      }
-    }
-
-    if (utils$1.isArray(header)) {
-      header.forEach(deleteHeader);
-    } else {
-      deleteHeader(header);
-    }
-
-    return deleted;
-  }
-
-  clear(matcher) {
-    const keys = Object.keys(this);
-    let i = keys.length;
-    let deleted = false;
-
-    while (i--) {
-      const key = keys[i];
-      if(!matcher || matchHeaderValue(this, this[key], key, matcher, true)) {
-        delete this[key];
-        deleted = true;
-      }
-    }
-
-    return deleted;
-  }
-
-  normalize(format) {
-    const self = this;
-    const headers = {};
-
-    utils$1.forEach(this, (value, header) => {
-      const key = utils$1.findKey(headers, header);
-
-      if (key) {
-        self[key] = normalizeValue(value);
-        delete self[header];
-        return;
-      }
-
-      const normalized = format ? formatHeader(header) : String(header).trim();
-
-      if (normalized !== header) {
-        delete self[header];
-      }
-
-      self[normalized] = normalizeValue(value);
-
-      headers[normalized] = true;
-    });
-
-    return this;
-  }
-
-  concat(...targets) {
-    return this.constructor.concat(this, ...targets);
-  }
-
-  toJSON(asStrings) {
-    const obj = Object.create(null);
-
-    utils$1.forEach(this, (value, header) => {
-      value != null && value !== false && (obj[header] = asStrings && utils$1.isArray(value) ? value.join(', ') : value);
-    });
-
-    return obj;
-  }
-
-  [Symbol.iterator]() {
-    return Object.entries(this.toJSON())[Symbol.iterator]();
-  }
-
-  toString() {
-    return Object.entries(this.toJSON()).map(([header, value]) => header + ': ' + value).join('\n');
-  }
-
-  get [Symbol.toStringTag]() {
-    return 'AxiosHeaders';
-  }
-
-  static from(thing) {
-    return thing instanceof this ? thing : new this(thing);
-  }
-
-  static concat(first, ...targets) {
-    const computed = new this(first);
-
-    targets.forEach((target) => computed.set(target));
-
-    return computed;
-  }
-
-  static accessor(header) {
-    const internals = this[$internals] = (this[$internals] = {
-      accessors: {}
-    });
-
-    const accessors = internals.accessors;
-    const prototype = this.prototype;
-
-    function defineAccessor(_header) {
-      const lHeader = normalizeHeader(_header);
-
-      if (!accessors[lHeader]) {
-        buildAccessors(prototype, _header);
-        accessors[lHeader] = true;
-      }
-    }
-
-    utils$1.isArray(header) ? header.forEach(defineAccessor) : defineAccessor(header);
-
-    return this;
-  }
-}
-
-AxiosHeaders.accessor(['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent', 'Authorization']);
-
-// reserved names hotfix
-utils$1.reduceDescriptors(AxiosHeaders.prototype, ({value}, key) => {
-  let mapped = key[0].toUpperCase() + key.slice(1); // map `set` => `Set`
-  return {
-    get: () => value,
-    set(headerValue) {
-      this[mapped] = headerValue;
-    }
-  }
-});
-
-utils$1.freezeMethods(AxiosHeaders);
-
-/**
- * Transform the data for a request or a response
- *
- * @param {Array|Function} fns A single function or Array of functions
- * @param {?Object} response The response object
- *
- * @returns {*} The resulting transformed data
- */
-function transformData(fns, response) {
-  const config = this || defaults;
-  const context = response || config;
-  const headers = AxiosHeaders.from(context.headers);
-  let data = context.data;
-
-  utils$1.forEach(fns, function transform(fn) {
-    data = fn.call(config, data, headers.normalize(), response ? response.status : undefined);
-  });
-
-  headers.normalize();
-
-  return data;
-}
-
-function isCancel(value) {
-  return !!(value && value.__CANCEL__);
-}
-
-/**
- * A `CanceledError` is an object that is thrown when an operation is canceled.
- *
- * @param {string=} message The message.
- * @param {Object=} config The config.
- * @param {Object=} request The request.
- *
- * @returns {CanceledError} The created error.
- */
-function CanceledError(message, config, request) {
-  // eslint-disable-next-line no-eq-null,eqeqeq
-  AxiosError.call(this, message == null ? 'canceled' : message, AxiosError.ERR_CANCELED, config, request);
-  this.name = 'CanceledError';
-}
-
-utils$1.inherits(CanceledError, AxiosError, {
-  __CANCEL__: true
-});
-
-/**
- * Resolve or reject a Promise based on response status.
- *
- * @param {Function} resolve A function that resolves the promise.
- * @param {Function} reject A function that rejects the promise.
- * @param {object} response The response.
- *
- * @returns {object} The response.
- */
-function settle(resolve, reject, response) {
-  const validateStatus = response.config.validateStatus;
-  if (!response.status || !validateStatus || validateStatus(response.status)) {
-    resolve(response);
-  } else {
-    reject(new AxiosError(
-      'Request failed with status code ' + response.status,
-      [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
-      response.config,
-      response.request,
-      response
-    ));
-  }
-}
-
-/**
- * Determines whether the specified URL is absolute
- *
- * @param {string} url The URL to test
- *
- * @returns {boolean} True if the specified URL is absolute, otherwise false
- */
-function isAbsoluteURL(url) {
-  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
-  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
-  // by any combination of letters, digits, plus, period, or hyphen.
-  return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
-}
-
-/**
- * Creates a new URL by combining the specified URLs
- *
- * @param {string} baseURL The base URL
- * @param {string} relativeURL The relative URL
- *
- * @returns {string} The combined URL
- */
-function combineURLs(baseURL, relativeURL) {
-  return relativeURL
-    ? baseURL.replace(/\/?\/$/, '') + '/' + relativeURL.replace(/^\/+/, '')
-    : baseURL;
-}
-
-/**
- * Creates a new URL by combining the baseURL with the requestedURL,
- * only when the requestedURL is not already an absolute URL.
- * If the requestURL is absolute, this function returns the requestedURL untouched.
- *
- * @param {string} baseURL The base URL
- * @param {string} requestedURL Absolute or relative URL to combine
- *
- * @returns {string} The combined full path
- */
-function buildFullPath(baseURL, requestedURL) {
-  if (baseURL && !isAbsoluteURL(requestedURL)) {
-    return combineURLs(baseURL, requestedURL);
-  }
-  return requestedURL;
-}
-
-var followRedirects$1 = {exports: {}};
-
-var debug$1;
-
-var debug_1 = function () {
-  if (!debug$1) {
-    try {
-      /* eslint global-require: off */
-      debug$1 = srcExports$1("follow-redirects");
-    }
-    catch (error) { /* */ }
-    if (typeof debug$1 !== "function") {
-      debug$1 = function () { /* */ };
-    }
-  }
-  debug$1.apply(null, arguments);
-};
-
-var url = require$$5;
-var URL$1 = url.URL;
-var http = require$$0$9;
-var https = require$$1$1;
-var Writable = require$$0$7.Writable;
-var assert$2 = require$$0$6;
-var debug = debug_1;
-
-// Whether to use the native URL object or the legacy url module
-var useNativeURL = false;
-try {
-  assert$2(new URL$1());
-}
-catch (error) {
-  useNativeURL = error.code === "ERR_INVALID_URL";
-}
-
-// URL fields to preserve in copy operations
-var preservedUrlFields = [
-  "auth",
-  "host",
-  "hostname",
-  "href",
-  "path",
-  "pathname",
-  "port",
-  "protocol",
-  "query",
-  "search",
-  "hash",
-];
-
-// Create handlers that pass events from native requests
-var events$1 = ["abort", "aborted", "connect", "error", "socket", "timeout"];
-var eventHandlers = Object.create(null);
-events$1.forEach(function (event) {
-  eventHandlers[event] = function (arg1, arg2, arg3) {
-    this._redirectable.emit(event, arg1, arg2, arg3);
-  };
-});
-
-// Error types with codes
-var InvalidUrlError = createErrorType(
-  "ERR_INVALID_URL",
-  "Invalid URL",
-  TypeError
-);
-var RedirectionError = createErrorType(
-  "ERR_FR_REDIRECTION_FAILURE",
-  "Redirected request failed"
-);
-var TooManyRedirectsError = createErrorType(
-  "ERR_FR_TOO_MANY_REDIRECTS",
-  "Maximum number of redirects exceeded",
-  RedirectionError
-);
-var MaxBodyLengthExceededError = createErrorType(
-  "ERR_FR_MAX_BODY_LENGTH_EXCEEDED",
-  "Request body larger than maxBodyLength limit"
-);
-var WriteAfterEndError = createErrorType(
-  "ERR_STREAM_WRITE_AFTER_END",
-  "write after end"
-);
-
-// istanbul ignore next
-var destroy = Writable.prototype.destroy || noop;
-
-// An HTTP(S) request that can be redirected
-function RedirectableRequest(options, responseCallback) {
-  // Initialize the request
-  Writable.call(this);
-  this._sanitizeOptions(options);
-  this._options = options;
-  this._ended = false;
-  this._ending = false;
-  this._redirectCount = 0;
-  this._redirects = [];
-  this._requestBodyLength = 0;
-  this._requestBodyBuffers = [];
-
-  // Attach a callback if passed
-  if (responseCallback) {
-    this.on("response", responseCallback);
-  }
-
-  // React to responses of native requests
-  var self = this;
-  this._onNativeResponse = function (response) {
-    try {
-      self._processResponse(response);
-    }
-    catch (cause) {
-      self.emit("error", cause instanceof RedirectionError ?
-        cause : new RedirectionError({ cause: cause }));
-    }
-  };
-
-  // Perform the first request
-  this._performRequest();
-}
-RedirectableRequest.prototype = Object.create(Writable.prototype);
-
-RedirectableRequest.prototype.abort = function () {
-  destroyRequest(this._currentRequest);
-  this._currentRequest.abort();
-  this.emit("abort");
-};
-
-RedirectableRequest.prototype.destroy = function (error) {
-  destroyRequest(this._currentRequest, error);
-  destroy.call(this, error);
-  return this;
-};
-
-// Writes buffered data to the current native request
-RedirectableRequest.prototype.write = function (data, encoding, callback) {
-  // Writing is not allowed if end has been called
-  if (this._ending) {
-    throw new WriteAfterEndError();
-  }
-
-  // Validate input and shift parameters if necessary
-  if (!isString$1(data) && !isBuffer(data)) {
-    throw new TypeError("data should be a string, Buffer or Uint8Array");
-  }
-  if (isFunction$1(encoding)) {
-    callback = encoding;
-    encoding = null;
-  }
-
-  // Ignore empty buffers, since writing them doesn't invoke the callback
-  // https://github.com/nodejs/node/issues/22066
-  if (data.length === 0) {
-    if (callback) {
-      callback();
-    }
-    return;
-  }
-  // Only write when we don't exceed the maximum body length
-  if (this._requestBodyLength + data.length <= this._options.maxBodyLength) {
-    this._requestBodyLength += data.length;
-    this._requestBodyBuffers.push({ data: data, encoding: encoding });
-    this._currentRequest.write(data, encoding, callback);
-  }
-  // Error when we exceed the maximum body length
-  else {
-    this.emit("error", new MaxBodyLengthExceededError());
-    this.abort();
-  }
-};
-
-// Ends the current native request
-RedirectableRequest.prototype.end = function (data, encoding, callback) {
-  // Shift parameters if necessary
-  if (isFunction$1(data)) {
-    callback = data;
-    data = encoding = null;
-  }
-  else if (isFunction$1(encoding)) {
-    callback = encoding;
-    encoding = null;
-  }
-
-  // Write data if needed and end
-  if (!data) {
-    this._ended = this._ending = true;
-    this._currentRequest.end(null, null, callback);
-  }
-  else {
-    var self = this;
-    var currentRequest = this._currentRequest;
-    this.write(data, encoding, function () {
-      self._ended = true;
-      currentRequest.end(null, null, callback);
-    });
-    this._ending = true;
-  }
-};
-
-// Sets a header value on the current native request
-RedirectableRequest.prototype.setHeader = function (name, value) {
-  this._options.headers[name] = value;
-  this._currentRequest.setHeader(name, value);
-};
-
-// Clears a header value on the current native request
-RedirectableRequest.prototype.removeHeader = function (name) {
-  delete this._options.headers[name];
-  this._currentRequest.removeHeader(name);
-};
-
-// Global timeout for all underlying requests
-RedirectableRequest.prototype.setTimeout = function (msecs, callback) {
-  var self = this;
-
-  // Destroys the socket on timeout
-  function destroyOnTimeout(socket) {
-    socket.setTimeout(msecs);
-    socket.removeListener("timeout", socket.destroy);
-    socket.addListener("timeout", socket.destroy);
-  }
-
-  // Sets up a timer to trigger a timeout event
-  function startTimer(socket) {
-    if (self._timeout) {
-      clearTimeout(self._timeout);
-    }
-    self._timeout = setTimeout(function () {
-      self.emit("timeout");
-      clearTimer();
-    }, msecs);
-    destroyOnTimeout(socket);
-  }
-
-  // Stops a timeout from triggering
-  function clearTimer() {
-    // Clear the timeout
-    if (self._timeout) {
-      clearTimeout(self._timeout);
-      self._timeout = null;
-    }
-
-    // Clean up all attached listeners
-    self.removeListener("abort", clearTimer);
-    self.removeListener("error", clearTimer);
-    self.removeListener("response", clearTimer);
-    self.removeListener("close", clearTimer);
-    if (callback) {
-      self.removeListener("timeout", callback);
-    }
-    if (!self.socket) {
-      self._currentRequest.removeListener("socket", startTimer);
-    }
-  }
-
-  // Attach callback if passed
-  if (callback) {
-    this.on("timeout", callback);
-  }
-
-  // Start the timer if or when the socket is opened
-  if (this.socket) {
-    startTimer(this.socket);
-  }
-  else {
-    this._currentRequest.once("socket", startTimer);
-  }
-
-  // Clean up on events
-  this.on("socket", destroyOnTimeout);
-  this.on("abort", clearTimer);
-  this.on("error", clearTimer);
-  this.on("response", clearTimer);
-  this.on("close", clearTimer);
-
-  return this;
-};
-
-// Proxy all other public ClientRequest methods
-[
-  "flushHeaders", "getHeader",
-  "setNoDelay", "setSocketKeepAlive",
-].forEach(function (method) {
-  RedirectableRequest.prototype[method] = function (a, b) {
-    return this._currentRequest[method](a, b);
-  };
-});
-
-// Proxy all public ClientRequest properties
-["aborted", "connection", "socket"].forEach(function (property) {
-  Object.defineProperty(RedirectableRequest.prototype, property, {
-    get: function () { return this._currentRequest[property]; },
-  });
-});
-
-RedirectableRequest.prototype._sanitizeOptions = function (options) {
-  // Ensure headers are always present
-  if (!options.headers) {
-    options.headers = {};
-  }
-
-  // Since http.request treats host as an alias of hostname,
-  // but the url module interprets host as hostname plus port,
-  // eliminate the host property to avoid confusion.
-  if (options.host) {
-    // Use hostname if set, because it has precedence
-    if (!options.hostname) {
-      options.hostname = options.host;
-    }
-    delete options.host;
-  }
-
-  // Complete the URL object when necessary
-  if (!options.pathname && options.path) {
-    var searchPos = options.path.indexOf("?");
-    if (searchPos < 0) {
-      options.pathname = options.path;
-    }
-    else {
-      options.pathname = options.path.substring(0, searchPos);
-      options.search = options.path.substring(searchPos);
-    }
-  }
-};
-
-
-// Executes the next native request (initial or redirect)
-RedirectableRequest.prototype._performRequest = function () {
-  // Load the native protocol
-  var protocol = this._options.protocol;
-  var nativeProtocol = this._options.nativeProtocols[protocol];
-  if (!nativeProtocol) {
-    throw new TypeError("Unsupported protocol " + protocol);
-  }
-
-  // If specified, use the agent corresponding to the protocol
-  // (HTTP and HTTPS use different types of agents)
-  if (this._options.agents) {
-    var scheme = protocol.slice(0, -1);
-    this._options.agent = this._options.agents[scheme];
-  }
-
-  // Create the native request and set up its event handlers
-  var request = this._currentRequest =
-        nativeProtocol.request(this._options, this._onNativeResponse);
-  request._redirectable = this;
-  for (var event of events$1) {
-    request.on(event, eventHandlers[event]);
-  }
-
-  // RFC7230§5.3.1: When making a request directly to an origin server, […]
-  // a client MUST send only the absolute path […] as the request-target.
-  this._currentUrl = /^\//.test(this._options.path) ?
-    url.format(this._options) :
-    // When making a request to a proxy, […]
-    // a client MUST send the target URI in absolute-form […].
-    this._options.path;
-
-  // End a redirected request
-  // (The first request must be ended explicitly with RedirectableRequest#end)
-  if (this._isRedirect) {
-    // Write the request entity and end
-    var i = 0;
-    var self = this;
-    var buffers = this._requestBodyBuffers;
-    (function writeNext(error) {
-      // Only write if this request has not been redirected yet
-      /* istanbul ignore else */
-      if (request === self._currentRequest) {
-        // Report any write errors
-        /* istanbul ignore if */
-        if (error) {
-          self.emit("error", error);
-        }
-        // Write the next buffer if there are still left
-        else if (i < buffers.length) {
-          var buffer = buffers[i++];
-          /* istanbul ignore else */
-          if (!request.finished) {
-            request.write(buffer.data, buffer.encoding, writeNext);
-          }
-        }
-        // End the request if `end` has been called on us
-        else if (self._ended) {
-          request.end();
-        }
-      }
-    }());
-  }
-};
-
-// Processes a response from the current native request
-RedirectableRequest.prototype._processResponse = function (response) {
-  // Store the redirected response
-  var statusCode = response.statusCode;
-  if (this._options.trackRedirects) {
-    this._redirects.push({
-      url: this._currentUrl,
-      headers: response.headers,
-      statusCode: statusCode,
-    });
-  }
-
-  // RFC7231§6.4: The 3xx (Redirection) class of status code indicates
-  // that further action needs to be taken by the user agent in order to
-  // fulfill the request. If a Location header field is provided,
-  // the user agent MAY automatically redirect its request to the URI
-  // referenced by the Location field value,
-  // even if the specific status code is not understood.
-
-  // If the response is not a redirect; return it as-is
-  var location = response.headers.location;
-  if (!location || this._options.followRedirects === false ||
-      statusCode < 300 || statusCode >= 400) {
-    response.responseUrl = this._currentUrl;
-    response.redirects = this._redirects;
-    this.emit("response", response);
-
-    // Clean up
-    this._requestBodyBuffers = [];
-    return;
-  }
-
-  // The response is a redirect, so abort the current request
-  destroyRequest(this._currentRequest);
-  // Discard the remainder of the response to avoid waiting for data
-  response.destroy();
-
-  // RFC7231§6.4: A client SHOULD detect and intervene
-  // in cyclical redirections (i.e., "infinite" redirection loops).
-  if (++this._redirectCount > this._options.maxRedirects) {
-    throw new TooManyRedirectsError();
-  }
-
-  // Store the request headers if applicable
-  var requestHeaders;
-  var beforeRedirect = this._options.beforeRedirect;
-  if (beforeRedirect) {
-    requestHeaders = Object.assign({
-      // The Host header was set by nativeProtocol.request
-      Host: response.req.getHeader("host"),
-    }, this._options.headers);
-  }
-
-  // RFC7231§6.4: Automatic redirection needs to done with
-  // care for methods not known to be safe, […]
-  // RFC7231§6.4.2–3: For historical reasons, a user agent MAY change
-  // the request method from POST to GET for the subsequent request.
-  var method = this._options.method;
-  if ((statusCode === 301 || statusCode === 302) && this._options.method === "POST" ||
-      // RFC7231§6.4.4: The 303 (See Other) status code indicates that
-      // the server is redirecting the user agent to a different resource […]
-      // A user agent can perform a retrieval request targeting that URI
-      // (a GET or HEAD request if using HTTP) […]
-      (statusCode === 303) && !/^(?:GET|HEAD)$/.test(this._options.method)) {
-    this._options.method = "GET";
-    // Drop a possible entity and headers related to it
-    this._requestBodyBuffers = [];
-    removeMatchingHeaders(/^content-/i, this._options.headers);
-  }
-
-  // Drop the Host header, as the redirect might lead to a different host
-  var currentHostHeader = removeMatchingHeaders(/^host$/i, this._options.headers);
-
-  // If the redirect is relative, carry over the host of the last request
-  var currentUrlParts = parseUrl(this._currentUrl);
-  var currentHost = currentHostHeader || currentUrlParts.host;
-  var currentUrl = /^\w+:/.test(location) ? this._currentUrl :
-    url.format(Object.assign(currentUrlParts, { host: currentHost }));
-
-  // Create the redirected request
-  var redirectUrl = resolveUrl(location, currentUrl);
-  debug("redirecting to", redirectUrl.href);
-  this._isRedirect = true;
-  spreadUrlObject(redirectUrl, this._options);
-
-  // Drop confidential headers when redirecting to a less secure protocol
-  // or to a different domain that is not a superdomain
-  if (redirectUrl.protocol !== currentUrlParts.protocol &&
-     redirectUrl.protocol !== "https:" ||
-     redirectUrl.host !== currentHost &&
-     !isSubdomain(redirectUrl.host, currentHost)) {
-    removeMatchingHeaders(/^(?:(?:proxy-)?authorization|cookie)$/i, this._options.headers);
-  }
-
-  // Evaluate the beforeRedirect callback
-  if (isFunction$1(beforeRedirect)) {
-    var responseDetails = {
-      headers: response.headers,
-      statusCode: statusCode,
-    };
-    var requestDetails = {
-      url: currentUrl,
-      method: method,
-      headers: requestHeaders,
-    };
-    beforeRedirect(this._options, responseDetails, requestDetails);
-    this._sanitizeOptions(this._options);
-  }
-
-  // Perform the redirected request
-  this._performRequest();
-};
-
-// Wraps the key/value object of protocols with redirect functionality
-function wrap(protocols) {
-  // Default settings
-  var exports = {
-    maxRedirects: 21,
-    maxBodyLength: 10 * 1024 * 1024,
-  };
-
-  // Wrap each protocol
-  var nativeProtocols = {};
-  Object.keys(protocols).forEach(function (scheme) {
-    var protocol = scheme + ":";
-    var nativeProtocol = nativeProtocols[protocol] = protocols[scheme];
-    var wrappedProtocol = exports[scheme] = Object.create(nativeProtocol);
-
-    // Executes a request, following redirects
-    function request(input, options, callback) {
-      // Parse parameters, ensuring that input is an object
-      if (isURL(input)) {
-        input = spreadUrlObject(input);
-      }
-      else if (isString$1(input)) {
-        input = spreadUrlObject(parseUrl(input));
-      }
-      else {
-        callback = options;
-        options = validateUrl(input);
-        input = { protocol: protocol };
-      }
-      if (isFunction$1(options)) {
-        callback = options;
-        options = null;
-      }
-
-      // Set defaults
-      options = Object.assign({
-        maxRedirects: exports.maxRedirects,
-        maxBodyLength: exports.maxBodyLength,
-      }, input, options);
-      options.nativeProtocols = nativeProtocols;
-      if (!isString$1(options.host) && !isString$1(options.hostname)) {
-        options.hostname = "::1";
-      }
-
-      assert$2.equal(options.protocol, protocol, "protocol mismatch");
-      debug("options", options);
-      return new RedirectableRequest(options, callback);
-    }
-
-    // Executes a GET request, following redirects
-    function get(input, options, callback) {
-      var wrappedRequest = wrappedProtocol.request(input, options, callback);
-      wrappedRequest.end();
-      return wrappedRequest;
-    }
-
-    // Expose the properties on the wrapped protocol
-    Object.defineProperties(wrappedProtocol, {
-      request: { value: request, configurable: true, enumerable: true, writable: true },
-      get: { value: get, configurable: true, enumerable: true, writable: true },
-    });
-  });
-  return exports;
-}
-
-function noop() { /* empty */ }
-
-function parseUrl(input) {
-  var parsed;
-  /* istanbul ignore else */
-  if (useNativeURL) {
-    parsed = new URL$1(input);
-  }
-  else {
-    // Ensure the URL is valid and absolute
-    parsed = validateUrl(url.parse(input));
-    if (!isString$1(parsed.protocol)) {
-      throw new InvalidUrlError({ input });
-    }
-  }
-  return parsed;
-}
-
-function resolveUrl(relative, base) {
-  /* istanbul ignore next */
-  return useNativeURL ? new URL$1(relative, base) : parseUrl(url.resolve(base, relative));
-}
-
-function validateUrl(input) {
-  if (/^\[/.test(input.hostname) && !/^\[[:0-9a-f]+\]$/i.test(input.hostname)) {
-    throw new InvalidUrlError({ input: input.href || input });
-  }
-  if (/^\[/.test(input.host) && !/^\[[:0-9a-f]+\](:\d+)?$/i.test(input.host)) {
-    throw new InvalidUrlError({ input: input.href || input });
-  }
-  return input;
-}
-
-function spreadUrlObject(urlObject, target) {
-  var spread = target || {};
-  for (var key of preservedUrlFields) {
-    spread[key] = urlObject[key];
-  }
-
-  // Fix IPv6 hostname
-  if (spread.hostname.startsWith("[")) {
-    spread.hostname = spread.hostname.slice(1, -1);
-  }
-  // Ensure port is a number
-  if (spread.port !== "") {
-    spread.port = Number(spread.port);
-  }
-  // Concatenate path
-  spread.path = spread.search ? spread.pathname + spread.search : spread.pathname;
-
-  return spread;
-}
-
-function removeMatchingHeaders(regex, headers) {
-  var lastValue;
-  for (var header in headers) {
-    if (regex.test(header)) {
-      lastValue = headers[header];
-      delete headers[header];
-    }
-  }
-  return (lastValue === null || typeof lastValue === "undefined") ?
-    undefined : String(lastValue).trim();
-}
-
-function createErrorType(code, message, baseClass) {
-  // Create constructor
-  function CustomError(properties) {
-    Error.captureStackTrace(this, this.constructor);
-    Object.assign(this, properties || {});
-    this.code = code;
-    this.message = this.cause ? message + ": " + this.cause.message : message;
-  }
-
-  // Attach constructor and set default properties
-  CustomError.prototype = new (baseClass || Error)();
-  Object.defineProperties(CustomError.prototype, {
-    constructor: {
-      value: CustomError,
-      enumerable: false,
-    },
-    name: {
-      value: "Error [" + code + "]",
-      enumerable: false,
-    },
-  });
-  return CustomError;
-}
-
-function destroyRequest(request, error) {
-  for (var event of events$1) {
-    request.removeListener(event, eventHandlers[event]);
-  }
-  request.on("error", noop);
-  request.destroy(error);
-}
-
-function isSubdomain(subdomain, domain) {
-  assert$2(isString$1(subdomain) && isString$1(domain));
-  var dot = subdomain.length - domain.length - 1;
-  return dot > 0 && subdomain[dot] === "." && subdomain.endsWith(domain);
-}
-
-function isString$1(value) {
-  return typeof value === "string" || value instanceof String;
-}
-
-function isFunction$1(value) {
-  return typeof value === "function";
-}
-
-function isBuffer(value) {
-  return typeof value === "object" && ("length" in value);
-}
-
-function isURL(value) {
-  return URL$1 && value instanceof URL$1;
-}
-
-// Exports
-followRedirects$1.exports = wrap({ http: http, https: https });
-followRedirects$1.exports.wrap = wrap;
-
-var followRedirectsExports = followRedirects$1.exports;
-var followRedirects = /*@__PURE__*/getDefaultExportFromCjs(followRedirectsExports);
-
-const VERSION = "1.7.7";
-
-function parseProtocol(url) {
-  const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
-  return match && match[1] || '';
-}
-
-const DATA_URL_PATTERN = /^(?:([^;]+);)?(?:[^;]+;)?(base64|),([\s\S]*)$/;
-
-/**
- * Parse data uri to a Buffer or Blob
- *
- * @param {String} uri
- * @param {?Boolean} asBlob
- * @param {?Object} options
- * @param {?Function} options.Blob
- *
- * @returns {Buffer|Blob}
- */
-function fromDataURI(uri, asBlob, options) {
-  const _Blob = options && options.Blob || platform.classes.Blob;
-  const protocol = parseProtocol(uri);
-
-  if (asBlob === undefined && _Blob) {
-    asBlob = true;
-  }
-
-  if (protocol === 'data') {
-    uri = protocol.length ? uri.slice(protocol.length + 1) : uri;
-
-    const match = DATA_URL_PATTERN.exec(uri);
-
-    if (!match) {
-      throw new AxiosError('Invalid URL', AxiosError.ERR_INVALID_URL);
-    }
-
-    const mime = match[1];
-    const isBase64 = match[2];
-    const body = match[3];
-    const buffer = Buffer.from(decodeURIComponent(body), isBase64 ? 'base64' : 'utf8');
-
-    if (asBlob) {
-      if (!_Blob) {
-        throw new AxiosError('Blob is not supported', AxiosError.ERR_NOT_SUPPORT);
-      }
-
-      return new _Blob([buffer], {type: mime});
-    }
-
-    return buffer;
-  }
-
-  throw new AxiosError('Unsupported protocol ' + protocol, AxiosError.ERR_NOT_SUPPORT);
-}
-
-const kInternals = Symbol('internals');
-
-class AxiosTransformStream extends require$$0$7.Transform{
-  constructor(options) {
-    options = utils$1.toFlatObject(options, {
-      maxRate: 0,
-      chunkSize: 64 * 1024,
-      minChunkSize: 100,
-      timeWindow: 500,
-      ticksRate: 2,
-      samplesCount: 15
-    }, null, (prop, source) => {
-      return !utils$1.isUndefined(source[prop]);
-    });
-
-    super({
-      readableHighWaterMark: options.chunkSize
-    });
-
-    const internals = this[kInternals] = {
-      timeWindow: options.timeWindow,
-      chunkSize: options.chunkSize,
-      maxRate: options.maxRate,
-      minChunkSize: options.minChunkSize,
-      bytesSeen: 0,
-      isCaptured: false,
-      notifiedBytesLoaded: 0,
-      ts: Date.now(),
-      bytes: 0,
-      onReadCallback: null
-    };
-
-    this.on('newListener', event => {
-      if (event === 'progress') {
-        if (!internals.isCaptured) {
-          internals.isCaptured = true;
-        }
-      }
-    });
-  }
-
-  _read(size) {
-    const internals = this[kInternals];
-
-    if (internals.onReadCallback) {
-      internals.onReadCallback();
-    }
-
-    return super._read(size);
-  }
-
-  _transform(chunk, encoding, callback) {
-    const internals = this[kInternals];
-    const maxRate = internals.maxRate;
-
-    const readableHighWaterMark = this.readableHighWaterMark;
-
-    const timeWindow = internals.timeWindow;
-
-    const divider = 1000 / timeWindow;
-    const bytesThreshold = (maxRate / divider);
-    const minChunkSize = internals.minChunkSize !== false ? Math.max(internals.minChunkSize, bytesThreshold * 0.01) : 0;
-
-    const pushChunk = (_chunk, _callback) => {
-      const bytes = Buffer.byteLength(_chunk);
-      internals.bytesSeen += bytes;
-      internals.bytes += bytes;
-
-      internals.isCaptured && this.emit('progress', internals.bytesSeen);
-
-      if (this.push(_chunk)) {
-        process.nextTick(_callback);
-      } else {
-        internals.onReadCallback = () => {
-          internals.onReadCallback = null;
-          process.nextTick(_callback);
-        };
-      }
-    };
-
-    const transformChunk = (_chunk, _callback) => {
-      const chunkSize = Buffer.byteLength(_chunk);
-      let chunkRemainder = null;
-      let maxChunkSize = readableHighWaterMark;
-      let bytesLeft;
-      let passed = 0;
-
-      if (maxRate) {
-        const now = Date.now();
-
-        if (!internals.ts || (passed = (now - internals.ts)) >= timeWindow) {
-          internals.ts = now;
-          bytesLeft = bytesThreshold - internals.bytes;
-          internals.bytes = bytesLeft < 0 ? -bytesLeft : 0;
-          passed = 0;
-        }
-
-        bytesLeft = bytesThreshold - internals.bytes;
-      }
-
-      if (maxRate) {
-        if (bytesLeft <= 0) {
-          // next time window
-          return setTimeout(() => {
-            _callback(null, _chunk);
-          }, timeWindow - passed);
-        }
-
-        if (bytesLeft < maxChunkSize) {
-          maxChunkSize = bytesLeft;
-        }
-      }
-
-      if (maxChunkSize && chunkSize > maxChunkSize && (chunkSize - maxChunkSize) > minChunkSize) {
-        chunkRemainder = _chunk.subarray(maxChunkSize);
-        _chunk = _chunk.subarray(0, maxChunkSize);
-      }
-
-      pushChunk(_chunk, chunkRemainder ? () => {
-        process.nextTick(_callback, null, chunkRemainder);
-      } : _callback);
-    };
-
-    transformChunk(chunk, function transformNextChunk(err, _chunk) {
-      if (err) {
-        return callback(err);
-      }
-
-      if (_chunk) {
-        transformChunk(_chunk, transformNextChunk);
-      } else {
-        callback(null);
-      }
-    });
-  }
-}
-
-const {asyncIterator} = Symbol;
-
-const readBlob = async function* (blob) {
-  if (blob.stream) {
-    yield* blob.stream();
-  } else if (blob.arrayBuffer) {
-    yield await blob.arrayBuffer();
-  } else if (blob[asyncIterator]) {
-    yield* blob[asyncIterator]();
-  } else {
-    yield blob;
-  }
-};
-
-const BOUNDARY_ALPHABET = utils$1.ALPHABET.ALPHA_DIGIT + '-_';
-
-const textEncoder = new require$$1.TextEncoder();
-
-const CRLF = '\r\n';
-const CRLF_BYTES = textEncoder.encode(CRLF);
-const CRLF_BYTES_COUNT = 2;
-
-class FormDataPart {
-  constructor(name, value) {
-    const {escapeName} = this.constructor;
-    const isStringValue = utils$1.isString(value);
-
-    let headers = `Content-Disposition: form-data; name="${escapeName(name)}"${
-      !isStringValue && value.name ? `; filename="${escapeName(value.name)}"` : ''
-    }${CRLF}`;
-
-    if (isStringValue) {
-      value = textEncoder.encode(String(value).replace(/\r?\n|\r\n?/g, CRLF));
-    } else {
-      headers += `Content-Type: ${value.type || "application/octet-stream"}${CRLF}`;
-    }
-
-    this.headers = textEncoder.encode(headers + CRLF);
-
-    this.contentLength = isStringValue ? value.byteLength : value.size;
-
-    this.size = this.headers.byteLength + this.contentLength + CRLF_BYTES_COUNT;
-
-    this.name = name;
-    this.value = value;
-  }
-
-  async *encode(){
-    yield this.headers;
-
-    const {value} = this;
-
-    if(utils$1.isTypedArray(value)) {
-      yield value;
-    } else {
-      yield* readBlob(value);
-    }
-
-    yield CRLF_BYTES;
-  }
-
-  static escapeName(name) {
-      return String(name).replace(/[\r\n"]/g, (match) => ({
-        '\r' : '%0D',
-        '\n' : '%0A',
-        '"' : '%22',
-      }[match]));
-  }
-}
-
-const formDataToStream = (form, headersHandler, options) => {
-  const {
-    tag = 'form-data-boundary',
-    size = 25,
-    boundary = tag + '-' + utils$1.generateString(size, BOUNDARY_ALPHABET)
-  } = options || {};
-
-  if(!utils$1.isFormData(form)) {
-    throw TypeError('FormData instance required');
-  }
-
-  if (boundary.length < 1 || boundary.length > 70) {
-    throw Error('boundary must be 10-70 characters long')
-  }
-
-  const boundaryBytes = textEncoder.encode('--' + boundary + CRLF);
-  const footerBytes = textEncoder.encode('--' + boundary + '--' + CRLF + CRLF);
-  let contentLength = footerBytes.byteLength;
-
-  const parts = Array.from(form.entries()).map(([name, value]) => {
-    const part = new FormDataPart(name, value);
-    contentLength += part.size;
-    return part;
-  });
-
-  contentLength += boundaryBytes.byteLength * parts.length;
-
-  contentLength = utils$1.toFiniteNumber(contentLength);
-
-  const computedHeaders = {
-    'Content-Type': `multipart/form-data; boundary=${boundary}`
-  };
-
-  if (Number.isFinite(contentLength)) {
-    computedHeaders['Content-Length'] = contentLength;
-  }
-
-  headersHandler && headersHandler(computedHeaders);
-
-  return require$$0$7.Readable.from((async function *() {
-    for(const part of parts) {
-      yield boundaryBytes;
-      yield* part.encode();
-    }
-
-    yield footerBytes;
-  })());
-};
-
-class ZlibHeaderTransformStream extends require$$0$7.Transform {
-  __transform(chunk, encoding, callback) {
-    this.push(chunk);
-    callback();
-  }
-
-  _transform(chunk, encoding, callback) {
-    if (chunk.length !== 0) {
-      this._transform = this.__transform;
-
-      // Add Default Compression headers if no zlib headers are present
-      if (chunk[0] !== 120) { // Hex: 78
-        const header = Buffer.alloc(2);
-        header[0] = 120; // Hex: 78
-        header[1] = 156; // Hex: 9C 
-        this.push(header, encoding);
-      }
-    }
-
-    this.__transform(chunk, encoding, callback);
-  }
-}
-
-const callbackify = (fn, reducer) => {
-  return utils$1.isAsyncFn(fn) ? function (...args) {
-    const cb = args.pop();
-    fn.apply(this, args).then((value) => {
-      try {
-        reducer ? cb(null, ...reducer(value)) : cb(null, value);
-      } catch (err) {
-        cb(err);
-      }
-    }, cb);
-  } : fn;
-};
-
-/**
- * Calculate data maxRate
- * @param {Number} [samplesCount= 10]
- * @param {Number} [min= 1000]
- * @returns {Function}
- */
-function speedometer(samplesCount, min) {
-  samplesCount = samplesCount || 10;
-  const bytes = new Array(samplesCount);
-  const timestamps = new Array(samplesCount);
-  let head = 0;
-  let tail = 0;
-  let firstSampleTS;
-
-  min = min !== undefined ? min : 1000;
-
-  return function push(chunkLength) {
-    const now = Date.now();
-
-    const startedAt = timestamps[tail];
-
-    if (!firstSampleTS) {
-      firstSampleTS = now;
-    }
-
-    bytes[head] = chunkLength;
-    timestamps[head] = now;
-
-    let i = tail;
-    let bytesCount = 0;
-
-    while (i !== head) {
-      bytesCount += bytes[i++];
-      i = i % samplesCount;
-    }
-
-    head = (head + 1) % samplesCount;
-
-    if (head === tail) {
-      tail = (tail + 1) % samplesCount;
-    }
-
-    if (now - firstSampleTS < min) {
-      return;
-    }
-
-    const passed = startedAt && now - startedAt;
-
-    return passed ? Math.round(bytesCount * 1000 / passed) : undefined;
-  };
-}
-
-/**
- * Throttle decorator
- * @param {Function} fn
- * @param {Number} freq
- * @return {Function}
- */
-function throttle(fn, freq) {
-  let timestamp = 0;
-  let threshold = 1000 / freq;
-  let lastArgs;
-  let timer;
-
-  const invoke = (args, now = Date.now()) => {
-    timestamp = now;
-    lastArgs = null;
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-    fn.apply(null, args);
-  };
-
-  const throttled = (...args) => {
-    const now = Date.now();
-    const passed = now - timestamp;
-    if ( passed >= threshold) {
-      invoke(args, now);
-    } else {
-      lastArgs = args;
-      if (!timer) {
-        timer = setTimeout(() => {
-          timer = null;
-          invoke(lastArgs);
-        }, threshold - passed);
-      }
-    }
-  };
-
-  const flush = () => lastArgs && invoke(lastArgs);
-
-  return [throttled, flush];
-}
-
-const progressEventReducer = (listener, isDownloadStream, freq = 3) => {
-  let bytesNotified = 0;
-  const _speedometer = speedometer(50, 250);
-
-  return throttle(e => {
-    const loaded = e.loaded;
-    const total = e.lengthComputable ? e.total : undefined;
-    const progressBytes = loaded - bytesNotified;
-    const rate = _speedometer(progressBytes);
-    const inRange = loaded <= total;
-
-    bytesNotified = loaded;
-
-    const data = {
-      loaded,
-      total,
-      progress: total ? (loaded / total) : undefined,
-      bytes: progressBytes,
-      rate: rate ? rate : undefined,
-      estimated: rate && total && inRange ? (total - loaded) / rate : undefined,
-      event: e,
-      lengthComputable: total != null,
-      [isDownloadStream ? 'download' : 'upload']: true
-    };
-
-    listener(data);
-  }, freq);
-};
-
-const progressEventDecorator = (total, throttled) => {
-  const lengthComputable = total != null;
-
-  return [(loaded) => throttled[0]({
-    lengthComputable,
-    total,
-    loaded
-  }), throttled[1]];
-};
-
-const asyncDecorator = (fn) => (...args) => utils$1.asap(() => fn(...args));
-
-const zlibOptions = {
-  flush: zlib$2.constants.Z_SYNC_FLUSH,
-  finishFlush: zlib$2.constants.Z_SYNC_FLUSH
-};
-
-const brotliOptions = {
-  flush: zlib$2.constants.BROTLI_OPERATION_FLUSH,
-  finishFlush: zlib$2.constants.BROTLI_OPERATION_FLUSH
-};
-
-const isBrotliSupported = utils$1.isFunction(zlib$2.createBrotliDecompress);
-
-const {http: httpFollow, https: httpsFollow} = followRedirects;
-
-const isHttps = /https:?/;
-
-const supportedProtocols = platform.protocols.map(protocol => {
-  return protocol + ':';
-});
-
-const flushOnFinish = (stream, [throttled, flush]) => {
-  stream
-    .on('end', flush)
-    .on('error', flush);
-
-  return throttled;
-};
-
-/**
- * If the proxy or config beforeRedirects functions are defined, call them with the options
- * object.
- *
- * @param {Object<string, any>} options - The options object that was passed to the request.
- *
- * @returns {Object<string, any>}
- */
-function dispatchBeforeRedirect(options, responseDetails) {
-  if (options.beforeRedirects.proxy) {
-    options.beforeRedirects.proxy(options);
-  }
-  if (options.beforeRedirects.config) {
-    options.beforeRedirects.config(options, responseDetails);
-  }
-}
-
-/**
- * If the proxy or config afterRedirects functions are defined, call them with the options
- *
- * @param {http.ClientRequestArgs} options
- * @param {AxiosProxyConfig} configProxy configuration from Axios options object
- * @param {string} location
- *
- * @returns {http.ClientRequestArgs}
- */
-function setProxy(options, configProxy, location) {
-  let proxy = configProxy;
-  if (!proxy && proxy !== false) {
-    const proxyUrl = getProxyForUrl_1(location);
-    if (proxyUrl) {
-      proxy = new URL(proxyUrl);
-    }
-  }
-  if (proxy) {
-    // Basic proxy authorization
-    if (proxy.username) {
-      proxy.auth = (proxy.username || '') + ':' + (proxy.password || '');
-    }
-
-    if (proxy.auth) {
-      // Support proxy auth object form
-      if (proxy.auth.username || proxy.auth.password) {
-        proxy.auth = (proxy.auth.username || '') + ':' + (proxy.auth.password || '');
-      }
-      const base64 = Buffer
-        .from(proxy.auth, 'utf8')
-        .toString('base64');
-      options.headers['Proxy-Authorization'] = 'Basic ' + base64;
-    }
-
-    options.headers.host = options.hostname + (options.port ? ':' + options.port : '');
-    const proxyHost = proxy.hostname || proxy.host;
-    options.hostname = proxyHost;
-    // Replace 'host' since options is not a URL object
-    options.host = proxyHost;
-    options.port = proxy.port;
-    options.path = location;
-    if (proxy.protocol) {
-      options.protocol = proxy.protocol.includes(':') ? proxy.protocol : `${proxy.protocol}:`;
-    }
-  }
-
-  options.beforeRedirects.proxy = function beforeRedirect(redirectOptions) {
-    // Configure proxy for redirected request, passing the original config proxy to apply
-    // the exact same logic as if the redirected request was performed by axios directly.
-    setProxy(redirectOptions, configProxy, redirectOptions.href);
-  };
-}
-
-const isHttpAdapterSupported = typeof process !== 'undefined' && utils$1.kindOf(process) === 'process';
-
-// temporary hotfix
-
-const wrapAsync = (asyncExecutor) => {
-  return new Promise((resolve, reject) => {
-    let onDone;
-    let isDone;
-
-    const done = (value, isRejected) => {
-      if (isDone) return;
-      isDone = true;
-      onDone && onDone(value, isRejected);
-    };
-
-    const _resolve = (value) => {
-      done(value);
-      resolve(value);
-    };
-
-    const _reject = (reason) => {
-      done(reason, true);
-      reject(reason);
-    };
-
-    asyncExecutor(_resolve, _reject, (onDoneHandler) => (onDone = onDoneHandler)).catch(_reject);
-  })
-};
-
-const resolveFamily = ({address, family}) => {
-  if (!utils$1.isString(address)) {
-    throw TypeError('address must be a string');
-  }
-  return ({
-    address,
-    family: family || (address.indexOf('.') < 0 ? 6 : 4)
-  });
-};
-
-const buildAddressEntry = (address, family) => resolveFamily(utils$1.isObject(address) ? address : {address, family});
-
-/*eslint consistent-return:0*/
-var httpAdapter = isHttpAdapterSupported && function httpAdapter(config) {
-  return wrapAsync(async function dispatchHttpRequest(resolve, reject, onDone) {
-    let {data, lookup, family} = config;
-    const {responseType, responseEncoding} = config;
-    const method = config.method.toUpperCase();
-    let isDone;
-    let rejected = false;
-    let req;
-
-    if (lookup) {
-      const _lookup = callbackify(lookup, (value) => utils$1.isArray(value) ? value : [value]);
-      // hotfix to support opt.all option which is required for node 20.x
-      lookup = (hostname, opt, cb) => {
-        _lookup(hostname, opt, (err, arg0, arg1) => {
-          if (err) {
-            return cb(err);
-          }
-
-          const addresses = utils$1.isArray(arg0) ? arg0.map(addr => buildAddressEntry(addr)) : [buildAddressEntry(arg0, arg1)];
-
-          opt.all ? cb(err, addresses) : cb(err, addresses[0].address, addresses[0].family);
-        });
-      };
-    }
-
-    // temporary internal emitter until the AxiosRequest class will be implemented
-    const emitter = new require$$0$5.EventEmitter();
-
-    const onFinished = () => {
-      if (config.cancelToken) {
-        config.cancelToken.unsubscribe(abort);
-      }
-
-      if (config.signal) {
-        config.signal.removeEventListener('abort', abort);
-      }
-
-      emitter.removeAllListeners();
-    };
-
-    onDone((value, isRejected) => {
-      isDone = true;
-      if (isRejected) {
-        rejected = true;
-        onFinished();
-      }
-    });
-
-    function abort(reason) {
-      emitter.emit('abort', !reason || reason.type ? new CanceledError(null, config, req) : reason);
-    }
-
-    emitter.once('abort', reject);
-
-    if (config.cancelToken || config.signal) {
-      config.cancelToken && config.cancelToken.subscribe(abort);
-      if (config.signal) {
-        config.signal.aborted ? abort() : config.signal.addEventListener('abort', abort);
-      }
-    }
-
-    // Parse url
-    const fullPath = buildFullPath(config.baseURL, config.url);
-    const parsed = new URL(fullPath, platform.hasBrowserEnv ? platform.origin : undefined);
-    const protocol = parsed.protocol || supportedProtocols[0];
-
-    if (protocol === 'data:') {
-      let convertedData;
-
-      if (method !== 'GET') {
-        return settle(resolve, reject, {
-          status: 405,
-          statusText: 'method not allowed',
-          headers: {},
-          config
-        });
-      }
-
-      try {
-        convertedData = fromDataURI(config.url, responseType === 'blob', {
-          Blob: config.env && config.env.Blob
-        });
-      } catch (err) {
-        throw AxiosError.from(err, AxiosError.ERR_BAD_REQUEST, config);
-      }
-
-      if (responseType === 'text') {
-        convertedData = convertedData.toString(responseEncoding);
-
-        if (!responseEncoding || responseEncoding === 'utf8') {
-          convertedData = utils$1.stripBOM(convertedData);
-        }
-      } else if (responseType === 'stream') {
-        convertedData = require$$0$7.Readable.from(convertedData);
-      }
-
-      return settle(resolve, reject, {
-        data: convertedData,
-        status: 200,
-        statusText: 'OK',
-        headers: new AxiosHeaders(),
-        config
-      });
-    }
-
-    if (supportedProtocols.indexOf(protocol) === -1) {
-      return reject(new AxiosError(
-        'Unsupported protocol ' + protocol,
-        AxiosError.ERR_BAD_REQUEST,
-        config
-      ));
-    }
-
-    const headers = AxiosHeaders.from(config.headers).normalize();
-
-    // Set User-Agent (required by some servers)
-    // See https://github.com/axios/axios/issues/69
-    // User-Agent is specified; handle case where no UA header is desired
-    // Only set header if it hasn't been set in config
-    headers.set('User-Agent', 'axios/' + VERSION, false);
-
-    const {onUploadProgress, onDownloadProgress} = config;
-    const maxRate = config.maxRate;
-    let maxUploadRate = undefined;
-    let maxDownloadRate = undefined;
-
-    // support for spec compliant FormData objects
-    if (utils$1.isSpecCompliantForm(data)) {
-      const userBoundary = headers.getContentType(/boundary=([-_\w\d]{10,70})/i);
-
-      data = formDataToStream(data, (formHeaders) => {
-        headers.set(formHeaders);
-      }, {
-        tag: `axios-${VERSION}-boundary`,
-        boundary: userBoundary && userBoundary[1] || undefined
-      });
-      // support for https://www.npmjs.com/package/form-data api
-    } else if (utils$1.isFormData(data) && utils$1.isFunction(data.getHeaders)) {
-      headers.set(data.getHeaders());
-
-      if (!headers.hasContentLength()) {
-        try {
-          const knownLength = await require$$1.promisify(data.getLength).call(data);
-          Number.isFinite(knownLength) && knownLength >= 0 && headers.setContentLength(knownLength);
-          /*eslint no-empty:0*/
-        } catch (e) {
-        }
-      }
-    } else if (utils$1.isBlob(data)) {
-      data.size && headers.setContentType(data.type || 'application/octet-stream');
-      headers.setContentLength(data.size || 0);
-      data = require$$0$7.Readable.from(readBlob(data));
-    } else if (data && !utils$1.isStream(data)) {
-      if (Buffer.isBuffer(data)) ; else if (utils$1.isArrayBuffer(data)) {
-        data = Buffer.from(new Uint8Array(data));
-      } else if (utils$1.isString(data)) {
-        data = Buffer.from(data, 'utf-8');
-      } else {
-        return reject(new AxiosError(
-          'Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream',
-          AxiosError.ERR_BAD_REQUEST,
-          config
-        ));
-      }
-
-      // Add Content-Length header if data exists
-      headers.setContentLength(data.length, false);
-
-      if (config.maxBodyLength > -1 && data.length > config.maxBodyLength) {
-        return reject(new AxiosError(
-          'Request body larger than maxBodyLength limit',
-          AxiosError.ERR_BAD_REQUEST,
-          config
-        ));
-      }
-    }
-
-    const contentLength = utils$1.toFiniteNumber(headers.getContentLength());
-
-    if (utils$1.isArray(maxRate)) {
-      maxUploadRate = maxRate[0];
-      maxDownloadRate = maxRate[1];
-    } else {
-      maxUploadRate = maxDownloadRate = maxRate;
-    }
-
-    if (data && (onUploadProgress || maxUploadRate)) {
-      if (!utils$1.isStream(data)) {
-        data = require$$0$7.Readable.from(data, {objectMode: false});
-      }
-
-      data = require$$0$7.pipeline([data, new AxiosTransformStream({
-        maxRate: utils$1.toFiniteNumber(maxUploadRate)
-      })], utils$1.noop);
-
-      onUploadProgress && data.on('progress', flushOnFinish(
-        data,
-        progressEventDecorator(
-          contentLength,
-          progressEventReducer(asyncDecorator(onUploadProgress), false, 3)
-        )
-      ));
-    }
-
-    // HTTP basic authentication
-    let auth = undefined;
-    if (config.auth) {
-      const username = config.auth.username || '';
-      const password = config.auth.password || '';
-      auth = username + ':' + password;
-    }
-
-    if (!auth && parsed.username) {
-      const urlUsername = parsed.username;
-      const urlPassword = parsed.password;
-      auth = urlUsername + ':' + urlPassword;
-    }
-
-    auth && headers.delete('authorization');
-
-    let path;
-
-    try {
-      path = buildURL(
-        parsed.pathname + parsed.search,
-        config.params,
-        config.paramsSerializer
-      ).replace(/^\?/, '');
-    } catch (err) {
-      const customErr = new Error(err.message);
-      customErr.config = config;
-      customErr.url = config.url;
-      customErr.exists = true;
-      return reject(customErr);
-    }
-
-    headers.set(
-      'Accept-Encoding',
-      'gzip, compress, deflate' + (isBrotliSupported ? ', br' : ''), false
-      );
-
-    const options = {
-      path,
-      method: method,
-      headers: headers.toJSON(),
-      agents: { http: config.httpAgent, https: config.httpsAgent },
-      auth,
-      protocol,
-      family,
-      beforeRedirect: dispatchBeforeRedirect,
-      beforeRedirects: {}
-    };
-
-    // cacheable-lookup integration hotfix
-    !utils$1.isUndefined(lookup) && (options.lookup = lookup);
-
-    if (config.socketPath) {
-      options.socketPath = config.socketPath;
-    } else {
-      options.hostname = parsed.hostname.startsWith("[") ? parsed.hostname.slice(1, -1) : parsed.hostname;
-      options.port = parsed.port;
-      setProxy(options, config.proxy, protocol + '//' + parsed.hostname + (parsed.port ? ':' + parsed.port : '') + options.path);
-    }
-
-    let transport;
-    const isHttpsRequest = isHttps.test(options.protocol);
-    options.agent = isHttpsRequest ? config.httpsAgent : config.httpAgent;
-    if (config.transport) {
-      transport = config.transport;
-    } else if (config.maxRedirects === 0) {
-      transport = isHttpsRequest ? require$$1$1 : require$$0$9;
-    } else {
-      if (config.maxRedirects) {
-        options.maxRedirects = config.maxRedirects;
-      }
-      if (config.beforeRedirect) {
-        options.beforeRedirects.config = config.beforeRedirect;
-      }
-      transport = isHttpsRequest ? httpsFollow : httpFollow;
-    }
-
-    if (config.maxBodyLength > -1) {
-      options.maxBodyLength = config.maxBodyLength;
-    } else {
-      // follow-redirects does not skip comparison, so it should always succeed for axios -1 unlimited
-      options.maxBodyLength = Infinity;
-    }
-
-    if (config.insecureHTTPParser) {
-      options.insecureHTTPParser = config.insecureHTTPParser;
-    }
-
-    // Create the request
-    req = transport.request(options, function handleResponse(res) {
-      if (req.destroyed) return;
-
-      const streams = [res];
-
-      const responseLength = +res.headers['content-length'];
-
-      if (onDownloadProgress || maxDownloadRate) {
-        const transformStream = new AxiosTransformStream({
-          maxRate: utils$1.toFiniteNumber(maxDownloadRate)
-        });
-
-        onDownloadProgress && transformStream.on('progress', flushOnFinish(
-          transformStream,
-          progressEventDecorator(
-            responseLength,
-            progressEventReducer(asyncDecorator(onDownloadProgress), true, 3)
-          )
-        ));
-
-        streams.push(transformStream);
-      }
-
-      // decompress the response body transparently if required
-      let responseStream = res;
-
-      // return the last request in case of redirects
-      const lastRequest = res.req || req;
-
-      // if decompress disabled we should not decompress
-      if (config.decompress !== false && res.headers['content-encoding']) {
-        // if no content, but headers still say that it is encoded,
-        // remove the header not confuse downstream operations
-        if (method === 'HEAD' || res.statusCode === 204) {
-          delete res.headers['content-encoding'];
-        }
-
-        switch ((res.headers['content-encoding'] || '').toLowerCase()) {
-        /*eslint default-case:0*/
-        case 'gzip':
-        case 'x-gzip':
-        case 'compress':
-        case 'x-compress':
-          // add the unzipper to the body stream processing pipeline
-          streams.push(zlib$2.createUnzip(zlibOptions));
-
-          // remove the content-encoding in order to not confuse downstream operations
-          delete res.headers['content-encoding'];
-          break;
-        case 'deflate':
-          streams.push(new ZlibHeaderTransformStream());
-
-          // add the unzipper to the body stream processing pipeline
-          streams.push(zlib$2.createUnzip(zlibOptions));
-
-          // remove the content-encoding in order to not confuse downstream operations
-          delete res.headers['content-encoding'];
-          break;
-        case 'br':
-          if (isBrotliSupported) {
-            streams.push(zlib$2.createBrotliDecompress(brotliOptions));
-            delete res.headers['content-encoding'];
-          }
-        }
-      }
-
-      responseStream = streams.length > 1 ? require$$0$7.pipeline(streams, utils$1.noop) : streams[0];
-
-      const offListeners = require$$0$7.finished(responseStream, () => {
-        offListeners();
-        onFinished();
-      });
-
-      const response = {
-        status: res.statusCode,
-        statusText: res.statusMessage,
-        headers: new AxiosHeaders(res.headers),
-        config,
-        request: lastRequest
-      };
-
-      if (responseType === 'stream') {
-        response.data = responseStream;
-        settle(resolve, reject, response);
-      } else {
-        const responseBuffer = [];
-        let totalResponseBytes = 0;
-
-        responseStream.on('data', function handleStreamData(chunk) {
-          responseBuffer.push(chunk);
-          totalResponseBytes += chunk.length;
-
-          // make sure the content length is not over the maxContentLength if specified
-          if (config.maxContentLength > -1 && totalResponseBytes > config.maxContentLength) {
-            // stream.destroy() emit aborted event before calling reject() on Node.js v16
-            rejected = true;
-            responseStream.destroy();
-            reject(new AxiosError('maxContentLength size of ' + config.maxContentLength + ' exceeded',
-              AxiosError.ERR_BAD_RESPONSE, config, lastRequest));
-          }
-        });
-
-        responseStream.on('aborted', function handlerStreamAborted() {
-          if (rejected) {
-            return;
-          }
-
-          const err = new AxiosError(
-            'maxContentLength size of ' + config.maxContentLength + ' exceeded',
-            AxiosError.ERR_BAD_RESPONSE,
-            config,
-            lastRequest
-          );
-          responseStream.destroy(err);
-          reject(err);
-        });
-
-        responseStream.on('error', function handleStreamError(err) {
-          if (req.destroyed) return;
-          reject(AxiosError.from(err, null, config, lastRequest));
-        });
-
-        responseStream.on('end', function handleStreamEnd() {
-          try {
-            let responseData = responseBuffer.length === 1 ? responseBuffer[0] : Buffer.concat(responseBuffer);
-            if (responseType !== 'arraybuffer') {
-              responseData = responseData.toString(responseEncoding);
-              if (!responseEncoding || responseEncoding === 'utf8') {
-                responseData = utils$1.stripBOM(responseData);
-              }
-            }
-            response.data = responseData;
-          } catch (err) {
-            return reject(AxiosError.from(err, null, config, response.request, response));
-          }
-          settle(resolve, reject, response);
-        });
-      }
-
-      emitter.once('abort', err => {
-        if (!responseStream.destroyed) {
-          responseStream.emit('error', err);
-          responseStream.destroy();
-        }
-      });
-    });
-
-    emitter.once('abort', err => {
-      reject(err);
-      req.destroy(err);
-    });
-
-    // Handle errors
-    req.on('error', function handleRequestError(err) {
-      // @todo remove
-      // if (req.aborted && err.code !== AxiosError.ERR_FR_TOO_MANY_REDIRECTS) return;
-      reject(AxiosError.from(err, null, config, req));
-    });
-
-    // set tcp keep alive to prevent drop connection by peer
-    req.on('socket', function handleRequestSocket(socket) {
-      // default interval of sending ack packet is 1 minute
-      socket.setKeepAlive(true, 1000 * 60);
-    });
-
-    // Handle request timeout
-    if (config.timeout) {
-      // This is forcing a int timeout to avoid problems if the `req` interface doesn't handle other types.
-      const timeout = parseInt(config.timeout, 10);
-
-      if (Number.isNaN(timeout)) {
-        reject(new AxiosError(
-          'error trying to parse `config.timeout` to int',
-          AxiosError.ERR_BAD_OPTION_VALUE,
-          config,
-          req
-        ));
-
-        return;
-      }
-
-      // Sometime, the response will be very slow, and does not respond, the connect event will be block by event loop system.
-      // And timer callback will be fired, and abort() will be invoked before connection, then get "socket hang up" and code ECONNRESET.
-      // At this time, if we have a large number of request, nodejs will hang up some socket on background. and the number will up and up.
-      // And then these socket which be hang up will devouring CPU little by little.
-      // ClientRequest.setTimeout will be fired on the specify milliseconds, and can make sure that abort() will be fired after connect.
-      req.setTimeout(timeout, function handleRequestTimeout() {
-        if (isDone) return;
-        let timeoutErrorMessage = config.timeout ? 'timeout of ' + config.timeout + 'ms exceeded' : 'timeout exceeded';
-        const transitional = config.transitional || transitionalDefaults;
-        if (config.timeoutErrorMessage) {
-          timeoutErrorMessage = config.timeoutErrorMessage;
-        }
-        reject(new AxiosError(
-          timeoutErrorMessage,
-          transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
-          config,
-          req
-        ));
-        abort();
-      });
-    }
-
-
-    // Send the request
-    if (utils$1.isStream(data)) {
-      let ended = false;
-      let errored = false;
-
-      data.on('end', () => {
-        ended = true;
-      });
-
-      data.once('error', err => {
-        errored = true;
-        req.destroy(err);
-      });
-
-      data.on('close', () => {
-        if (!ended && !errored) {
-          abort(new CanceledError('Request stream has been aborted', config, req));
-        }
-      });
-
-      data.pipe(req);
-    } else {
-      req.end(data);
-    }
-  });
-};
-
-var isURLSameOrigin = platform.hasStandardBrowserEnv ?
-
-// Standard browser envs have full support of the APIs needed to test
-// whether the request URL is of the same origin as current location.
-  (function standardBrowserEnv() {
-    const msie = platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent);
-    const urlParsingNode = document.createElement('a');
-    let originURL;
-
-    /**
-    * Parse a URL to discover its components
-    *
-    * @param {String} url The URL to be parsed
-    * @returns {Object}
-    */
-    function resolveURL(url) {
-      let href = url;
-
-      if (msie) {
-        // IE needs attribute set twice to normalize properties
-        urlParsingNode.setAttribute('href', href);
-        href = urlParsingNode.href;
-      }
-
-      urlParsingNode.setAttribute('href', href);
-
-      // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-      return {
-        href: urlParsingNode.href,
-        protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
-        host: urlParsingNode.host,
-        search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
-        hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
-        hostname: urlParsingNode.hostname,
-        port: urlParsingNode.port,
-        pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
-          urlParsingNode.pathname :
-          '/' + urlParsingNode.pathname
-      };
-    }
-
-    originURL = resolveURL(window.location.href);
-
-    /**
-    * Determine if a URL shares the same origin as the current location
-    *
-    * @param {String} requestURL The URL to test
-    * @returns {boolean} True if URL shares the same origin, otherwise false
-    */
-    return function isURLSameOrigin(requestURL) {
-      const parsed = (utils$1.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
-      return (parsed.protocol === originURL.protocol &&
-          parsed.host === originURL.host);
-    };
-  })() :
-
-  // Non standard browser envs (web workers, react-native) lack needed support.
-  (function nonStandardBrowserEnv() {
-    return function isURLSameOrigin() {
-      return true;
-    };
-  })();
-
-var cookies = platform.hasStandardBrowserEnv ?
-
-  // Standard browser envs support document.cookie
-  {
-    write(name, value, expires, path, domain, secure) {
-      const cookie = [name + '=' + encodeURIComponent(value)];
-
-      utils$1.isNumber(expires) && cookie.push('expires=' + new Date(expires).toGMTString());
-
-      utils$1.isString(path) && cookie.push('path=' + path);
-
-      utils$1.isString(domain) && cookie.push('domain=' + domain);
-
-      secure === true && cookie.push('secure');
-
-      document.cookie = cookie.join('; ');
-    },
-
-    read(name) {
-      const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-      return (match ? decodeURIComponent(match[3]) : null);
-    },
-
-    remove(name) {
-      this.write(name, '', Date.now() - 86400000);
-    }
-  }
-
-  :
-
-  // Non-standard browser env (web workers, react-native) lack needed support.
-  {
-    write() {},
-    read() {
-      return null;
-    },
-    remove() {}
-  };
-
-const headersToObject = (thing) => thing instanceof AxiosHeaders ? { ...thing } : thing;
-
-/**
- * Config-specific merge-function which creates a new config-object
- * by merging two configuration objects together.
- *
- * @param {Object} config1
- * @param {Object} config2
- *
- * @returns {Object} New object resulting from merging config2 to config1
- */
-function mergeConfig(config1, config2) {
-  // eslint-disable-next-line no-param-reassign
-  config2 = config2 || {};
-  const config = {};
-
-  function getMergedValue(target, source, caseless) {
-    if (utils$1.isPlainObject(target) && utils$1.isPlainObject(source)) {
-      return utils$1.merge.call({caseless}, target, source);
-    } else if (utils$1.isPlainObject(source)) {
-      return utils$1.merge({}, source);
-    } else if (utils$1.isArray(source)) {
-      return source.slice();
-    }
-    return source;
-  }
-
-  // eslint-disable-next-line consistent-return
-  function mergeDeepProperties(a, b, caseless) {
-    if (!utils$1.isUndefined(b)) {
-      return getMergedValue(a, b, caseless);
-    } else if (!utils$1.isUndefined(a)) {
-      return getMergedValue(undefined, a, caseless);
-    }
-  }
-
-  // eslint-disable-next-line consistent-return
-  function valueFromConfig2(a, b) {
-    if (!utils$1.isUndefined(b)) {
-      return getMergedValue(undefined, b);
-    }
-  }
-
-  // eslint-disable-next-line consistent-return
-  function defaultToConfig2(a, b) {
-    if (!utils$1.isUndefined(b)) {
-      return getMergedValue(undefined, b);
-    } else if (!utils$1.isUndefined(a)) {
-      return getMergedValue(undefined, a);
-    }
-  }
-
-  // eslint-disable-next-line consistent-return
-  function mergeDirectKeys(a, b, prop) {
-    if (prop in config2) {
-      return getMergedValue(a, b);
-    } else if (prop in config1) {
-      return getMergedValue(undefined, a);
-    }
-  }
-
-  const mergeMap = {
-    url: valueFromConfig2,
-    method: valueFromConfig2,
-    data: valueFromConfig2,
-    baseURL: defaultToConfig2,
-    transformRequest: defaultToConfig2,
-    transformResponse: defaultToConfig2,
-    paramsSerializer: defaultToConfig2,
-    timeout: defaultToConfig2,
-    timeoutMessage: defaultToConfig2,
-    withCredentials: defaultToConfig2,
-    withXSRFToken: defaultToConfig2,
-    adapter: defaultToConfig2,
-    responseType: defaultToConfig2,
-    xsrfCookieName: defaultToConfig2,
-    xsrfHeaderName: defaultToConfig2,
-    onUploadProgress: defaultToConfig2,
-    onDownloadProgress: defaultToConfig2,
-    decompress: defaultToConfig2,
-    maxContentLength: defaultToConfig2,
-    maxBodyLength: defaultToConfig2,
-    beforeRedirect: defaultToConfig2,
-    transport: defaultToConfig2,
-    httpAgent: defaultToConfig2,
-    httpsAgent: defaultToConfig2,
-    cancelToken: defaultToConfig2,
-    socketPath: defaultToConfig2,
-    responseEncoding: defaultToConfig2,
-    validateStatus: mergeDirectKeys,
-    headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
-  };
-
-  utils$1.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop) {
-    const merge = mergeMap[prop] || mergeDeepProperties;
-    const configValue = merge(config1[prop], config2[prop], prop);
-    (utils$1.isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
-  });
-
-  return config;
-}
-
-var resolveConfig = (config) => {
-  const newConfig = mergeConfig({}, config);
-
-  let {data, withXSRFToken, xsrfHeaderName, xsrfCookieName, headers, auth} = newConfig;
-
-  newConfig.headers = headers = AxiosHeaders.from(headers);
-
-  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
-
-  // HTTP basic authentication
-  if (auth) {
-    headers.set('Authorization', 'Basic ' +
-      btoa((auth.username || '') + ':' + (auth.password ? unescape(encodeURIComponent(auth.password)) : ''))
-    );
-  }
-
-  let contentType;
-
-  if (utils$1.isFormData(data)) {
-    if (platform.hasStandardBrowserEnv || platform.hasStandardBrowserWebWorkerEnv) {
-      headers.setContentType(undefined); // Let the browser set it
-    } else if ((contentType = headers.getContentType()) !== false) {
-      // fix semicolon duplication issue for ReactNative FormData implementation
-      const [type, ...tokens] = contentType ? contentType.split(';').map(token => token.trim()).filter(Boolean) : [];
-      headers.setContentType([type || 'multipart/form-data', ...tokens].join('; '));
-    }
-  }
-
-  // Add xsrf header
-  // This is only done if running in a standard browser environment.
-  // Specifically not if we're in a web worker, or react-native.
-
-  if (platform.hasStandardBrowserEnv) {
-    withXSRFToken && utils$1.isFunction(withXSRFToken) && (withXSRFToken = withXSRFToken(newConfig));
-
-    if (withXSRFToken || (withXSRFToken !== false && isURLSameOrigin(newConfig.url))) {
-      // Add xsrf header
-      const xsrfValue = xsrfHeaderName && xsrfCookieName && cookies.read(xsrfCookieName);
-
-      if (xsrfValue) {
-        headers.set(xsrfHeaderName, xsrfValue);
-      }
-    }
-  }
-
-  return newConfig;
-};
-
-const isXHRAdapterSupported = typeof XMLHttpRequest !== 'undefined';
-
-var xhrAdapter = isXHRAdapterSupported && function (config) {
-  return new Promise(function dispatchXhrRequest(resolve, reject) {
-    const _config = resolveConfig(config);
-    let requestData = _config.data;
-    const requestHeaders = AxiosHeaders.from(_config.headers).normalize();
-    let {responseType, onUploadProgress, onDownloadProgress} = _config;
-    let onCanceled;
-    let uploadThrottled, downloadThrottled;
-    let flushUpload, flushDownload;
-
-    function done() {
-      flushUpload && flushUpload(); // flush events
-      flushDownload && flushDownload(); // flush events
-
-      _config.cancelToken && _config.cancelToken.unsubscribe(onCanceled);
-
-      _config.signal && _config.signal.removeEventListener('abort', onCanceled);
-    }
-
-    let request = new XMLHttpRequest();
-
-    request.open(_config.method.toUpperCase(), _config.url, true);
-
-    // Set the request timeout in MS
-    request.timeout = _config.timeout;
-
-    function onloadend() {
-      if (!request) {
-        return;
-      }
-      // Prepare the response
-      const responseHeaders = AxiosHeaders.from(
-        'getAllResponseHeaders' in request && request.getAllResponseHeaders()
-      );
-      const responseData = !responseType || responseType === 'text' || responseType === 'json' ?
-        request.responseText : request.response;
-      const response = {
-        data: responseData,
-        status: request.status,
-        statusText: request.statusText,
-        headers: responseHeaders,
-        config,
-        request
-      };
-
-      settle(function _resolve(value) {
-        resolve(value);
-        done();
-      }, function _reject(err) {
-        reject(err);
-        done();
-      }, response);
-
-      // Clean up request
-      request = null;
-    }
-
-    if ('onloadend' in request) {
-      // Use onloadend if available
-      request.onloadend = onloadend;
-    } else {
-      // Listen for ready state to emulate onloadend
-      request.onreadystatechange = function handleLoad() {
-        if (!request || request.readyState !== 4) {
-          return;
-        }
-
-        // The request errored out and we didn't get a response, this will be
-        // handled by onerror instead
-        // With one exception: request that using file: protocol, most browsers
-        // will return status as 0 even though it's a successful request
-        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-          return;
-        }
-        // readystate handler is calling before onerror or ontimeout handlers,
-        // so we should call onloadend on the next 'tick'
-        setTimeout(onloadend);
-      };
-    }
-
-    // Handle browser request cancellation (as opposed to a manual cancellation)
-    request.onabort = function handleAbort() {
-      if (!request) {
-        return;
-      }
-
-      reject(new AxiosError('Request aborted', AxiosError.ECONNABORTED, config, request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle low level network errors
-    request.onerror = function handleError() {
-      // Real errors are hidden from us by the browser
-      // onerror should only fire if it's a network error
-      reject(new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Handle timeout
-    request.ontimeout = function handleTimeout() {
-      let timeoutErrorMessage = _config.timeout ? 'timeout of ' + _config.timeout + 'ms exceeded' : 'timeout exceeded';
-      const transitional = _config.transitional || transitionalDefaults;
-      if (_config.timeoutErrorMessage) {
-        timeoutErrorMessage = _config.timeoutErrorMessage;
-      }
-      reject(new AxiosError(
-        timeoutErrorMessage,
-        transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
-        config,
-        request));
-
-      // Clean up request
-      request = null;
-    };
-
-    // Remove Content-Type if data is undefined
-    requestData === undefined && requestHeaders.setContentType(null);
-
-    // Add headers to the request
-    if ('setRequestHeader' in request) {
-      utils$1.forEach(requestHeaders.toJSON(), function setRequestHeader(val, key) {
-        request.setRequestHeader(key, val);
-      });
-    }
-
-    // Add withCredentials to request if needed
-    if (!utils$1.isUndefined(_config.withCredentials)) {
-      request.withCredentials = !!_config.withCredentials;
-    }
-
-    // Add responseType to request if needed
-    if (responseType && responseType !== 'json') {
-      request.responseType = _config.responseType;
-    }
-
-    // Handle progress if needed
-    if (onDownloadProgress) {
-      ([downloadThrottled, flushDownload] = progressEventReducer(onDownloadProgress, true));
-      request.addEventListener('progress', downloadThrottled);
-    }
-
-    // Not all browsers support upload events
-    if (onUploadProgress && request.upload) {
-      ([uploadThrottled, flushUpload] = progressEventReducer(onUploadProgress));
-
-      request.upload.addEventListener('progress', uploadThrottled);
-
-      request.upload.addEventListener('loadend', flushUpload);
-    }
-
-    if (_config.cancelToken || _config.signal) {
-      // Handle cancellation
-      // eslint-disable-next-line func-names
-      onCanceled = cancel => {
-        if (!request) {
-          return;
-        }
-        reject(!cancel || cancel.type ? new CanceledError(null, config, request) : cancel);
-        request.abort();
-        request = null;
-      };
-
-      _config.cancelToken && _config.cancelToken.subscribe(onCanceled);
-      if (_config.signal) {
-        _config.signal.aborted ? onCanceled() : _config.signal.addEventListener('abort', onCanceled);
-      }
-    }
-
-    const protocol = parseProtocol(_config.url);
-
-    if (protocol && platform.protocols.indexOf(protocol) === -1) {
-      reject(new AxiosError('Unsupported protocol ' + protocol + ':', AxiosError.ERR_BAD_REQUEST, config));
-      return;
-    }
-
-
-    // Send the request
-    request.send(requestData || null);
-  });
-};
-
-const composeSignals = (signals, timeout) => {
-  const {length} = (signals = signals ? signals.filter(Boolean) : []);
-
-  if (timeout || length) {
-    let controller = new AbortController();
-
-    let aborted;
-
-    const onabort = function (reason) {
-      if (!aborted) {
-        aborted = true;
-        unsubscribe();
-        const err = reason instanceof Error ? reason : this.reason;
-        controller.abort(err instanceof AxiosError ? err : new CanceledError(err instanceof Error ? err.message : err));
-      }
-    };
-
-    let timer = timeout && setTimeout(() => {
-      timer = null;
-      onabort(new AxiosError(`timeout ${timeout} of ms exceeded`, AxiosError.ETIMEDOUT));
-    }, timeout);
-
-    const unsubscribe = () => {
-      if (signals) {
-        timer && clearTimeout(timer);
-        timer = null;
-        signals.forEach(signal => {
-          signal.unsubscribe ? signal.unsubscribe(onabort) : signal.removeEventListener('abort', onabort);
-        });
-        signals = null;
-      }
-    };
-
-    signals.forEach((signal) => signal.addEventListener('abort', onabort));
-
-    const {signal} = controller;
-
-    signal.unsubscribe = () => utils$1.asap(unsubscribe);
-
-    return signal;
-  }
-};
-
-const streamChunk = function* (chunk, chunkSize) {
-  let len = chunk.byteLength;
-
-  if (len < chunkSize) {
-    yield chunk;
-    return;
-  }
-
-  let pos = 0;
-  let end;
-
-  while (pos < len) {
-    end = pos + chunkSize;
-    yield chunk.slice(pos, end);
-    pos = end;
-  }
-};
-
-const readBytes = async function* (iterable, chunkSize) {
-  for await (const chunk of readStream(iterable)) {
-    yield* streamChunk(chunk, chunkSize);
-  }
-};
-
-const readStream = async function* (stream) {
-  if (stream[Symbol.asyncIterator]) {
-    yield* stream;
-    return;
-  }
-
-  const reader = stream.getReader();
-  try {
-    for (;;) {
-      const {done, value} = await reader.read();
-      if (done) {
-        break;
-      }
-      yield value;
-    }
-  } finally {
-    await reader.cancel();
-  }
-};
-
-const trackStream = (stream, chunkSize, onProgress, onFinish) => {
-  const iterator = readBytes(stream, chunkSize);
-
-  let bytes = 0;
-  let done;
-  let _onFinish = (e) => {
-    if (!done) {
-      done = true;
-      onFinish && onFinish(e);
-    }
-  };
-
-  return new ReadableStream({
-    async pull(controller) {
-      try {
-        const {done, value} = await iterator.next();
-
-        if (done) {
-         _onFinish();
-          controller.close();
-          return;
-        }
-
-        let len = value.byteLength;
-        if (onProgress) {
-          let loadedBytes = bytes += len;
-          onProgress(loadedBytes);
-        }
-        controller.enqueue(new Uint8Array(value));
-      } catch (err) {
-        _onFinish(err);
-        throw err;
-      }
-    },
-    cancel(reason) {
-      _onFinish(reason);
-      return iterator.return();
-    }
-  }, {
-    highWaterMark: 2
-  })
-};
-
-const isFetchSupported = typeof fetch === 'function' && typeof Request === 'function' && typeof Response === 'function';
-const isReadableStreamSupported = isFetchSupported && typeof ReadableStream === 'function';
-
-// used only inside the fetch adapter
-const encodeText = isFetchSupported && (typeof TextEncoder === 'function' ?
-    ((encoder) => (str) => encoder.encode(str))(new TextEncoder()) :
-    async (str) => new Uint8Array(await new Response(str).arrayBuffer())
-);
-
-const test = (fn, ...args) => {
-  try {
-    return !!fn(...args);
-  } catch (e) {
-    return false
-  }
-};
-
-const supportsRequestStream = isReadableStreamSupported && test(() => {
-  let duplexAccessed = false;
-
-  const hasContentType = new Request(platform.origin, {
-    body: new ReadableStream(),
-    method: 'POST',
-    get duplex() {
-      duplexAccessed = true;
-      return 'half';
-    },
-  }).headers.has('Content-Type');
-
-  return duplexAccessed && !hasContentType;
-});
-
-const DEFAULT_CHUNK_SIZE = 64 * 1024;
-
-const supportsResponseStream = isReadableStreamSupported &&
-  test(() => utils$1.isReadableStream(new Response('').body));
-
-
-const resolvers = {
-  stream: supportsResponseStream && ((res) => res.body)
-};
-
-isFetchSupported && (((res) => {
-  ['text', 'arrayBuffer', 'blob', 'formData', 'stream'].forEach(type => {
-    !resolvers[type] && (resolvers[type] = utils$1.isFunction(res[type]) ? (res) => res[type]() :
-      (_, config) => {
-        throw new AxiosError(`Response type '${type}' is not supported`, AxiosError.ERR_NOT_SUPPORT, config);
-      });
-  });
-})(new Response));
-
-const getBodyLength = async (body) => {
-  if (body == null) {
-    return 0;
-  }
-
-  if(utils$1.isBlob(body)) {
-    return body.size;
-  }
-
-  if(utils$1.isSpecCompliantForm(body)) {
-    const _request = new Request(platform.origin, {
-      method: 'POST',
-      body,
-    });
-    return (await _request.arrayBuffer()).byteLength;
-  }
-
-  if(utils$1.isArrayBufferView(body) || utils$1.isArrayBuffer(body)) {
-    return body.byteLength;
-  }
-
-  if(utils$1.isURLSearchParams(body)) {
-    body = body + '';
-  }
-
-  if(utils$1.isString(body)) {
-    return (await encodeText(body)).byteLength;
-  }
-};
-
-const resolveBodyLength = async (headers, body) => {
-  const length = utils$1.toFiniteNumber(headers.getContentLength());
-
-  return length == null ? getBodyLength(body) : length;
-};
-
-var fetchAdapter = isFetchSupported && (async (config) => {
-  let {
-    url,
-    method,
-    data,
-    signal,
-    cancelToken,
-    timeout,
-    onDownloadProgress,
-    onUploadProgress,
-    responseType,
-    headers,
-    withCredentials = 'same-origin',
-    fetchOptions
-  } = resolveConfig(config);
-
-  responseType = responseType ? (responseType + '').toLowerCase() : 'text';
-
-  let composedSignal = composeSignals([signal, cancelToken && cancelToken.toAbortSignal()], timeout);
-
-  let request;
-
-  const unsubscribe = composedSignal && composedSignal.unsubscribe && (() => {
-      composedSignal.unsubscribe();
-  });
-
-  let requestContentLength;
-
-  try {
-    if (
-      onUploadProgress && supportsRequestStream && method !== 'get' && method !== 'head' &&
-      (requestContentLength = await resolveBodyLength(headers, data)) !== 0
-    ) {
-      let _request = new Request(url, {
-        method: 'POST',
-        body: data,
-        duplex: "half"
-      });
-
-      let contentTypeHeader;
-
-      if (utils$1.isFormData(data) && (contentTypeHeader = _request.headers.get('content-type'))) {
-        headers.setContentType(contentTypeHeader);
-      }
-
-      if (_request.body) {
-        const [onProgress, flush] = progressEventDecorator(
-          requestContentLength,
-          progressEventReducer(asyncDecorator(onUploadProgress))
-        );
-
-        data = trackStream(_request.body, DEFAULT_CHUNK_SIZE, onProgress, flush);
-      }
-    }
-
-    if (!utils$1.isString(withCredentials)) {
-      withCredentials = withCredentials ? 'include' : 'omit';
-    }
-
-    // Cloudflare Workers throws when credentials are defined
-    // see https://github.com/cloudflare/workerd/issues/902
-    const isCredentialsSupported = "credentials" in Request.prototype;
-    request = new Request(url, {
-      ...fetchOptions,
-      signal: composedSignal,
-      method: method.toUpperCase(),
-      headers: headers.normalize().toJSON(),
-      body: data,
-      duplex: "half",
-      credentials: isCredentialsSupported ? withCredentials : undefined
-    });
-
-    let response = await fetch(request);
-
-    const isStreamResponse = supportsResponseStream && (responseType === 'stream' || responseType === 'response');
-
-    if (supportsResponseStream && (onDownloadProgress || (isStreamResponse && unsubscribe))) {
-      const options = {};
-
-      ['status', 'statusText', 'headers'].forEach(prop => {
-        options[prop] = response[prop];
-      });
-
-      const responseContentLength = utils$1.toFiniteNumber(response.headers.get('content-length'));
-
-      const [onProgress, flush] = onDownloadProgress && progressEventDecorator(
-        responseContentLength,
-        progressEventReducer(asyncDecorator(onDownloadProgress), true)
-      ) || [];
-
-      response = new Response(
-        trackStream(response.body, DEFAULT_CHUNK_SIZE, onProgress, () => {
-          flush && flush();
-          unsubscribe && unsubscribe();
-        }),
-        options
-      );
-    }
-
-    responseType = responseType || 'text';
-
-    let responseData = await resolvers[utils$1.findKey(resolvers, responseType) || 'text'](response, config);
-
-    !isStreamResponse && unsubscribe && unsubscribe();
-
-    return await new Promise((resolve, reject) => {
-      settle(resolve, reject, {
-        data: responseData,
-        headers: AxiosHeaders.from(response.headers),
-        status: response.status,
-        statusText: response.statusText,
-        config,
-        request
-      });
-    })
-  } catch (err) {
-    unsubscribe && unsubscribe();
-
-    if (err && err.name === 'TypeError' && /fetch/i.test(err.message)) {
-      throw Object.assign(
-        new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request),
-        {
-          cause: err.cause || err
-        }
-      )
-    }
-
-    throw AxiosError.from(err, err && err.code, config, request);
-  }
-});
-
-const knownAdapters = {
-  http: httpAdapter,
-  xhr: xhrAdapter,
-  fetch: fetchAdapter
-};
-
-utils$1.forEach(knownAdapters, (fn, value) => {
-  if (fn) {
-    try {
-      Object.defineProperty(fn, 'name', {value});
-    } catch (e) {
-      // eslint-disable-next-line no-empty
-    }
-    Object.defineProperty(fn, 'adapterName', {value});
-  }
-});
-
-const renderReason = (reason) => `- ${reason}`;
-
-const isResolvedHandle = (adapter) => utils$1.isFunction(adapter) || adapter === null || adapter === false;
-
-var adapters = {
-  getAdapter: (adapters) => {
-    adapters = utils$1.isArray(adapters) ? adapters : [adapters];
-
-    const {length} = adapters;
-    let nameOrAdapter;
-    let adapter;
-
-    const rejectedReasons = {};
-
-    for (let i = 0; i < length; i++) {
-      nameOrAdapter = adapters[i];
-      let id;
-
-      adapter = nameOrAdapter;
-
-      if (!isResolvedHandle(nameOrAdapter)) {
-        adapter = knownAdapters[(id = String(nameOrAdapter)).toLowerCase()];
-
-        if (adapter === undefined) {
-          throw new AxiosError(`Unknown adapter '${id}'`);
-        }
-      }
-
-      if (adapter) {
-        break;
-      }
-
-      rejectedReasons[id || '#' + i] = adapter;
-    }
-
-    if (!adapter) {
-
-      const reasons = Object.entries(rejectedReasons)
-        .map(([id, state]) => `adapter ${id} ` +
-          (state === false ? 'is not supported by the environment' : 'is not available in the build')
-        );
-
-      let s = length ?
-        (reasons.length > 1 ? 'since :\n' + reasons.map(renderReason).join('\n') : ' ' + renderReason(reasons[0])) :
-        'as no adapter specified';
-
-      throw new AxiosError(
-        `There is no suitable adapter to dispatch the request ` + s,
-        'ERR_NOT_SUPPORT'
-      );
-    }
-
-    return adapter;
-  },
-  adapters: knownAdapters
-};
-
-/**
- * Throws a `CanceledError` if cancellation has been requested.
- *
- * @param {Object} config The config that is to be used for the request
- *
- * @returns {void}
- */
-function throwIfCancellationRequested(config) {
-  if (config.cancelToken) {
-    config.cancelToken.throwIfRequested();
-  }
-
-  if (config.signal && config.signal.aborted) {
-    throw new CanceledError(null, config);
-  }
-}
-
-/**
- * Dispatch a request to the server using the configured adapter.
- *
- * @param {object} config The config that is to be used for the request
- *
- * @returns {Promise} The Promise to be fulfilled
- */
-function dispatchRequest(config) {
-  throwIfCancellationRequested(config);
-
-  config.headers = AxiosHeaders.from(config.headers);
-
-  // Transform request data
-  config.data = transformData.call(
-    config,
-    config.transformRequest
-  );
-
-  if (['post', 'put', 'patch'].indexOf(config.method) !== -1) {
-    config.headers.setContentType('application/x-www-form-urlencoded', false);
-  }
-
-  const adapter = adapters.getAdapter(config.adapter || defaults.adapter);
-
-  return adapter(config).then(function onAdapterResolution(response) {
-    throwIfCancellationRequested(config);
-
-    // Transform response data
-    response.data = transformData.call(
-      config,
-      config.transformResponse,
-      response
-    );
-
-    response.headers = AxiosHeaders.from(response.headers);
-
-    return response;
-  }, function onAdapterRejection(reason) {
-    if (!isCancel(reason)) {
-      throwIfCancellationRequested(config);
-
-      // Transform response data
-      if (reason && reason.response) {
-        reason.response.data = transformData.call(
-          config,
-          config.transformResponse,
-          reason.response
-        );
-        reason.response.headers = AxiosHeaders.from(reason.response.headers);
-      }
-    }
-
-    return Promise.reject(reason);
-  });
-}
-
-const validators$1 = {};
-
-// eslint-disable-next-line func-names
-['object', 'boolean', 'number', 'function', 'string', 'symbol'].forEach((type, i) => {
-  validators$1[type] = function validator(thing) {
-    return typeof thing === type || 'a' + (i < 1 ? 'n ' : ' ') + type;
-  };
-});
-
-const deprecatedWarnings = {};
-
-/**
- * Transitional option validator
- *
- * @param {function|boolean?} validator - set to false if the transitional option has been removed
- * @param {string?} version - deprecated version / removed since version
- * @param {string?} message - some message with additional info
- *
- * @returns {function}
- */
-validators$1.transitional = function transitional(validator, version, message) {
-  function formatMessage(opt, desc) {
-    return '[Axios v' + VERSION + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
-  }
-
-  // eslint-disable-next-line func-names
-  return (value, opt, opts) => {
-    if (validator === false) {
-      throw new AxiosError(
-        formatMessage(opt, ' has been removed' + (version ? ' in ' + version : '')),
-        AxiosError.ERR_DEPRECATED
-      );
-    }
-
-    if (version && !deprecatedWarnings[opt]) {
-      deprecatedWarnings[opt] = true;
-      // eslint-disable-next-line no-console
-      console.warn(
-        formatMessage(
-          opt,
-          ' has been deprecated since v' + version + ' and will be removed in the near future'
-        )
-      );
-    }
-
-    return validator ? validator(value, opt, opts) : true;
-  };
-};
-
-/**
- * Assert object's properties type
- *
- * @param {object} options
- * @param {object} schema
- * @param {boolean?} allowUnknown
- *
- * @returns {object}
- */
-
-function assertOptions(options, schema, allowUnknown) {
-  if (typeof options !== 'object') {
-    throw new AxiosError('options must be an object', AxiosError.ERR_BAD_OPTION_VALUE);
-  }
-  const keys = Object.keys(options);
-  let i = keys.length;
-  while (i-- > 0) {
-    const opt = keys[i];
-    const validator = schema[opt];
-    if (validator) {
-      const value = options[opt];
-      const result = value === undefined || validator(value, opt, options);
-      if (result !== true) {
-        throw new AxiosError('option ' + opt + ' must be ' + result, AxiosError.ERR_BAD_OPTION_VALUE);
-      }
-      continue;
-    }
-    if (allowUnknown !== true) {
-      throw new AxiosError('Unknown option ' + opt, AxiosError.ERR_BAD_OPTION);
-    }
-  }
-}
-
-var validator = {
-  assertOptions,
-  validators: validators$1
-};
-
-const validators = validator.validators;
-
-/**
- * Create a new instance of Axios
- *
- * @param {Object} instanceConfig The default config for the instance
- *
- * @return {Axios} A new instance of Axios
- */
-class Axios {
-  constructor(instanceConfig) {
-    this.defaults = instanceConfig;
-    this.interceptors = {
-      request: new InterceptorManager(),
-      response: new InterceptorManager()
-    };
-  }
-
-  /**
-   * Dispatch a request
-   *
-   * @param {String|Object} configOrUrl The config specific for this request (merged with this.defaults)
-   * @param {?Object} config
-   *
-   * @returns {Promise} The Promise to be fulfilled
-   */
-  async request(configOrUrl, config) {
-    try {
-      return await this._request(configOrUrl, config);
-    } catch (err) {
-      if (err instanceof Error) {
-        let dummy;
-
-        Error.captureStackTrace ? Error.captureStackTrace(dummy = {}) : (dummy = new Error());
-
-        // slice off the Error: ... line
-        const stack = dummy.stack ? dummy.stack.replace(/^.+\n/, '') : '';
-        try {
-          if (!err.stack) {
-            err.stack = stack;
-            // match without the 2 top stack lines
-          } else if (stack && !String(err.stack).endsWith(stack.replace(/^.+\n.+\n/, ''))) {
-            err.stack += '\n' + stack;
-          }
-        } catch (e) {
-          // ignore the case where "stack" is an un-writable property
-        }
-      }
-
-      throw err;
-    }
-  }
-
-  _request(configOrUrl, config) {
-    /*eslint no-param-reassign:0*/
-    // Allow for axios('example/url'[, config]) a la fetch API
-    if (typeof configOrUrl === 'string') {
-      config = config || {};
-      config.url = configOrUrl;
-    } else {
-      config = configOrUrl || {};
-    }
-
-    config = mergeConfig(this.defaults, config);
-
-    const {transitional, paramsSerializer, headers} = config;
-
-    if (transitional !== undefined) {
-      validator.assertOptions(transitional, {
-        silentJSONParsing: validators.transitional(validators.boolean),
-        forcedJSONParsing: validators.transitional(validators.boolean),
-        clarifyTimeoutError: validators.transitional(validators.boolean)
-      }, false);
-    }
-
-    if (paramsSerializer != null) {
-      if (utils$1.isFunction(paramsSerializer)) {
-        config.paramsSerializer = {
-          serialize: paramsSerializer
-        };
-      } else {
-        validator.assertOptions(paramsSerializer, {
-          encode: validators.function,
-          serialize: validators.function
-        }, true);
-      }
-    }
-
-    // Set config.method
-    config.method = (config.method || this.defaults.method || 'get').toLowerCase();
-
-    // Flatten headers
-    let contextHeaders = headers && utils$1.merge(
-      headers.common,
-      headers[config.method]
-    );
-
-    headers && utils$1.forEach(
-      ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
-      (method) => {
-        delete headers[method];
-      }
-    );
-
-    config.headers = AxiosHeaders.concat(contextHeaders, headers);
-
-    // filter out skipped interceptors
-    const requestInterceptorChain = [];
-    let synchronousRequestInterceptors = true;
-    this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
-      if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
-        return;
-      }
-
-      synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
-
-      requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
-    });
-
-    const responseInterceptorChain = [];
-    this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
-      responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
-    });
-
-    let promise;
-    let i = 0;
-    let len;
-
-    if (!synchronousRequestInterceptors) {
-      const chain = [dispatchRequest.bind(this), undefined];
-      chain.unshift.apply(chain, requestInterceptorChain);
-      chain.push.apply(chain, responseInterceptorChain);
-      len = chain.length;
-
-      promise = Promise.resolve(config);
-
-      while (i < len) {
-        promise = promise.then(chain[i++], chain[i++]);
-      }
-
-      return promise;
-    }
-
-    len = requestInterceptorChain.length;
-
-    let newConfig = config;
-
-    i = 0;
-
-    while (i < len) {
-      const onFulfilled = requestInterceptorChain[i++];
-      const onRejected = requestInterceptorChain[i++];
-      try {
-        newConfig = onFulfilled(newConfig);
-      } catch (error) {
-        onRejected.call(this, error);
-        break;
-      }
-    }
-
-    try {
-      promise = dispatchRequest.call(this, newConfig);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-
-    i = 0;
-    len = responseInterceptorChain.length;
-
-    while (i < len) {
-      promise = promise.then(responseInterceptorChain[i++], responseInterceptorChain[i++]);
-    }
-
-    return promise;
-  }
-
-  getUri(config) {
-    config = mergeConfig(this.defaults, config);
-    const fullPath = buildFullPath(config.baseURL, config.url);
-    return buildURL(fullPath, config.params, config.paramsSerializer);
-  }
-}
-
-// Provide aliases for supported request methods
-utils$1.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
-  /*eslint func-names:0*/
-  Axios.prototype[method] = function(url, config) {
-    return this.request(mergeConfig(config || {}, {
-      method,
-      url,
-      data: (config || {}).data
-    }));
-  };
-});
-
-utils$1.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  /*eslint func-names:0*/
-
-  function generateHTTPMethod(isForm) {
-    return function httpMethod(url, data, config) {
-      return this.request(mergeConfig(config || {}, {
-        method,
-        headers: isForm ? {
-          'Content-Type': 'multipart/form-data'
-        } : {},
-        url,
-        data
-      }));
-    };
-  }
-
-  Axios.prototype[method] = generateHTTPMethod();
-
-  Axios.prototype[method + 'Form'] = generateHTTPMethod(true);
-});
-
-/**
- * A `CancelToken` is an object that can be used to request cancellation of an operation.
- *
- * @param {Function} executor The executor function.
- *
- * @returns {CancelToken}
- */
-class CancelToken {
-  constructor(executor) {
-    if (typeof executor !== 'function') {
-      throw new TypeError('executor must be a function.');
-    }
-
-    let resolvePromise;
-
-    this.promise = new Promise(function promiseExecutor(resolve) {
-      resolvePromise = resolve;
-    });
-
-    const token = this;
-
-    // eslint-disable-next-line func-names
-    this.promise.then(cancel => {
-      if (!token._listeners) return;
-
-      let i = token._listeners.length;
-
-      while (i-- > 0) {
-        token._listeners[i](cancel);
-      }
-      token._listeners = null;
-    });
-
-    // eslint-disable-next-line func-names
-    this.promise.then = onfulfilled => {
-      let _resolve;
-      // eslint-disable-next-line func-names
-      const promise = new Promise(resolve => {
-        token.subscribe(resolve);
-        _resolve = resolve;
-      }).then(onfulfilled);
-
-      promise.cancel = function reject() {
-        token.unsubscribe(_resolve);
-      };
-
-      return promise;
-    };
-
-    executor(function cancel(message, config, request) {
-      if (token.reason) {
-        // Cancellation has already been requested
-        return;
-      }
-
-      token.reason = new CanceledError(message, config, request);
-      resolvePromise(token.reason);
-    });
-  }
-
-  /**
-   * Throws a `CanceledError` if cancellation has been requested.
-   */
-  throwIfRequested() {
-    if (this.reason) {
-      throw this.reason;
-    }
-  }
-
-  /**
-   * Subscribe to the cancel signal
-   */
-
-  subscribe(listener) {
-    if (this.reason) {
-      listener(this.reason);
-      return;
-    }
-
-    if (this._listeners) {
-      this._listeners.push(listener);
-    } else {
-      this._listeners = [listener];
-    }
-  }
-
-  /**
-   * Unsubscribe from the cancel signal
-   */
-
-  unsubscribe(listener) {
-    if (!this._listeners) {
-      return;
-    }
-    const index = this._listeners.indexOf(listener);
-    if (index !== -1) {
-      this._listeners.splice(index, 1);
-    }
-  }
-
-  toAbortSignal() {
-    const controller = new AbortController();
-
-    const abort = (err) => {
-      controller.abort(err);
-    };
-
-    this.subscribe(abort);
-
-    controller.signal.unsubscribe = () => this.unsubscribe(abort);
-
-    return controller.signal;
-  }
-
-  /**
-   * Returns an object that contains a new `CancelToken` and a function that, when called,
-   * cancels the `CancelToken`.
-   */
-  static source() {
-    let cancel;
-    const token = new CancelToken(function executor(c) {
-      cancel = c;
-    });
-    return {
-      token,
-      cancel
-    };
-  }
-}
-
-/**
- * Syntactic sugar for invoking a function and expanding an array for arguments.
- *
- * Common use case would be to use `Function.prototype.apply`.
- *
- *  ```js
- *  function f(x, y, z) {}
- *  var args = [1, 2, 3];
- *  f.apply(null, args);
- *  ```
- *
- * With `spread` this example can be re-written.
- *
- *  ```js
- *  spread(function(x, y, z) {})([1, 2, 3]);
- *  ```
- *
- * @param {Function} callback
- *
- * @returns {Function}
- */
-function spread(callback) {
-  return function wrap(arr) {
-    return callback.apply(null, arr);
-  };
-}
-
-/**
- * Determines whether the payload is an error thrown by Axios
- *
- * @param {*} payload The value to test
- *
- * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
- */
-function isAxiosError(payload) {
-  return utils$1.isObject(payload) && (payload.isAxiosError === true);
-}
-
-const HttpStatusCode = {
-  Continue: 100,
-  SwitchingProtocols: 101,
-  Processing: 102,
-  EarlyHints: 103,
-  Ok: 200,
-  Created: 201,
-  Accepted: 202,
-  NonAuthoritativeInformation: 203,
-  NoContent: 204,
-  ResetContent: 205,
-  PartialContent: 206,
-  MultiStatus: 207,
-  AlreadyReported: 208,
-  ImUsed: 226,
-  MultipleChoices: 300,
-  MovedPermanently: 301,
-  Found: 302,
-  SeeOther: 303,
-  NotModified: 304,
-  UseProxy: 305,
-  Unused: 306,
-  TemporaryRedirect: 307,
-  PermanentRedirect: 308,
-  BadRequest: 400,
-  Unauthorized: 401,
-  PaymentRequired: 402,
-  Forbidden: 403,
-  NotFound: 404,
-  MethodNotAllowed: 405,
-  NotAcceptable: 406,
-  ProxyAuthenticationRequired: 407,
-  RequestTimeout: 408,
-  Conflict: 409,
-  Gone: 410,
-  LengthRequired: 411,
-  PreconditionFailed: 412,
-  PayloadTooLarge: 413,
-  UriTooLong: 414,
-  UnsupportedMediaType: 415,
-  RangeNotSatisfiable: 416,
-  ExpectationFailed: 417,
-  ImATeapot: 418,
-  MisdirectedRequest: 421,
-  UnprocessableEntity: 422,
-  Locked: 423,
-  FailedDependency: 424,
-  TooEarly: 425,
-  UpgradeRequired: 426,
-  PreconditionRequired: 428,
-  TooManyRequests: 429,
-  RequestHeaderFieldsTooLarge: 431,
-  UnavailableForLegalReasons: 451,
-  InternalServerError: 500,
-  NotImplemented: 501,
-  BadGateway: 502,
-  ServiceUnavailable: 503,
-  GatewayTimeout: 504,
-  HttpVersionNotSupported: 505,
-  VariantAlsoNegotiates: 506,
-  InsufficientStorage: 507,
-  LoopDetected: 508,
-  NotExtended: 510,
-  NetworkAuthenticationRequired: 511,
-};
-
-Object.entries(HttpStatusCode).forEach(([key, value]) => {
-  HttpStatusCode[value] = key;
-});
-
-/**
- * Create an instance of Axios
- *
- * @param {Object} defaultConfig The default config for the instance
- *
- * @returns {Axios} A new instance of Axios
- */
-function createInstance(defaultConfig) {
-  const context = new Axios(defaultConfig);
-  const instance = bind(Axios.prototype.request, context);
-
-  // Copy axios.prototype to instance
-  utils$1.extend(instance, Axios.prototype, context, {allOwnKeys: true});
-
-  // Copy context to instance
-  utils$1.extend(instance, context, null, {allOwnKeys: true});
-
-  // Factory for creating new instances
-  instance.create = function create(instanceConfig) {
-    return createInstance(mergeConfig(defaultConfig, instanceConfig));
-  };
-
-  return instance;
-}
-
-// Create the default instance to be exported
-const axios = createInstance(defaults);
-
-// Expose Axios class to allow class inheritance
-axios.Axios = Axios;
-
-// Expose Cancel & CancelToken
-axios.CanceledError = CanceledError;
-axios.CancelToken = CancelToken;
-axios.isCancel = isCancel;
-axios.VERSION = VERSION;
-axios.toFormData = toFormData;
-
-// Expose AxiosError class
-axios.AxiosError = AxiosError;
-
-// alias for CanceledError for backward compatibility
-axios.Cancel = axios.CanceledError;
-
-// Expose all/spread
-axios.all = function all(promises) {
-  return Promise.all(promises);
-};
-
-axios.spread = spread;
-
-// Expose isAxiosError
-axios.isAxiosError = isAxiosError;
-
-// Expose mergeConfig
-axios.mergeConfig = mergeConfig;
-
-axios.AxiosHeaders = AxiosHeaders;
-
-axios.formToJSON = thing => formDataToJSON(utils$1.isHTMLForm(thing) ? new FormData(thing) : thing);
-
-axios.getAdapter = adapters.getAdapter;
-
-axios.HttpStatusCode = HttpStatusCode;
-
-axios.default = axios;
-
 function buildRPCPayload(params) {
     return {
         jsonrpc: "2.0",
@@ -317437,2030 +299866,4296 @@ function buildRPCPayload(params) {
 }
 async function makeRPC(route, params, headers) {
     headers = headers || {};
-    headers["Content-type"] = "application/json";
-    const response = await axios.post(route, buildRPCPayload(params), {
-        headers: headers,
-        withCredentials: true,
-        data: buildRPCPayload(params),
+    headers["Content-Type"] = "application/json";
+    const response = await fetch(route, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(buildRPCPayload(params)),
+        credentials: "include",
     });
-    return response.data;
+    if (!response.ok) {
+        throw new Error(`RPC request failed with status ${response.status}`);
+    }
+    return response.json();
 }
 async function authenticate(url, login, password) {
     const databaseList = await makeRPC(`${url}/web/database/list`);
     const db_name = databaseList.result[0];
-    const headers = {
-        "Content-type": "application/json",
-    };
-    const response = await axios.post(`${url}/web/session/authenticate`, buildRPCPayload({ login: login, password: password, db: db_name }), {
-        headers: headers,
-        withCredentials: true,
+    const response = await fetch(`${url}/web/session/authenticate`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(buildRPCPayload({ login, password, db: db_name })),
+        credentials: "include",
     });
-    if (!response.headers?.["set-cookie"]) {
+    if (!response.ok) {
+        throw new Error(`Authentication failed with status ${response.status}`);
+    }
+    const setCookie = response.headers.get("set-cookie");
+    if (!setCookie) {
         throw new Error(`Authentication failed for user ${login} with password ${password}`);
     }
     return {
         name: "session_id",
-        value: response.headers["set-cookie"][0].split(";")[0].split("=")[1],
+        value: setCookie.split(";")[0].split("=")[1],
         domain: url.split("//")[1].split(":")[0],
         path: "/",
     };
 }
 
-/**
- * lodash (Custom Build) <https://lodash.com/>
- * Build: `lodash modularize exports="npm" -o ./`
- * Copyright jQuery Foundation and other contributors <https://jquery.org/>
- * Released under MIT license <https://lodash.com/license>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- */
+var commander = {};
 
-/** Used as references for various `Number` constants. */
-var INFINITY = 1 / 0;
+var argument = {};
 
-/** `Object#toString` result references. */
-var symbolTag = '[object Symbol]';
-
-/** Used to match words composed of alphanumeric characters. */
-var reAsciiWord = /[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g;
-
-/** Used to match Latin Unicode letters (excluding mathematical operators). */
-var reLatin = /[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g;
-
-/** Used to compose unicode character classes. */
-var rsAstralRange = '\\ud800-\\udfff',
-    rsComboMarksRange = '\\u0300-\\u036f\\ufe20-\\ufe23',
-    rsComboSymbolsRange = '\\u20d0-\\u20f0',
-    rsDingbatRange = '\\u2700-\\u27bf',
-    rsLowerRange = 'a-z\\xdf-\\xf6\\xf8-\\xff',
-    rsMathOpRange = '\\xac\\xb1\\xd7\\xf7',
-    rsNonCharRange = '\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf',
-    rsPunctuationRange = '\\u2000-\\u206f',
-    rsSpaceRange = ' \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000',
-    rsUpperRange = 'A-Z\\xc0-\\xd6\\xd8-\\xde',
-    rsVarRange = '\\ufe0e\\ufe0f',
-    rsBreakRange = rsMathOpRange + rsNonCharRange + rsPunctuationRange + rsSpaceRange;
-
-/** Used to compose unicode capture groups. */
-var rsApos = "['\u2019]",
-    rsAstral = '[' + rsAstralRange + ']',
-    rsBreak = '[' + rsBreakRange + ']',
-    rsCombo = '[' + rsComboMarksRange + rsComboSymbolsRange + ']',
-    rsDigits = '\\d+',
-    rsDingbat = '[' + rsDingbatRange + ']',
-    rsLower = '[' + rsLowerRange + ']',
-    rsMisc = '[^' + rsAstralRange + rsBreakRange + rsDigits + rsDingbatRange + rsLowerRange + rsUpperRange + ']',
-    rsFitz = '\\ud83c[\\udffb-\\udfff]',
-    rsModifier = '(?:' + rsCombo + '|' + rsFitz + ')',
-    rsNonAstral = '[^' + rsAstralRange + ']',
-    rsRegional = '(?:\\ud83c[\\udde6-\\uddff]){2}',
-    rsSurrPair = '[\\ud800-\\udbff][\\udc00-\\udfff]',
-    rsUpper = '[' + rsUpperRange + ']',
-    rsZWJ = '\\u200d';
-
-/** Used to compose unicode regexes. */
-var rsLowerMisc = '(?:' + rsLower + '|' + rsMisc + ')',
-    rsUpperMisc = '(?:' + rsUpper + '|' + rsMisc + ')',
-    rsOptLowerContr = '(?:' + rsApos + '(?:d|ll|m|re|s|t|ve))?',
-    rsOptUpperContr = '(?:' + rsApos + '(?:D|LL|M|RE|S|T|VE))?',
-    reOptMod = rsModifier + '?',
-    rsOptVar = '[' + rsVarRange + ']?',
-    rsOptJoin = '(?:' + rsZWJ + '(?:' + [rsNonAstral, rsRegional, rsSurrPair].join('|') + ')' + rsOptVar + reOptMod + ')*',
-    rsSeq = rsOptVar + reOptMod + rsOptJoin,
-    rsEmoji = '(?:' + [rsDingbat, rsRegional, rsSurrPair].join('|') + ')' + rsSeq,
-    rsSymbol = '(?:' + [rsNonAstral + rsCombo + '?', rsCombo, rsRegional, rsSurrPair, rsAstral].join('|') + ')';
-
-/** Used to match apostrophes. */
-var reApos = RegExp(rsApos, 'g');
+var error = {};
 
 /**
- * Used to match [combining diacritical marks](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks) and
- * [combining diacritical marks for symbols](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks_for_Symbols).
+ * CommanderError class
  */
-var reComboMark = RegExp(rsCombo, 'g');
 
-/** Used to match [string symbols](https://mathiasbynens.be/notes/javascript-unicode). */
-var reUnicode = RegExp(rsFitz + '(?=' + rsFitz + ')|' + rsSymbol + rsSeq, 'g');
-
-/** Used to match complex or compound words. */
-var reUnicodeWord = RegExp([
-  rsUpper + '?' + rsLower + '+' + rsOptLowerContr + '(?=' + [rsBreak, rsUpper, '$'].join('|') + ')',
-  rsUpperMisc + '+' + rsOptUpperContr + '(?=' + [rsBreak, rsUpper + rsLowerMisc, '$'].join('|') + ')',
-  rsUpper + '?' + rsLowerMisc + '+' + rsOptLowerContr,
-  rsUpper + '+' + rsOptUpperContr,
-  rsDigits,
-  rsEmoji
-].join('|'), 'g');
-
-/** Used to detect strings with [zero-width joiners or code points from the astral planes](http://eev.ee/blog/2015/09/12/dark-corners-of-unicode/). */
-var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboMarksRange + rsComboSymbolsRange + rsVarRange + ']');
-
-/** Used to detect strings that need a more robust regexp to match words. */
-var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
-
-/** Used to map Latin Unicode letters to basic Latin letters. */
-var deburredLetters = {
-  // Latin-1 Supplement block.
-  '\xc0': 'A',  '\xc1': 'A', '\xc2': 'A', '\xc3': 'A', '\xc4': 'A', '\xc5': 'A',
-  '\xe0': 'a',  '\xe1': 'a', '\xe2': 'a', '\xe3': 'a', '\xe4': 'a', '\xe5': 'a',
-  '\xc7': 'C',  '\xe7': 'c',
-  '\xd0': 'D',  '\xf0': 'd',
-  '\xc8': 'E',  '\xc9': 'E', '\xca': 'E', '\xcb': 'E',
-  '\xe8': 'e',  '\xe9': 'e', '\xea': 'e', '\xeb': 'e',
-  '\xcc': 'I',  '\xcd': 'I', '\xce': 'I', '\xcf': 'I',
-  '\xec': 'i',  '\xed': 'i', '\xee': 'i', '\xef': 'i',
-  '\xd1': 'N',  '\xf1': 'n',
-  '\xd2': 'O',  '\xd3': 'O', '\xd4': 'O', '\xd5': 'O', '\xd6': 'O', '\xd8': 'O',
-  '\xf2': 'o',  '\xf3': 'o', '\xf4': 'o', '\xf5': 'o', '\xf6': 'o', '\xf8': 'o',
-  '\xd9': 'U',  '\xda': 'U', '\xdb': 'U', '\xdc': 'U',
-  '\xf9': 'u',  '\xfa': 'u', '\xfb': 'u', '\xfc': 'u',
-  '\xdd': 'Y',  '\xfd': 'y', '\xff': 'y',
-  '\xc6': 'Ae', '\xe6': 'ae',
-  '\xde': 'Th', '\xfe': 'th',
-  '\xdf': 'ss',
-  // Latin Extended-A block.
-  '\u0100': 'A',  '\u0102': 'A', '\u0104': 'A',
-  '\u0101': 'a',  '\u0103': 'a', '\u0105': 'a',
-  '\u0106': 'C',  '\u0108': 'C', '\u010a': 'C', '\u010c': 'C',
-  '\u0107': 'c',  '\u0109': 'c', '\u010b': 'c', '\u010d': 'c',
-  '\u010e': 'D',  '\u0110': 'D', '\u010f': 'd', '\u0111': 'd',
-  '\u0112': 'E',  '\u0114': 'E', '\u0116': 'E', '\u0118': 'E', '\u011a': 'E',
-  '\u0113': 'e',  '\u0115': 'e', '\u0117': 'e', '\u0119': 'e', '\u011b': 'e',
-  '\u011c': 'G',  '\u011e': 'G', '\u0120': 'G', '\u0122': 'G',
-  '\u011d': 'g',  '\u011f': 'g', '\u0121': 'g', '\u0123': 'g',
-  '\u0124': 'H',  '\u0126': 'H', '\u0125': 'h', '\u0127': 'h',
-  '\u0128': 'I',  '\u012a': 'I', '\u012c': 'I', '\u012e': 'I', '\u0130': 'I',
-  '\u0129': 'i',  '\u012b': 'i', '\u012d': 'i', '\u012f': 'i', '\u0131': 'i',
-  '\u0134': 'J',  '\u0135': 'j',
-  '\u0136': 'K',  '\u0137': 'k', '\u0138': 'k',
-  '\u0139': 'L',  '\u013b': 'L', '\u013d': 'L', '\u013f': 'L', '\u0141': 'L',
-  '\u013a': 'l',  '\u013c': 'l', '\u013e': 'l', '\u0140': 'l', '\u0142': 'l',
-  '\u0143': 'N',  '\u0145': 'N', '\u0147': 'N', '\u014a': 'N',
-  '\u0144': 'n',  '\u0146': 'n', '\u0148': 'n', '\u014b': 'n',
-  '\u014c': 'O',  '\u014e': 'O', '\u0150': 'O',
-  '\u014d': 'o',  '\u014f': 'o', '\u0151': 'o',
-  '\u0154': 'R',  '\u0156': 'R', '\u0158': 'R',
-  '\u0155': 'r',  '\u0157': 'r', '\u0159': 'r',
-  '\u015a': 'S',  '\u015c': 'S', '\u015e': 'S', '\u0160': 'S',
-  '\u015b': 's',  '\u015d': 's', '\u015f': 's', '\u0161': 's',
-  '\u0162': 'T',  '\u0164': 'T', '\u0166': 'T',
-  '\u0163': 't',  '\u0165': 't', '\u0167': 't',
-  '\u0168': 'U',  '\u016a': 'U', '\u016c': 'U', '\u016e': 'U', '\u0170': 'U', '\u0172': 'U',
-  '\u0169': 'u',  '\u016b': 'u', '\u016d': 'u', '\u016f': 'u', '\u0171': 'u', '\u0173': 'u',
-  '\u0174': 'W',  '\u0175': 'w',
-  '\u0176': 'Y',  '\u0177': 'y', '\u0178': 'Y',
-  '\u0179': 'Z',  '\u017b': 'Z', '\u017d': 'Z',
-  '\u017a': 'z',  '\u017c': 'z', '\u017e': 'z',
-  '\u0132': 'IJ', '\u0133': 'ij',
-  '\u0152': 'Oe', '\u0153': 'oe',
-  '\u0149': "'n", '\u017f': 'ss'
+let CommanderError$3 = class CommanderError extends Error {
+  /**
+   * Constructs the CommanderError class
+   * @param {number} exitCode suggested exit code which could be used with process.exit
+   * @param {string} code an id string representing the error
+   * @param {string} message human-readable description of the error
+   */
+  constructor(exitCode, code, message) {
+    super(message);
+    // properly capture stack trace in Node.js
+    Error.captureStackTrace(this, this.constructor);
+    this.name = this.constructor.name;
+    this.code = code;
+    this.exitCode = exitCode;
+    this.nestedError = undefined;
+  }
 };
 
-/** Detect free variable `global` from Node.js. */
-var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
-
-/** Detect free variable `self`. */
-var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-/** Used as a reference to the global object. */
-var root = freeGlobal || freeSelf || Function('return this')();
-
 /**
- * A specialized version of `_.reduce` for arrays without support for
- * iteratee shorthands.
- *
- * @private
- * @param {Array} [array] The array to iterate over.
- * @param {Function} iteratee The function invoked per iteration.
- * @param {*} [accumulator] The initial value.
- * @param {boolean} [initAccum] Specify using the first element of `array` as
- *  the initial value.
- * @returns {*} Returns the accumulated value.
+ * InvalidArgumentError class
  */
-function arrayReduce(array, iteratee, accumulator, initAccum) {
-  var index = -1,
-      length = array ? array.length : 0;
-  while (++index < length) {
-    accumulator = iteratee(accumulator, array[index], index, array);
+let InvalidArgumentError$4 = class InvalidArgumentError extends CommanderError$3 {
+  /**
+   * Constructs the InvalidArgumentError class
+   * @param {string} [message] explanation of why argument is invalid
+   */
+  constructor(message) {
+    super(1, 'commander.invalidArgument', message);
+    // properly capture stack trace in Node.js
+    Error.captureStackTrace(this, this.constructor);
+    this.name = this.constructor.name;
   }
-  return accumulator;
-}
+};
 
-/**
- * Converts an ASCII `string` to an array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the converted array.
- */
-function asciiToArray(string) {
-  return string.split('');
-}
+error.CommanderError = CommanderError$3;
+error.InvalidArgumentError = InvalidArgumentError$4;
 
-/**
- * Splits an ASCII `string` into an array of its words.
- *
- * @private
- * @param {string} The string to inspect.
- * @returns {Array} Returns the words of `string`.
- */
-function asciiWords(string) {
-  return string.match(reAsciiWord) || [];
-}
+const { InvalidArgumentError: InvalidArgumentError$3 } = error;
 
-/**
- * The base implementation of `_.propertyOf` without support for deep paths.
- *
- * @private
- * @param {Object} object The object to query.
- * @returns {Function} Returns the new accessor function.
- */
-function basePropertyOf(object) {
-  return function(key) {
-    return object == null ? undefined : object[key];
-  };
-}
+let Argument$3 = class Argument {
+  /**
+   * Initialize a new command argument with the given name and description.
+   * The default is that the argument is required, and you can explicitly
+   * indicate this with <> around the name. Put [] around the name for an optional argument.
+   *
+   * @param {string} name
+   * @param {string} [description]
+   */
 
-/**
- * Used by `_.deburr` to convert Latin-1 Supplement and Latin Extended-A
- * letters to basic Latin letters.
- *
- * @private
- * @param {string} letter The matched letter to deburr.
- * @returns {string} Returns the deburred letter.
- */
-var deburrLetter = basePropertyOf(deburredLetters);
+  constructor(name, description) {
+    this.description = description || '';
+    this.variadic = false;
+    this.parseArg = undefined;
+    this.defaultValue = undefined;
+    this.defaultValueDescription = undefined;
+    this.argChoices = undefined;
 
-/**
- * Checks if `string` contains Unicode symbols.
- *
- * @private
- * @param {string} string The string to inspect.
- * @returns {boolean} Returns `true` if a symbol is found, else `false`.
- */
-function hasUnicode(string) {
-  return reHasUnicode.test(string);
-}
+    switch (name[0]) {
+      case '<': // e.g. <required>
+        this.required = true;
+        this._name = name.slice(1, -1);
+        break;
+      case '[': // e.g. [optional]
+        this.required = false;
+        this._name = name.slice(1, -1);
+        break;
+      default:
+        this.required = true;
+        this._name = name;
+        break;
+    }
 
-/**
- * Checks if `string` contains a word composed of Unicode symbols.
- *
- * @private
- * @param {string} string The string to inspect.
- * @returns {boolean} Returns `true` if a word is found, else `false`.
- */
-function hasUnicodeWord(string) {
-  return reHasUnicodeWord.test(string);
-}
-
-/**
- * Converts `string` to an array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the converted array.
- */
-function stringToArray(string) {
-  return hasUnicode(string)
-    ? unicodeToArray(string)
-    : asciiToArray(string);
-}
-
-/**
- * Converts a Unicode `string` to an array.
- *
- * @private
- * @param {string} string The string to convert.
- * @returns {Array} Returns the converted array.
- */
-function unicodeToArray(string) {
-  return string.match(reUnicode) || [];
-}
-
-/**
- * Splits a Unicode `string` into an array of its words.
- *
- * @private
- * @param {string} The string to inspect.
- * @returns {Array} Returns the words of `string`.
- */
-function unicodeWords(string) {
-  return string.match(reUnicodeWord) || [];
-}
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/**
- * Used to resolve the
- * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objectToString = objectProto.toString;
-
-/** Built-in value references. */
-var Symbol$1 = root.Symbol;
-
-/** Used to convert symbols to primitives and strings. */
-var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined,
-    symbolToString = symbolProto ? symbolProto.toString : undefined;
-
-/**
- * The base implementation of `_.slice` without an iteratee call guard.
- *
- * @private
- * @param {Array} array The array to slice.
- * @param {number} [start=0] The start position.
- * @param {number} [end=array.length] The end position.
- * @returns {Array} Returns the slice of `array`.
- */
-function baseSlice(array, start, end) {
-  var index = -1,
-      length = array.length;
-
-  if (start < 0) {
-    start = -start > length ? 0 : (length + start);
-  }
-  end = end > length ? length : end;
-  if (end < 0) {
-    end += length;
-  }
-  length = start > end ? 0 : ((end - start) >>> 0);
-  start >>>= 0;
-
-  var result = Array(length);
-  while (++index < length) {
-    result[index] = array[index + start];
-  }
-  return result;
-}
-
-/**
- * The base implementation of `_.toString` which doesn't convert nullish
- * values to empty strings.
- *
- * @private
- * @param {*} value The value to process.
- * @returns {string} Returns the string.
- */
-function baseToString(value) {
-  // Exit early for strings to avoid a performance hit in some environments.
-  if (typeof value == 'string') {
-    return value;
-  }
-  if (isSymbol(value)) {
-    return symbolToString ? symbolToString.call(value) : '';
-  }
-  var result = (value + '');
-  return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
-}
-
-/**
- * Casts `array` to a slice if it's needed.
- *
- * @private
- * @param {Array} array The array to inspect.
- * @param {number} start The start position.
- * @param {number} [end=array.length] The end position.
- * @returns {Array} Returns the cast slice.
- */
-function castSlice(array, start, end) {
-  var length = array.length;
-  end = end === undefined ? length : end;
-  return (!start && end >= length) ? array : baseSlice(array, start, end);
-}
-
-/**
- * Creates a function like `_.lowerFirst`.
- *
- * @private
- * @param {string} methodName The name of the `String` case method to use.
- * @returns {Function} Returns the new case function.
- */
-function createCaseFirst(methodName) {
-  return function(string) {
-    string = toString(string);
-
-    var strSymbols = hasUnicode(string)
-      ? stringToArray(string)
-      : undefined;
-
-    var chr = strSymbols
-      ? strSymbols[0]
-      : string.charAt(0);
-
-    var trailing = strSymbols
-      ? castSlice(strSymbols, 1).join('')
-      : string.slice(1);
-
-    return chr[methodName]() + trailing;
-  };
-}
-
-/**
- * Creates a function like `_.camelCase`.
- *
- * @private
- * @param {Function} callback The function to combine each word.
- * @returns {Function} Returns the new compounder function.
- */
-function createCompounder(callback) {
-  return function(string) {
-    return arrayReduce(words(deburr(string).replace(reApos, '')), callback, '');
-  };
-}
-
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-function isObjectLike(value) {
-  return !!value && typeof value == 'object';
-}
-
-/**
- * Checks if `value` is classified as a `Symbol` primitive or object.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
- * @example
- *
- * _.isSymbol(Symbol.iterator);
- * // => true
- *
- * _.isSymbol('abc');
- * // => false
- */
-function isSymbol(value) {
-  return typeof value == 'symbol' ||
-    (isObjectLike(value) && objectToString.call(value) == symbolTag);
-}
-
-/**
- * Converts `value` to a string. An empty string is returned for `null`
- * and `undefined` values. The sign of `-0` is preserved.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category Lang
- * @param {*} value The value to process.
- * @returns {string} Returns the string.
- * @example
- *
- * _.toString(null);
- * // => ''
- *
- * _.toString(-0);
- * // => '-0'
- *
- * _.toString([1, 2, 3]);
- * // => '1,2,3'
- */
-function toString(value) {
-  return value == null ? '' : baseToString(value);
-}
-
-/**
- * Converts `string` to [camel case](https://en.wikipedia.org/wiki/CamelCase).
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to convert.
- * @returns {string} Returns the camel cased string.
- * @example
- *
- * _.camelCase('Foo Bar');
- * // => 'fooBar'
- *
- * _.camelCase('--foo-bar--');
- * // => 'fooBar'
- *
- * _.camelCase('__FOO_BAR__');
- * // => 'fooBar'
- */
-var camelCase$1 = createCompounder(function(result, word, index) {
-  word = word.toLowerCase();
-  return result + (index ? capitalize(word) : word);
-});
-
-/**
- * Converts the first character of `string` to upper case and the remaining
- * to lower case.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to capitalize.
- * @returns {string} Returns the capitalized string.
- * @example
- *
- * _.capitalize('FRED');
- * // => 'Fred'
- */
-function capitalize(string) {
-  return upperFirst(toString(string).toLowerCase());
-}
-
-/**
- * Deburrs `string` by converting
- * [Latin-1 Supplement](https://en.wikipedia.org/wiki/Latin-1_Supplement_(Unicode_block)#Character_table)
- * and [Latin Extended-A](https://en.wikipedia.org/wiki/Latin_Extended-A)
- * letters to basic Latin letters and removing
- * [combining diacritical marks](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks).
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to deburr.
- * @returns {string} Returns the deburred string.
- * @example
- *
- * _.deburr('déjà vu');
- * // => 'deja vu'
- */
-function deburr(string) {
-  string = toString(string);
-  return string && string.replace(reLatin, deburrLetter).replace(reComboMark, '');
-}
-
-/**
- * Converts the first character of `string` to upper case.
- *
- * @static
- * @memberOf _
- * @since 4.0.0
- * @category String
- * @param {string} [string=''] The string to convert.
- * @returns {string} Returns the converted string.
- * @example
- *
- * _.upperFirst('fred');
- * // => 'Fred'
- *
- * _.upperFirst('FRED');
- * // => 'FRED'
- */
-var upperFirst = createCaseFirst('toUpperCase');
-
-/**
- * Splits `string` into an array of its words.
- *
- * @static
- * @memberOf _
- * @since 3.0.0
- * @category String
- * @param {string} [string=''] The string to inspect.
- * @param {RegExp|string} [pattern] The pattern to match words.
- * @param- {Object} [guard] Enables use as an iteratee for methods like `_.map`.
- * @returns {Array} Returns the words of `string`.
- * @example
- *
- * _.words('fred, barney, & pebbles');
- * // => ['fred', 'barney', 'pebbles']
- *
- * _.words('fred, barney, & pebbles', /[^, ]+/g);
- * // => ['fred', 'barney', '&', 'pebbles']
- */
-function words(string, pattern, guard) {
-  string = toString(string);
-  pattern = pattern;
-
-  if (pattern === undefined) {
-    return hasUnicodeWord(string) ? unicodeWords(string) : asciiWords(string);
-  }
-  return string.match(pattern) || [];
-}
-
-var lodash_camelcase = camelCase$1;
-
-function _interopDefault$1 (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var camelCase = _interopDefault$1(lodash_camelcase);
-
-/**
- * Takes any input and guarantees an array back.
- *
- * - Converts array-like objects (e.g. `arguments`, `Set`) to a real array.
- * - Converts `undefined` to an empty array.
- * - Converts any another other, singular value (including `null`, objects and iterables other than `Set`) into an array containing that value.
- * - Ignores input which is already an array.
- *
- * @module array-back
- * @example
- * > const arrayify = require('array-back')
- *
- * > arrayify(undefined)
- * []
- *
- * > arrayify(null)
- * [ null ]
- *
- * > arrayify(0)
- * [ 0 ]
- *
- * > arrayify([ 1, 2 ])
- * [ 1, 2 ]
- *
- * > arrayify(new Set([ 1, 2 ]))
- * [ 1, 2 ]
- *
- * > function f(){ return arrayify(arguments); }
- * > f(1,2,3)
- * [ 1, 2, 3 ]
- */
-
-function isObject (input) {
-  return typeof input === 'object' && input !== null
-}
-
-function isArrayLike (input) {
-  return isObject(input) && typeof input.length === 'number'
-}
-
-/**
- * @param {*} - The input value to convert to an array
- * @returns {Array}
- * @alias module:array-back
- */
-function arrayify (input) {
-  if (Array.isArray(input)) {
-    return input
-  }
-
-  if (input === undefined) {
-    return []
-  }
-
-  if (isArrayLike(input) || input instanceof Set) {
-    return Array.from(input)
-  }
-
-  return [ input ]
-}
-
-/**
- * Takes any input and guarantees an array back.
- *
- * - converts array-like objects (e.g. `arguments`) to a real array
- * - converts `undefined` to an empty array
- * - converts any another other, singular value (including `null`) into an array containing that value
- * - ignores input which is already an array
- *
- * @module array-back
- * @example
- * > const arrayify = require('array-back')
- *
- * > arrayify(undefined)
- * []
- *
- * > arrayify(null)
- * [ null ]
- *
- * > arrayify(0)
- * [ 0 ]
- *
- * > arrayify([ 1, 2 ])
- * [ 1, 2 ]
- *
- * > function f(){ return arrayify(arguments); }
- * > f(1,2,3)
- * [ 1, 2, 3 ]
- */
-
-function isObject$1 (input) {
-  return typeof input === 'object' && input !== null
-}
-
-function isArrayLike$1 (input) {
-  return isObject$1(input) && typeof input.length === 'number'
-}
-
-/**
- * @param {*} - the input value to convert to an array
- * @returns {Array}
- * @alias module:array-back
- */
-function arrayify$1 (input) {
-  if (Array.isArray(input)) {
-    return input
-  } else {
-    if (input === undefined) {
-      return []
-    } else if (isArrayLike$1(input)) {
-      return Array.prototype.slice.call(input)
-    } else {
-      return [ input ]
+    if (this._name.endsWith('...')) {
+      this.variadic = true;
+      this._name = this._name.slice(0, -3);
     }
   }
-}
 
-/**
- * Find and either replace or remove items in an array.
- *
- * @module find-replace
- * @example
- * > const findReplace = require('find-replace')
- * > const numbers = [ 1, 2, 3]
- *
- * > findReplace(numbers, n => n === 2, 'two')
- * [ 1, 'two', 3 ]
- *
- * > findReplace(numbers, n => n === 2, [ 'two', 'zwei' ])
- * [ 1, [ 'two', 'zwei' ], 3 ]
- *
- * > findReplace(numbers, n => n === 2, 'two', 'zwei')
- * [ 1, 'two', 'zwei', 3 ]
- *
- * > findReplace(numbers, n => n === 2) // no replacement, so remove
- * [ 1, 3 ]
- */
+  /**
+   * Return argument name.
+   *
+   * @return {string}
+   */
 
-/**
- * @param {array} - The input array
- * @param {testFn} - A predicate function which, if returning `true` causes the current item to be operated on.
- * @param [replaceWith] {...any} - If specified, found values will be replaced with these values, else removed.
- * @returns {array}
- * @alias module:find-replace
- */
-function findReplace (array, testFn) {
-  const found = [];
-  const replaceWiths = arrayify$1(arguments);
-  replaceWiths.splice(0, 2);
+  name() {
+    return this._name;
+  }
 
-  arrayify$1(array).forEach((value, index) => {
-    let expanded = [];
-    replaceWiths.forEach(replaceWith => {
-      if (typeof replaceWith === 'function') {
-        expanded = expanded.concat(replaceWith(value));
-      } else {
-        expanded.push(replaceWith);
+  /**
+   * @package
+   */
+
+  _collectValue(value, previous) {
+    if (previous === this.defaultValue || !Array.isArray(previous)) {
+      return [value];
+    }
+
+    previous.push(value);
+    return previous;
+  }
+
+  /**
+   * Set the default value, and optionally supply the description to be displayed in the help.
+   *
+   * @param {*} value
+   * @param {string} [description]
+   * @return {Argument}
+   */
+
+  default(value, description) {
+    this.defaultValue = value;
+    this.defaultValueDescription = description;
+    return this;
+  }
+
+  /**
+   * Set the custom handler for processing CLI command arguments into argument values.
+   *
+   * @param {Function} [fn]
+   * @return {Argument}
+   */
+
+  argParser(fn) {
+    this.parseArg = fn;
+    return this;
+  }
+
+  /**
+   * Only allow argument value to be one of choices.
+   *
+   * @param {string[]} values
+   * @return {Argument}
+   */
+
+  choices(values) {
+    this.argChoices = values.slice();
+    this.parseArg = (arg, previous) => {
+      if (!this.argChoices.includes(arg)) {
+        throw new InvalidArgumentError$3(
+          `Allowed choices are ${this.argChoices.join(', ')}.`,
+        );
       }
-    });
+      if (this.variadic) {
+        return this._collectValue(arg, previous);
+      }
+      return arg;
+    };
+    return this;
+  }
 
-    if (testFn(value)) {
-      found.push({
-        index: index,
-        replaceWithValue: expanded
-      });
-    }
-  });
+  /**
+   * Make argument required.
+   *
+   * @returns {Argument}
+   */
+  argRequired() {
+    this.required = true;
+    return this;
+  }
 
-  found.reverse().forEach(item => {
-    const spliceArgs = [ item.index, 1 ].concat(item.replaceWithValue);
-    array.splice.apply(array, spliceArgs);
-  });
-
-  return array
-}
-
-/**
- * Some useful tools for working with `process.argv`.
- *
- * @module argv-tools
- * @typicalName argvTools
- * @example
- * const argvTools = require('argv-tools')
- */
-
-/**
- * Regular expressions for matching option formats.
- * @static
- */
-const re$1 = {
-  short: /^-([^\d-])$/,
-  long: /^--(\S+)/,
-  combinedShort: /^-[^\d-]{2,}$/,
-  optEquals: /^(--\S+?)=(.*)/
+  /**
+   * Make argument optional.
+   *
+   * @returns {Argument}
+   */
+  argOptional() {
+    this.required = false;
+    return this;
+  }
 };
 
 /**
- * Array subclass encapsulating common operations on `process.argv`.
- * @static
+ * Takes an argument and returns its human readable equivalent for help usage.
+ *
+ * @param {Argument} arg
+ * @return {string}
+ * @private
  */
-class ArgvArray extends Array {
+
+function humanReadableArgName$2(arg) {
+  const nameOutput = arg.name() + (arg.variadic === true ? '...' : '');
+
+  return arg.required ? '<' + nameOutput + '>' : '[' + nameOutput + ']';
+}
+
+argument.Argument = Argument$3;
+argument.humanReadableArgName = humanReadableArgName$2;
+
+var command = {};
+
+var help = {};
+
+const { humanReadableArgName: humanReadableArgName$1 } = argument;
+
+/**
+ * TypeScript import types for JSDoc, used by Visual Studio Code IntelliSense and `npm run typescript-checkJS`
+ * https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import-types
+ * @typedef { import("./argument.js").Argument } Argument
+ * @typedef { import("./command.js").Command } Command
+ * @typedef { import("./option.js").Option } Option
+ */
+
+// Although this is a class, methods are static in style to allow override using subclass or just functions.
+let Help$3 = class Help {
+  constructor() {
+    this.helpWidth = undefined;
+    this.minWidthToWrap = 40;
+    this.sortSubcommands = false;
+    this.sortOptions = false;
+    this.showGlobalOptions = false;
+  }
+
   /**
-   * Clears the array has loads the supplied input.
-   * @param {string[]} argv - The argv list to load. Defaults to `process.argv`.
+   * prepareContext is called by Commander after applying overrides from `Command.configureHelp()`
+   * and just before calling `formatHelp()`.
+   *
+   * Commander just uses the helpWidth and the rest is provided for optional use by more complex subclasses.
+   *
+   * @param {{ error?: boolean, helpWidth?: number, outputHasColors?: boolean }} contextOptions
    */
-  load (argv) {
-    this.clear();
-    if (argv && argv !== process.argv) {
-      argv = arrayify(argv);
-    } else {
-      /* if no argv supplied, assume we are parsing process.argv */
-      argv = process.argv.slice(0);
-      const deleteCount = process.execArgv.some(isExecArg) ? 1 : 2;
-      argv.splice(0, deleteCount);
+  prepareContext(contextOptions) {
+    this.helpWidth = this.helpWidth ?? contextOptions.helpWidth ?? 80;
+  }
+
+  /**
+   * Get an array of the visible subcommands. Includes a placeholder for the implicit help command, if there is one.
+   *
+   * @param {Command} cmd
+   * @returns {Command[]}
+   */
+
+  visibleCommands(cmd) {
+    const visibleCommands = cmd.commands.filter((cmd) => !cmd._hidden);
+    const helpCommand = cmd._getHelpCommand();
+    if (helpCommand && !helpCommand._hidden) {
+      visibleCommands.push(helpCommand);
     }
-    argv.forEach(arg => this.push(String(arg)));
-  }
-
-  /**
-   * Clear the array.
-   */
-  clear () {
-    this.length = 0;
-  }
-
-  /**
-   * expand ``--option=value` style args.
-   */
-  expandOptionEqualsNotation () {
-    if (this.some(arg => re$1.optEquals.test(arg))) {
-      const expandedArgs = [];
-      this.forEach(arg => {
-        const matches = arg.match(re$1.optEquals);
-        if (matches) {
-          expandedArgs.push(matches[1], matches[2]);
-        } else {
-          expandedArgs.push(arg);
-        }
+    if (this.sortSubcommands) {
+      visibleCommands.sort((a, b) => {
+        // @ts-ignore: because overloaded return type
+        return a.name().localeCompare(b.name());
       });
-      this.clear();
-      this.load(expandedArgs);
     }
+    return visibleCommands;
   }
 
   /**
-   * expand getopt-style combinedShort options.
+   * Compare options for sort.
+   *
+   * @param {Option} a
+   * @param {Option} b
+   * @returns {number}
    */
-  expandGetoptNotation () {
-    if (this.hasCombinedShortOptions()) {
-      findReplace(this, re$1.combinedShort, expandCombinedShortArg);
-    }
+  compareOptions(a, b) {
+    const getSortKey = (option) => {
+      // WYSIWYG for order displayed in help. Short used for comparison if present. No special handling for negated.
+      return option.short
+        ? option.short.replace(/^-/, '')
+        : option.long.replace(/^--/, '');
+    };
+    return getSortKey(a).localeCompare(getSortKey(b));
   }
 
   /**
-   * Returns true if the array contains combined short options (e.g. `-ab`).
-   * @returns {boolean}
+   * Get an array of the visible options. Includes a placeholder for the implicit help option, if there is one.
+   *
+   * @param {Command} cmd
+   * @returns {Option[]}
    */
-  hasCombinedShortOptions () {
-    return this.some(arg => re$1.combinedShort.test(arg))
-  }
 
-  static from (argv) {
-    const result = new this();
-    result.load(argv);
-    return result
-  }
-}
-
-/**
- * Expand a combined short option.
- * @param {string} - the string to expand, e.g. `-ab`
- * @returns {string[]}
- * @static
- */
-function expandCombinedShortArg (arg) {
-  /* remove initial hypen */
-  arg = arg.slice(1);
-  return arg.split('').map(letter => '-' + letter)
-}
-
-/**
- * Returns true if the supplied arg matches `--option=value` notation.
- * @param {string} - the arg to test, e.g. `--one=something`
- * @returns {boolean}
- * @static
- */
-function isOptionEqualsNotation (arg) {
-  return re$1.optEquals.test(arg)
-}
-
-/**
- * Returns true if the supplied arg is in either long (`--one`) or short (`-o`) format.
- * @param {string} - the arg to test, e.g. `--one`
- * @returns {boolean}
- * @static
- */
-function isOption (arg) {
-  return (re$1.short.test(arg) || re$1.long.test(arg)) && !re$1.optEquals.test(arg)
-}
-
-/**
- * Returns true if the supplied arg is in long (`--one`) format.
- * @param {string} - the arg to test, e.g. `--one`
- * @returns {boolean}
- * @static
- */
-function isLongOption (arg) {
-  return re$1.long.test(arg) && !isOptionEqualsNotation(arg)
-}
-
-/**
- * Returns the name from a long, short or `--options=value` arg.
- * @param {string} - the arg to inspect, e.g. `--one`
- * @returns {string}
- * @static
- */
-function getOptionName (arg) {
-  if (re$1.short.test(arg)) {
-    return arg.match(re$1.short)[1]
-  } else if (isLongOption(arg)) {
-    return arg.match(re$1.long)[1]
-  } else if (isOptionEqualsNotation(arg)) {
-    return arg.match(re$1.optEquals)[1].replace(/^--/, '')
-  } else {
-    return null
-  }
-}
-
-function isValue (arg) {
-  return !(isOption(arg) || re$1.combinedShort.test(arg) || re$1.optEquals.test(arg))
-}
-
-function isExecArg (arg) {
-  return ['--eval', '-e'].indexOf(arg) > -1 || arg.startsWith('--eval=')
-}
-
-/**
- * For type-checking Javascript values.
- * @module typical
- * @typicalname t
- * @example
- * const t = require('typical')
- */
-
-/**
- * Returns true if input is a number
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- * @example
- * > t.isNumber(0)
- * true
- * > t.isNumber(1)
- * true
- * > t.isNumber(1.1)
- * true
- * > t.isNumber(0xff)
- * true
- * > t.isNumber(0644)
- * true
- * > t.isNumber(6.2e5)
- * true
- * > t.isNumber(NaN)
- * false
- * > t.isNumber(Infinity)
- * false
- */
-function isNumber (n) {
-  return !isNaN(parseFloat(n)) && isFinite(n)
-}
-
-/**
- * A plain object is a simple object literal, it is not an instance of a class. Returns true if the input `typeof` is `object` and directly decends from `Object`.
- *
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- * @example
- * > t.isPlainObject({ something: 'one' })
- * true
- * > t.isPlainObject(new Date())
- * false
- * > t.isPlainObject([ 0, 1 ])
- * false
- * > t.isPlainObject(/test/)
- * false
- * > t.isPlainObject(1)
- * false
- * > t.isPlainObject('one')
- * false
- * > t.isPlainObject(null)
- * false
- * > t.isPlainObject((function * () {})())
- * false
- * > t.isPlainObject(function * () {})
- * false
- */
-function isPlainObject (input) {
-  return input !== null && typeof input === 'object' && input.constructor === Object
-}
-
-/**
- * An array-like value has all the properties of an array, but is not an array instance. Examples in the `arguments` object. Returns true if the input value is an object, not null and has a `length` property with a numeric value.
- *
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- * @example
- * function sum(x, y){
- *     console.log(t.isArrayLike(arguments))
- *     // prints `true`
- * }
- */
-function isArrayLike$2 (input) {
-  return isObject$2(input) && typeof input.length === 'number'
-}
-
-/**
- * returns true if the typeof input is `'object'`, but not null!
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- */
-function isObject$2 (input) {
-  return typeof input === 'object' && input !== null
-}
-
-/**
- * Returns true if the input value is defined
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- */
-function isDefined (input) {
-  return typeof input !== 'undefined'
-}
-
-/**
- * Returns true if the input value is a string
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- */
-function isString (input) {
-  return typeof input === 'string'
-}
-
-/**
- * Returns true if the input value is a boolean
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- */
-function isBoolean (input) {
-  return typeof input === 'boolean'
-}
-
-/**
- * Returns true if the input value is a function
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- */
-function isFunction (input) {
-  return typeof input === 'function'
-}
-
-/**
- * Returns true if the input value is an es2015 `class`.
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- */
-function isClass (input) {
-  if (isFunction(input)) {
-    return /^class /.test(Function.prototype.toString.call(input))
-  } else {
-    return false
-  }
-}
-
-/**
- * Returns true if the input is a string, number, symbol, boolean, null or undefined value.
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- */
-function isPrimitive (input) {
-  if (input === null) return true
-  switch (typeof input) {
-    case 'string':
-    case 'number':
-    case 'symbol':
-    case 'undefined':
-    case 'boolean':
-      return true
-    default:
-      return false
-  }
-}
-
-/**
- * Returns true if the input is a Promise.
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- */
-function isPromise (input) {
-  if (input) {
-    const isPromise = isDefined(Promise) && input instanceof Promise;
-    const isThenable = input.then && typeof input.then === 'function';
-    return !!(isPromise || isThenable)
-  } else {
-    return false
-  }
-}
-
-/**
- * Returns true if the input is an iterable (`Map`, `Set`, `Array`, Generator etc.).
- * @param {*} - the input to test
- * @returns {boolean}
- * @static
- * @example
- * > t.isIterable('string')
- * true
- * > t.isIterable(new Map())
- * true
- * > t.isIterable([])
- * true
- * > t.isIterable((function * () {})())
- * true
- * > t.isIterable(Promise.resolve())
- * false
- * > t.isIterable(Promise)
- * false
- * > t.isIterable(true)
- * false
- * > t.isIterable({})
- * false
- * > t.isIterable(0)
- * false
- * > t.isIterable(1.1)
- * false
- * > t.isIterable(NaN)
- * false
- * > t.isIterable(Infinity)
- * false
- * > t.isIterable(function () {})
- * false
- * > t.isIterable(Date)
- * false
- * > t.isIterable()
- * false
- * > t.isIterable({ then: function () {} })
- * false
- */
-function isIterable (input) {
-  if (input === null || !isDefined(input)) {
-    return false
-  } else {
-    return (
-      typeof input[Symbol.iterator] === 'function' ||
-      typeof input[Symbol.asyncIterator] === 'function'
-    )
-  }
-}
-
-var t = {
-  isNumber,
-  isString,
-  isBoolean,
-  isPlainObject,
-  isArrayLike: isArrayLike$2,
-  isObject: isObject$2,
-  isDefined,
-  isFunction,
-  isClass,
-  isPrimitive,
-  isPromise,
-  isIterable
-};
-
-/**
- * @module option-definition
- */
-
-/**
- * Describes a command-line option. Additionally, if generating a usage guide with [command-line-usage](https://github.com/75lb/command-line-usage) you could optionally add `description` and `typeLabel` properties to each definition.
- *
- * @alias module:option-definition
- * @typicalname option
- */
-class OptionDefinition {
-  constructor (definition) {
-    /**
-    * The only required definition property is `name`, so the simplest working example is
-    * ```js
-    * const optionDefinitions = [
-    *   { name: 'file' },
-    *   { name: 'depth' }
-    * ]
-    * ```
-    *
-    * Where a `type` property is not specified it will default to `String`.
-    *
-    * | #   | argv input | commandLineArgs() output |
-    * | --- | -------------------- | ------------ |
-    * | 1   | `--file` | `{ file: null }` |
-    * | 2   | `--file lib.js` | `{ file: 'lib.js' }` |
-    * | 3   | `--depth 2` | `{ depth: '2' }` |
-    *
-    * Unicode option names and aliases are valid, for example:
-    * ```js
-    * const optionDefinitions = [
-    *   { name: 'один' },
-    *   { name: '两' },
-    *   { name: 'три', alias: 'т' }
-    * ]
-    * ```
-    * @type {string}
-    */
-    this.name = definition.name;
-
-    /**
-    * The `type` value is a setter function (you receive the output from this), enabling you to be specific about the type and value received.
-    *
-    * The most common values used are `String` (the default), `Number` and `Boolean` but you can use a custom function, for example:
-    *
-    * ```js
-    * const fs = require('fs')
-    *
-    * class FileDetails {
-    *   constructor (filename) {
-    *     this.filename = filename
-    *     this.exists = fs.existsSync(filename)
-    *   }
-    * }
-    *
-    * const cli = commandLineArgs([
-    *   { name: 'file', type: filename => new FileDetails(filename) },
-    *   { name: 'depth', type: Number }
-    * ])
-    * ```
-    *
-    * | #   | argv input | commandLineArgs() output |
-    * | --- | ----------------- | ------------ |
-    * | 1   | `--file asdf.txt` | `{ file: { filename: 'asdf.txt', exists: false } }` |
-    *
-    * The `--depth` option expects a `Number`. If no value was set, you will receive `null`.
-    *
-    * | #   | argv input | commandLineArgs() output |
-    * | --- | ----------------- | ------------ |
-    * | 2   | `--depth` | `{ depth: null }` |
-    * | 3   | `--depth 2` | `{ depth: 2 }` |
-    *
-    * @type {function}
-    * @default String
-    */
-    this.type = definition.type || String;
-
-    /**
-    * getopt-style short option names. Can be any single character (unicode included) except a digit or hyphen.
-    *
-    * ```js
-    * const optionDefinitions = [
-    *   { name: 'hot', alias: 'h', type: Boolean },
-    *   { name: 'discount', alias: 'd', type: Boolean },
-    *   { name: 'courses', alias: 'c' , type: Number }
-    * ]
-    * ```
-    *
-    * | #   | argv input | commandLineArgs() output |
-    * | --- | ------------ | ------------ |
-    * | 1   | `-hcd` | `{ hot: true, courses: null, discount: true }` |
-    * | 2   | `-hdc 3` | `{ hot: true, discount: true, courses: 3 }` |
-    *
-    * @type {string}
-    */
-    this.alias = definition.alias;
-
-    /**
-    * Set this flag if the option takes a list of values. You will receive an array of values, each passed through the `type` function (if specified).
-    *
-    * ```js
-    * const optionDefinitions = [
-    *   { name: 'files', type: String, multiple: true }
-    * ]
-    * ```
-    *
-    * Note, examples 1 and 3 below demonstrate "greedy" parsing which can be disabled by using `lazyMultiple`.
-    *
-    * | #   | argv input | commandLineArgs() output |
-    * | --- | ------------ | ------------ |
-    * | 1   | `--files one.js two.js` | `{ files: [ 'one.js', 'two.js' ] }` |
-    * | 2   | `--files one.js --files two.js` | `{ files: [ 'one.js', 'two.js' ] }` |
-    * | 3   | `--files *` | `{ files: [ 'one.js', 'two.js' ] }` |
-    *
-    * @type {boolean}
-    */
-    this.multiple = definition.multiple;
-
-    /**
-     * Identical to `multiple` but with greedy parsing disabled.
-     *
-     * ```js
-     * const optionDefinitions = [
-     *   { name: 'files', lazyMultiple: true },
-     *   { name: 'verbose', alias: 'v', type: Boolean, lazyMultiple: true }
-     * ]
-     * ```
-     *
-     * | #   | argv input | commandLineArgs() output |
-     * | --- | ------------ | ------------ |
-     * | 1   | `--files one.js --files two.js` | `{ files: [ 'one.js', 'two.js' ] }` |
-     * | 2   | `-vvv` | `{ verbose: [ true, true, true ] }` |
-     *
-     * @type {boolean}
-     */
-    this.lazyMultiple = definition.lazyMultiple;
-
-    /**
-    * Any values unaccounted for by an option definition will be set on the `defaultOption`. This flag is typically set on the most commonly-used option to make for more concise usage (i.e. `$ example *.js` instead of `$ example --files *.js`).
-    *
-    * ```js
-    * const optionDefinitions = [
-    *   { name: 'files', multiple: true, defaultOption: true }
-    * ]
-    * ```
-    *
-    * | #   | argv input | commandLineArgs() output |
-    * | --- | ------------ | ------------ |
-    * | 1   | `--files one.js two.js` | `{ files: [ 'one.js', 'two.js' ] }` |
-    * | 2   | `one.js two.js` | `{ files: [ 'one.js', 'two.js' ] }` |
-    * | 3   | `*` | `{ files: [ 'one.js', 'two.js' ] }` |
-    *
-    * @type {boolean}
-    */
-    this.defaultOption = definition.defaultOption;
-
-    /**
-    * An initial value for the option.
-    *
-    * ```js
-    * const optionDefinitions = [
-    *   { name: 'files', multiple: true, defaultValue: [ 'one.js' ] },
-    *   { name: 'max', type: Number, defaultValue: 3 }
-    * ]
-    * ```
-    *
-    * | #   | argv input | commandLineArgs() output |
-    * | --- | ------------ | ------------ |
-    * | 1   |  | `{ files: [ 'one.js' ], max: 3 }` |
-    * | 2   | `--files two.js` | `{ files: [ 'two.js' ], max: 3 }` |
-    * | 3   | `--max 4` | `{ files: [ 'one.js' ], max: 4 }` |
-    *
-    * @type {*}
-    */
-    this.defaultValue = definition.defaultValue;
-
-    /**
-    * When your app has a large amount of options it makes sense to organise them in groups.
-    *
-    * There are two automatic groups: `_all` (contains all options) and `_none` (contains options without a `group` specified in their definition).
-    *
-    * ```js
-    * const optionDefinitions = [
-    *   { name: 'verbose', group: 'standard' },
-    *   { name: 'help', group: [ 'standard', 'main' ] },
-    *   { name: 'compress', group: [ 'server', 'main' ] },
-    *   { name: 'static', group: 'server' },
-    *   { name: 'debug' }
-    * ]
-    * ```
-    *
-    *<table>
-    *  <tr>
-    *    <th>#</th><th>Command Line</th><th>commandLineArgs() output</th>
-    *  </tr>
-    *  <tr>
-    *    <td>1</td><td><code>--verbose</code></td><td><pre><code>
-    *{
-    *  _all: { verbose: true },
-    *  standard: { verbose: true }
-    *}
-    *</code></pre></td>
-    *  </tr>
-    *  <tr>
-    *    <td>2</td><td><code>--debug</code></td><td><pre><code>
-    *{
-    *  _all: { debug: true },
-    *  _none: { debug: true }
-    *}
-    *</code></pre></td>
-    *  </tr>
-    *  <tr>
-    *    <td>3</td><td><code>--verbose --debug --compress</code></td><td><pre><code>
-    *{
-    *  _all: {
-    *    verbose: true,
-    *    debug: true,
-    *    compress: true
-    *  },
-    *  standard: { verbose: true },
-    *  server: { compress: true },
-    *  main: { compress: true },
-    *  _none: { debug: true }
-    *}
-    *</code></pre></td>
-    *  </tr>
-    *  <tr>
-    *    <td>4</td><td><code>--compress</code></td><td><pre><code>
-    *{
-    *  _all: { compress: true },
-    *  server: { compress: true },
-    *  main: { compress: true }
-    *}
-    *</code></pre></td>
-    *  </tr>
-    *</table>
-    *
-    * @type {string|string[]}
-    */
-    this.group = definition.group;
-
-    /* pick up any remaining properties */
-    for (const prop in definition) {
-      if (!this[prop]) this[prop] = definition[prop];
+  visibleOptions(cmd) {
+    const visibleOptions = cmd.options.filter((option) => !option.hidden);
+    // Built-in help option.
+    const helpOption = cmd._getHelpOption();
+    if (helpOption && !helpOption.hidden) {
+      // Automatically hide conflicting flags. Bit dubious but a historical behaviour that is convenient for single-command programs.
+      const removeShort = helpOption.short && cmd._findOption(helpOption.short);
+      const removeLong = helpOption.long && cmd._findOption(helpOption.long);
+      if (!removeShort && !removeLong) {
+        visibleOptions.push(helpOption); // no changes needed
+      } else if (helpOption.long && !removeLong) {
+        visibleOptions.push(
+          cmd.createOption(helpOption.long, helpOption.description),
+        );
+      } else if (helpOption.short && !removeShort) {
+        visibleOptions.push(
+          cmd.createOption(helpOption.short, helpOption.description),
+        );
+      }
     }
+    if (this.sortOptions) {
+      visibleOptions.sort(this.compareOptions);
+    }
+    return visibleOptions;
   }
 
-  isBoolean () {
-    return this.type === Boolean || (t.isFunction(this.type) && this.type.name === 'Boolean')
-  }
-
-  isMultiple () {
-    return this.multiple || this.lazyMultiple
-  }
-
-  static create (def) {
-    const result = new this(def);
-    return result
-  }
-}
-
-/**
- * @module option-definitions
- */
-
-/**
- * @alias module:option-definitions
- */
-class Definitions extends Array {
   /**
-   * validate option definitions
-   * @param {boolean} [caseInsensitive=false] - whether arguments will be parsed in a case insensitive manner
+   * Get an array of the visible global options. (Not including help.)
+   *
+   * @param {Command} cmd
+   * @returns {Option[]}
+   */
+
+  visibleGlobalOptions(cmd) {
+    if (!this.showGlobalOptions) return [];
+
+    const globalOptions = [];
+    for (
+      let ancestorCmd = cmd.parent;
+      ancestorCmd;
+      ancestorCmd = ancestorCmd.parent
+    ) {
+      const visibleOptions = ancestorCmd.options.filter(
+        (option) => !option.hidden,
+      );
+      globalOptions.push(...visibleOptions);
+    }
+    if (this.sortOptions) {
+      globalOptions.sort(this.compareOptions);
+    }
+    return globalOptions;
+  }
+
+  /**
+   * Get an array of the arguments if any have a description.
+   *
+   * @param {Command} cmd
+   * @returns {Argument[]}
+   */
+
+  visibleArguments(cmd) {
+    // Side effect! Apply the legacy descriptions before the arguments are displayed.
+    if (cmd._argsDescription) {
+      cmd.registeredArguments.forEach((argument) => {
+        argument.description =
+          argument.description || cmd._argsDescription[argument.name()] || '';
+      });
+    }
+
+    // If there are any arguments with a description then return all the arguments.
+    if (cmd.registeredArguments.find((argument) => argument.description)) {
+      return cmd.registeredArguments;
+    }
+    return [];
+  }
+
+  /**
+   * Get the command term to show in the list of subcommands.
+   *
+   * @param {Command} cmd
    * @returns {string}
    */
-  validate (caseInsensitive) {
-    const someHaveNoName = this.some(def => !def.name);
-    if (someHaveNoName) {
-      halt(
-        'INVALID_DEFINITIONS',
-        'Invalid option definitions: the `name` property is required on each definition'
-      );
-    }
 
-    const someDontHaveFunctionType = this.some(def => def.type && typeof def.type !== 'function');
-    if (someDontHaveFunctionType) {
-      halt(
-        'INVALID_DEFINITIONS',
-        'Invalid option definitions: the `type` property must be a setter fuction (default: `Boolean`)'
-      );
-    }
-
-    let invalidOption;
-
-    const numericAlias = this.some(def => {
-      invalidOption = def;
-      return t.isDefined(def.alias) && t.isNumber(def.alias)
-    });
-    if (numericAlias) {
-      halt(
-        'INVALID_DEFINITIONS',
-        'Invalid option definition: to avoid ambiguity an alias cannot be numeric [--' + invalidOption.name + ' alias is -' + invalidOption.alias + ']'
-      );
-    }
-
-    const multiCharacterAlias = this.some(def => {
-      invalidOption = def;
-      return t.isDefined(def.alias) && def.alias.length !== 1
-    });
-    if (multiCharacterAlias) {
-      halt(
-        'INVALID_DEFINITIONS',
-        'Invalid option definition: an alias must be a single character'
-      );
-    }
-
-    const hypenAlias = this.some(def => {
-      invalidOption = def;
-      return def.alias === '-'
-    });
-    if (hypenAlias) {
-      halt(
-        'INVALID_DEFINITIONS',
-        'Invalid option definition: an alias cannot be "-"'
-      );
-    }
-
-    const duplicateName = hasDuplicates(this.map(def => caseInsensitive ? def.name.toLowerCase() : def.name));
-    if (duplicateName) {
-      halt(
-        'INVALID_DEFINITIONS',
-        'Two or more option definitions have the same name'
-      );
-    }
-
-    const duplicateAlias = hasDuplicates(this.map(def => caseInsensitive && t.isDefined(def.alias) ? def.alias.toLowerCase() : def.alias));
-    if (duplicateAlias) {
-      halt(
-        'INVALID_DEFINITIONS',
-        'Two or more option definitions have the same alias'
-      );
-    }
-
-    const duplicateDefaultOption = this.filter(def => def.defaultOption === true).length > 1;
-    if (duplicateDefaultOption) {
-      halt(
-        'INVALID_DEFINITIONS',
-        'Only one option definition can be the defaultOption'
-      );
-    }
-
-    const defaultBoolean = this.some(def => {
-      invalidOption = def;
-      return def.isBoolean() && def.defaultOption
-    });
-    if (defaultBoolean) {
-      halt(
-        'INVALID_DEFINITIONS',
-        `A boolean option ["${invalidOption.name}"] can not also be the defaultOption.`
-      );
-    }
+  subcommandTerm(cmd) {
+    // Legacy. Ignores custom usage string, and nested commands.
+    const args = cmd.registeredArguments
+      .map((arg) => humanReadableArgName$1(arg))
+      .join(' ');
+    return (
+      cmd._name +
+      (cmd._aliases[0] ? '|' + cmd._aliases[0] : '') +
+      (cmd.options.length ? ' [options]' : '') + // simplistic check for non-help option
+      (args ? ' ' + args : '')
+    );
   }
 
   /**
-   * Get definition by option arg (e.g. `--one` or `-o`)
-   * @param {string} [arg] the argument name to get the definition for
-   * @param {boolean} [caseInsensitive] whether to use case insensitive comparisons when finding the appropriate definition
-   * @returns {Definition}
+   * Get the option term to show in the list of options.
+   *
+   * @param {Option} option
+   * @returns {string}
    */
-  get (arg, caseInsensitive) {
-    if (isOption(arg)) {
-      if (re$1.short.test(arg)) {
-        const shortOptionName = getOptionName(arg);
-        if (caseInsensitive) {
-          const lowercaseShortOptionName = shortOptionName.toLowerCase();
-          return this.find(def => t.isDefined(def.alias) && def.alias.toLowerCase() === lowercaseShortOptionName)
-        } else {
-          return this.find(def => def.alias === shortOptionName)
-        }
-      } else {
-        const optionName = getOptionName(arg);
-        if (caseInsensitive) {
-          const lowercaseOptionName = optionName.toLowerCase();
-          return this.find(def => def.name.toLowerCase() === lowercaseOptionName)
-        } else {
-          return this.find(def => def.name === optionName)
-        }
+
+  optionTerm(option) {
+    return option.flags;
+  }
+
+  /**
+   * Get the argument term to show in the list of arguments.
+   *
+   * @param {Argument} argument
+   * @returns {string}
+   */
+
+  argumentTerm(argument) {
+    return argument.name();
+  }
+
+  /**
+   * Get the longest command term length.
+   *
+   * @param {Command} cmd
+   * @param {Help} helper
+   * @returns {number}
+   */
+
+  longestSubcommandTermLength(cmd, helper) {
+    return helper.visibleCommands(cmd).reduce((max, command) => {
+      return Math.max(
+        max,
+        this.displayWidth(
+          helper.styleSubcommandTerm(helper.subcommandTerm(command)),
+        ),
+      );
+    }, 0);
+  }
+
+  /**
+   * Get the longest option term length.
+   *
+   * @param {Command} cmd
+   * @param {Help} helper
+   * @returns {number}
+   */
+
+  longestOptionTermLength(cmd, helper) {
+    return helper.visibleOptions(cmd).reduce((max, option) => {
+      return Math.max(
+        max,
+        this.displayWidth(helper.styleOptionTerm(helper.optionTerm(option))),
+      );
+    }, 0);
+  }
+
+  /**
+   * Get the longest global option term length.
+   *
+   * @param {Command} cmd
+   * @param {Help} helper
+   * @returns {number}
+   */
+
+  longestGlobalOptionTermLength(cmd, helper) {
+    return helper.visibleGlobalOptions(cmd).reduce((max, option) => {
+      return Math.max(
+        max,
+        this.displayWidth(helper.styleOptionTerm(helper.optionTerm(option))),
+      );
+    }, 0);
+  }
+
+  /**
+   * Get the longest argument term length.
+   *
+   * @param {Command} cmd
+   * @param {Help} helper
+   * @returns {number}
+   */
+
+  longestArgumentTermLength(cmd, helper) {
+    return helper.visibleArguments(cmd).reduce((max, argument) => {
+      return Math.max(
+        max,
+        this.displayWidth(
+          helper.styleArgumentTerm(helper.argumentTerm(argument)),
+        ),
+      );
+    }, 0);
+  }
+
+  /**
+   * Get the command usage to be displayed at the top of the built-in help.
+   *
+   * @param {Command} cmd
+   * @returns {string}
+   */
+
+  commandUsage(cmd) {
+    // Usage
+    let cmdName = cmd._name;
+    if (cmd._aliases[0]) {
+      cmdName = cmdName + '|' + cmd._aliases[0];
+    }
+    let ancestorCmdNames = '';
+    for (
+      let ancestorCmd = cmd.parent;
+      ancestorCmd;
+      ancestorCmd = ancestorCmd.parent
+    ) {
+      ancestorCmdNames = ancestorCmd.name() + ' ' + ancestorCmdNames;
+    }
+    return ancestorCmdNames + cmdName + ' ' + cmd.usage();
+  }
+
+  /**
+   * Get the description for the command.
+   *
+   * @param {Command} cmd
+   * @returns {string}
+   */
+
+  commandDescription(cmd) {
+    // @ts-ignore: because overloaded return type
+    return cmd.description();
+  }
+
+  /**
+   * Get the subcommand summary to show in the list of subcommands.
+   * (Fallback to description for backwards compatibility.)
+   *
+   * @param {Command} cmd
+   * @returns {string}
+   */
+
+  subcommandDescription(cmd) {
+    // @ts-ignore: because overloaded return type
+    return cmd.summary() || cmd.description();
+  }
+
+  /**
+   * Get the option description to show in the list of options.
+   *
+   * @param {Option} option
+   * @return {string}
+   */
+
+  optionDescription(option) {
+    const extraInfo = [];
+
+    if (option.argChoices) {
+      extraInfo.push(
+        // use stringify to match the display of the default value
+        `choices: ${option.argChoices.map((choice) => JSON.stringify(choice)).join(', ')}`,
+      );
+    }
+    if (option.defaultValue !== undefined) {
+      // default for boolean and negated more for programmer than end user,
+      // but show true/false for boolean option as may be for hand-rolled env or config processing.
+      const showDefault =
+        option.required ||
+        option.optional ||
+        (option.isBoolean() && typeof option.defaultValue === 'boolean');
+      if (showDefault) {
+        extraInfo.push(
+          `default: ${option.defaultValueDescription || JSON.stringify(option.defaultValue)}`,
+        );
       }
-    } else {
-      return this.find(def => def.name === arg)
     }
-  }
-
-  getDefault () {
-    return this.find(def => def.defaultOption === true)
-  }
-
-  isGrouped () {
-    return this.some(def => def.group)
-  }
-
-  whereGrouped () {
-    return this.filter(containsValidGroup)
-  }
-
-  whereNotGrouped () {
-    return this.filter(def => !containsValidGroup(def))
-  }
-
-  whereDefaultValueSet () {
-    return this.filter(def => t.isDefined(def.defaultValue))
-  }
-
-  static from (definitions, caseInsensitive) {
-    if (definitions instanceof this) return definitions
-    const result = super.from(arrayify(definitions), def => OptionDefinition.create(def));
-    result.validate(caseInsensitive);
-    return result
-  }
-}
-
-function halt (name, message) {
-  const err = new Error(message);
-  err.name = name;
-  throw err
-}
-
-function containsValidGroup (def) {
-  return arrayify(def.group).some(group => group)
-}
-
-function hasDuplicates (array) {
-  const items = {};
-  for (let i = 0; i < array.length; i++) {
-    const value = array[i];
-    if (items[value]) {
-      return true
-    } else {
-      if (t.isDefined(value)) items[value] = true;
+    // preset for boolean and negated are more for programmer than end user
+    if (option.presetArg !== undefined && option.optional) {
+      extraInfo.push(`preset: ${JSON.stringify(option.presetArg)}`);
     }
+    if (option.envVar !== undefined) {
+      extraInfo.push(`env: ${option.envVar}`);
+    }
+    if (extraInfo.length > 0) {
+      const extraDescription = `(${extraInfo.join(', ')})`;
+      if (option.description) {
+        return `${option.description} ${extraDescription}`;
+      }
+      return extraDescription;
+    }
+
+    return option.description;
   }
-}
 
-/**
- * @module argv-parser
- */
-
-/**
- * @alias module:argv-parser
- */
-class ArgvParser {
   /**
-   * @param {OptionDefinitions} - Definitions array
-   * @param {object} [options] - Options
-   * @param {string[]} [options.argv] - Overrides `process.argv`
-   * @param {boolean} [options.stopAtFirstUnknown] -
-   * @param {boolean} [options.caseInsensitive] - Arguments will be parsed in a case insensitive manner. Defaults to false.
+   * Get the argument description to show in the list of arguments.
+   *
+   * @param {Argument} argument
+   * @return {string}
    */
-  constructor (definitions, options) {
-    this.options = Object.assign({}, options);
-    /**
-     * Option Definitions
-     */
-    this.definitions = Definitions.from(definitions, this.options.caseInsensitive);
 
-    /**
-     * Argv
-     */
-    this.argv = ArgvArray.from(this.options.argv);
-    if (this.argv.hasCombinedShortOptions()) {
-      findReplace(this.argv, re$1.combinedShort.test.bind(re$1.combinedShort), arg => {
-        arg = arg.slice(1);
-        return arg.split('').map(letter => ({ origArg: `-${arg}`, arg: '-' + letter }))
+  argumentDescription(argument) {
+    const extraInfo = [];
+    if (argument.argChoices) {
+      extraInfo.push(
+        // use stringify to match the display of the default value
+        `choices: ${argument.argChoices.map((choice) => JSON.stringify(choice)).join(', ')}`,
+      );
+    }
+    if (argument.defaultValue !== undefined) {
+      extraInfo.push(
+        `default: ${argument.defaultValueDescription || JSON.stringify(argument.defaultValue)}`,
+      );
+    }
+    if (extraInfo.length > 0) {
+      const extraDescription = `(${extraInfo.join(', ')})`;
+      if (argument.description) {
+        return `${argument.description} ${extraDescription}`;
+      }
+      return extraDescription;
+    }
+    return argument.description;
+  }
+
+  /**
+   * Format a list of items, given a heading and an array of formatted items.
+   *
+   * @param {string} heading
+   * @param {string[]} items
+   * @param {Help} helper
+   * @returns string[]
+   */
+  formatItemList(heading, items, helper) {
+    if (items.length === 0) return [];
+
+    return [helper.styleTitle(heading), ...items, ''];
+  }
+
+  /**
+   * Group items by their help group heading.
+   *
+   * @param {Command[] | Option[]} unsortedItems
+   * @param {Command[] | Option[]} visibleItems
+   * @param {Function} getGroup
+   * @returns {Map<string, Command[] | Option[]>}
+   */
+  groupItems(unsortedItems, visibleItems, getGroup) {
+    const result = new Map();
+    // Add groups in order of appearance in unsortedItems.
+    unsortedItems.forEach((item) => {
+      const group = getGroup(item);
+      if (!result.has(group)) result.set(group, []);
+    });
+    // Add items in order of appearance in visibleItems.
+    visibleItems.forEach((item) => {
+      const group = getGroup(item);
+      if (!result.has(group)) {
+        result.set(group, []);
+      }
+      result.get(group).push(item);
+    });
+    return result;
+  }
+
+  /**
+   * Generate the built-in help text.
+   *
+   * @param {Command} cmd
+   * @param {Help} helper
+   * @returns {string}
+   */
+
+  formatHelp(cmd, helper) {
+    const termWidth = helper.padWidth(cmd, helper);
+    const helpWidth = helper.helpWidth ?? 80; // in case prepareContext() was not called
+
+    function callFormatItem(term, description) {
+      return helper.formatItem(term, termWidth, description, helper);
+    }
+
+    // Usage
+    let output = [
+      `${helper.styleTitle('Usage:')} ${helper.styleUsage(helper.commandUsage(cmd))}`,
+      '',
+    ];
+
+    // Description
+    const commandDescription = helper.commandDescription(cmd);
+    if (commandDescription.length > 0) {
+      output = output.concat([
+        helper.boxWrap(
+          helper.styleCommandDescription(commandDescription),
+          helpWidth,
+        ),
+        '',
+      ]);
+    }
+
+    // Arguments
+    const argumentList = helper.visibleArguments(cmd).map((argument) => {
+      return callFormatItem(
+        helper.styleArgumentTerm(helper.argumentTerm(argument)),
+        helper.styleArgumentDescription(helper.argumentDescription(argument)),
+      );
+    });
+    output = output.concat(
+      this.formatItemList('Arguments:', argumentList, helper),
+    );
+
+    // Options
+    const optionGroups = this.groupItems(
+      cmd.options,
+      helper.visibleOptions(cmd),
+      (option) => option.helpGroupHeading ?? 'Options:',
+    );
+    optionGroups.forEach((options, group) => {
+      const optionList = options.map((option) => {
+        return callFormatItem(
+          helper.styleOptionTerm(helper.optionTerm(option)),
+          helper.styleOptionDescription(helper.optionDescription(option)),
+        );
       });
+      output = output.concat(this.formatItemList(group, optionList, helper));
+    });
+
+    if (helper.showGlobalOptions) {
+      const globalOptionList = helper
+        .visibleGlobalOptions(cmd)
+        .map((option) => {
+          return callFormatItem(
+            helper.styleOptionTerm(helper.optionTerm(option)),
+            helper.styleOptionDescription(helper.optionDescription(option)),
+          );
+        });
+      output = output.concat(
+        this.formatItemList('Global Options:', globalOptionList, helper),
+      );
     }
+
+    // Commands
+    const commandGroups = this.groupItems(
+      cmd.commands,
+      helper.visibleCommands(cmd),
+      (sub) => sub.helpGroup() || 'Commands:',
+    );
+    commandGroups.forEach((commands, group) => {
+      const commandList = commands.map((sub) => {
+        return callFormatItem(
+          helper.styleSubcommandTerm(helper.subcommandTerm(sub)),
+          helper.styleSubcommandDescription(helper.subcommandDescription(sub)),
+        );
+      });
+      output = output.concat(this.formatItemList(group, commandList, helper));
+    });
+
+    return output.join('\n');
   }
 
   /**
-   * Yields one `{ event, name, value, arg, def }` argInfo object for each arg in `process.argv` (or `options.argv`).
+   * Return display width of string, ignoring ANSI escape sequences. Used in padding and wrapping calculations.
+   *
+   * @param {string} str
+   * @returns {number}
    */
-  * [Symbol.iterator] () {
-    const definitions = this.definitions;
-
-    let def;
-    let value;
-    let name;
-    let event;
-    let singularDefaultSet = false;
-    let unknownFound = false;
-    let origArg;
-
-    for (let arg of this.argv) {
-      if (t.isPlainObject(arg)) {
-        origArg = arg.origArg;
-        arg = arg.arg;
-      }
-
-      if (unknownFound && this.options.stopAtFirstUnknown) {
-        yield { event: 'unknown_value', arg, name: '_unknown', value: undefined };
-        continue
-      }
-
-      /* handle long or short option */
-      if (isOption(arg)) {
-        def = definitions.get(arg, this.options.caseInsensitive);
-        value = undefined;
-        if (def) {
-          value = def.isBoolean() ? true : null;
-          event = 'set';
-        } else {
-          event = 'unknown_option';
-        }
-
-      /* handle --option-value notation */
-      } else if (isOptionEqualsNotation(arg)) {
-        const matches = arg.match(re$1.optEquals);
-        def = definitions.get(matches[1], this.options.caseInsensitive);
-        if (def) {
-          if (def.isBoolean()) {
-            yield { event: 'unknown_value', arg, name: '_unknown', value, def };
-            event = 'set';
-            value = true;
-          } else {
-            event = 'set';
-            value = matches[2];
-          }
-        } else {
-          event = 'unknown_option';
-        }
-
-      /* handle value */
-      } else if (isValue(arg)) {
-        if (def) {
-          value = arg;
-          event = 'set';
-        } else {
-          /* get the defaultOption */
-          def = this.definitions.getDefault();
-          if (def && !singularDefaultSet) {
-            value = arg;
-            event = 'set';
-          } else {
-            event = 'unknown_value';
-            def = undefined;
-          }
-        }
-      }
-
-      name = def ? def.name : '_unknown';
-      const argInfo = { event, arg, name, value, def };
-      if (origArg) {
-        argInfo.subArg = arg;
-        argInfo.arg = origArg;
-      }
-      yield argInfo;
-
-      /* unknownFound logic */
-      if (name === '_unknown') unknownFound = true;
-
-      /* singularDefaultSet logic */
-      if (def && def.defaultOption && !def.isMultiple() && event === 'set') singularDefaultSet = true;
-
-      /* reset values once consumed and yielded */
-      if (def && def.isBoolean()) def = undefined;
-      /* reset the def if it's a singular which has been set */
-      if (def && !def.multiple && t.isDefined(value) && value !== null) {
-        def = undefined;
-      }
-      value = undefined;
-      event = undefined;
-      name = undefined;
-      origArg = undefined;
-    }
+  displayWidth(str) {
+    return stripColor$1(str).length;
   }
-}
 
-const _value = new WeakMap();
+  /**
+   * Style the title for displaying in the help. Called with 'Usage:', 'Options:', etc.
+   *
+   * @param {string} str
+   * @returns {string}
+   */
+  styleTitle(str) {
+    return str;
+  }
+
+  styleUsage(str) {
+    // Usage has lots of parts the user might like to color separately! Assume default usage string which is formed like:
+    //    command subcommand [options] [command] <foo> [bar]
+    return str
+      .split(' ')
+      .map((word) => {
+        if (word === '[options]') return this.styleOptionText(word);
+        if (word === '[command]') return this.styleSubcommandText(word);
+        if (word[0] === '[' || word[0] === '<')
+          return this.styleArgumentText(word);
+        return this.styleCommandText(word); // Restrict to initial words?
+      })
+      .join(' ');
+  }
+  styleCommandDescription(str) {
+    return this.styleDescriptionText(str);
+  }
+  styleOptionDescription(str) {
+    return this.styleDescriptionText(str);
+  }
+  styleSubcommandDescription(str) {
+    return this.styleDescriptionText(str);
+  }
+  styleArgumentDescription(str) {
+    return this.styleDescriptionText(str);
+  }
+  styleDescriptionText(str) {
+    return str;
+  }
+  styleOptionTerm(str) {
+    return this.styleOptionText(str);
+  }
+  styleSubcommandTerm(str) {
+    // This is very like usage with lots of parts! Assume default string which is formed like:
+    //    subcommand [options] <foo> [bar]
+    return str
+      .split(' ')
+      .map((word) => {
+        if (word === '[options]') return this.styleOptionText(word);
+        if (word[0] === '[' || word[0] === '<')
+          return this.styleArgumentText(word);
+        return this.styleSubcommandText(word); // Restrict to initial words?
+      })
+      .join(' ');
+  }
+  styleArgumentTerm(str) {
+    return this.styleArgumentText(str);
+  }
+  styleOptionText(str) {
+    return str;
+  }
+  styleArgumentText(str) {
+    return str;
+  }
+  styleSubcommandText(str) {
+    return str;
+  }
+  styleCommandText(str) {
+    return str;
+  }
+
+  /**
+   * Calculate the pad width from the maximum term length.
+   *
+   * @param {Command} cmd
+   * @param {Help} helper
+   * @returns {number}
+   */
+
+  padWidth(cmd, helper) {
+    return Math.max(
+      helper.longestOptionTermLength(cmd, helper),
+      helper.longestGlobalOptionTermLength(cmd, helper),
+      helper.longestSubcommandTermLength(cmd, helper),
+      helper.longestArgumentTermLength(cmd, helper),
+    );
+  }
+
+  /**
+   * Detect manually wrapped and indented strings by checking for line break followed by whitespace.
+   *
+   * @param {string} str
+   * @returns {boolean}
+   */
+  preformatted(str) {
+    return /\n[^\S\r\n]/.test(str);
+  }
+
+  /**
+   * Format the "item", which consists of a term and description. Pad the term and wrap the description, indenting the following lines.
+   *
+   * So "TTT", 5, "DDD DDDD DD DDD" might be formatted for this.helpWidth=17 like so:
+   *   TTT  DDD DDDD
+   *        DD DDD
+   *
+   * @param {string} term
+   * @param {number} termWidth
+   * @param {string} description
+   * @param {Help} helper
+   * @returns {string}
+   */
+  formatItem(term, termWidth, description, helper) {
+    const itemIndent = 2;
+    const itemIndentStr = ' '.repeat(itemIndent);
+    if (!description) return itemIndentStr + term;
+
+    // Pad the term out to a consistent width, so descriptions are aligned.
+    const paddedTerm = term.padEnd(
+      termWidth + term.length - helper.displayWidth(term),
+    );
+
+    // Format the description.
+    const spacerWidth = 2; // between term and description
+    const helpWidth = this.helpWidth ?? 80; // in case prepareContext() was not called
+    const remainingWidth = helpWidth - termWidth - spacerWidth - itemIndent;
+    let formattedDescription;
+    if (
+      remainingWidth < this.minWidthToWrap ||
+      helper.preformatted(description)
+    ) {
+      formattedDescription = description;
+    } else {
+      const wrappedDescription = helper.boxWrap(description, remainingWidth);
+      formattedDescription = wrappedDescription.replace(
+        /\n/g,
+        '\n' + ' '.repeat(termWidth + spacerWidth),
+      );
+    }
+
+    // Construct and overall indent.
+    return (
+      itemIndentStr +
+      paddedTerm +
+      ' '.repeat(spacerWidth) +
+      formattedDescription.replace(/\n/g, `\n${itemIndentStr}`)
+    );
+  }
+
+  /**
+   * Wrap a string at whitespace, preserving existing line breaks.
+   * Wrapping is skipped if the width is less than `minWidthToWrap`.
+   *
+   * @param {string} str
+   * @param {number} width
+   * @returns {string}
+   */
+  boxWrap(str, width) {
+    if (width < this.minWidthToWrap) return str;
+
+    const rawLines = str.split(/\r\n|\n/);
+    // split up text by whitespace
+    const chunkPattern = /[\s]*[^\s]+/g;
+    const wrappedLines = [];
+    rawLines.forEach((line) => {
+      const chunks = line.match(chunkPattern);
+      if (chunks === null) {
+        wrappedLines.push('');
+        return;
+      }
+
+      let sumChunks = [chunks.shift()];
+      let sumWidth = this.displayWidth(sumChunks[0]);
+      chunks.forEach((chunk) => {
+        const visibleWidth = this.displayWidth(chunk);
+        // Accumulate chunks while they fit into width.
+        if (sumWidth + visibleWidth <= width) {
+          sumChunks.push(chunk);
+          sumWidth += visibleWidth;
+          return;
+        }
+        wrappedLines.push(sumChunks.join(''));
+
+        const nextChunk = chunk.trimStart(); // trim space at line break
+        sumChunks = [nextChunk];
+        sumWidth = this.displayWidth(nextChunk);
+      });
+      wrappedLines.push(sumChunks.join(''));
+    });
+
+    return wrappedLines.join('\n');
+  }
+};
 
 /**
- * Encapsulates behaviour (defined by an OptionDefinition) when setting values
+ * Strip style ANSI escape sequences from the string. In particular, SGR (Select Graphic Rendition) codes.
+ *
+ * @param {string} str
+ * @returns {string}
+ * @package
  */
-class Option {
-  constructor (definition) {
-    this.definition = new OptionDefinition(definition);
-    this.state = null; /* set or default */
-    this.resetToDefault();
-  }
 
-  get () {
-    return _value.get(this)
-  }
-
-  set (val) {
-    this._set(val, 'set');
-  }
-
-  _set (val, state) {
-    const def = this.definition;
-    if (def.isMultiple()) {
-      /* don't add null or undefined to a multiple */
-      if (val !== null && val !== undefined) {
-        const arr = this.get();
-        if (this.state === 'default') arr.length = 0;
-        arr.push(def.type(val));
-        this.state = state;
-      }
-    } else {
-      /* throw if already set on a singlar defaultOption */
-      if (!def.isMultiple() && this.state === 'set') {
-        const err = new Error(`Singular option already set [${this.definition.name}=${this.get()}]`);
-        err.name = 'ALREADY_SET';
-        err.value = val;
-        err.optionName = def.name;
-        throw err
-      } else if (val === null || val === undefined) {
-        _value.set(this, val);
-        // /* required to make 'partial: defaultOption with value equal to defaultValue 2' pass */
-        // if (!(def.defaultOption && !def.isMultiple())) {
-        //   this.state = state
-        // }
-      } else {
-        _value.set(this, def.type(val));
-        this.state = state;
-      }
-    }
-  }
-
-  resetToDefault () {
-    if (t.isDefined(this.definition.defaultValue)) {
-      if (this.definition.isMultiple()) {
-        _value.set(this, arrayify(this.definition.defaultValue).slice());
-      } else {
-        _value.set(this, this.definition.defaultValue);
-      }
-    } else {
-      if (this.definition.isMultiple()) {
-        _value.set(this, []);
-      } else {
-        _value.set(this, null);
-      }
-    }
-    this.state = 'default';
-  }
-
-  static create (definition) {
-    definition = new OptionDefinition(definition);
-    if (definition.isBoolean()) {
-      return FlagOption.create(definition)
-    } else {
-      return new this(definition)
-    }
-  }
+function stripColor$1(str) {
+  // eslint-disable-next-line no-control-regex
+  const sgrPattern = /\x1b\[\d*(;\d*)*m/g;
+  return str.replace(sgrPattern, '');
 }
 
-class FlagOption extends Option {
-  set (val) {
-    super.set(true);
-  }
+help.Help = Help$3;
+help.stripColor = stripColor$1;
 
-  static create (def) {
-    return new this(def)
-  }
-}
+var option = {};
 
-/**
- * A map of { DefinitionNameString: Option }. By default, an Output has an `_unknown` property and any options with defaultValues.
- */
-class Output extends Map {
-  constructor (definitions) {
-    super();
-    /**
-     * @type {OptionDefinitions}
-     */
-    this.definitions = Definitions.from(definitions);
+const { InvalidArgumentError: InvalidArgumentError$2 } = error;
 
-    /* by default, an Output has an `_unknown` property and any options with defaultValues */
-    this.set('_unknown', Option.create({ name: '_unknown', multiple: true }));
-    for (const def of this.definitions.whereDefaultValueSet()) {
-      this.set(def.name, Option.create(def));
+let Option$3 = class Option {
+  /**
+   * Initialize a new `Option` with the given `flags` and `description`.
+   *
+   * @param {string} flags
+   * @param {string} [description]
+   */
+
+  constructor(flags, description) {
+    this.flags = flags;
+    this.description = description || '';
+
+    this.required = flags.includes('<'); // A value must be supplied when the option is specified.
+    this.optional = flags.includes('['); // A value is optional when the option is specified.
+    // variadic test ignores <value,...> et al which might be used to describe custom splitting of single argument
+    this.variadic = /\w\.\.\.[>\]]$/.test(flags); // The option can take multiple values.
+    this.mandatory = false; // The option must have a value after parsing, which usually means it must be specified on command line.
+    const optionFlags = splitOptionFlags(flags);
+    this.short = optionFlags.shortFlag; // May be a short flag, undefined, or even a long flag (if option has two long flags).
+    this.long = optionFlags.longFlag;
+    this.negate = false;
+    if (this.long) {
+      this.negate = this.long.startsWith('--no-');
     }
+    this.defaultValue = undefined;
+    this.defaultValueDescription = undefined;
+    this.presetArg = undefined;
+    this.envVar = undefined;
+    this.parseArg = undefined;
+    this.hidden = false;
+    this.argChoices = undefined;
+    this.conflictsWith = [];
+    this.implied = undefined;
+    this.helpGroupHeading = undefined; // soft initialised when option added to command
   }
 
-  toObject (options) {
-    options = options || {};
-    const output = {};
-    for (const item of this) {
-      const name = options.camelCase && item[0] !== '_unknown' ? camelCase(item[0]) : item[0];
-      const option = item[1];
-      if (name === '_unknown' && !option.get().length) continue
-      output[name] = option.get();
+  /**
+   * Set the default value, and optionally supply the description to be displayed in the help.
+   *
+   * @param {*} value
+   * @param {string} [description]
+   * @return {Option}
+   */
+
+  default(value, description) {
+    this.defaultValue = value;
+    this.defaultValueDescription = description;
+    return this;
+  }
+
+  /**
+   * Preset to use when option used without option-argument, especially optional but also boolean and negated.
+   * The custom processing (parseArg) is called.
+   *
+   * @example
+   * new Option('--color').default('GREYSCALE').preset('RGB');
+   * new Option('--donate [amount]').preset('20').argParser(parseFloat);
+   *
+   * @param {*} arg
+   * @return {Option}
+   */
+
+  preset(arg) {
+    this.presetArg = arg;
+    return this;
+  }
+
+  /**
+   * Add option name(s) that conflict with this option.
+   * An error will be displayed if conflicting options are found during parsing.
+   *
+   * @example
+   * new Option('--rgb').conflicts('cmyk');
+   * new Option('--js').conflicts(['ts', 'jsx']);
+   *
+   * @param {(string | string[])} names
+   * @return {Option}
+   */
+
+  conflicts(names) {
+    this.conflictsWith = this.conflictsWith.concat(names);
+    return this;
+  }
+
+  /**
+   * Specify implied option values for when this option is set and the implied options are not.
+   *
+   * The custom processing (parseArg) is not called on the implied values.
+   *
+   * @example
+   * program
+   *   .addOption(new Option('--log', 'write logging information to file'))
+   *   .addOption(new Option('--trace', 'log extra details').implies({ log: 'trace.txt' }));
+   *
+   * @param {object} impliedOptionValues
+   * @return {Option}
+   */
+  implies(impliedOptionValues) {
+    let newImplied = impliedOptionValues;
+    if (typeof impliedOptionValues === 'string') {
+      // string is not documented, but easy mistake and we can do what user probably intended.
+      newImplied = { [impliedOptionValues]: true };
+    }
+    this.implied = Object.assign(this.implied || {}, newImplied);
+    return this;
+  }
+
+  /**
+   * Set environment variable to check for option value.
+   *
+   * An environment variable is only used if when processed the current option value is
+   * undefined, or the source of the current value is 'default' or 'config' or 'env'.
+   *
+   * @param {string} name
+   * @return {Option}
+   */
+
+  env(name) {
+    this.envVar = name;
+    return this;
+  }
+
+  /**
+   * Set the custom handler for processing CLI option arguments into option values.
+   *
+   * @param {Function} [fn]
+   * @return {Option}
+   */
+
+  argParser(fn) {
+    this.parseArg = fn;
+    return this;
+  }
+
+  /**
+   * Whether the option is mandatory and must have a value after parsing.
+   *
+   * @param {boolean} [mandatory=true]
+   * @return {Option}
+   */
+
+  makeOptionMandatory(mandatory = true) {
+    this.mandatory = !!mandatory;
+    return this;
+  }
+
+  /**
+   * Hide option in help.
+   *
+   * @param {boolean} [hide=true]
+   * @return {Option}
+   */
+
+  hideHelp(hide = true) {
+    this.hidden = !!hide;
+    return this;
+  }
+
+  /**
+   * @package
+   */
+
+  _collectValue(value, previous) {
+    if (previous === this.defaultValue || !Array.isArray(previous)) {
+      return [value];
     }
 
-    if (options.skipUnknown) delete output._unknown;
-    return output
+    previous.push(value);
+    return previous;
   }
-}
 
-class GroupedOutput extends Output {
-  toObject (options) {
-    const superOutputNoCamel = super.toObject({ skipUnknown: options.skipUnknown });
-    const superOutput = super.toObject(options);
-    const unknown = superOutput._unknown;
-    delete superOutput._unknown;
-    const grouped = {
-      _all: superOutput
+  /**
+   * Only allow option value to be one of choices.
+   *
+   * @param {string[]} values
+   * @return {Option}
+   */
+
+  choices(values) {
+    this.argChoices = values.slice();
+    this.parseArg = (arg, previous) => {
+      if (!this.argChoices.includes(arg)) {
+        throw new InvalidArgumentError$2(
+          `Allowed choices are ${this.argChoices.join(', ')}.`,
+        );
+      }
+      if (this.variadic) {
+        return this._collectValue(arg, previous);
+      }
+      return arg;
     };
-    if (unknown && unknown.length) grouped._unknown = unknown;
-
-    this.definitions.whereGrouped().forEach(def => {
-      const name = options.camelCase ? camelCase(def.name) : def.name;
-      const outputValue = superOutputNoCamel[def.name];
-      for (const groupName of arrayify(def.group)) {
-        grouped[groupName] = grouped[groupName] || {};
-        if (t.isDefined(outputValue)) {
-          grouped[groupName][name] = outputValue;
-        }
-      }
-    });
-
-    this.definitions.whereNotGrouped().forEach(def => {
-      const name = options.camelCase ? camelCase(def.name) : def.name;
-      const outputValue = superOutputNoCamel[def.name];
-      if (t.isDefined(outputValue)) {
-        if (!grouped._none) grouped._none = {};
-        grouped._none[name] = outputValue;
-      }
-    });
-    return grouped
+    return this;
   }
+
+  /**
+   * Return option name.
+   *
+   * @return {string}
+   */
+
+  name() {
+    if (this.long) {
+      return this.long.replace(/^--/, '');
+    }
+    return this.short.replace(/^-/, '');
+  }
+
+  /**
+   * Return option name, in a camelcase format that can be used
+   * as an object attribute key.
+   *
+   * @return {string}
+   */
+
+  attributeName() {
+    if (this.negate) {
+      return camelcase(this.name().replace(/^no-/, ''));
+    }
+    return camelcase(this.name());
+  }
+
+  /**
+   * Set the help group heading.
+   *
+   * @param {string} heading
+   * @return {Option}
+   */
+  helpGroup(heading) {
+    this.helpGroupHeading = heading;
+    return this;
+  }
+
+  /**
+   * Check if `arg` matches the short or long flag.
+   *
+   * @param {string} arg
+   * @return {boolean}
+   * @package
+   */
+
+  is(arg) {
+    return this.short === arg || this.long === arg;
+  }
+
+  /**
+   * Return whether a boolean option.
+   *
+   * Options are one of boolean, negated, required argument, or optional argument.
+   *
+   * @return {boolean}
+   * @package
+   */
+
+  isBoolean() {
+    return !this.required && !this.optional && !this.negate;
+  }
+};
+
+/**
+ * This class is to make it easier to work with dual options, without changing the existing
+ * implementation. We support separate dual options for separate positive and negative options,
+ * like `--build` and `--no-build`, which share a single option value. This works nicely for some
+ * use cases, but is tricky for others where we want separate behaviours despite
+ * the single shared option value.
+ */
+let DualOptions$1 = class DualOptions {
+  /**
+   * @param {Option[]} options
+   */
+  constructor(options) {
+    this.positiveOptions = new Map();
+    this.negativeOptions = new Map();
+    this.dualOptions = new Set();
+    options.forEach((option) => {
+      if (option.negate) {
+        this.negativeOptions.set(option.attributeName(), option);
+      } else {
+        this.positiveOptions.set(option.attributeName(), option);
+      }
+    });
+    this.negativeOptions.forEach((value, key) => {
+      if (this.positiveOptions.has(key)) {
+        this.dualOptions.add(key);
+      }
+    });
+  }
+
+  /**
+   * Did the value come from the option, and not from possible matching dual option?
+   *
+   * @param {*} value
+   * @param {Option} option
+   * @returns {boolean}
+   */
+  valueFromOption(value, option) {
+    const optionKey = option.attributeName();
+    if (!this.dualOptions.has(optionKey)) return true;
+
+    // Use the value to deduce if (probably) came from the option.
+    const preset = this.negativeOptions.get(optionKey).presetArg;
+    const negativeValue = preset !== undefined ? preset : false;
+    return option.negate === (negativeValue === value);
+  }
+};
+
+/**
+ * Convert string from kebab-case to camelCase.
+ *
+ * @param {string} str
+ * @return {string}
+ * @private
+ */
+
+function camelcase(str) {
+  return str.split('-').reduce((str, word) => {
+    return str + word[0].toUpperCase() + word.slice(1);
+  });
 }
 
 /**
- * @module command-line-args
+ * Split the short and long flag out of something like '-m,--mixed <value>'
+ *
+ * @private
  */
+
+function splitOptionFlags(flags) {
+  let shortFlag;
+  let longFlag;
+  // short flag, single dash and single character
+  const shortFlagExp = /^-[^-]$/;
+  // long flag, double dash and at least one character
+  const longFlagExp = /^--[^-]/;
+
+  const flagParts = flags.split(/[ |,]+/).concat('guard');
+  // Normal is short and/or long.
+  if (shortFlagExp.test(flagParts[0])) shortFlag = flagParts.shift();
+  if (longFlagExp.test(flagParts[0])) longFlag = flagParts.shift();
+  // Long then short. Rarely used but fine.
+  if (!shortFlag && shortFlagExp.test(flagParts[0]))
+    shortFlag = flagParts.shift();
+  // Allow two long flags, like '--ws, --workspace'
+  // This is the supported way to have a shortish option flag.
+  if (!shortFlag && longFlagExp.test(flagParts[0])) {
+    shortFlag = longFlag;
+    longFlag = flagParts.shift();
+  }
+
+  // Check for unprocessed flag. Fail noisily rather than silently ignore.
+  if (flagParts[0].startsWith('-')) {
+    const unsupportedFlag = flagParts[0];
+    const baseError = `option creation failed due to '${unsupportedFlag}' in option flags '${flags}'`;
+    if (/^-[^-][^-]/.test(unsupportedFlag))
+      throw new Error(
+        `${baseError}
+- a short flag is a single dash and a single character
+  - either use a single dash and a single character (for a short flag)
+  - or use a double dash for a long option (and can have two, like '--ws, --workspace')`,
+      );
+    if (shortFlagExp.test(unsupportedFlag))
+      throw new Error(`${baseError}
+- too many short flags`);
+    if (longFlagExp.test(unsupportedFlag))
+      throw new Error(`${baseError}
+- too many long flags`);
+
+    throw new Error(`${baseError}
+- unrecognised flag format`);
+  }
+  if (shortFlag === undefined && longFlag === undefined)
+    throw new Error(
+      `option creation failed due to no flags found in '${flags}'.`,
+    );
+
+  return { shortFlag, longFlag };
+}
+
+option.Option = Option$3;
+option.DualOptions = DualOptions$1;
+
+var suggestSimilar$2 = {};
+
+const maxDistance = 3;
+
+function editDistance(a, b) {
+  // https://en.wikipedia.org/wiki/Damerau–Levenshtein_distance
+  // Calculating optimal string alignment distance, no substring is edited more than once.
+  // (Simple implementation.)
+
+  // Quick early exit, return worst case.
+  if (Math.abs(a.length - b.length) > maxDistance)
+    return Math.max(a.length, b.length);
+
+  // distance between prefix substrings of a and b
+  const d = [];
+
+  // pure deletions turn a into empty string
+  for (let i = 0; i <= a.length; i++) {
+    d[i] = [i];
+  }
+  // pure insertions turn empty string into b
+  for (let j = 0; j <= b.length; j++) {
+    d[0][j] = j;
+  }
+
+  // fill matrix
+  for (let j = 1; j <= b.length; j++) {
+    for (let i = 1; i <= a.length; i++) {
+      let cost = 1;
+      if (a[i - 1] === b[j - 1]) {
+        cost = 0;
+      } else {
+        cost = 1;
+      }
+      d[i][j] = Math.min(
+        d[i - 1][j] + 1, // deletion
+        d[i][j - 1] + 1, // insertion
+        d[i - 1][j - 1] + cost, // substitution
+      );
+      // transposition
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+      }
+    }
+  }
+
+  return d[a.length][b.length];
+}
 
 /**
- * Returns an object containing all option values set on the command line. By default it parses the global  [`process.argv`](https://nodejs.org/api/process.html#process_process_argv) array.
+ * Find close matches, restricted to same number of edits.
  *
- * Parsing is strict by default - an exception is thrown if the user sets a singular option more than once or sets an unknown value or option (one without a valid [definition](https://github.com/75lb/command-line-args/blob/master/doc/option-definition.md)). To be more permissive, enabling [partial](https://github.com/75lb/command-line-args/wiki/Partial-mode-example) or [stopAtFirstUnknown](https://github.com/75lb/command-line-args/wiki/stopAtFirstUnknown) modes will return known options in the usual manner while collecting unknown arguments in a separate `_unknown` property.
- *
- * @param {Array<OptionDefinition>} - An array of [OptionDefinition](https://github.com/75lb/command-line-args/blob/master/doc/option-definition.md) objects
- * @param {object} [options] - Options.
- * @param {string[]} [options.argv] - An array of strings which, if present will be parsed instead  of `process.argv`.
- * @param {boolean} [options.partial] - If `true`, an array of unknown arguments is returned in the `_unknown` property of the output.
- * @param {boolean} [options.stopAtFirstUnknown] - If `true`, parsing will stop at the first unknown argument and the remaining arguments returned in `_unknown`. When set, `partial: true` is also implied.
- * @param {boolean} [options.camelCase] - If `true`, options with hypenated names (e.g. `move-to`) will be returned in camel-case (e.g. `moveTo`).
- * @param {boolean} [options.caseInsensitive] - If `true`, the case of each option name or alias parsed is insignificant. In other words, both `--Verbose` and `--verbose`, `-V` and `-v` would be equivalent. Defaults to false.
- * @returns {object}
- * @throws `UNKNOWN_OPTION` If `options.partial` is false and the user set an undefined option. The `err.optionName` property contains the arg that specified an unknown option, e.g. `--one`.
- * @throws `UNKNOWN_VALUE` If `options.partial` is false and the user set a value unaccounted for by an option definition. The `err.value` property contains the unknown value, e.g. `5`.
- * @throws `ALREADY_SET` If a user sets a singular, non-multiple option more than once. The `err.optionName` property contains the option name that has already been set, e.g. `one`.
- * @throws `INVALID_DEFINITIONS`
- *   - If an option definition is missing the required `name` property
- *   - If an option definition has a `type` value that's not a function
- *   - If an alias is numeric, a hyphen or a length other than 1
- *   - If an option definition name was used more than once
- *   - If an option definition alias was used more than once
- *   - If more than one option definition has `defaultOption: true`
- *   - If a `Boolean` option is also set as the `defaultOption`.
- * @alias module:command-line-args
+ * @param {string} word
+ * @param {string[]} candidates
+ * @returns {string}
  */
-function commandLineArgs (optionDefinitions, options) {
-  options = options || {};
-  if (options.stopAtFirstUnknown) options.partial = true;
-  optionDefinitions = Definitions.from(optionDefinitions, options.caseInsensitive);
 
-  const parser = new ArgvParser(optionDefinitions, {
-    argv: options.argv,
-    stopAtFirstUnknown: options.stopAtFirstUnknown,
-    caseInsensitive: options.caseInsensitive
+function suggestSimilar$1(word, candidates) {
+  if (!candidates || candidates.length === 0) return '';
+  // remove possible duplicates
+  candidates = Array.from(new Set(candidates));
+
+  const searchingOptions = word.startsWith('--');
+  if (searchingOptions) {
+    word = word.slice(2);
+    candidates = candidates.map((candidate) => candidate.slice(2));
+  }
+
+  let similar = [];
+  let bestDistance = maxDistance;
+  const minSimilarity = 0.4;
+  candidates.forEach((candidate) => {
+    if (candidate.length <= 1) return; // no one character guesses
+
+    const distance = editDistance(word, candidate);
+    const length = Math.max(word.length, candidate.length);
+    const similarity = (length - distance) / length;
+    if (similarity > minSimilarity) {
+      if (distance < bestDistance) {
+        // better edit distance, throw away previous worse matches
+        bestDistance = distance;
+        similar = [candidate];
+      } else if (distance === bestDistance) {
+        similar.push(candidate);
+      }
+    }
   });
 
-  const OutputClass = optionDefinitions.isGrouped() ? GroupedOutput : Output;
-  const output = new OutputClass(optionDefinitions);
+  similar.sort((a, b) => a.localeCompare(b));
+  if (searchingOptions) {
+    similar = similar.map((candidate) => `--${candidate}`);
+  }
 
-  /* Iterate the parser setting each known value to the output. Optionally, throw on unknowns. */
-  for (const argInfo of parser) {
-    const arg = argInfo.subArg || argInfo.arg;
-    if (!options.partial) {
-      if (argInfo.event === 'unknown_value') {
-        const err = new Error(`Unknown value: ${arg}`);
-        err.name = 'UNKNOWN_VALUE';
-        err.value = arg;
-        throw err
-      } else if (argInfo.event === 'unknown_option') {
-        const err = new Error(`Unknown option: ${arg}`);
-        err.name = 'UNKNOWN_OPTION';
-        err.optionName = arg;
-        throw err
+  if (similar.length > 1) {
+    return `\n(Did you mean one of ${similar.join(', ')}?)`;
+  }
+  if (similar.length === 1) {
+    return `\n(Did you mean ${similar[0]}?)`;
+  }
+  return '';
+}
+
+suggestSimilar$2.suggestSimilar = suggestSimilar$1;
+
+const EventEmitter$2 = require$$0$b.EventEmitter;
+const childProcess = require$$1$6;
+const path = require$$2$1;
+const fs = require$$3$2;
+const process$1 = process$5;
+
+const { Argument: Argument$2, humanReadableArgName } = argument;
+const { CommanderError: CommanderError$2 } = error;
+const { Help: Help$2, stripColor } = help;
+const { Option: Option$2, DualOptions } = option;
+const { suggestSimilar } = suggestSimilar$2;
+
+let Command$2 = class Command extends EventEmitter$2 {
+  /**
+   * Initialize a new `Command`.
+   *
+   * @param {string} [name]
+   */
+
+  constructor(name) {
+    super();
+    /** @type {Command[]} */
+    this.commands = [];
+    /** @type {Option[]} */
+    this.options = [];
+    this.parent = null;
+    this._allowUnknownOption = false;
+    this._allowExcessArguments = false;
+    /** @type {Argument[]} */
+    this.registeredArguments = [];
+    this._args = this.registeredArguments; // deprecated old name
+    /** @type {string[]} */
+    this.args = []; // cli args with options removed
+    this.rawArgs = [];
+    this.processedArgs = []; // like .args but after custom processing and collecting variadic
+    this._scriptPath = null;
+    this._name = name || '';
+    this._optionValues = {};
+    this._optionValueSources = {}; // default, env, cli etc
+    this._storeOptionsAsProperties = false;
+    this._actionHandler = null;
+    this._executableHandler = false;
+    this._executableFile = null; // custom name for executable
+    this._executableDir = null; // custom search directory for subcommands
+    this._defaultCommandName = null;
+    this._exitCallback = null;
+    this._aliases = [];
+    this._combineFlagAndOptionalValue = true;
+    this._description = '';
+    this._summary = '';
+    this._argsDescription = undefined; // legacy
+    this._enablePositionalOptions = false;
+    this._passThroughOptions = false;
+    this._lifeCycleHooks = {}; // a hash of arrays
+    /** @type {(boolean | string)} */
+    this._showHelpAfterError = false;
+    this._showSuggestionAfterError = true;
+    this._savedState = null; // used in save/restoreStateBeforeParse
+
+    // see configureOutput() for docs
+    this._outputConfiguration = {
+      writeOut: (str) => process$1.stdout.write(str),
+      writeErr: (str) => process$1.stderr.write(str),
+      outputError: (str, write) => write(str),
+      getOutHelpWidth: () =>
+        process$1.stdout.isTTY ? process$1.stdout.columns : undefined,
+      getErrHelpWidth: () =>
+        process$1.stderr.isTTY ? process$1.stderr.columns : undefined,
+      getOutHasColors: () =>
+        useColor() ?? (process$1.stdout.isTTY && process$1.stdout.hasColors?.()),
+      getErrHasColors: () =>
+        useColor() ?? (process$1.stderr.isTTY && process$1.stderr.hasColors?.()),
+      stripColor: (str) => stripColor(str),
+    };
+
+    this._hidden = false;
+    /** @type {(Option | null | undefined)} */
+    this._helpOption = undefined; // Lazy created on demand. May be null if help option is disabled.
+    this._addImplicitHelpCommand = undefined; // undecided whether true or false yet, not inherited
+    /** @type {Command} */
+    this._helpCommand = undefined; // lazy initialised, inherited
+    this._helpConfiguration = {};
+    /** @type {string | undefined} */
+    this._helpGroupHeading = undefined; // soft initialised when added to parent
+    /** @type {string | undefined} */
+    this._defaultCommandGroup = undefined;
+    /** @type {string | undefined} */
+    this._defaultOptionGroup = undefined;
+  }
+
+  /**
+   * Copy settings that are useful to have in common across root command and subcommands.
+   *
+   * (Used internally when adding a command using `.command()` so subcommands inherit parent settings.)
+   *
+   * @param {Command} sourceCommand
+   * @return {Command} `this` command for chaining
+   */
+  copyInheritedSettings(sourceCommand) {
+    this._outputConfiguration = sourceCommand._outputConfiguration;
+    this._helpOption = sourceCommand._helpOption;
+    this._helpCommand = sourceCommand._helpCommand;
+    this._helpConfiguration = sourceCommand._helpConfiguration;
+    this._exitCallback = sourceCommand._exitCallback;
+    this._storeOptionsAsProperties = sourceCommand._storeOptionsAsProperties;
+    this._combineFlagAndOptionalValue =
+      sourceCommand._combineFlagAndOptionalValue;
+    this._allowExcessArguments = sourceCommand._allowExcessArguments;
+    this._enablePositionalOptions = sourceCommand._enablePositionalOptions;
+    this._showHelpAfterError = sourceCommand._showHelpAfterError;
+    this._showSuggestionAfterError = sourceCommand._showSuggestionAfterError;
+
+    return this;
+  }
+
+  /**
+   * @returns {Command[]}
+   * @private
+   */
+
+  _getCommandAndAncestors() {
+    const result = [];
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    for (let command = this; command; command = command.parent) {
+      result.push(command);
+    }
+    return result;
+  }
+
+  /**
+   * Define a command.
+   *
+   * There are two styles of command: pay attention to where to put the description.
+   *
+   * @example
+   * // Command implemented using action handler (description is supplied separately to `.command`)
+   * program
+   *   .command('clone <source> [destination]')
+   *   .description('clone a repository into a newly created directory')
+   *   .action((source, destination) => {
+   *     console.log('clone command called');
+   *   });
+   *
+   * // Command implemented using separate executable file (description is second parameter to `.command`)
+   * program
+   *   .command('start <service>', 'start named service')
+   *   .command('stop [service]', 'stop named service, or all if no name supplied');
+   *
+   * @param {string} nameAndArgs - command name and arguments, args are `<required>` or `[optional]` and last may also be `variadic...`
+   * @param {(object | string)} [actionOptsOrExecDesc] - configuration options (for action), or description (for executable)
+   * @param {object} [execOpts] - configuration options (for executable)
+   * @return {Command} returns new command for action handler, or `this` for executable command
+   */
+
+  command(nameAndArgs, actionOptsOrExecDesc, execOpts) {
+    let desc = actionOptsOrExecDesc;
+    let opts = execOpts;
+    if (typeof desc === 'object' && desc !== null) {
+      opts = desc;
+      desc = null;
+    }
+    opts = opts || {};
+    const [, name, args] = nameAndArgs.match(/([^ ]+) *(.*)/);
+
+    const cmd = this.createCommand(name);
+    if (desc) {
+      cmd.description(desc);
+      cmd._executableHandler = true;
+    }
+    if (opts.isDefault) this._defaultCommandName = cmd._name;
+    cmd._hidden = !!(opts.noHelp || opts.hidden); // noHelp is deprecated old name for hidden
+    cmd._executableFile = opts.executableFile || null; // Custom name for executable file, set missing to null to match constructor
+    if (args) cmd.arguments(args);
+    this._registerCommand(cmd);
+    cmd.parent = this;
+    cmd.copyInheritedSettings(this);
+
+    if (desc) return this;
+    return cmd;
+  }
+
+  /**
+   * Factory routine to create a new unattached command.
+   *
+   * See .command() for creating an attached subcommand, which uses this routine to
+   * create the command. You can override createCommand to customise subcommands.
+   *
+   * @param {string} [name]
+   * @return {Command} new command
+   */
+
+  createCommand(name) {
+    return new Command(name);
+  }
+
+  /**
+   * You can customise the help with a subclass of Help by overriding createHelp,
+   * or by overriding Help properties using configureHelp().
+   *
+   * @return {Help}
+   */
+
+  createHelp() {
+    return Object.assign(new Help$2(), this.configureHelp());
+  }
+
+  /**
+   * You can customise the help by overriding Help properties using configureHelp(),
+   * or with a subclass of Help by overriding createHelp().
+   *
+   * @param {object} [configuration] - configuration options
+   * @return {(Command | object)} `this` command for chaining, or stored configuration
+   */
+
+  configureHelp(configuration) {
+    if (configuration === undefined) return this._helpConfiguration;
+
+    this._helpConfiguration = configuration;
+    return this;
+  }
+
+  /**
+   * The default output goes to stdout and stderr. You can customise this for special
+   * applications. You can also customise the display of errors by overriding outputError.
+   *
+   * The configuration properties are all functions:
+   *
+   *     // change how output being written, defaults to stdout and stderr
+   *     writeOut(str)
+   *     writeErr(str)
+   *     // change how output being written for errors, defaults to writeErr
+   *     outputError(str, write) // used for displaying errors and not used for displaying help
+   *     // specify width for wrapping help
+   *     getOutHelpWidth()
+   *     getErrHelpWidth()
+   *     // color support, currently only used with Help
+   *     getOutHasColors()
+   *     getErrHasColors()
+   *     stripColor() // used to remove ANSI escape codes if output does not have colors
+   *
+   * @param {object} [configuration] - configuration options
+   * @return {(Command | object)} `this` command for chaining, or stored configuration
+   */
+
+  configureOutput(configuration) {
+    if (configuration === undefined) return this._outputConfiguration;
+
+    this._outputConfiguration = {
+      ...this._outputConfiguration,
+      ...configuration,
+    };
+    return this;
+  }
+
+  /**
+   * Display the help or a custom message after an error occurs.
+   *
+   * @param {(boolean|string)} [displayHelp]
+   * @return {Command} `this` command for chaining
+   */
+  showHelpAfterError(displayHelp = true) {
+    if (typeof displayHelp !== 'string') displayHelp = !!displayHelp;
+    this._showHelpAfterError = displayHelp;
+    return this;
+  }
+
+  /**
+   * Display suggestion of similar commands for unknown commands, or options for unknown options.
+   *
+   * @param {boolean} [displaySuggestion]
+   * @return {Command} `this` command for chaining
+   */
+  showSuggestionAfterError(displaySuggestion = true) {
+    this._showSuggestionAfterError = !!displaySuggestion;
+    return this;
+  }
+
+  /**
+   * Add a prepared subcommand.
+   *
+   * See .command() for creating an attached subcommand which inherits settings from its parent.
+   *
+   * @param {Command} cmd - new subcommand
+   * @param {object} [opts] - configuration options
+   * @return {Command} `this` command for chaining
+   */
+
+  addCommand(cmd, opts) {
+    if (!cmd._name) {
+      throw new Error(`Command passed to .addCommand() must have a name
+- specify the name in Command constructor or using .name()`);
+    }
+
+    opts = opts || {};
+    if (opts.isDefault) this._defaultCommandName = cmd._name;
+    if (opts.noHelp || opts.hidden) cmd._hidden = true; // modifying passed command due to existing implementation
+
+    this._registerCommand(cmd);
+    cmd.parent = this;
+    cmd._checkForBrokenPassThrough();
+
+    return this;
+  }
+
+  /**
+   * Factory routine to create a new unattached argument.
+   *
+   * See .argument() for creating an attached argument, which uses this routine to
+   * create the argument. You can override createArgument to return a custom argument.
+   *
+   * @param {string} name
+   * @param {string} [description]
+   * @return {Argument} new argument
+   */
+
+  createArgument(name, description) {
+    return new Argument$2(name, description);
+  }
+
+  /**
+   * Define argument syntax for command.
+   *
+   * The default is that the argument is required, and you can explicitly
+   * indicate this with <> around the name. Put [] around the name for an optional argument.
+   *
+   * @example
+   * program.argument('<input-file>');
+   * program.argument('[output-file]');
+   *
+   * @param {string} name
+   * @param {string} [description]
+   * @param {(Function|*)} [parseArg] - custom argument processing function or default value
+   * @param {*} [defaultValue]
+   * @return {Command} `this` command for chaining
+   */
+  argument(name, description, parseArg, defaultValue) {
+    const argument = this.createArgument(name, description);
+    if (typeof parseArg === 'function') {
+      argument.default(defaultValue).argParser(parseArg);
+    } else {
+      argument.default(parseArg);
+    }
+    this.addArgument(argument);
+    return this;
+  }
+
+  /**
+   * Define argument syntax for command, adding multiple at once (without descriptions).
+   *
+   * See also .argument().
+   *
+   * @example
+   * program.arguments('<cmd> [env]');
+   *
+   * @param {string} names
+   * @return {Command} `this` command for chaining
+   */
+
+  arguments(names) {
+    names
+      .trim()
+      .split(/ +/)
+      .forEach((detail) => {
+        this.argument(detail);
+      });
+    return this;
+  }
+
+  /**
+   * Define argument syntax for command, adding a prepared argument.
+   *
+   * @param {Argument} argument
+   * @return {Command} `this` command for chaining
+   */
+  addArgument(argument) {
+    const previousArgument = this.registeredArguments.slice(-1)[0];
+    if (previousArgument?.variadic) {
+      throw new Error(
+        `only the last argument can be variadic '${previousArgument.name()}'`,
+      );
+    }
+    if (
+      argument.required &&
+      argument.defaultValue !== undefined &&
+      argument.parseArg === undefined
+    ) {
+      throw new Error(
+        `a default value for a required argument is never used: '${argument.name()}'`,
+      );
+    }
+    this.registeredArguments.push(argument);
+    return this;
+  }
+
+  /**
+   * Customise or override default help command. By default a help command is automatically added if your command has subcommands.
+   *
+   * @example
+   *    program.helpCommand('help [cmd]');
+   *    program.helpCommand('help [cmd]', 'show help');
+   *    program.helpCommand(false); // suppress default help command
+   *    program.helpCommand(true); // add help command even if no subcommands
+   *
+   * @param {string|boolean} enableOrNameAndArgs - enable with custom name and/or arguments, or boolean to override whether added
+   * @param {string} [description] - custom description
+   * @return {Command} `this` command for chaining
+   */
+
+  helpCommand(enableOrNameAndArgs, description) {
+    if (typeof enableOrNameAndArgs === 'boolean') {
+      this._addImplicitHelpCommand = enableOrNameAndArgs;
+      if (enableOrNameAndArgs && this._defaultCommandGroup) {
+        // make the command to store the group
+        this._initCommandGroup(this._getHelpCommand());
       }
+      return this;
     }
 
-    let option;
-    if (output.has(argInfo.name)) {
-      option = output.get(argInfo.name);
-    } else {
-      option = Option.create(argInfo.def);
-      output.set(argInfo.name, option);
+    const nameAndArgs = enableOrNameAndArgs ?? 'help [command]';
+    const [, helpName, helpArgs] = nameAndArgs.match(/([^ ]+) *(.*)/);
+    const helpDescription = description ?? 'display help for command';
+
+    const helpCommand = this.createCommand(helpName);
+    helpCommand.helpOption(false);
+    if (helpArgs) helpCommand.arguments(helpArgs);
+    if (helpDescription) helpCommand.description(helpDescription);
+
+    this._addImplicitHelpCommand = true;
+    this._helpCommand = helpCommand;
+    // init group unless lazy create
+    if (enableOrNameAndArgs || description) this._initCommandGroup(helpCommand);
+
+    return this;
+  }
+
+  /**
+   * Add prepared custom help command.
+   *
+   * @param {(Command|string|boolean)} helpCommand - custom help command, or deprecated enableOrNameAndArgs as for `.helpCommand()`
+   * @param {string} [deprecatedDescription] - deprecated custom description used with custom name only
+   * @return {Command} `this` command for chaining
+   */
+  addHelpCommand(helpCommand, deprecatedDescription) {
+    // If not passed an object, call through to helpCommand for backwards compatibility,
+    // as addHelpCommand was originally used like helpCommand is now.
+    if (typeof helpCommand !== 'object') {
+      this.helpCommand(helpCommand, deprecatedDescription);
+      return this;
     }
 
-    if (argInfo.name === '_unknown') {
-      option.set(arg);
+    this._addImplicitHelpCommand = true;
+    this._helpCommand = helpCommand;
+    this._initCommandGroup(helpCommand);
+    return this;
+  }
+
+  /**
+   * Lazy create help command.
+   *
+   * @return {(Command|null)}
+   * @package
+   */
+  _getHelpCommand() {
+    const hasImplicitHelpCommand =
+      this._addImplicitHelpCommand ??
+      (this.commands.length &&
+        !this._actionHandler &&
+        !this._findCommand('help'));
+
+    if (hasImplicitHelpCommand) {
+      if (this._helpCommand === undefined) {
+        this.helpCommand(undefined, undefined); // use default name and description
+      }
+      return this._helpCommand;
+    }
+    return null;
+  }
+
+  /**
+   * Add hook for life cycle event.
+   *
+   * @param {string} event
+   * @param {Function} listener
+   * @return {Command} `this` command for chaining
+   */
+
+  hook(event, listener) {
+    const allowedValues = ['preSubcommand', 'preAction', 'postAction'];
+    if (!allowedValues.includes(event)) {
+      throw new Error(`Unexpected value for event passed to hook : '${event}'.
+Expecting one of '${allowedValues.join("', '")}'`);
+    }
+    if (this._lifeCycleHooks[event]) {
+      this._lifeCycleHooks[event].push(listener);
     } else {
-      option.set(argInfo.value);
+      this._lifeCycleHooks[event] = [listener];
+    }
+    return this;
+  }
+
+  /**
+   * Register callback to use as replacement for calling process.exit.
+   *
+   * @param {Function} [fn] optional callback which will be passed a CommanderError, defaults to throwing
+   * @return {Command} `this` command for chaining
+   */
+
+  exitOverride(fn) {
+    if (fn) {
+      this._exitCallback = fn;
+    } else {
+      this._exitCallback = (err) => {
+        if (err.code !== 'commander.executeSubCommandAsync') {
+          throw err;
+        }
+      };
+    }
+    return this;
+  }
+
+  /**
+   * Call process.exit, and _exitCallback if defined.
+   *
+   * @param {number} exitCode exit code for using with process.exit
+   * @param {string} code an id string representing the error
+   * @param {string} message human-readable description of the error
+   * @return never
+   * @private
+   */
+
+  _exit(exitCode, code, message) {
+    if (this._exitCallback) {
+      this._exitCallback(new CommanderError$2(exitCode, code, message));
+      // Expecting this line is not reached.
+    }
+    process$1.exit(exitCode);
+  }
+
+  /**
+   * Register callback `fn` for the command.
+   *
+   * @example
+   * program
+   *   .command('serve')
+   *   .description('start service')
+   *   .action(function() {
+   *      // do work here
+   *   });
+   *
+   * @param {Function} fn
+   * @return {Command} `this` command for chaining
+   */
+
+  action(fn) {
+    const listener = (args) => {
+      // The .action callback takes an extra parameter which is the command or options.
+      const expectedArgsCount = this.registeredArguments.length;
+      const actionArgs = args.slice(0, expectedArgsCount);
+      if (this._storeOptionsAsProperties) {
+        actionArgs[expectedArgsCount] = this; // backwards compatible "options"
+      } else {
+        actionArgs[expectedArgsCount] = this.opts();
+      }
+      actionArgs.push(this);
+
+      return fn.apply(this, actionArgs);
+    };
+    this._actionHandler = listener;
+    return this;
+  }
+
+  /**
+   * Factory routine to create a new unattached option.
+   *
+   * See .option() for creating an attached option, which uses this routine to
+   * create the option. You can override createOption to return a custom option.
+   *
+   * @param {string} flags
+   * @param {string} [description]
+   * @return {Option} new option
+   */
+
+  createOption(flags, description) {
+    return new Option$2(flags, description);
+  }
+
+  /**
+   * Wrap parseArgs to catch 'commander.invalidArgument'.
+   *
+   * @param {(Option | Argument)} target
+   * @param {string} value
+   * @param {*} previous
+   * @param {string} invalidArgumentMessage
+   * @private
+   */
+
+  _callParseArg(target, value, previous, invalidArgumentMessage) {
+    try {
+      return target.parseArg(value, previous);
+    } catch (err) {
+      if (err.code === 'commander.invalidArgument') {
+        const message = `${invalidArgumentMessage} ${err.message}`;
+        this.error(message, { exitCode: err.exitCode, code: err.code });
+      }
+      throw err;
     }
   }
 
-  return output.toObject({ skipUnknown: !options.partial, camelCase: options.camelCase })
+  /**
+   * Check for option flag conflicts.
+   * Register option if no conflicts found, or throw on conflict.
+   *
+   * @param {Option} option
+   * @private
+   */
+
+  _registerOption(option) {
+    const matchingOption =
+      (option.short && this._findOption(option.short)) ||
+      (option.long && this._findOption(option.long));
+    if (matchingOption) {
+      const matchingFlag =
+        option.long && this._findOption(option.long)
+          ? option.long
+          : option.short;
+      throw new Error(`Cannot add option '${option.flags}'${this._name && ` to command '${this._name}'`} due to conflicting flag '${matchingFlag}'
+-  already used by option '${matchingOption.flags}'`);
+    }
+
+    this._initOptionGroup(option);
+    this.options.push(option);
+  }
+
+  /**
+   * Check for command name and alias conflicts with existing commands.
+   * Register command if no conflicts found, or throw on conflict.
+   *
+   * @param {Command} command
+   * @private
+   */
+
+  _registerCommand(command) {
+    const knownBy = (cmd) => {
+      return [cmd.name()].concat(cmd.aliases());
+    };
+
+    const alreadyUsed = knownBy(command).find((name) =>
+      this._findCommand(name),
+    );
+    if (alreadyUsed) {
+      const existingCmd = knownBy(this._findCommand(alreadyUsed)).join('|');
+      const newCmd = knownBy(command).join('|');
+      throw new Error(
+        `cannot add command '${newCmd}' as already have command '${existingCmd}'`,
+      );
+    }
+
+    this._initCommandGroup(command);
+    this.commands.push(command);
+  }
+
+  /**
+   * Add an option.
+   *
+   * @param {Option} option
+   * @return {Command} `this` command for chaining
+   */
+  addOption(option) {
+    this._registerOption(option);
+
+    const oname = option.name();
+    const name = option.attributeName();
+
+    // store default value
+    if (option.negate) {
+      // --no-foo is special and defaults foo to true, unless a --foo option is already defined
+      const positiveLongFlag = option.long.replace(/^--no-/, '--');
+      if (!this._findOption(positiveLongFlag)) {
+        this.setOptionValueWithSource(
+          name,
+          option.defaultValue === undefined ? true : option.defaultValue,
+          'default',
+        );
+      }
+    } else if (option.defaultValue !== undefined) {
+      this.setOptionValueWithSource(name, option.defaultValue, 'default');
+    }
+
+    // handler for cli and env supplied values
+    const handleOptionValue = (val, invalidValueMessage, valueSource) => {
+      // val is null for optional option used without an optional-argument.
+      // val is undefined for boolean and negated option.
+      if (val == null && option.presetArg !== undefined) {
+        val = option.presetArg;
+      }
+
+      // custom processing
+      const oldValue = this.getOptionValue(name);
+      if (val !== null && option.parseArg) {
+        val = this._callParseArg(option, val, oldValue, invalidValueMessage);
+      } else if (val !== null && option.variadic) {
+        val = option._collectValue(val, oldValue);
+      }
+
+      // Fill-in appropriate missing values. Long winded but easy to follow.
+      if (val == null) {
+        if (option.negate) {
+          val = false;
+        } else if (option.isBoolean() || option.optional) {
+          val = true;
+        } else {
+          val = ''; // not normal, parseArg might have failed or be a mock function for testing
+        }
+      }
+      this.setOptionValueWithSource(name, val, valueSource);
+    };
+
+    this.on('option:' + oname, (val) => {
+      const invalidValueMessage = `error: option '${option.flags}' argument '${val}' is invalid.`;
+      handleOptionValue(val, invalidValueMessage, 'cli');
+    });
+
+    if (option.envVar) {
+      this.on('optionEnv:' + oname, (val) => {
+        const invalidValueMessage = `error: option '${option.flags}' value '${val}' from env '${option.envVar}' is invalid.`;
+        handleOptionValue(val, invalidValueMessage, 'env');
+      });
+    }
+
+    return this;
+  }
+
+  /**
+   * Internal implementation shared by .option() and .requiredOption()
+   *
+   * @return {Command} `this` command for chaining
+   * @private
+   */
+  _optionEx(config, flags, description, fn, defaultValue) {
+    if (typeof flags === 'object' && flags instanceof Option$2) {
+      throw new Error(
+        'To add an Option object use addOption() instead of option() or requiredOption()',
+      );
+    }
+    const option = this.createOption(flags, description);
+    option.makeOptionMandatory(!!config.mandatory);
+    if (typeof fn === 'function') {
+      option.default(defaultValue).argParser(fn);
+    } else if (fn instanceof RegExp) {
+      // deprecated
+      const regex = fn;
+      fn = (val, def) => {
+        const m = regex.exec(val);
+        return m ? m[0] : def;
+      };
+      option.default(defaultValue).argParser(fn);
+    } else {
+      option.default(fn);
+    }
+
+    return this.addOption(option);
+  }
+
+  /**
+   * Define option with `flags`, `description`, and optional argument parsing function or `defaultValue` or both.
+   *
+   * The `flags` string contains the short and/or long flags, separated by comma, a pipe or space. A required
+   * option-argument is indicated by `<>` and an optional option-argument by `[]`.
+   *
+   * See the README for more details, and see also addOption() and requiredOption().
+   *
+   * @example
+   * program
+   *     .option('-p, --pepper', 'add pepper')
+   *     .option('--pt, --pizza-type <TYPE>', 'type of pizza') // required option-argument
+   *     .option('-c, --cheese [CHEESE]', 'add extra cheese', 'mozzarella') // optional option-argument with default
+   *     .option('-t, --tip <VALUE>', 'add tip to purchase cost', parseFloat) // custom parse function
+   *
+   * @param {string} flags
+   * @param {string} [description]
+   * @param {(Function|*)} [parseArg] - custom option processing function or default value
+   * @param {*} [defaultValue]
+   * @return {Command} `this` command for chaining
+   */
+
+  option(flags, description, parseArg, defaultValue) {
+    return this._optionEx({}, flags, description, parseArg, defaultValue);
+  }
+
+  /**
+   * Add a required option which must have a value after parsing. This usually means
+   * the option must be specified on the command line. (Otherwise the same as .option().)
+   *
+   * The `flags` string contains the short and/or long flags, separated by comma, a pipe or space.
+   *
+   * @param {string} flags
+   * @param {string} [description]
+   * @param {(Function|*)} [parseArg] - custom option processing function or default value
+   * @param {*} [defaultValue]
+   * @return {Command} `this` command for chaining
+   */
+
+  requiredOption(flags, description, parseArg, defaultValue) {
+    return this._optionEx(
+      { mandatory: true },
+      flags,
+      description,
+      parseArg,
+      defaultValue,
+    );
+  }
+
+  /**
+   * Alter parsing of short flags with optional values.
+   *
+   * @example
+   * // for `.option('-f,--flag [value]'):
+   * program.combineFlagAndOptionalValue(true);  // `-f80` is treated like `--flag=80`, this is the default behaviour
+   * program.combineFlagAndOptionalValue(false) // `-fb` is treated like `-f -b`
+   *
+   * @param {boolean} [combine] - if `true` or omitted, an optional value can be specified directly after the flag.
+   * @return {Command} `this` command for chaining
+   */
+  combineFlagAndOptionalValue(combine = true) {
+    this._combineFlagAndOptionalValue = !!combine;
+    return this;
+  }
+
+  /**
+   * Allow unknown options on the command line.
+   *
+   * @param {boolean} [allowUnknown] - if `true` or omitted, no error will be thrown for unknown options.
+   * @return {Command} `this` command for chaining
+   */
+  allowUnknownOption(allowUnknown = true) {
+    this._allowUnknownOption = !!allowUnknown;
+    return this;
+  }
+
+  /**
+   * Allow excess command-arguments on the command line. Pass false to make excess arguments an error.
+   *
+   * @param {boolean} [allowExcess] - if `true` or omitted, no error will be thrown for excess arguments.
+   * @return {Command} `this` command for chaining
+   */
+  allowExcessArguments(allowExcess = true) {
+    this._allowExcessArguments = !!allowExcess;
+    return this;
+  }
+
+  /**
+   * Enable positional options. Positional means global options are specified before subcommands which lets
+   * subcommands reuse the same option names, and also enables subcommands to turn on passThroughOptions.
+   * The default behaviour is non-positional and global options may appear anywhere on the command line.
+   *
+   * @param {boolean} [positional]
+   * @return {Command} `this` command for chaining
+   */
+  enablePositionalOptions(positional = true) {
+    this._enablePositionalOptions = !!positional;
+    return this;
+  }
+
+  /**
+   * Pass through options that come after command-arguments rather than treat them as command-options,
+   * so actual command-options come before command-arguments. Turning this on for a subcommand requires
+   * positional options to have been enabled on the program (parent commands).
+   * The default behaviour is non-positional and options may appear before or after command-arguments.
+   *
+   * @param {boolean} [passThrough] for unknown options.
+   * @return {Command} `this` command for chaining
+   */
+  passThroughOptions(passThrough = true) {
+    this._passThroughOptions = !!passThrough;
+    this._checkForBrokenPassThrough();
+    return this;
+  }
+
+  /**
+   * @private
+   */
+
+  _checkForBrokenPassThrough() {
+    if (
+      this.parent &&
+      this._passThroughOptions &&
+      !this.parent._enablePositionalOptions
+    ) {
+      throw new Error(
+        `passThroughOptions cannot be used for '${this._name}' without turning on enablePositionalOptions for parent command(s)`,
+      );
+    }
+  }
+
+  /**
+   * Whether to store option values as properties on command object,
+   * or store separately (specify false). In both cases the option values can be accessed using .opts().
+   *
+   * @param {boolean} [storeAsProperties=true]
+   * @return {Command} `this` command for chaining
+   */
+
+  storeOptionsAsProperties(storeAsProperties = true) {
+    if (this.options.length) {
+      throw new Error('call .storeOptionsAsProperties() before adding options');
+    }
+    if (Object.keys(this._optionValues).length) {
+      throw new Error(
+        'call .storeOptionsAsProperties() before setting option values',
+      );
+    }
+    this._storeOptionsAsProperties = !!storeAsProperties;
+    return this;
+  }
+
+  /**
+   * Retrieve option value.
+   *
+   * @param {string} key
+   * @return {object} value
+   */
+
+  getOptionValue(key) {
+    if (this._storeOptionsAsProperties) {
+      return this[key];
+    }
+    return this._optionValues[key];
+  }
+
+  /**
+   * Store option value.
+   *
+   * @param {string} key
+   * @param {object} value
+   * @return {Command} `this` command for chaining
+   */
+
+  setOptionValue(key, value) {
+    return this.setOptionValueWithSource(key, value, undefined);
+  }
+
+  /**
+   * Store option value and where the value came from.
+   *
+   * @param {string} key
+   * @param {object} value
+   * @param {string} source - expected values are default/config/env/cli/implied
+   * @return {Command} `this` command for chaining
+   */
+
+  setOptionValueWithSource(key, value, source) {
+    if (this._storeOptionsAsProperties) {
+      this[key] = value;
+    } else {
+      this._optionValues[key] = value;
+    }
+    this._optionValueSources[key] = source;
+    return this;
+  }
+
+  /**
+   * Get source of option value.
+   * Expected values are default | config | env | cli | implied
+   *
+   * @param {string} key
+   * @return {string}
+   */
+
+  getOptionValueSource(key) {
+    return this._optionValueSources[key];
+  }
+
+  /**
+   * Get source of option value. See also .optsWithGlobals().
+   * Expected values are default | config | env | cli | implied
+   *
+   * @param {string} key
+   * @return {string}
+   */
+
+  getOptionValueSourceWithGlobals(key) {
+    // global overwrites local, like optsWithGlobals
+    let source;
+    this._getCommandAndAncestors().forEach((cmd) => {
+      if (cmd.getOptionValueSource(key) !== undefined) {
+        source = cmd.getOptionValueSource(key);
+      }
+    });
+    return source;
+  }
+
+  /**
+   * Get user arguments from implied or explicit arguments.
+   * Side-effects: set _scriptPath if args included script. Used for default program name, and subcommand searches.
+   *
+   * @private
+   */
+
+  _prepareUserArgs(argv, parseOptions) {
+    if (argv !== undefined && !Array.isArray(argv)) {
+      throw new Error('first parameter to parse must be array or undefined');
+    }
+    parseOptions = parseOptions || {};
+
+    // auto-detect argument conventions if nothing supplied
+    if (argv === undefined && parseOptions.from === undefined) {
+      if (process$1.versions?.electron) {
+        parseOptions.from = 'electron';
+      }
+      // check node specific options for scenarios where user CLI args follow executable without scriptname
+      const execArgv = process$1.execArgv ?? [];
+      if (
+        execArgv.includes('-e') ||
+        execArgv.includes('--eval') ||
+        execArgv.includes('-p') ||
+        execArgv.includes('--print')
+      ) {
+        parseOptions.from = 'eval'; // internal usage, not documented
+      }
+    }
+
+    // default to using process.argv
+    if (argv === undefined) {
+      argv = process$1.argv;
+    }
+    this.rawArgs = argv.slice();
+
+    // extract the user args and scriptPath
+    let userArgs;
+    switch (parseOptions.from) {
+      case undefined:
+      case 'node':
+        this._scriptPath = argv[1];
+        userArgs = argv.slice(2);
+        break;
+      case 'electron':
+        // @ts-ignore: because defaultApp is an unknown property
+        if (process$1.defaultApp) {
+          this._scriptPath = argv[1];
+          userArgs = argv.slice(2);
+        } else {
+          userArgs = argv.slice(1);
+        }
+        break;
+      case 'user':
+        userArgs = argv.slice(0);
+        break;
+      case 'eval':
+        userArgs = argv.slice(1);
+        break;
+      default:
+        throw new Error(
+          `unexpected parse option { from: '${parseOptions.from}' }`,
+        );
+    }
+
+    // Find default name for program from arguments.
+    if (!this._name && this._scriptPath)
+      this.nameFromFilename(this._scriptPath);
+    this._name = this._name || 'program';
+
+    return userArgs;
+  }
+
+  /**
+   * Parse `argv`, setting options and invoking commands when defined.
+   *
+   * Use parseAsync instead of parse if any of your action handlers are async.
+   *
+   * Call with no parameters to parse `process.argv`. Detects Electron and special node options like `node --eval`. Easy mode!
+   *
+   * Or call with an array of strings to parse, and optionally where the user arguments start by specifying where the arguments are `from`:
+   * - `'node'`: default, `argv[0]` is the application and `argv[1]` is the script being run, with user arguments after that
+   * - `'electron'`: `argv[0]` is the application and `argv[1]` varies depending on whether the electron application is packaged
+   * - `'user'`: just user arguments
+   *
+   * @example
+   * program.parse(); // parse process.argv and auto-detect electron and special node flags
+   * program.parse(process.argv); // assume argv[0] is app and argv[1] is script
+   * program.parse(my-args, { from: 'user' }); // just user supplied arguments, nothing special about argv[0]
+   *
+   * @param {string[]} [argv] - optional, defaults to process.argv
+   * @param {object} [parseOptions] - optionally specify style of options with from: node/user/electron
+   * @param {string} [parseOptions.from] - where the args are from: 'node', 'user', 'electron'
+   * @return {Command} `this` command for chaining
+   */
+
+  parse(argv, parseOptions) {
+    this._prepareForParse();
+    const userArgs = this._prepareUserArgs(argv, parseOptions);
+    this._parseCommand([], userArgs);
+
+    return this;
+  }
+
+  /**
+   * Parse `argv`, setting options and invoking commands when defined.
+   *
+   * Call with no parameters to parse `process.argv`. Detects Electron and special node options like `node --eval`. Easy mode!
+   *
+   * Or call with an array of strings to parse, and optionally where the user arguments start by specifying where the arguments are `from`:
+   * - `'node'`: default, `argv[0]` is the application and `argv[1]` is the script being run, with user arguments after that
+   * - `'electron'`: `argv[0]` is the application and `argv[1]` varies depending on whether the electron application is packaged
+   * - `'user'`: just user arguments
+   *
+   * @example
+   * await program.parseAsync(); // parse process.argv and auto-detect electron and special node flags
+   * await program.parseAsync(process.argv); // assume argv[0] is app and argv[1] is script
+   * await program.parseAsync(my-args, { from: 'user' }); // just user supplied arguments, nothing special about argv[0]
+   *
+   * @param {string[]} [argv]
+   * @param {object} [parseOptions]
+   * @param {string} parseOptions.from - where the args are from: 'node', 'user', 'electron'
+   * @return {Promise}
+   */
+
+  async parseAsync(argv, parseOptions) {
+    this._prepareForParse();
+    const userArgs = this._prepareUserArgs(argv, parseOptions);
+    await this._parseCommand([], userArgs);
+
+    return this;
+  }
+
+  _prepareForParse() {
+    if (this._savedState === null) {
+      this.saveStateBeforeParse();
+    } else {
+      this.restoreStateBeforeParse();
+    }
+  }
+
+  /**
+   * Called the first time parse is called to save state and allow a restore before subsequent calls to parse.
+   * Not usually called directly, but available for subclasses to save their custom state.
+   *
+   * This is called in a lazy way. Only commands used in parsing chain will have state saved.
+   */
+  saveStateBeforeParse() {
+    this._savedState = {
+      // name is stable if supplied by author, but may be unspecified for root command and deduced during parsing
+      _name: this._name,
+      // option values before parse have default values (including false for negated options)
+      // shallow clones
+      _optionValues: { ...this._optionValues },
+      _optionValueSources: { ...this._optionValueSources },
+    };
+  }
+
+  /**
+   * Restore state before parse for calls after the first.
+   * Not usually called directly, but available for subclasses to save their custom state.
+   *
+   * This is called in a lazy way. Only commands used in parsing chain will have state restored.
+   */
+  restoreStateBeforeParse() {
+    if (this._storeOptionsAsProperties)
+      throw new Error(`Can not call parse again when storeOptionsAsProperties is true.
+- either make a new Command for each call to parse, or stop storing options as properties`);
+
+    // clear state from _prepareUserArgs
+    this._name = this._savedState._name;
+    this._scriptPath = null;
+    this.rawArgs = [];
+    // clear state from setOptionValueWithSource
+    this._optionValues = { ...this._savedState._optionValues };
+    this._optionValueSources = { ...this._savedState._optionValueSources };
+    // clear state from _parseCommand
+    this.args = [];
+    // clear state from _processArguments
+    this.processedArgs = [];
+  }
+
+  /**
+   * Throw if expected executable is missing. Add lots of help for author.
+   *
+   * @param {string} executableFile
+   * @param {string} executableDir
+   * @param {string} subcommandName
+   */
+  _checkForMissingExecutable(executableFile, executableDir, subcommandName) {
+    if (fs.existsSync(executableFile)) return;
+
+    const executableDirMessage = executableDir
+      ? `searched for local subcommand relative to directory '${executableDir}'`
+      : 'no directory for search for local subcommand, use .executableDir() to supply a custom directory';
+    const executableMissing = `'${executableFile}' does not exist
+ - if '${subcommandName}' is not meant to be an executable command, remove description parameter from '.command()' and use '.description()' instead
+ - if the default executable name is not suitable, use the executableFile option to supply a custom name or path
+ - ${executableDirMessage}`;
+    throw new Error(executableMissing);
+  }
+
+  /**
+   * Execute a sub-command executable.
+   *
+   * @private
+   */
+
+  _executeSubCommand(subcommand, args) {
+    args = args.slice();
+    let launchWithNode = false; // Use node for source targets so do not need to get permissions correct, and on Windows.
+    const sourceExt = ['.js', '.ts', '.tsx', '.mjs', '.cjs'];
+
+    function findFile(baseDir, baseName) {
+      // Look for specified file
+      const localBin = path.resolve(baseDir, baseName);
+      if (fs.existsSync(localBin)) return localBin;
+
+      // Stop looking if candidate already has an expected extension.
+      if (sourceExt.includes(path.extname(baseName))) return undefined;
+
+      // Try all the extensions.
+      const foundExt = sourceExt.find((ext) =>
+        fs.existsSync(`${localBin}${ext}`),
+      );
+      if (foundExt) return `${localBin}${foundExt}`;
+
+      return undefined;
+    }
+
+    // Not checking for help first. Unlikely to have mandatory and executable, and can't robustly test for help flags in external command.
+    this._checkForMissingMandatoryOptions();
+    this._checkForConflictingOptions();
+
+    // executableFile and executableDir might be full path, or just a name
+    let executableFile =
+      subcommand._executableFile || `${this._name}-${subcommand._name}`;
+    let executableDir = this._executableDir || '';
+    if (this._scriptPath) {
+      let resolvedScriptPath; // resolve possible symlink for installed npm binary
+      try {
+        resolvedScriptPath = fs.realpathSync(this._scriptPath);
+      } catch {
+        resolvedScriptPath = this._scriptPath;
+      }
+      executableDir = path.resolve(
+        path.dirname(resolvedScriptPath),
+        executableDir,
+      );
+    }
+
+    // Look for a local file in preference to a command in PATH.
+    if (executableDir) {
+      let localFile = findFile(executableDir, executableFile);
+
+      // Legacy search using prefix of script name instead of command name
+      if (!localFile && !subcommand._executableFile && this._scriptPath) {
+        const legacyName = path.basename(
+          this._scriptPath,
+          path.extname(this._scriptPath),
+        );
+        if (legacyName !== this._name) {
+          localFile = findFile(
+            executableDir,
+            `${legacyName}-${subcommand._name}`,
+          );
+        }
+      }
+      executableFile = localFile || executableFile;
+    }
+
+    launchWithNode = sourceExt.includes(path.extname(executableFile));
+
+    let proc;
+    if (process$1.platform !== 'win32') {
+      if (launchWithNode) {
+        args.unshift(executableFile);
+        // add executable arguments to spawn
+        args = incrementNodeInspectorPort(process$1.execArgv).concat(args);
+
+        proc = childProcess.spawn(process$1.argv[0], args, { stdio: 'inherit' });
+      } else {
+        proc = childProcess.spawn(executableFile, args, { stdio: 'inherit' });
+      }
+    } else {
+      this._checkForMissingExecutable(
+        executableFile,
+        executableDir,
+        subcommand._name,
+      );
+      args.unshift(executableFile);
+      // add executable arguments to spawn
+      args = incrementNodeInspectorPort(process$1.execArgv).concat(args);
+      proc = childProcess.spawn(process$1.execPath, args, { stdio: 'inherit' });
+    }
+
+    if (!proc.killed) {
+      // testing mainly to avoid leak warnings during unit tests with mocked spawn
+      const signals = ['SIGUSR1', 'SIGUSR2', 'SIGTERM', 'SIGINT', 'SIGHUP'];
+      signals.forEach((signal) => {
+        process$1.on(signal, () => {
+          if (proc.killed === false && proc.exitCode === null) {
+            // @ts-ignore because signals not typed to known strings
+            proc.kill(signal);
+          }
+        });
+      });
+    }
+
+    // By default terminate process when spawned process terminates.
+    const exitCallback = this._exitCallback;
+    proc.on('close', (code) => {
+      code = code ?? 1; // code is null if spawned process terminated due to a signal
+      if (!exitCallback) {
+        process$1.exit(code);
+      } else {
+        exitCallback(
+          new CommanderError$2(
+            code,
+            'commander.executeSubCommandAsync',
+            '(close)',
+          ),
+        );
+      }
+    });
+    proc.on('error', (err) => {
+      // @ts-ignore: because err.code is an unknown property
+      if (err.code === 'ENOENT') {
+        this._checkForMissingExecutable(
+          executableFile,
+          executableDir,
+          subcommand._name,
+        );
+        // @ts-ignore: because err.code is an unknown property
+      } else if (err.code === 'EACCES') {
+        throw new Error(`'${executableFile}' not executable`);
+      }
+      if (!exitCallback) {
+        process$1.exit(1);
+      } else {
+        const wrappedError = new CommanderError$2(
+          1,
+          'commander.executeSubCommandAsync',
+          '(error)',
+        );
+        wrappedError.nestedError = err;
+        exitCallback(wrappedError);
+      }
+    });
+
+    // Store the reference to the child process
+    this.runningCommand = proc;
+  }
+
+  /**
+   * @private
+   */
+
+  _dispatchSubcommand(commandName, operands, unknown) {
+    const subCommand = this._findCommand(commandName);
+    if (!subCommand) this.help({ error: true });
+
+    subCommand._prepareForParse();
+    let promiseChain;
+    promiseChain = this._chainOrCallSubCommandHook(
+      promiseChain,
+      subCommand,
+      'preSubcommand',
+    );
+    promiseChain = this._chainOrCall(promiseChain, () => {
+      if (subCommand._executableHandler) {
+        this._executeSubCommand(subCommand, operands.concat(unknown));
+      } else {
+        return subCommand._parseCommand(operands, unknown);
+      }
+    });
+    return promiseChain;
+  }
+
+  /**
+   * Invoke help directly if possible, or dispatch if necessary.
+   * e.g. help foo
+   *
+   * @private
+   */
+
+  _dispatchHelpCommand(subcommandName) {
+    if (!subcommandName) {
+      this.help();
+    }
+    const subCommand = this._findCommand(subcommandName);
+    if (subCommand && !subCommand._executableHandler) {
+      subCommand.help();
+    }
+
+    // Fallback to parsing the help flag to invoke the help.
+    return this._dispatchSubcommand(
+      subcommandName,
+      [],
+      [this._getHelpOption()?.long ?? this._getHelpOption()?.short ?? '--help'],
+    );
+  }
+
+  /**
+   * Check this.args against expected this.registeredArguments.
+   *
+   * @private
+   */
+
+  _checkNumberOfArguments() {
+    // too few
+    this.registeredArguments.forEach((arg, i) => {
+      if (arg.required && this.args[i] == null) {
+        this.missingArgument(arg.name());
+      }
+    });
+    // too many
+    if (
+      this.registeredArguments.length > 0 &&
+      this.registeredArguments[this.registeredArguments.length - 1].variadic
+    ) {
+      return;
+    }
+    if (this.args.length > this.registeredArguments.length) {
+      this._excessArguments(this.args);
+    }
+  }
+
+  /**
+   * Process this.args using this.registeredArguments and save as this.processedArgs!
+   *
+   * @private
+   */
+
+  _processArguments() {
+    const myParseArg = (argument, value, previous) => {
+      // Extra processing for nice error message on parsing failure.
+      let parsedValue = value;
+      if (value !== null && argument.parseArg) {
+        const invalidValueMessage = `error: command-argument value '${value}' is invalid for argument '${argument.name()}'.`;
+        parsedValue = this._callParseArg(
+          argument,
+          value,
+          previous,
+          invalidValueMessage,
+        );
+      }
+      return parsedValue;
+    };
+
+    this._checkNumberOfArguments();
+
+    const processedArgs = [];
+    this.registeredArguments.forEach((declaredArg, index) => {
+      let value = declaredArg.defaultValue;
+      if (declaredArg.variadic) {
+        // Collect together remaining arguments for passing together as an array.
+        if (index < this.args.length) {
+          value = this.args.slice(index);
+          if (declaredArg.parseArg) {
+            value = value.reduce((processed, v) => {
+              return myParseArg(declaredArg, v, processed);
+            }, declaredArg.defaultValue);
+          }
+        } else if (value === undefined) {
+          value = [];
+        }
+      } else if (index < this.args.length) {
+        value = this.args[index];
+        if (declaredArg.parseArg) {
+          value = myParseArg(declaredArg, value, declaredArg.defaultValue);
+        }
+      }
+      processedArgs[index] = value;
+    });
+    this.processedArgs = processedArgs;
+  }
+
+  /**
+   * Once we have a promise we chain, but call synchronously until then.
+   *
+   * @param {(Promise|undefined)} promise
+   * @param {Function} fn
+   * @return {(Promise|undefined)}
+   * @private
+   */
+
+  _chainOrCall(promise, fn) {
+    // thenable
+    if (promise?.then && typeof promise.then === 'function') {
+      // already have a promise, chain callback
+      return promise.then(() => fn());
+    }
+    // callback might return a promise
+    return fn();
+  }
+
+  /**
+   *
+   * @param {(Promise|undefined)} promise
+   * @param {string} event
+   * @return {(Promise|undefined)}
+   * @private
+   */
+
+  _chainOrCallHooks(promise, event) {
+    let result = promise;
+    const hooks = [];
+    this._getCommandAndAncestors()
+      .reverse()
+      .filter((cmd) => cmd._lifeCycleHooks[event] !== undefined)
+      .forEach((hookedCommand) => {
+        hookedCommand._lifeCycleHooks[event].forEach((callback) => {
+          hooks.push({ hookedCommand, callback });
+        });
+      });
+    if (event === 'postAction') {
+      hooks.reverse();
+    }
+
+    hooks.forEach((hookDetail) => {
+      result = this._chainOrCall(result, () => {
+        return hookDetail.callback(hookDetail.hookedCommand, this);
+      });
+    });
+    return result;
+  }
+
+  /**
+   *
+   * @param {(Promise|undefined)} promise
+   * @param {Command} subCommand
+   * @param {string} event
+   * @return {(Promise|undefined)}
+   * @private
+   */
+
+  _chainOrCallSubCommandHook(promise, subCommand, event) {
+    let result = promise;
+    if (this._lifeCycleHooks[event] !== undefined) {
+      this._lifeCycleHooks[event].forEach((hook) => {
+        result = this._chainOrCall(result, () => {
+          return hook(this, subCommand);
+        });
+      });
+    }
+    return result;
+  }
+
+  /**
+   * Process arguments in context of this command.
+   * Returns action result, in case it is a promise.
+   *
+   * @private
+   */
+
+  _parseCommand(operands, unknown) {
+    const parsed = this.parseOptions(unknown);
+    this._parseOptionsEnv(); // after cli, so parseArg not called on both cli and env
+    this._parseOptionsImplied();
+    operands = operands.concat(parsed.operands);
+    unknown = parsed.unknown;
+    this.args = operands.concat(unknown);
+
+    if (operands && this._findCommand(operands[0])) {
+      return this._dispatchSubcommand(operands[0], operands.slice(1), unknown);
+    }
+    if (
+      this._getHelpCommand() &&
+      operands[0] === this._getHelpCommand().name()
+    ) {
+      return this._dispatchHelpCommand(operands[1]);
+    }
+    if (this._defaultCommandName) {
+      this._outputHelpIfRequested(unknown); // Run the help for default command from parent rather than passing to default command
+      return this._dispatchSubcommand(
+        this._defaultCommandName,
+        operands,
+        unknown,
+      );
+    }
+    if (
+      this.commands.length &&
+      this.args.length === 0 &&
+      !this._actionHandler &&
+      !this._defaultCommandName
+    ) {
+      // probably missing subcommand and no handler, user needs help (and exit)
+      this.help({ error: true });
+    }
+
+    this._outputHelpIfRequested(parsed.unknown);
+    this._checkForMissingMandatoryOptions();
+    this._checkForConflictingOptions();
+
+    // We do not always call this check to avoid masking a "better" error, like unknown command.
+    const checkForUnknownOptions = () => {
+      if (parsed.unknown.length > 0) {
+        this.unknownOption(parsed.unknown[0]);
+      }
+    };
+
+    const commandEvent = `command:${this.name()}`;
+    if (this._actionHandler) {
+      checkForUnknownOptions();
+      this._processArguments();
+
+      let promiseChain;
+      promiseChain = this._chainOrCallHooks(promiseChain, 'preAction');
+      promiseChain = this._chainOrCall(promiseChain, () =>
+        this._actionHandler(this.processedArgs),
+      );
+      if (this.parent) {
+        promiseChain = this._chainOrCall(promiseChain, () => {
+          this.parent.emit(commandEvent, operands, unknown); // legacy
+        });
+      }
+      promiseChain = this._chainOrCallHooks(promiseChain, 'postAction');
+      return promiseChain;
+    }
+    if (this.parent?.listenerCount(commandEvent)) {
+      checkForUnknownOptions();
+      this._processArguments();
+      this.parent.emit(commandEvent, operands, unknown); // legacy
+    } else if (operands.length) {
+      if (this._findCommand('*')) {
+        // legacy default command
+        return this._dispatchSubcommand('*', operands, unknown);
+      }
+      if (this.listenerCount('command:*')) {
+        // skip option check, emit event for possible misspelling suggestion
+        this.emit('command:*', operands, unknown);
+      } else if (this.commands.length) {
+        this.unknownCommand();
+      } else {
+        checkForUnknownOptions();
+        this._processArguments();
+      }
+    } else if (this.commands.length) {
+      checkForUnknownOptions();
+      // This command has subcommands and nothing hooked up at this level, so display help (and exit).
+      this.help({ error: true });
+    } else {
+      checkForUnknownOptions();
+      this._processArguments();
+      // fall through for caller to handle after calling .parse()
+    }
+  }
+
+  /**
+   * Find matching command.
+   *
+   * @private
+   * @return {Command | undefined}
+   */
+  _findCommand(name) {
+    if (!name) return undefined;
+    return this.commands.find(
+      (cmd) => cmd._name === name || cmd._aliases.includes(name),
+    );
+  }
+
+  /**
+   * Return an option matching `arg` if any.
+   *
+   * @param {string} arg
+   * @return {Option}
+   * @package
+   */
+
+  _findOption(arg) {
+    return this.options.find((option) => option.is(arg));
+  }
+
+  /**
+   * Display an error message if a mandatory option does not have a value.
+   * Called after checking for help flags in leaf subcommand.
+   *
+   * @private
+   */
+
+  _checkForMissingMandatoryOptions() {
+    // Walk up hierarchy so can call in subcommand after checking for displaying help.
+    this._getCommandAndAncestors().forEach((cmd) => {
+      cmd.options.forEach((anOption) => {
+        if (
+          anOption.mandatory &&
+          cmd.getOptionValue(anOption.attributeName()) === undefined
+        ) {
+          cmd.missingMandatoryOptionValue(anOption);
+        }
+      });
+    });
+  }
+
+  /**
+   * Display an error message if conflicting options are used together in this.
+   *
+   * @private
+   */
+  _checkForConflictingLocalOptions() {
+    const definedNonDefaultOptions = this.options.filter((option) => {
+      const optionKey = option.attributeName();
+      if (this.getOptionValue(optionKey) === undefined) {
+        return false;
+      }
+      return this.getOptionValueSource(optionKey) !== 'default';
+    });
+
+    const optionsWithConflicting = definedNonDefaultOptions.filter(
+      (option) => option.conflictsWith.length > 0,
+    );
+
+    optionsWithConflicting.forEach((option) => {
+      const conflictingAndDefined = definedNonDefaultOptions.find((defined) =>
+        option.conflictsWith.includes(defined.attributeName()),
+      );
+      if (conflictingAndDefined) {
+        this._conflictingOption(option, conflictingAndDefined);
+      }
+    });
+  }
+
+  /**
+   * Display an error message if conflicting options are used together.
+   * Called after checking for help flags in leaf subcommand.
+   *
+   * @private
+   */
+  _checkForConflictingOptions() {
+    // Walk up hierarchy so can call in subcommand after checking for displaying help.
+    this._getCommandAndAncestors().forEach((cmd) => {
+      cmd._checkForConflictingLocalOptions();
+    });
+  }
+
+  /**
+   * Parse options from `argv` removing known options,
+   * and return argv split into operands and unknown arguments.
+   *
+   * Side effects: modifies command by storing options. Does not reset state if called again.
+   *
+   * Examples:
+   *
+   *     argv => operands, unknown
+   *     --known kkk op => [op], []
+   *     op --known kkk => [op], []
+   *     sub --unknown uuu op => [sub], [--unknown uuu op]
+   *     sub -- --unknown uuu op => [sub --unknown uuu op], []
+   *
+   * @param {string[]} args
+   * @return {{operands: string[], unknown: string[]}}
+   */
+
+  parseOptions(args) {
+    const operands = []; // operands, not options or values
+    const unknown = []; // first unknown option and remaining unknown args
+    let dest = operands;
+
+    function maybeOption(arg) {
+      return arg.length > 1 && arg[0] === '-';
+    }
+
+    const negativeNumberArg = (arg) => {
+      // return false if not a negative number
+      if (!/^-\d*\.?\d+(e[+-]?\d+)?$/.test(arg)) return false;
+      // negative number is ok unless digit used as an option in command hierarchy
+      return !this._getCommandAndAncestors().some((cmd) =>
+        cmd.options
+          .map((opt) => opt.short)
+          .some((short) => /^-\d$/.test(short)),
+      );
+    };
+
+    // parse options
+    let activeVariadicOption = null;
+    let activeGroup = null; // working through group of short options, like -abc
+    let i = 0;
+    while (i < args.length || activeGroup) {
+      const arg = activeGroup ?? args[i++];
+      activeGroup = null;
+
+      // literal
+      if (arg === '--') {
+        if (dest === unknown) dest.push(arg);
+        dest.push(...args.slice(i));
+        break;
+      }
+
+      if (
+        activeVariadicOption &&
+        (!maybeOption(arg) || negativeNumberArg(arg))
+      ) {
+        this.emit(`option:${activeVariadicOption.name()}`, arg);
+        continue;
+      }
+      activeVariadicOption = null;
+
+      if (maybeOption(arg)) {
+        const option = this._findOption(arg);
+        // recognised option, call listener to assign value with possible custom processing
+        if (option) {
+          if (option.required) {
+            const value = args[i++];
+            if (value === undefined) this.optionMissingArgument(option);
+            this.emit(`option:${option.name()}`, value);
+          } else if (option.optional) {
+            let value = null;
+            // historical behaviour is optional value is following arg unless an option
+            if (
+              i < args.length &&
+              (!maybeOption(args[i]) || negativeNumberArg(args[i]))
+            ) {
+              value = args[i++];
+            }
+            this.emit(`option:${option.name()}`, value);
+          } else {
+            // boolean flag
+            this.emit(`option:${option.name()}`);
+          }
+          activeVariadicOption = option.variadic ? option : null;
+          continue;
+        }
+      }
+
+      // Look for combo options following single dash, eat first one if known.
+      if (arg.length > 2 && arg[0] === '-' && arg[1] !== '-') {
+        const option = this._findOption(`-${arg[1]}`);
+        if (option) {
+          if (
+            option.required ||
+            (option.optional && this._combineFlagAndOptionalValue)
+          ) {
+            // option with value following in same argument
+            this.emit(`option:${option.name()}`, arg.slice(2));
+          } else {
+            // boolean option
+            this.emit(`option:${option.name()}`);
+            // remove the processed option and keep processing group
+            activeGroup = `-${arg.slice(2)}`;
+          }
+          continue;
+        }
+      }
+
+      // Look for known long flag with value, like --foo=bar
+      if (/^--[^=]+=/.test(arg)) {
+        const index = arg.indexOf('=');
+        const option = this._findOption(arg.slice(0, index));
+        if (option && (option.required || option.optional)) {
+          this.emit(`option:${option.name()}`, arg.slice(index + 1));
+          continue;
+        }
+      }
+
+      // Not a recognised option by this command.
+      // Might be a command-argument, or subcommand option, or unknown option, or help command or option.
+
+      // An unknown option means further arguments also classified as unknown so can be reprocessed by subcommands.
+      // A negative number in a leaf command is not an unknown option.
+      if (
+        dest === operands &&
+        maybeOption(arg) &&
+        !(this.commands.length === 0 && negativeNumberArg(arg))
+      ) {
+        dest = unknown;
+      }
+
+      // If using positionalOptions, stop processing our options at subcommand.
+      if (
+        (this._enablePositionalOptions || this._passThroughOptions) &&
+        operands.length === 0 &&
+        unknown.length === 0
+      ) {
+        if (this._findCommand(arg)) {
+          operands.push(arg);
+          unknown.push(...args.slice(i));
+          break;
+        } else if (
+          this._getHelpCommand() &&
+          arg === this._getHelpCommand().name()
+        ) {
+          operands.push(arg, ...args.slice(i));
+          break;
+        } else if (this._defaultCommandName) {
+          unknown.push(arg, ...args.slice(i));
+          break;
+        }
+      }
+
+      // If using passThroughOptions, stop processing options at first command-argument.
+      if (this._passThroughOptions) {
+        dest.push(arg, ...args.slice(i));
+        break;
+      }
+
+      // add arg
+      dest.push(arg);
+    }
+
+    return { operands, unknown };
+  }
+
+  /**
+   * Return an object containing local option values as key-value pairs.
+   *
+   * @return {object}
+   */
+  opts() {
+    if (this._storeOptionsAsProperties) {
+      // Preserve original behaviour so backwards compatible when still using properties
+      const result = {};
+      const len = this.options.length;
+
+      for (let i = 0; i < len; i++) {
+        const key = this.options[i].attributeName();
+        result[key] =
+          key === this._versionOptionName ? this._version : this[key];
+      }
+      return result;
+    }
+
+    return this._optionValues;
+  }
+
+  /**
+   * Return an object containing merged local and global option values as key-value pairs.
+   *
+   * @return {object}
+   */
+  optsWithGlobals() {
+    // globals overwrite locals
+    return this._getCommandAndAncestors().reduce(
+      (combinedOptions, cmd) => Object.assign(combinedOptions, cmd.opts()),
+      {},
+    );
+  }
+
+  /**
+   * Display error message and exit (or call exitOverride).
+   *
+   * @param {string} message
+   * @param {object} [errorOptions]
+   * @param {string} [errorOptions.code] - an id string representing the error
+   * @param {number} [errorOptions.exitCode] - used with process.exit
+   */
+  error(message, errorOptions) {
+    // output handling
+    this._outputConfiguration.outputError(
+      `${message}\n`,
+      this._outputConfiguration.writeErr,
+    );
+    if (typeof this._showHelpAfterError === 'string') {
+      this._outputConfiguration.writeErr(`${this._showHelpAfterError}\n`);
+    } else if (this._showHelpAfterError) {
+      this._outputConfiguration.writeErr('\n');
+      this.outputHelp({ error: true });
+    }
+
+    // exit handling
+    const config = errorOptions || {};
+    const exitCode = config.exitCode || 1;
+    const code = config.code || 'commander.error';
+    this._exit(exitCode, code, message);
+  }
+
+  /**
+   * Apply any option related environment variables, if option does
+   * not have a value from cli or client code.
+   *
+   * @private
+   */
+  _parseOptionsEnv() {
+    this.options.forEach((option) => {
+      if (option.envVar && option.envVar in process$1.env) {
+        const optionKey = option.attributeName();
+        // Priority check. Do not overwrite cli or options from unknown source (client-code).
+        if (
+          this.getOptionValue(optionKey) === undefined ||
+          ['default', 'config', 'env'].includes(
+            this.getOptionValueSource(optionKey),
+          )
+        ) {
+          if (option.required || option.optional) {
+            // option can take a value
+            // keep very simple, optional always takes value
+            this.emit(`optionEnv:${option.name()}`, process$1.env[option.envVar]);
+          } else {
+            // boolean
+            // keep very simple, only care that envVar defined and not the value
+            this.emit(`optionEnv:${option.name()}`);
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Apply any implied option values, if option is undefined or default value.
+   *
+   * @private
+   */
+  _parseOptionsImplied() {
+    const dualHelper = new DualOptions(this.options);
+    const hasCustomOptionValue = (optionKey) => {
+      return (
+        this.getOptionValue(optionKey) !== undefined &&
+        !['default', 'implied'].includes(this.getOptionValueSource(optionKey))
+      );
+    };
+    this.options
+      .filter(
+        (option) =>
+          option.implied !== undefined &&
+          hasCustomOptionValue(option.attributeName()) &&
+          dualHelper.valueFromOption(
+            this.getOptionValue(option.attributeName()),
+            option,
+          ),
+      )
+      .forEach((option) => {
+        Object.keys(option.implied)
+          .filter((impliedKey) => !hasCustomOptionValue(impliedKey))
+          .forEach((impliedKey) => {
+            this.setOptionValueWithSource(
+              impliedKey,
+              option.implied[impliedKey],
+              'implied',
+            );
+          });
+      });
+  }
+
+  /**
+   * Argument `name` is missing.
+   *
+   * @param {string} name
+   * @private
+   */
+
+  missingArgument(name) {
+    const message = `error: missing required argument '${name}'`;
+    this.error(message, { code: 'commander.missingArgument' });
+  }
+
+  /**
+   * `Option` is missing an argument.
+   *
+   * @param {Option} option
+   * @private
+   */
+
+  optionMissingArgument(option) {
+    const message = `error: option '${option.flags}' argument missing`;
+    this.error(message, { code: 'commander.optionMissingArgument' });
+  }
+
+  /**
+   * `Option` does not have a value, and is a mandatory option.
+   *
+   * @param {Option} option
+   * @private
+   */
+
+  missingMandatoryOptionValue(option) {
+    const message = `error: required option '${option.flags}' not specified`;
+    this.error(message, { code: 'commander.missingMandatoryOptionValue' });
+  }
+
+  /**
+   * `Option` conflicts with another option.
+   *
+   * @param {Option} option
+   * @param {Option} conflictingOption
+   * @private
+   */
+  _conflictingOption(option, conflictingOption) {
+    // The calling code does not know whether a negated option is the source of the
+    // value, so do some work to take an educated guess.
+    const findBestOptionFromValue = (option) => {
+      const optionKey = option.attributeName();
+      const optionValue = this.getOptionValue(optionKey);
+      const negativeOption = this.options.find(
+        (target) => target.negate && optionKey === target.attributeName(),
+      );
+      const positiveOption = this.options.find(
+        (target) => !target.negate && optionKey === target.attributeName(),
+      );
+      if (
+        negativeOption &&
+        ((negativeOption.presetArg === undefined && optionValue === false) ||
+          (negativeOption.presetArg !== undefined &&
+            optionValue === negativeOption.presetArg))
+      ) {
+        return negativeOption;
+      }
+      return positiveOption || option;
+    };
+
+    const getErrorMessage = (option) => {
+      const bestOption = findBestOptionFromValue(option);
+      const optionKey = bestOption.attributeName();
+      const source = this.getOptionValueSource(optionKey);
+      if (source === 'env') {
+        return `environment variable '${bestOption.envVar}'`;
+      }
+      return `option '${bestOption.flags}'`;
+    };
+
+    const message = `error: ${getErrorMessage(option)} cannot be used with ${getErrorMessage(conflictingOption)}`;
+    this.error(message, { code: 'commander.conflictingOption' });
+  }
+
+  /**
+   * Unknown option `flag`.
+   *
+   * @param {string} flag
+   * @private
+   */
+
+  unknownOption(flag) {
+    if (this._allowUnknownOption) return;
+    let suggestion = '';
+
+    if (flag.startsWith('--') && this._showSuggestionAfterError) {
+      // Looping to pick up the global options too
+      let candidateFlags = [];
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      let command = this;
+      do {
+        const moreFlags = command
+          .createHelp()
+          .visibleOptions(command)
+          .filter((option) => option.long)
+          .map((option) => option.long);
+        candidateFlags = candidateFlags.concat(moreFlags);
+        command = command.parent;
+      } while (command && !command._enablePositionalOptions);
+      suggestion = suggestSimilar(flag, candidateFlags);
+    }
+
+    const message = `error: unknown option '${flag}'${suggestion}`;
+    this.error(message, { code: 'commander.unknownOption' });
+  }
+
+  /**
+   * Excess arguments, more than expected.
+   *
+   * @param {string[]} receivedArgs
+   * @private
+   */
+
+  _excessArguments(receivedArgs) {
+    if (this._allowExcessArguments) return;
+
+    const expected = this.registeredArguments.length;
+    const s = expected === 1 ? '' : 's';
+    const forSubcommand = this.parent ? ` for '${this.name()}'` : '';
+    const message = `error: too many arguments${forSubcommand}. Expected ${expected} argument${s} but got ${receivedArgs.length}.`;
+    this.error(message, { code: 'commander.excessArguments' });
+  }
+
+  /**
+   * Unknown command.
+   *
+   * @private
+   */
+
+  unknownCommand() {
+    const unknownName = this.args[0];
+    let suggestion = '';
+
+    if (this._showSuggestionAfterError) {
+      const candidateNames = [];
+      this.createHelp()
+        .visibleCommands(this)
+        .forEach((command) => {
+          candidateNames.push(command.name());
+          // just visible alias
+          if (command.alias()) candidateNames.push(command.alias());
+        });
+      suggestion = suggestSimilar(unknownName, candidateNames);
+    }
+
+    const message = `error: unknown command '${unknownName}'${suggestion}`;
+    this.error(message, { code: 'commander.unknownCommand' });
+  }
+
+  /**
+   * Get or set the program version.
+   *
+   * This method auto-registers the "-V, --version" option which will print the version number.
+   *
+   * You can optionally supply the flags and description to override the defaults.
+   *
+   * @param {string} [str]
+   * @param {string} [flags]
+   * @param {string} [description]
+   * @return {(this | string | undefined)} `this` command for chaining, or version string if no arguments
+   */
+
+  version(str, flags, description) {
+    if (str === undefined) return this._version;
+    this._version = str;
+    flags = flags || '-V, --version';
+    description = description || 'output the version number';
+    const versionOption = this.createOption(flags, description);
+    this._versionOptionName = versionOption.attributeName();
+    this._registerOption(versionOption);
+
+    this.on('option:' + versionOption.name(), () => {
+      this._outputConfiguration.writeOut(`${str}\n`);
+      this._exit(0, 'commander.version', str);
+    });
+    return this;
+  }
+
+  /**
+   * Set the description.
+   *
+   * @param {string} [str]
+   * @param {object} [argsDescription]
+   * @return {(string|Command)}
+   */
+  description(str, argsDescription) {
+    if (str === undefined && argsDescription === undefined)
+      return this._description;
+    this._description = str;
+    if (argsDescription) {
+      this._argsDescription = argsDescription;
+    }
+    return this;
+  }
+
+  /**
+   * Set the summary. Used when listed as subcommand of parent.
+   *
+   * @param {string} [str]
+   * @return {(string|Command)}
+   */
+  summary(str) {
+    if (str === undefined) return this._summary;
+    this._summary = str;
+    return this;
+  }
+
+  /**
+   * Set an alias for the command.
+   *
+   * You may call more than once to add multiple aliases. Only the first alias is shown in the auto-generated help.
+   *
+   * @param {string} [alias]
+   * @return {(string|Command)}
+   */
+
+  alias(alias) {
+    if (alias === undefined) return this._aliases[0]; // just return first, for backwards compatibility
+
+    /** @type {Command} */
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let command = this;
+    if (
+      this.commands.length !== 0 &&
+      this.commands[this.commands.length - 1]._executableHandler
+    ) {
+      // assume adding alias for last added executable subcommand, rather than this
+      command = this.commands[this.commands.length - 1];
+    }
+
+    if (alias === command._name)
+      throw new Error("Command alias can't be the same as its name");
+    const matchingCommand = this.parent?._findCommand(alias);
+    if (matchingCommand) {
+      // c.f. _registerCommand
+      const existingCmd = [matchingCommand.name()]
+        .concat(matchingCommand.aliases())
+        .join('|');
+      throw new Error(
+        `cannot add alias '${alias}' to command '${this.name()}' as already have command '${existingCmd}'`,
+      );
+    }
+
+    command._aliases.push(alias);
+    return this;
+  }
+
+  /**
+   * Set aliases for the command.
+   *
+   * Only the first alias is shown in the auto-generated help.
+   *
+   * @param {string[]} [aliases]
+   * @return {(string[]|Command)}
+   */
+
+  aliases(aliases) {
+    // Getter for the array of aliases is the main reason for having aliases() in addition to alias().
+    if (aliases === undefined) return this._aliases;
+
+    aliases.forEach((alias) => this.alias(alias));
+    return this;
+  }
+
+  /**
+   * Set / get the command usage `str`.
+   *
+   * @param {string} [str]
+   * @return {(string|Command)}
+   */
+
+  usage(str) {
+    if (str === undefined) {
+      if (this._usage) return this._usage;
+
+      const args = this.registeredArguments.map((arg) => {
+        return humanReadableArgName(arg);
+      });
+      return []
+        .concat(
+          this.options.length || this._helpOption !== null ? '[options]' : [],
+          this.commands.length ? '[command]' : [],
+          this.registeredArguments.length ? args : [],
+        )
+        .join(' ');
+    }
+
+    this._usage = str;
+    return this;
+  }
+
+  /**
+   * Get or set the name of the command.
+   *
+   * @param {string} [str]
+   * @return {(string|Command)}
+   */
+
+  name(str) {
+    if (str === undefined) return this._name;
+    this._name = str;
+    return this;
+  }
+
+  /**
+   * Set/get the help group heading for this subcommand in parent command's help.
+   *
+   * @param {string} [heading]
+   * @return {Command | string}
+   */
+
+  helpGroup(heading) {
+    if (heading === undefined) return this._helpGroupHeading ?? '';
+    this._helpGroupHeading = heading;
+    return this;
+  }
+
+  /**
+   * Set/get the default help group heading for subcommands added to this command.
+   * (This does not override a group set directly on the subcommand using .helpGroup().)
+   *
+   * @example
+   * program.commandsGroup('Development Commands:);
+   * program.command('watch')...
+   * program.command('lint')...
+   * ...
+   *
+   * @param {string} [heading]
+   * @returns {Command | string}
+   */
+  commandsGroup(heading) {
+    if (heading === undefined) return this._defaultCommandGroup ?? '';
+    this._defaultCommandGroup = heading;
+    return this;
+  }
+
+  /**
+   * Set/get the default help group heading for options added to this command.
+   * (This does not override a group set directly on the option using .helpGroup().)
+   *
+   * @example
+   * program
+   *   .optionsGroup('Development Options:')
+   *   .option('-d, --debug', 'output extra debugging')
+   *   .option('-p, --profile', 'output profiling information')
+   *
+   * @param {string} [heading]
+   * @returns {Command | string}
+   */
+  optionsGroup(heading) {
+    if (heading === undefined) return this._defaultOptionGroup ?? '';
+    this._defaultOptionGroup = heading;
+    return this;
+  }
+
+  /**
+   * @param {Option} option
+   * @private
+   */
+  _initOptionGroup(option) {
+    if (this._defaultOptionGroup && !option.helpGroupHeading)
+      option.helpGroup(this._defaultOptionGroup);
+  }
+
+  /**
+   * @param {Command} cmd
+   * @private
+   */
+  _initCommandGroup(cmd) {
+    if (this._defaultCommandGroup && !cmd.helpGroup())
+      cmd.helpGroup(this._defaultCommandGroup);
+  }
+
+  /**
+   * Set the name of the command from script filename, such as process.argv[1],
+   * or require.main.filename, or __filename.
+   *
+   * (Used internally and public although not documented in README.)
+   *
+   * @example
+   * program.nameFromFilename(require.main.filename);
+   *
+   * @param {string} filename
+   * @return {Command}
+   */
+
+  nameFromFilename(filename) {
+    this._name = path.basename(filename, path.extname(filename));
+
+    return this;
+  }
+
+  /**
+   * Get or set the directory for searching for executable subcommands of this command.
+   *
+   * @example
+   * program.executableDir(__dirname);
+   * // or
+   * program.executableDir('subcommands');
+   *
+   * @param {string} [path]
+   * @return {(string|null|Command)}
+   */
+
+  executableDir(path) {
+    if (path === undefined) return this._executableDir;
+    this._executableDir = path;
+    return this;
+  }
+
+  /**
+   * Return program help documentation.
+   *
+   * @param {{ error: boolean }} [contextOptions] - pass {error:true} to wrap for stderr instead of stdout
+   * @return {string}
+   */
+
+  helpInformation(contextOptions) {
+    const helper = this.createHelp();
+    const context = this._getOutputContext(contextOptions);
+    helper.prepareContext({
+      error: context.error,
+      helpWidth: context.helpWidth,
+      outputHasColors: context.hasColors,
+    });
+    const text = helper.formatHelp(this, helper);
+    if (context.hasColors) return text;
+    return this._outputConfiguration.stripColor(text);
+  }
+
+  /**
+   * @typedef HelpContext
+   * @type {object}
+   * @property {boolean} error
+   * @property {number} helpWidth
+   * @property {boolean} hasColors
+   * @property {function} write - includes stripColor if needed
+   *
+   * @returns {HelpContext}
+   * @private
+   */
+
+  _getOutputContext(contextOptions) {
+    contextOptions = contextOptions || {};
+    const error = !!contextOptions.error;
+    let baseWrite;
+    let hasColors;
+    let helpWidth;
+    if (error) {
+      baseWrite = (str) => this._outputConfiguration.writeErr(str);
+      hasColors = this._outputConfiguration.getErrHasColors();
+      helpWidth = this._outputConfiguration.getErrHelpWidth();
+    } else {
+      baseWrite = (str) => this._outputConfiguration.writeOut(str);
+      hasColors = this._outputConfiguration.getOutHasColors();
+      helpWidth = this._outputConfiguration.getOutHelpWidth();
+    }
+    const write = (str) => {
+      if (!hasColors) str = this._outputConfiguration.stripColor(str);
+      return baseWrite(str);
+    };
+    return { error, write, hasColors, helpWidth };
+  }
+
+  /**
+   * Output help information for this command.
+   *
+   * Outputs built-in help, and custom text added using `.addHelpText()`.
+   *
+   * @param {{ error: boolean } | Function} [contextOptions] - pass {error:true} to write to stderr instead of stdout
+   */
+
+  outputHelp(contextOptions) {
+    let deprecatedCallback;
+    if (typeof contextOptions === 'function') {
+      deprecatedCallback = contextOptions;
+      contextOptions = undefined;
+    }
+
+    const outputContext = this._getOutputContext(contextOptions);
+    /** @type {HelpTextEventContext} */
+    const eventContext = {
+      error: outputContext.error,
+      write: outputContext.write,
+      command: this,
+    };
+
+    this._getCommandAndAncestors()
+      .reverse()
+      .forEach((command) => command.emit('beforeAllHelp', eventContext));
+    this.emit('beforeHelp', eventContext);
+
+    let helpInformation = this.helpInformation({ error: outputContext.error });
+    if (deprecatedCallback) {
+      helpInformation = deprecatedCallback(helpInformation);
+      if (
+        typeof helpInformation !== 'string' &&
+        !Buffer.isBuffer(helpInformation)
+      ) {
+        throw new Error('outputHelp callback must return a string or a Buffer');
+      }
+    }
+    outputContext.write(helpInformation);
+
+    if (this._getHelpOption()?.long) {
+      this.emit(this._getHelpOption().long); // deprecated
+    }
+    this.emit('afterHelp', eventContext);
+    this._getCommandAndAncestors().forEach((command) =>
+      command.emit('afterAllHelp', eventContext),
+    );
+  }
+
+  /**
+   * You can pass in flags and a description to customise the built-in help option.
+   * Pass in false to disable the built-in help option.
+   *
+   * @example
+   * program.helpOption('-?, --help' 'show help'); // customise
+   * program.helpOption(false); // disable
+   *
+   * @param {(string | boolean)} flags
+   * @param {string} [description]
+   * @return {Command} `this` command for chaining
+   */
+
+  helpOption(flags, description) {
+    // Support enabling/disabling built-in help option.
+    if (typeof flags === 'boolean') {
+      if (flags) {
+        if (this._helpOption === null) this._helpOption = undefined; // reenable
+        if (this._defaultOptionGroup) {
+          // make the option to store the group
+          this._initOptionGroup(this._getHelpOption());
+        }
+      } else {
+        this._helpOption = null; // disable
+      }
+      return this;
+    }
+
+    // Customise flags and description.
+    this._helpOption = this.createOption(
+      flags ?? '-h, --help',
+      description ?? 'display help for command',
+    );
+    // init group unless lazy create
+    if (flags || description) this._initOptionGroup(this._helpOption);
+
+    return this;
+  }
+
+  /**
+   * Lazy create help option.
+   * Returns null if has been disabled with .helpOption(false).
+   *
+   * @returns {(Option | null)} the help option
+   * @package
+   */
+  _getHelpOption() {
+    // Lazy create help option on demand.
+    if (this._helpOption === undefined) {
+      this.helpOption(undefined, undefined);
+    }
+    return this._helpOption;
+  }
+
+  /**
+   * Supply your own option to use for the built-in help option.
+   * This is an alternative to using helpOption() to customise the flags and description etc.
+   *
+   * @param {Option} option
+   * @return {Command} `this` command for chaining
+   */
+  addHelpOption(option) {
+    this._helpOption = option;
+    this._initOptionGroup(option);
+    return this;
+  }
+
+  /**
+   * Output help information and exit.
+   *
+   * Outputs built-in help, and custom text added using `.addHelpText()`.
+   *
+   * @param {{ error: boolean }} [contextOptions] - pass {error:true} to write to stderr instead of stdout
+   */
+
+  help(contextOptions) {
+    this.outputHelp(contextOptions);
+    let exitCode = Number(process$1.exitCode ?? 0); // process.exitCode does allow a string or an integer, but we prefer just a number
+    if (
+      exitCode === 0 &&
+      contextOptions &&
+      typeof contextOptions !== 'function' &&
+      contextOptions.error
+    ) {
+      exitCode = 1;
+    }
+    // message: do not have all displayed text available so only passing placeholder.
+    this._exit(exitCode, 'commander.help', '(outputHelp)');
+  }
+
+  /**
+   * // Do a little typing to coordinate emit and listener for the help text events.
+   * @typedef HelpTextEventContext
+   * @type {object}
+   * @property {boolean} error
+   * @property {Command} command
+   * @property {function} write
+   */
+
+  /**
+   * Add additional text to be displayed with the built-in help.
+   *
+   * Position is 'before' or 'after' to affect just this command,
+   * and 'beforeAll' or 'afterAll' to affect this command and all its subcommands.
+   *
+   * @param {string} position - before or after built-in help
+   * @param {(string | Function)} text - string to add, or a function returning a string
+   * @return {Command} `this` command for chaining
+   */
+
+  addHelpText(position, text) {
+    const allowedValues = ['beforeAll', 'before', 'after', 'afterAll'];
+    if (!allowedValues.includes(position)) {
+      throw new Error(`Unexpected value for position to addHelpText.
+Expecting one of '${allowedValues.join("', '")}'`);
+    }
+
+    const helpEvent = `${position}Help`;
+    this.on(helpEvent, (/** @type {HelpTextEventContext} */ context) => {
+      let helpStr;
+      if (typeof text === 'function') {
+        helpStr = text({ error: context.error, command: context.command });
+      } else {
+        helpStr = text;
+      }
+      // Ignore falsy value when nothing to output.
+      if (helpStr) {
+        context.write(`${helpStr}\n`);
+      }
+    });
+    return this;
+  }
+
+  /**
+   * Output help information if help flags specified
+   *
+   * @param {Array} args - array of options to search for help flags
+   * @private
+   */
+
+  _outputHelpIfRequested(args) {
+    const helpOption = this._getHelpOption();
+    const helpRequested = helpOption && args.find((arg) => helpOption.is(arg));
+    if (helpRequested) {
+      this.outputHelp();
+      // (Do not have all displayed text available so only passing placeholder.)
+      this._exit(0, 'commander.helpDisplayed', '(outputHelp)');
+    }
+  }
+};
+
+/**
+ * Scan arguments and increment port number for inspect calls (to avoid conflicts when spawning new command).
+ *
+ * @param {string[]} args - array of arguments from node.execArgv
+ * @returns {string[]}
+ * @private
+ */
+
+function incrementNodeInspectorPort(args) {
+  // Testing for these options:
+  //  --inspect[=[host:]port]
+  //  --inspect-brk[=[host:]port]
+  //  --inspect-port=[host:]port
+  return args.map((arg) => {
+    if (!arg.startsWith('--inspect')) {
+      return arg;
+    }
+    let debugOption;
+    let debugHost = '127.0.0.1';
+    let debugPort = '9229';
+    let match;
+    if ((match = arg.match(/^(--inspect(-brk)?)$/)) !== null) {
+      // e.g. --inspect
+      debugOption = match[1];
+    } else if (
+      (match = arg.match(/^(--inspect(-brk|-port)?)=([^:]+)$/)) !== null
+    ) {
+      debugOption = match[1];
+      if (/^\d+$/.test(match[3])) {
+        // e.g. --inspect=1234
+        debugPort = match[3];
+      } else {
+        // e.g. --inspect=localhost
+        debugHost = match[3];
+      }
+    } else if (
+      (match = arg.match(/^(--inspect(-brk|-port)?)=([^:]+):(\d+)$/)) !== null
+    ) {
+      // e.g. --inspect=localhost:1234
+      debugOption = match[1];
+      debugHost = match[3];
+      debugPort = match[4];
+    }
+
+    if (debugOption && debugPort !== '0') {
+      return `${debugOption}=${debugHost}:${parseInt(debugPort) + 1}`;
+    }
+    return arg;
+  });
 }
 
-var dist = commandLineArgs;
+/**
+ * @returns {boolean | undefined}
+ * @package
+ */
+function useColor() {
+  // Test for common conventions.
+  // NB: the observed behaviour is in combination with how author adds color! For example:
+  //   - we do not test NODE_DISABLE_COLORS, but util:styletext does
+  //   - we do test NO_COLOR, but Chalk does not
+  //
+  // References:
+  // https://no-color.org
+  // https://bixense.com/clicolors/
+  // https://github.com/nodejs/node/blob/0a00217a5f67ef4a22384cfc80eb6dd9a917fdc1/lib/internal/tty.js#L109
+  // https://github.com/chalk/supports-color/blob/c214314a14bcb174b12b3014b2b0a8de375029ae/index.js#L33
+  // (https://force-color.org recent web page from 2023, does not match major javascript implementations)
 
-var commandLineArgs$1 = /*@__PURE__*/getDefaultExportFromCjs(dist);
+  if (
+    process$1.env.NO_COLOR ||
+    process$1.env.FORCE_COLOR === '0' ||
+    process$1.env.FORCE_COLOR === 'false'
+  )
+    return false;
+  if (process$1.env.FORCE_COLOR || process$1.env.CLICOLOR_FORCE !== undefined)
+    return true;
+  return undefined;
+}
+
+command.Command = Command$2;
+command.useColor = useColor; // exporting for tests
+
+const { Argument: Argument$1 } = argument;
+const { Command: Command$1 } = command;
+const { CommanderError: CommanderError$1, InvalidArgumentError: InvalidArgumentError$1 } = error;
+const { Help: Help$1 } = help;
+const { Option: Option$1 } = option;
+
+commander.program = new Command$1();
+
+commander.createCommand = (name) => new Command$1(name);
+commander.createOption = (flags, description) => new Option$1(flags, description);
+commander.createArgument = (name, description) => new Argument$1(name, description);
+
+/**
+ * Expose classes
+ */
+
+commander.Command = Command$1;
+commander.Option = Option$1;
+commander.Argument = Argument$1;
+commander.Help = Help$1;
+
+commander.CommanderError = CommanderError$1;
+commander.InvalidArgumentError = InvalidArgumentError$1;
+commander.InvalidOptionArgumentError = InvalidArgumentError$1; // Deprecated
+
+// wrapper to provide named exports for ESM.
+const {
+  program,
+  createCommand,
+  createArgument,
+  createOption,
+  CommanderError,
+  InvalidArgumentError,
+  InvalidOptionArgumentError, // deprecated old name
+  Command,
+  Argument,
+  Option,
+  Help,
+} = commander;
 
 var RUN_TYPE;
 (function (RUN_TYPE) {
@@ -319610,13 +304305,13 @@ class TestSuiteConfig {
     metadata;
     mobileEmulation;
     onlyLastStats;
-    promptForRetry;
     runForever;
     serverURL;
     suite;
     suiteNames;
     testId;
     verbose = false;
+    once = false;
     static async parseJSONSettings() {
         const settingsFilePath = path$f.resolve(process.cwd(), "settings.json");
         let settings = {};
@@ -319647,56 +304342,66 @@ class TestSuiteConfig {
     }
     static async parseCLIOptions() {
         const settings = await TestSuiteConfig.parseJSONSettings();
-        const optionsDefinition = [
-            { name: "verbose", type: Boolean, default: false },
-            { name: "devtools", type: Boolean, default: false },
-            { name: "debug", type: Boolean },
-            { name: "test-id", alias: "t", type: String },
-            { name: "workers", type: Number, defaultValue: settings["workers"] },
-            { name: "min-worker-load", type: Number, defaultValue: settings["minWorkerLoad"] },
-            { name: "suite-names", alias: "m", multiple: true },
-            { name: "suite", type: String, defaultValue: "hoot" },
-            { name: "server-url", type: String, defaultValue: settings["serverURL"] },
-            { name: "visible", type: Boolean, defaultValue: false },
-            { name: "fail-fast", type: Boolean, defaultValue: false },
-            { name: "run-forever", type: Boolean, defaultValue: false },
-            { name: "mobile", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
-            { name: "prompt-for-retry", type: Boolean, defaultValue: false }, // TODO - NOT YET IMPLEMENTED
-            { name: "cpu-limit", type: Number, defaultValue: settings["cpuLimit"] },
-        ];
-        const rawOptions = commandLineArgs$1(optionsDefinition);
+        const program = new Command();
+        program
+            .description('Test Warden is a CLI launcher for unit testing that runs tests until failure, reporting screenshots, logs, and notifying when failures occur.')
+            .addHelpText('before', `
+████████ ███████ ███████ ████████     ██     ██  █████  ██████  ██████  ███████ ███    ██
+   ██    ██      ██         ██        ██     ██ ██   ██ ██   ██ ██   ██ ██      ████   ██
+   ██    █████   ███████    ██        ██  █  ██ ███████ ██████  ██   ██ █████   ██ ██  ██
+   ██    ██           ██    ██        ██ ███ ██ ██   ██ ██   ██ ██   ██ ██      ██  ██ ██
+   ██    ███████ ███████    ██         ███ ███  ██   ██ ██   ██ ██████  ███████ ██   ████
+
+`)
+            .option("--verbose", "Enable Chrome debug messages (dumpio). Useful for debugging browser behavior.")
+            .option("--devtools", "Open Chrome DevTools during test execution.")
+            .option("--once", "Run the test suite only once, then exit (success or failure).", false)
+            .option("--debug", "Activate test suite debug mode (UI visible).")
+            .option("--visible", "Run tests in headful mode (headless disabled).")
+            .option("-t, --test-id <id>", "Specify the ID of a single test to run.")
+            .option("--workers <number>", "Number of parallel browser instances used to run tests.", parseInt, settings["workers"])
+            .option("--min-worker-load <number>", "Minimum number of tests to assign to a worker. For example, with 50 tests and 4 workers, setting 25 means only 2 workers will run.", parseInt, settings["minWorkerLoad"])
+            .option("-m, --suite-names <names...>", "Run only specific test suites by name.")
+            .option("--suite <name>", "Name of the suite to run (default: 'hoot').", "hoot")
+            .option("--server-url <url>", "URL of the server to run tests against.", settings["serverURL"])
+            .option("--fail-fast", "Stop immediately when a test fails (by default, remaining tests continue).", false)
+            .option("--run-forever", "Continue running tests even if a test fails.", false)
+            .option("--mobile", "Enable mobile emulation (TODO: not fully implemented).", false)
+            .option("--cpu-limit <number>", "Maximum number of CPU cores to use when running tests.", parseInt, settings["cpuLimit"]);
+        program.parse(process.argv);
+        const rawOptions = program.opts();
         if ("suite" in rawOptions) {
             rawOptions["suite"] = settings.suites[rawOptions["suite"]] ?? rawOptions["suite"];
         }
-        const authCookie = await authenticate(rawOptions["server-url"], "admin", "admin");
+        const authCookie = await authenticate(rawOptions["serverUrl"], "admin", "admin");
         return new TestSuiteConfig(rawOptions, authCookie);
     }
     constructor(rawOptions, authCookie) {
         this.rawOptions = rawOptions;
         this.debug = rawOptions.debug;
         this.devtools = rawOptions.devtools;
-        this.testId = rawOptions["test-id"];
+        this.testId = rawOptions["testId"];
         this.suite = rawOptions.suite;
-        this.serverURL = rawOptions["server-url"];
+        this.serverURL = rawOptions["serverUrl"];
         this.headless = !rawOptions.visible;
-        this.failfast = rawOptions["fail-fast"];
-        this.onlyLastStats = rawOptions["only-last-stats"];
+        this.failfast = rawOptions["failFast"];
+        this.onlyLastStats = rawOptions["onlyLastStats"];
         this.mobileEmulation = rawOptions.mobile ?? false;
-        this.promptForRetry = rawOptions["prompt-for-retry"];
         this.authCookie = authCookie;
         this.MAX_NUMBER_OF_WORKERS = rawOptions["workers"];
-        this.MIN_TEST_PER_WORKER = rawOptions["min-worker-load"];
-        this.runForever = rawOptions["run-forever"];
-        this.suiteNames = rawOptions["suite-names"] ?? [];
+        this.MIN_TEST_PER_WORKER = rawOptions["minWorkerLoad"];
+        this.runForever = rawOptions["runForever"];
+        this.suiteNames = rawOptions["suiteNames"] ?? [];
         this.verbose = rawOptions.verbose;
-        this.cpuLimit = rawOptions["cpu-limit"] ?? 0;
+        this.once = rawOptions.once;
+        this.cpuLimit = rawOptions["cpuLimit"] ?? 0;
     }
     get baseSuiteURL() {
         // TODO - specific suite parameters to adapters
         const opts = [
             ["debug", "tests,assets"],
             ["timeout", "15000"],
-            ["loglevel", "3"],
+            ["loglevel", this.debug ? "3" : "0"],
             ["manual", "true"],
         ];
         if (this.failfast) {
@@ -319791,6 +304496,7 @@ class TestSuiteMetadata {
         try {
             const adapter = new config.adapterClass();
             return await oraPromise(async () => {
+                await page.waitForFunction(adapter.metadataReady);
                 return new TestSuiteMetadata(config, await page.evaluate(adapter.getMetadata));
             }, {
                 text: chalk$5.white("Fetching test suite metadata"),
@@ -319824,6 +304530,9 @@ class HootAdapter extends TestSuiteAdapter {
             queryParams.push("bail=1");
         }
         return `${config.baseSuiteURL}&${queryParams.join("&")}`;
+    }
+    async metadataReady() {
+        return Boolean(window.odoo?.loader?.modules?.get("@web/../lib/hoot/hoot"));
     }
     async getMetadata() {
         function getAllTests(suite) {
@@ -319871,7 +304580,6 @@ class HootAdapter extends TestSuiteAdapter {
                 }
                 catch { }
             });
-            await client.send("HeapProfiler.enable");
             if (!callbacksRegistered) {
                 page.exposeFunction("beforeEach", (test) => this.currentTest$.next(test));
                 page.exposeFunction("afterEach", (result) => {
@@ -320056,6 +304764,16 @@ class QUnitAdapter extends TestSuiteAdapter {
 }
 registerAdapter(QUnitAdapter);
 
+const require$1 = require$$1$5.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === 'SCRIPT' && _documentCurrentScript.src || new URL('test-warden.cjs', document.baseURI).href)));
+let nc;
+try {
+    const mod = require$1("nodeaffinity");
+    nc = mod.default || mod;
+}
+catch (err) {
+    logger.warn("Missing package: 'nodeaffinity'. `cpuLimit` option will be ignored.");
+    nc = null;
+}
 const ABORT_CONTROLLER = new AbortController();
 const processExit$ = new cjs.BehaviorSubject(false);
 let isCleaningUp = false;
@@ -320073,7 +304791,7 @@ signals.forEach((signal) => process.on(signal, doCleanup));
 process.on("unhandledRejection", (reason) => {
     logger.error("Unhandled Promise Rejection");
     logger.error(reason instanceof Error ? reason.stack : JSON.stringify(reason, null, 2));
-    // process.exit(1);
+    process.exit(1);
 });
 (async function start() {
     try {
@@ -320110,10 +304828,12 @@ process.on("unhandledRejection", (reason) => {
         await browser.close();
         config.metadata = metadata;
         config.check();
-        let mask = (1 << config.cpuLimit) - 1;
-        nc.setAffinity(mask);
-        const totalCPUs = os$2.cpus().length;
-        logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
+        if (nc) {
+            let mask = (1 << config.cpuLimit) - 1;
+            nc.setAffinity(mask);
+            const totalCPUs = os$2.cpus().length;
+            logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
+        }
         await new TestSuiteRunner(config, metadata).run();
     }
     catch (e) {
@@ -320121,7 +304841,6 @@ process.on("unhandledRejection", (reason) => {
             throw e;
         }
     }
-    doCleanup();
 })();
 
 var BidiMapper = {};
@@ -329777,12 +314496,12 @@ class BidiCdpSession extends CDPSession {
  * Copyright 2017 Google Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
-const debugProtocolSend = debug$g('puppeteer:webDriverBiDi:SEND ►');
-const debugProtocolReceive = debug$g('puppeteer:webDriverBiDi:RECV ◀');
+const debugProtocolSend = debug$e('puppeteer:webDriverBiDi:SEND ►');
+const debugProtocolReceive = debug$e('puppeteer:webDriverBiDi:RECV ◀');
 /**
  * @internal
  */
-class BidiConnection extends EventEmitter$5 {
+class BidiConnection extends EventEmitter$6 {
     #url;
     #transport;
     #delay;
@@ -329815,7 +314534,7 @@ class BidiConnection extends EventEmitter$5 {
         return super.emit(type, event);
     }
     send(method, params, timeout) {
-        assert$5(!this.#closed, 'Protocol error: Connection closed.');
+        assert$4(!this.#closed, 'Protocol error: Connection closed.');
         return this.#callbacks.create(method, timeout ?? this.#timeout, id => {
             const stringifiedMessage = JSON.stringify({
                 id,
@@ -329913,7 +314632,7 @@ function isCdpEvent(event) {
  * SPDX-License-Identifier: Apache-2.0
  */
 const bidiServerLogger = (prefix, ...args) => {
-    debug$g(`bidi:${prefix}`)(args);
+    debug$e(`bidi:${prefix}`)(args);
 };
 /**
  * @internal
@@ -330093,7 +314812,7 @@ var __esDecorate$d = (undefined && undefined.__esDecorate) || function (ctor, de
  * @internal
  */
 let Navigation = (() => {
-    let _classSuper = EventEmitter$5;
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _dispose_decorators;
     return class Navigation extends _classSuper {
@@ -330117,7 +314836,7 @@ let Navigation = (() => {
             this.#browsingContext = context;
         }
         #initialize() {
-            const browsingContextEmitter = this.#disposables.use(new EventEmitter$5(this.#browsingContext));
+            const browsingContextEmitter = this.#disposables.use(new EventEmitter$6(this.#browsingContext));
             browsingContextEmitter.once('closed', () => {
                 this.emit('failed', {
                     url: this.#browsingContext.url,
@@ -330134,12 +314853,12 @@ let Navigation = (() => {
                 }
                 this.#request = request;
                 this.emit('request', request);
-                const requestEmitter = this.#disposables.use(new EventEmitter$5(this.#request));
+                const requestEmitter = this.#disposables.use(new EventEmitter$6(this.#request));
                 requestEmitter.on('redirect', request => {
                     this.#request = request;
                 });
             });
-            const sessionEmitter = this.#disposables.use(new EventEmitter$5(this.#session));
+            const sessionEmitter = this.#disposables.use(new EventEmitter$6(this.#session));
             sessionEmitter.on('browsingContext.navigationStarted', info => {
                 if (info.context !== this.#browsingContext.id ||
                     this.#navigation !== undefined) {
@@ -330256,7 +314975,7 @@ var _a$1;
  * @internal
  */
 let Realm = (() => {
-    let _classSuper = EventEmitter$5;
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _dispose_decorators;
     let _disown_decorators;
@@ -330363,11 +315082,11 @@ class WindowRealm extends Realm {
         this.sandbox = sandbox;
     }
     #initialize() {
-        const browsingContextEmitter = this.disposables.use(new EventEmitter$5(this.browsingContext));
+        const browsingContextEmitter = this.disposables.use(new EventEmitter$6(this.browsingContext));
         browsingContextEmitter.on('closed', ({ reason }) => {
             this.dispose(reason);
         });
-        const sessionEmitter = this.disposables.use(new EventEmitter$5(this.session));
+        const sessionEmitter = this.disposables.use(new EventEmitter$6(this.session));
         sessionEmitter.on('script.realmCreated', info => {
             if (info.type !== 'window' ||
                 info.context !== this.browsingContext.id ||
@@ -330388,7 +315107,7 @@ class WindowRealm extends Realm {
             }
             const realm = DedicatedWorkerRealm.from(this, info.realm, info.origin);
             this.#workers.set(realm.id, realm);
-            const realmEmitter = this.disposables.use(new EventEmitter$5(realm));
+            const realmEmitter = this.disposables.use(new EventEmitter$6(realm));
             realmEmitter.once('destroyed', () => {
                 realmEmitter.removeAllListeners();
                 this.#workers.delete(realm.id);
@@ -330419,7 +315138,7 @@ class DedicatedWorkerRealm extends Realm {
         this.owners = new Set([owner]);
     }
     #initialize() {
-        const sessionEmitter = this.disposables.use(new EventEmitter$5(this.session));
+        const sessionEmitter = this.disposables.use(new EventEmitter$6(this.session));
         sessionEmitter.on('script.realmDestroyed', info => {
             if (info.realm !== this.id) {
                 return;
@@ -330435,7 +315154,7 @@ class DedicatedWorkerRealm extends Realm {
             }
             const realm = _a$1.from(this, info.realm, info.origin);
             this.#workers.set(realm.id, realm);
-            const realmEmitter = this.disposables.use(new EventEmitter$5(realm));
+            const realmEmitter = this.disposables.use(new EventEmitter$6(realm));
             realmEmitter.once('destroyed', () => {
                 this.#workers.delete(realm.id);
             });
@@ -330464,7 +315183,7 @@ class SharedWorkerRealm extends Realm {
         this.browser = browser;
     }
     #initialize() {
-        const sessionEmitter = this.disposables.use(new EventEmitter$5(this.session));
+        const sessionEmitter = this.disposables.use(new EventEmitter$6(this.session));
         sessionEmitter.on('script.realmDestroyed', info => {
             if (info.realm !== this.id) {
                 return;
@@ -330480,7 +315199,7 @@ class SharedWorkerRealm extends Realm {
             }
             const realm = DedicatedWorkerRealm.from(this, info.realm, info.origin);
             this.#workers.set(realm.id, realm);
-            const realmEmitter = this.disposables.use(new EventEmitter$5(realm));
+            const realmEmitter = this.disposables.use(new EventEmitter$6(realm));
             realmEmitter.once('destroyed', () => {
                 this.#workers.delete(realm.id);
             });
@@ -330534,8 +315253,8 @@ var __esDecorate$b = (undefined && undefined.__esDecorate) || function (ctor, de
 /**
  * @internal
  */
-let Request$1 = (() => {
-    let _classSuper = EventEmitter$5;
+let Request = (() => {
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _dispose_decorators;
     return class Request extends _classSuper {
@@ -330561,13 +315280,13 @@ let Request$1 = (() => {
             this.#event = event;
         }
         #initialize() {
-            const browsingContextEmitter = this.#disposables.use(new EventEmitter$5(this.#browsingContext));
+            const browsingContextEmitter = this.#disposables.use(new EventEmitter$6(this.#browsingContext));
             browsingContextEmitter.once('closed', ({ reason }) => {
                 this.#error = reason;
                 this.emit('error', this.#error);
                 this.dispose();
             });
-            const sessionEmitter = this.#disposables.use(new EventEmitter$5(this.#session));
+            const sessionEmitter = this.#disposables.use(new EventEmitter$6(this.#session));
             sessionEmitter.on('network.beforeRequestSent', event => {
                 if (event.context !== this.#browsingContext.id ||
                     event.request.request !== this.id ||
@@ -330750,7 +315469,7 @@ var __esDecorate$a = (undefined && undefined.__esDecorate) || function (ctor, de
  * @internal
  */
 let UserPrompt = (() => {
-    let _classSuper = EventEmitter$5;
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _dispose_decorators;
     let _handle_decorators;
@@ -330777,11 +315496,11 @@ let UserPrompt = (() => {
             this.info = info;
         }
         #initialize() {
-            const browserContextEmitter = this.#disposables.use(new EventEmitter$5(this.browsingContext));
+            const browserContextEmitter = this.#disposables.use(new EventEmitter$6(this.browsingContext));
             browserContextEmitter.once('closed', ({ reason }) => {
                 this.dispose(`User prompt already closed: ${reason}`);
             });
-            const sessionEmitter = this.#disposables.use(new EventEmitter$5(this.#session));
+            const sessionEmitter = this.#disposables.use(new EventEmitter$6(this.#session));
             sessionEmitter.on('browsingContext.userPromptClosed', parameters => {
                 if (parameters.context !== this.browsingContext.id) {
                     return;
@@ -330874,7 +315593,7 @@ var __esDecorate$9 = (undefined && undefined.__esDecorate) || function (ctor, de
  * @internal
  */
 let BrowsingContext = (() => {
-    let _classSuper = EventEmitter$5;
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _dispose_decorators;
     let _activate_decorators;
@@ -330962,18 +315681,18 @@ let BrowsingContext = (() => {
             this.defaultRealm = this.#createWindowRealm();
         }
         #initialize() {
-            const userContextEmitter = this.#disposables.use(new EventEmitter$5(this.userContext));
+            const userContextEmitter = this.#disposables.use(new EventEmitter$6(this.userContext));
             userContextEmitter.once('closed', ({ reason }) => {
                 this.dispose(`Browsing context already closed: ${reason}`);
             });
-            const sessionEmitter = this.#disposables.use(new EventEmitter$5(this.#session));
+            const sessionEmitter = this.#disposables.use(new EventEmitter$6(this.#session));
             sessionEmitter.on('browsingContext.contextCreated', info => {
                 if (info.parent !== this.id) {
                     return;
                 }
                 const browsingContext = BrowsingContext.from(this.userContext, this, info.context, info.url, info.originalOpener);
                 this.#children.set(info.context, browsingContext);
-                const browsingContextEmitter = this.#disposables.use(new EventEmitter$5(browsingContext));
+                const browsingContextEmitter = this.#disposables.use(new EventEmitter$6(browsingContext));
                 browsingContextEmitter.once('closed', () => {
                     browsingContextEmitter.removeAllListeners();
                     this.#children.delete(browsingContext.id);
@@ -331018,7 +315737,7 @@ let BrowsingContext = (() => {
                 }
                 // Note the navigation ID is null for this event.
                 this.#navigation = Navigation.from(this);
-                const navigationEmitter = this.#disposables.use(new EventEmitter$5(this.#navigation));
+                const navigationEmitter = this.#disposables.use(new EventEmitter$6(this.#navigation));
                 for (const eventName of ['fragment', 'failed', 'aborted']) {
                     navigationEmitter.once(eventName, ({ url }) => {
                         navigationEmitter[disposeSymbol]();
@@ -331036,7 +315755,7 @@ let BrowsingContext = (() => {
                     // Or an Auth event was issued
                     return;
                 }
-                const request = Request$1.from(this, event);
+                const request = Request.from(this, event);
                 this.#requests.set(request.id, request);
                 this.emit('request', { request });
             });
@@ -331349,7 +316068,7 @@ var __esDecorate$8 = (undefined && undefined.__esDecorate) || function (ctor, de
  * @internal
  */
 let UserContext = (() => {
-    let _classSuper = EventEmitter$5;
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _dispose_decorators;
     let _createBrowsingContext_decorators;
@@ -331386,11 +316105,11 @@ let UserContext = (() => {
             this.browser = browser;
         }
         #initialize() {
-            const browserEmitter = this.#disposables.use(new EventEmitter$5(this.browser));
+            const browserEmitter = this.#disposables.use(new EventEmitter$6(this.browser));
             browserEmitter.once('closed', ({ reason }) => {
                 this.dispose(`User context already closed: ${reason}`);
             });
-            const sessionEmitter = this.#disposables.use(new EventEmitter$5(this.#session));
+            const sessionEmitter = this.#disposables.use(new EventEmitter$6(this.#session));
             sessionEmitter.on('browsingContext.contextCreated', info => {
                 if (info.parent) {
                     return;
@@ -331400,7 +316119,7 @@ let UserContext = (() => {
                 }
                 const browsingContext = BrowsingContext.from(this, undefined, info.context, info.url, info.originalOpener);
                 this.#browsingContexts.set(browsingContext.id, browsingContext);
-                const browsingContextEmitter = this.#disposables.use(new EventEmitter$5(browsingContext));
+                const browsingContextEmitter = this.#disposables.use(new EventEmitter$6(browsingContext));
                 browsingContextEmitter.on('closed', () => {
                     browsingContextEmitter.removeAllListeners();
                     this.#browsingContexts.delete(browsingContext.id);
@@ -331435,7 +316154,7 @@ let UserContext = (() => {
                 userContext: this.#id,
             });
             const browsingContext = this.#browsingContexts.get(contextId);
-            assert$5(browsingContext, 'The WebDriver BiDi implementation is failing to create a browsing context correctly.');
+            assert$4(browsingContext, 'The WebDriver BiDi implementation is failing to create a browsing context correctly.');
             // We use an array to avoid the promise from being awaited.
             return browsingContext;
         }
@@ -331954,7 +316673,7 @@ class ExposeableFunction {
                 ownership: "root" /* Bidi.Script.ResultOwnership.Root */,
             },
         };
-        const connectionEmitter = this.#disposables.use(new EventEmitter$5(connection));
+        const connectionEmitter = this.#disposables.use(new EventEmitter$6(connection));
         connectionEmitter.on(protocol.ChromiumBidi.Script.EventNames.Message, this.#handleMessage);
         const functionDeclaration = stringifyFunction(interpolateFunction((callback) => {
             Object.assign(globalThis, {
@@ -332549,7 +317268,7 @@ class BidiSerializer {
                 value: parsedArray,
             };
         }
-        else if (isPlainObject$2(arg)) {
+        else if (isPlainObject(arg)) {
             try {
                 JSON.stringify(arg);
             }
@@ -332569,7 +317288,7 @@ class BidiSerializer {
                 value: parsedObject,
             };
         }
-        else if (isRegExp$1(arg)) {
+        else if (isRegExp(arg)) {
             return {
                 type: 'regexp',
                 value: {
@@ -332578,7 +317297,7 @@ class BidiSerializer {
                 },
             };
         }
-        else if (isDate$1(arg)) {
+        else if (isDate(arg)) {
             return {
                 type: 'date',
                 value: arg.toISOString(),
@@ -332737,7 +317456,7 @@ class BidiRealm extends Realm$3 {
                 maxObjectDepth: 0,
                 maxDomDepth: 0,
             };
-        if (isString$3(pageFunction)) {
+        if (isString(pageFunction)) {
             const expression = SOURCE_URL_REGEX.test(pageFunction)
                 ? pageFunction
                 : `${pageFunction}\n${sourceUrlComment}\n`;
@@ -333249,7 +317968,7 @@ let BidiFrame = (() => {
             });
         }
         #detached$() {
-            return defer$2(() => {
+            return defer(() => {
                 if (this.detached) {
                     return of(this);
                 }
@@ -334099,7 +318818,7 @@ let BidiPage = (() => {
             page.#initialize();
             return page;
         }
-        #trustedEmitter_accessor_storage = __runInitializers$4(this, _trustedEmitter_initializers, new EventEmitter$5());
+        #trustedEmitter_accessor_storage = __runInitializers$4(this, _trustedEmitter_initializers, new EventEmitter$6());
         get trustedEmitter() { return this.#trustedEmitter_accessor_storage; }
         set trustedEmitter(value) { this.#trustedEmitter_accessor_storage = value; }
         #browserContext = __runInitializers$4(this, _trustedEmitter_extraInitializers);
@@ -334193,8 +318912,8 @@ let BidiPage = (() => {
             await this._client().send('Page.setBypassCSP', { enabled });
         }
         async queryObjects(prototypeHandle) {
-            assert$5(!prototypeHandle.disposed, 'Prototype JSHandle is disposed!');
-            assert$5(prototypeHandle.id, 'Prototype JSHandle must not be referencing primitive value');
+            assert$4(!prototypeHandle.disposed, 'Prototype JSHandle is disposed!');
+            assert$4(prototypeHandle.id, 'Prototype JSHandle must not be referencing primitive value');
             const response = await this.#frame.client.send('Runtime.queryObjects', {
                 prototypeObjectId: prototypeHandle.id,
             });
@@ -334229,11 +318948,11 @@ let BidiPage = (() => {
                     return win;
                 })), false);
                 const value = handle.remoteValue();
-                assert$5(value.type === 'window');
+                assert$4(value.type === 'window');
                 const frame = this.frames().find(frame => {
                     return frame._id === value.value.context;
                 });
-                assert$5(frame);
+                assert$4(frame);
                 return frame;
             }
             catch (e_1) {
@@ -334478,7 +319197,7 @@ let BidiPage = (() => {
         async setExtraHTTPHeaders(headers) {
             const extraHTTPHeaders = {};
             for (const [key, value] of Object.entries(headers)) {
-                assert$5(isString$3(value), `Expected value of header "${key}" to be String, but "${typeof value}" is found.`);
+                assert$4(isString(value), `Expected value of header "${key}" to be String, but "${typeof value}" is found.`);
                 extraHTTPHeaders[key.toLowerCase()] = value;
             }
             this._extraHTTPHeaders = extraHTTPHeaders;
@@ -334568,13 +319287,13 @@ let BidiPage = (() => {
                 if (!cookieUrl && pageUrlStartsWithHTTP) {
                     cookieUrl = pageURL;
                 }
-                assert$5(cookieUrl !== 'about:blank', `Blank page can not have cookie "${cookie.name}"`);
-                assert$5(!String.prototype.startsWith.call(cookieUrl || '', 'data:'), `Data URL page can not have cookie "${cookie.name}"`);
+                assert$4(cookieUrl !== 'about:blank', `Blank page can not have cookie "${cookie.name}"`);
+                assert$4(!String.prototype.startsWith.call(cookieUrl || '', 'data:'), `Data URL page can not have cookie "${cookie.name}"`);
                 const normalizedUrl = URL.canParse(cookieUrl)
                     ? new URL(cookieUrl)
                     : undefined;
                 const domain = cookie.domain ?? normalizedUrl?.hostname;
-                assert$5(domain !== undefined, `At least one of the url and domain needs to be specified`);
+                assert$4(domain !== undefined, `At least one of the url and domain needs to be specified`);
                 const bidiCookie = {
                     domain: domain,
                     name: cookie.name,
@@ -334607,7 +319326,7 @@ let BidiPage = (() => {
                     ? new URL(cookieUrl)
                     : undefined;
                 const domain = deleteCookieRequest.domain ?? normalizedUrl?.hostname;
-                assert$5(domain !== undefined, `At least one of the url and domain needs to be specified`);
+                assert$4(domain !== undefined, `At least one of the url and domain needs to be specified`);
                 const filter = {
                     domain: domain,
                     name: deleteCookieRequest.name,
@@ -334698,7 +319417,7 @@ function testUrlMatchCookiePath(cookie, normalizedUrl) {
  */
 function testUrlMatchCookie(cookie, url) {
     const normalizedUrl = new URL(url);
-    assert$5(cookie !== undefined);
+    assert$4(cookie !== undefined);
     if (!testUrlMatchCookieHostname(cookie, normalizedUrl)) {
         return false;
     }
@@ -334960,7 +319679,7 @@ let BidiBrowserContext = (() => {
             context.#initialize();
             return context;
         }
-        #trustedEmitter_accessor_storage = __runInitializers$3(this, _trustedEmitter_initializers, new EventEmitter$5());
+        #trustedEmitter_accessor_storage = __runInitializers$3(this, _trustedEmitter_initializers, new EventEmitter$6());
         get trustedEmitter() { return this.#trustedEmitter_accessor_storage; }
         set trustedEmitter(value) { this.#trustedEmitter_accessor_storage = value; }
         #browser = __runInitializers$3(this, _trustedEmitter_extraInitializers);
@@ -335235,7 +319954,7 @@ var __disposeResources = (undefined && undefined.__disposeResources) || (functio
  * @internal
  */
 let Browser = (() => {
-    let _classSuper = EventEmitter$5;
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _dispose_decorators;
     let _close_decorators;
@@ -335270,7 +319989,7 @@ let Browser = (() => {
             this.session = session;
         }
         async #initialize() {
-            const sessionEmitter = this.#disposables.use(new EventEmitter$5(this.session));
+            const sessionEmitter = this.#disposables.use(new EventEmitter$6(this.session));
             sessionEmitter.once('ended', ({ reason }) => {
                 this.dispose(reason);
             });
@@ -335297,7 +320016,7 @@ let Browser = (() => {
             {
                 const env_1 = { stack: [], error: void 0, hasError: false };
                 try {
-                    const sessionEmitter = __addDisposableResource(env_1, new EventEmitter$5(this.session), false);
+                    const sessionEmitter = __addDisposableResource(env_1, new EventEmitter$6(this.session), false);
                     sessionEmitter.on('browsingContext.contextCreated', info => {
                         contextIds.add(info.context);
                     });
@@ -335325,7 +320044,7 @@ let Browser = (() => {
         #createUserContext(id) {
             const userContext = UserContext.create(this, id);
             this.#userContexts.set(userContext.id, userContext);
-            const userContextEmitter = this.#disposables.use(new EventEmitter$5(userContext));
+            const userContextEmitter = this.#disposables.use(new EventEmitter$6(userContext));
             userContextEmitter.once('closed', () => {
                 userContextEmitter.removeAllListeners();
                 this.#userContexts.delete(userContext.id);
@@ -335458,7 +320177,7 @@ var __esDecorate$1 = (undefined && undefined.__esDecorate) || function (ctor, de
  * @internal
  */
 let Session = (() => {
-    let _classSuper = EventEmitter$5;
+    let _classSuper = EventEmitter$6;
     let _instanceExtraInitializers = [];
     let _connection_decorators;
     let _connection_initializers = [];
@@ -335699,7 +320418,7 @@ let BidiBrowser = (() => {
             browser.#initialize();
             return browser;
         }
-        #trustedEmitter_accessor_storage = __runInitializers(this, _private_trustedEmitter_initializers, new EventEmitter$5());
+        #trustedEmitter_accessor_storage = __runInitializers(this, _private_trustedEmitter_initializers, new EventEmitter$6());
         get #trustedEmitter() { return _private_trustedEmitter_descriptor.get.call(this); }
         set #trustedEmitter(value) { return _private_trustedEmitter_descriptor.set.call(this, value); }
         #process = __runInitializers(this, _private_trustedEmitter_extraInitializers);

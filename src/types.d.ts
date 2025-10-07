@@ -16,6 +16,7 @@ declare interface TestSuiteConfigOptions {
   "open-fail-folder"?: boolean;
   "run-forever": boolean;
   cpuLimit?: number;
+  once: boolean;
 }
 
 declare type AuthCookie = {
@@ -36,3 +37,4 @@ declare interface Window {
   afterAll: any;
   getQUnitData: Function;
 }
+declare module "nodeaffinity";

@@ -201,6 +201,9 @@ export class Executor {
       }
       // 4. Let the runner process the result.
       yield { success };
+      if (this.config.once) {
+        return;
+      }
       previousResults.push(...(await lastValueFrom(testResults$)));
       await Promise.all(this.splits.map((s) => s.reload()));
     }

@@ -1,5 +1,3 @@
-import axios from "axios";
-
 function buildRPCPayload(params?: object) {
   return {
     jsonrpc: "2.0",
@@ -8,38 +6,43 @@ function buildRPCPayload(params?: object) {
   };
 }
 
-async function makeRPC(route: string, params?: object, headers?: object) {
+async function makeRPC(route: string, params?: object, headers?: Record<string, string>) {
   headers = headers || {};
-  headers["Content-type"] = "application/json";
-
-  const response = await axios.post(route, buildRPCPayload(params), {
-    headers: headers,
-    withCredentials: true,
-    data: buildRPCPayload(params),
+  headers["Content-Type"] = "application/json";
+  const response = await fetch(route, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(buildRPCPayload(params)),
+    credentials: "include",
   });
-  return response.data;
+  if (!response.ok) {
+    throw new Error(`RPC request failed with status ${response.status}`);
+  }
+  return response.json();
 }
 
 export async function authenticate(url: string, login: string, password: string): Promise<AuthCookie> {
   const databaseList = await makeRPC(`${url}/web/database/list`);
   const db_name = databaseList.result[0];
-  const headers = {
-    "Content-type": "application/json",
-  };
-  const response = await axios.post(
-    `${url}/web/session/authenticate`,
-    buildRPCPayload({ login: login, password: password, db: db_name }),
-    {
-      headers: headers,
-      withCredentials: true,
+
+  const response = await fetch(`${url}/web/session/authenticate`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
-  if (!response.headers?.["set-cookie"]) {
+    body: JSON.stringify(buildRPCPayload({ login, password, db: db_name })),
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error(`Authentication failed with status ${response.status}`);
+  }
+  const setCookie = response.headers.get("set-cookie");
+  if (!setCookie) {
     throw new Error(`Authentication failed for user ${login} with password ${password}`);
   }
   return {
     name: "session_id",
-    value: response.headers["set-cookie"][0].split(";")[0].split("=")[1],
+    value: setCookie.split(";")[0].split("=")[1],
     domain: url.split("//")[1].split(":")[0],
     path: "/",
   };

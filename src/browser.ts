@@ -5,6 +5,7 @@ import { TestSuiteConfig } from "@warden/test_suite_config";
 import { exec } from "child_process";
 import { oraPromise } from "ora";
 import puppeteer, { Browser, CDPSession, Page, Protocol, PuppeteerLaunchOptions } from "puppeteer";
+import { last } from "rxjs";
 import { promisify } from "util";
 
 const execPromise = promisify(exec);
@@ -22,7 +23,6 @@ export const CHROME_OPTIONS = [
   "--disable-crash-reporter",
   "--disable-default-apps",
   "--disable-device-discovery-notifications",
-  "--disable-accelerated-2d-canvas",
   "--disable-setuid-sandbox",
   "--disable-dev-shm-usage",
   "--disable-accelerated-2d-canvas",
@@ -30,7 +30,6 @@ export const CHROME_OPTIONS = [
   "--no-zygote",
   "--blink-settings=imagesEnabled=false",
   "--disable-features=PaintHolding",
-  // "--single-process",
   "--disable-software-rasterizer",
   "--disable-translate",
   // "--js-flags=--expose_gc",
@@ -38,26 +37,27 @@ export const CHROME_OPTIONS = [
   `--window-size=1366,768`, // Same as RunBot
 ];
 
-let latestDebuggingPort = 9221;
-const findPortMutext = new Mutex();
-async function findFirstAvailablePort() {
-  for (let port = latestDebuggingPort + 1; true; port++) {
-    try {
-      await execPromise(`netstat -tuplen | grep ${port}`);
-    } catch {
-      latestDebuggingPort = port;
-      return port;
+let latestDebuggingPort = 9222;
+async function killPortsInRange(start = 9222, end = 9250) {
+    for (let port = start; port <= end; port++) {
+        try {
+            await execPromise(`fuser -k ${port}/tcp`);
+        } catch (err) {
+            // Ignore errors if no process is using this port
+        }
     }
-  }
 }
 
-const browsers: WeakRef<Browser>[] = [];
-const clients: WeakRef<CDPSession>[] = [];
+const browsers: Browser[] = [];
+const clients: CDPSession[] = [];
 let launchDeferred;
 let setupCacheDeferred;
 export async function launch(options: PuppeteerLaunchOptions) {
+  if (latestDebuggingPort === 9222) {
+    await killPortsInRange(9222, 9230);
+  }
   launchDeferred = new Deferred();
-  const port = await findPortMutext.exec(findFirstAvailablePort);
+  const port =  ++latestDebuggingPort;
   const browser = await puppeteer.launch({
     ...options,
     args: [...CHROME_OPTIONS, `--remote-debugging-port=${port}`],
@@ -66,7 +66,7 @@ export async function launch(options: PuppeteerLaunchOptions) {
     handleSIGTERM: false,
     handleSIGHUP: false,
   });
-  browsers.push(new WeakRef(browser));
+  browsers.push(browser);
   launchDeferred.resolve();
   return browser;
 }
@@ -74,21 +74,20 @@ export async function launch(options: PuppeteerLaunchOptions) {
 export async function cleanup() {
   await oraPromise(
     async () => {
+      killPortsInRange(9222, latestDebuggingPort);
       await Promise.all([setupCacheDeferred, launchDeferred]);
       await Promise.all([
         ...clients.map(
           (c) =>
             c
-              .deref()
               ?.detach()
-              ?.catch(() => {}),
+              ?.catch(() => { }),
         ),
         ...browsers.map(
           (b) =>
             b
-              .deref()
               ?.close()
-              ?.catch(() => {}),
+              ?.catch(() => { }),
         ),
       ]);
     },
@@ -121,25 +120,36 @@ function addHeader(
 
 /**
  * Cache responses to speed up reload time.
+ * TODO: better caching, especially for document. Check if XHR caching is OK.
  */
 export async function setupCache(page: Page, config: TestSuiteConfig) {
   setupCacheDeferred = new Deferred();
   const client = await page.target().createCDPSession();
-  clients.push(new WeakRef(client));
+  clients.push(client);
   await client.send("ServiceWorker.enable");
   await client.send("ServiceWorker.unregister", { scopeURL: config.serverURL });
   await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
   await client.send("Fetch.enable");
+
   client.on("Fetch.requestPaused", async (event) => {
     const { requestId } = event;
-    if (event.request.url in cache) {
-      const cached = cache[event.request.url];
+
+    let cacheUrl = event.request.url;
+
+    // Cache /web/tests document ignoring query string
+    if (event.resourceType === "Document" && event.request.url.includes("/web/tests")) {
+      const [base] = event.request.url.split("?");
+      cacheUrl = base;
+    }
+
+    if (cacheUrl in cache) {
+      const cached = cache[cacheUrl];
       await client.send("Fetch.fulfillRequest", {
         requestId,
         responseCode: cached.status,
         responseHeaders: addHeader(cached.headers, [
           ["Cache-Control", "public, max-age=31536000"],
-          ["X-Warden-XHR-Cache", "TRUE"],
+          ["X-Warden-Cache", "TRUE"],
         ]),
         body: cached.body.toString("base64"),
       });
@@ -149,7 +159,7 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
       await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
       return;
     }
-    if (event.resourceType === "XHR") {
+    if (event.resourceType === "XHR" && !event.request.url.includes("all_dependencies")) {
       try {
         const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
         cache[event.request.url] = {
@@ -157,7 +167,17 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
           headers: event.responseHeaders,
           body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
         };
-      } catch (e) {}
+      } catch (e) { }
+    }
+    if (event.resourceType === "Document" && event.request.url.includes("/web/tests")) {
+      try {
+        const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
+        cache[cacheUrl] = {
+          status: event.responseStatusCode,
+          headers: event.responseHeaders,
+          body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
+        };
+      } catch (e) { }
     }
     try {
       await client.send("Fetch.continueResponse", {
@@ -165,7 +185,7 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         responseCode: event.responseStatusCode,
         responseHeaders: addHeader(event.responseHeaders, [
           ["Cache-Control", "public, max-age=31536000"],
-          ["X-Warden-Cache-Control", "TRUE"],
+          ["X-Warden-Cache", "TRUE"],
         ]),
         responsePhrase: event.responseStatusText,
       });
@@ -176,6 +196,8 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
       }
     }
   });
+
   await page.setCacheEnabled(true);
   setupCacheDeferred.resolve();
 }
+

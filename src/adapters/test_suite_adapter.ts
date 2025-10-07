@@ -82,6 +82,9 @@ export abstract class TestSuiteAdapter {
   }
 
   async screenshotFails(page: Page, path: string) {}
+  async metadataReady() {
+    return true;
+  }
 }
 
 export type TestResult = {
