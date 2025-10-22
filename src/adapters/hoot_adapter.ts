@@ -35,6 +35,10 @@ export class HootAdapter extends TestSuiteAdapter {
     return `${config.baseSuiteURL}&${queryParams.join("&")}`;
   }
 
+  getTestURL(config: any, testId: string): string {
+    return `${config.baseSuiteURL}&id=${testId}&debugTest=True`.replace("manual=true", "manual=false");
+  }
+
   async metadataReady() {
     return Boolean(window.odoo?.loader?.modules?.get("@web/../lib/hoot/hoot"))
   }

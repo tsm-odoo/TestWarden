@@ -292720,10 +292720,13 @@ function addHeader(ogHeaders, headers) {
  * Cache responses to speed up reload time.
  * TODO: better caching, especially for document. Check if XHR caching is OK.
  */
-async function setupCache(page, config) {
+async function setupCache(page, config, initialLoad = false) {
     setupCacheDeferred = new Deferred$3();
     const client = await page.target().createCDPSession();
     clients.push(client);
+    if (config.cpuThrottling && !initialLoad) {
+        await client.send("Emulation.setCPUThrottlingRate", { rate: config.cpuThrottling + 1 });
+    }
     await client.send("ServiceWorker.enable");
     await client.send("ServiceWorker.unregister", { scopeURL: config.serverURL });
     await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
@@ -294201,7 +294204,9 @@ class Executor {
             });
             lastFail$.subscribe((r) => {
                 const totalRuns = this.config.isSingleTest ? runs * this.splits.length : runs;
-                this.progressBar.log(formatter$1.warn(`${totalRuns}. [${r.id}] ${r.name} - ${Math.round(r.duration * 100) / 100}s`));
+                const url = new this.config.adapterClass().getTestURL(this.config, r.id);
+                const text = `${totalRuns}. [${r.id}] ${r.name} - ${Math.round(r.duration * 100) / 100}s`;
+                this.progressBar.log(formatter$1.warn(`\u001B]8;;${url}\u0007${text}\u001B]8;;\u0007`));
                 if (!this.config.runForever && (this.config.failfast || this.config.isSingleTest)) {
                     this.splits.forEach((s) => s.stop());
                 }
@@ -299986,7 +299991,7 @@ let Argument$3 = class Argument {
         break;
     }
 
-    if (this._name.endsWith('...')) {
+    if (this._name.length > 3 && this._name.slice(-3) === '...') {
       this.variadic = true;
       this._name = this._name.slice(0, -3);
     }
@@ -300006,13 +300011,12 @@ let Argument$3 = class Argument {
    * @package
    */
 
-  _collectValue(value, previous) {
+  _concatValue(value, previous) {
     if (previous === this.defaultValue || !Array.isArray(previous)) {
       return [value];
     }
 
-    previous.push(value);
-    return previous;
+    return previous.concat(value);
   }
 
   /**
@@ -300057,7 +300061,7 @@ let Argument$3 = class Argument {
         );
       }
       if (this.variadic) {
-        return this._collectValue(arg, previous);
+        return this._concatValue(arg, previous);
       }
       return arg;
     };
@@ -300460,11 +300464,7 @@ let Help$3 = class Help {
       extraInfo.push(`env: ${option.envVar}`);
     }
     if (extraInfo.length > 0) {
-      const extraDescription = `(${extraInfo.join(', ')})`;
-      if (option.description) {
-        return `${option.description} ${extraDescription}`;
-      }
-      return extraDescription;
+      return `${option.description} (${extraInfo.join(', ')})`;
     }
 
     return option.description;
@@ -300498,46 +300498,6 @@ let Help$3 = class Help {
       return extraDescription;
     }
     return argument.description;
-  }
-
-  /**
-   * Format a list of items, given a heading and an array of formatted items.
-   *
-   * @param {string} heading
-   * @param {string[]} items
-   * @param {Help} helper
-   * @returns string[]
-   */
-  formatItemList(heading, items, helper) {
-    if (items.length === 0) return [];
-
-    return [helper.styleTitle(heading), ...items, ''];
-  }
-
-  /**
-   * Group items by their help group heading.
-   *
-   * @param {Command[] | Option[]} unsortedItems
-   * @param {Command[] | Option[]} visibleItems
-   * @param {Function} getGroup
-   * @returns {Map<string, Command[] | Option[]>}
-   */
-  groupItems(unsortedItems, visibleItems, getGroup) {
-    const result = new Map();
-    // Add groups in order of appearance in unsortedItems.
-    unsortedItems.forEach((item) => {
-      const group = getGroup(item);
-      if (!result.has(group)) result.set(group, []);
-    });
-    // Add items in order of appearance in visibleItems.
-    visibleItems.forEach((item) => {
-      const group = getGroup(item);
-      if (!result.has(group)) {
-        result.set(group, []);
-      }
-      result.get(group).push(item);
-    });
-    return result;
   }
 
   /**
@@ -300581,25 +300541,28 @@ let Help$3 = class Help {
         helper.styleArgumentDescription(helper.argumentDescription(argument)),
       );
     });
-    output = output.concat(
-      this.formatItemList('Arguments:', argumentList, helper),
-    );
+    if (argumentList.length > 0) {
+      output = output.concat([
+        helper.styleTitle('Arguments:'),
+        ...argumentList,
+        '',
+      ]);
+    }
 
     // Options
-    const optionGroups = this.groupItems(
-      cmd.options,
-      helper.visibleOptions(cmd),
-      (option) => option.helpGroupHeading ?? 'Options:',
-    );
-    optionGroups.forEach((options, group) => {
-      const optionList = options.map((option) => {
-        return callFormatItem(
-          helper.styleOptionTerm(helper.optionTerm(option)),
-          helper.styleOptionDescription(helper.optionDescription(option)),
-        );
-      });
-      output = output.concat(this.formatItemList(group, optionList, helper));
+    const optionList = helper.visibleOptions(cmd).map((option) => {
+      return callFormatItem(
+        helper.styleOptionTerm(helper.optionTerm(option)),
+        helper.styleOptionDescription(helper.optionDescription(option)),
+      );
     });
+    if (optionList.length > 0) {
+      output = output.concat([
+        helper.styleTitle('Options:'),
+        ...optionList,
+        '',
+      ]);
+    }
 
     if (helper.showGlobalOptions) {
       const globalOptionList = helper
@@ -300610,26 +300573,29 @@ let Help$3 = class Help {
             helper.styleOptionDescription(helper.optionDescription(option)),
           );
         });
-      output = output.concat(
-        this.formatItemList('Global Options:', globalOptionList, helper),
-      );
+      if (globalOptionList.length > 0) {
+        output = output.concat([
+          helper.styleTitle('Global Options:'),
+          ...globalOptionList,
+          '',
+        ]);
+      }
     }
 
     // Commands
-    const commandGroups = this.groupItems(
-      cmd.commands,
-      helper.visibleCommands(cmd),
-      (sub) => sub.helpGroup() || 'Commands:',
-    );
-    commandGroups.forEach((commands, group) => {
-      const commandList = commands.map((sub) => {
-        return callFormatItem(
-          helper.styleSubcommandTerm(helper.subcommandTerm(sub)),
-          helper.styleSubcommandDescription(helper.subcommandDescription(sub)),
-        );
-      });
-      output = output.concat(this.formatItemList(group, commandList, helper));
+    const commandList = helper.visibleCommands(cmd).map((cmd) => {
+      return callFormatItem(
+        helper.styleSubcommandTerm(helper.subcommandTerm(cmd)),
+        helper.styleSubcommandDescription(helper.subcommandDescription(cmd)),
+      );
     });
+    if (commandList.length > 0) {
+      output = output.concat([
+        helper.styleTitle('Commands:'),
+        ...commandList,
+        '',
+      ]);
+    }
 
     return output.join('\n');
   }
@@ -300891,7 +300857,6 @@ let Option$3 = class Option {
     this.argChoices = undefined;
     this.conflictsWith = [];
     this.implied = undefined;
-    this.helpGroupHeading = undefined; // soft initialised when option added to command
   }
 
   /**
@@ -301020,13 +300985,12 @@ let Option$3 = class Option {
    * @package
    */
 
-  _collectValue(value, previous) {
+  _concatValue(value, previous) {
     if (previous === this.defaultValue || !Array.isArray(previous)) {
       return [value];
     }
 
-    previous.push(value);
-    return previous;
+    return previous.concat(value);
   }
 
   /**
@@ -301045,7 +301009,7 @@ let Option$3 = class Option {
         );
       }
       if (this.variadic) {
-        return this._collectValue(arg, previous);
+        return this._concatValue(arg, previous);
       }
       return arg;
     };
@@ -301077,17 +301041,6 @@ let Option$3 = class Option {
       return camelcase(this.name().replace(/^no-/, ''));
     }
     return camelcase(this.name());
-  }
-
-  /**
-   * Set the help group heading.
-   *
-   * @param {string} heading
-   * @return {Option}
-   */
-  helpGroup(heading) {
-    this.helpGroupHeading = heading;
-    return this;
   }
 
   /**
@@ -301423,12 +301376,6 @@ let Command$2 = class Command extends EventEmitter$2 {
     /** @type {Command} */
     this._helpCommand = undefined; // lazy initialised, inherited
     this._helpConfiguration = {};
-    /** @type {string | undefined} */
-    this._helpGroupHeading = undefined; // soft initialised when added to parent
-    /** @type {string | undefined} */
-    this._defaultCommandGroup = undefined;
-    /** @type {string | undefined} */
-    this._defaultOptionGroup = undefined;
   }
 
   /**
@@ -301588,10 +301535,7 @@ let Command$2 = class Command extends EventEmitter$2 {
   configureOutput(configuration) {
     if (configuration === undefined) return this._outputConfiguration;
 
-    this._outputConfiguration = {
-      ...this._outputConfiguration,
-      ...configuration,
-    };
+    Object.assign(this._outputConfiguration, configuration);
     return this;
   }
 
@@ -301672,16 +301616,16 @@ let Command$2 = class Command extends EventEmitter$2 {
    *
    * @param {string} name
    * @param {string} [description]
-   * @param {(Function|*)} [parseArg] - custom argument processing function or default value
+   * @param {(Function|*)} [fn] - custom argument processing function
    * @param {*} [defaultValue]
    * @return {Command} `this` command for chaining
    */
-  argument(name, description, parseArg, defaultValue) {
+  argument(name, description, fn, defaultValue) {
     const argument = this.createArgument(name, description);
-    if (typeof parseArg === 'function') {
-      argument.default(defaultValue).argParser(parseArg);
+    if (typeof fn === 'function') {
+      argument.default(defaultValue).argParser(fn);
     } else {
-      argument.default(parseArg);
+      argument.default(fn);
     }
     this.addArgument(argument);
     return this;
@@ -301717,7 +301661,7 @@ let Command$2 = class Command extends EventEmitter$2 {
    */
   addArgument(argument) {
     const previousArgument = this.registeredArguments.slice(-1)[0];
-    if (previousArgument?.variadic) {
+    if (previousArgument && previousArgument.variadic) {
       throw new Error(
         `only the last argument can be variadic '${previousArgument.name()}'`,
       );
@@ -301752,15 +301696,11 @@ let Command$2 = class Command extends EventEmitter$2 {
   helpCommand(enableOrNameAndArgs, description) {
     if (typeof enableOrNameAndArgs === 'boolean') {
       this._addImplicitHelpCommand = enableOrNameAndArgs;
-      if (enableOrNameAndArgs && this._defaultCommandGroup) {
-        // make the command to store the group
-        this._initCommandGroup(this._getHelpCommand());
-      }
       return this;
     }
 
-    const nameAndArgs = enableOrNameAndArgs ?? 'help [command]';
-    const [, helpName, helpArgs] = nameAndArgs.match(/([^ ]+) *(.*)/);
+    enableOrNameAndArgs = enableOrNameAndArgs ?? 'help [command]';
+    const [, helpName, helpArgs] = enableOrNameAndArgs.match(/([^ ]+) *(.*)/);
     const helpDescription = description ?? 'display help for command';
 
     const helpCommand = this.createCommand(helpName);
@@ -301770,8 +301710,6 @@ let Command$2 = class Command extends EventEmitter$2 {
 
     this._addImplicitHelpCommand = true;
     this._helpCommand = helpCommand;
-    // init group unless lazy create
-    if (enableOrNameAndArgs || description) this._initCommandGroup(helpCommand);
 
     return this;
   }
@@ -301793,7 +301731,6 @@ let Command$2 = class Command extends EventEmitter$2 {
 
     this._addImplicitHelpCommand = true;
     this._helpCommand = helpCommand;
-    this._initCommandGroup(helpCommand);
     return this;
   }
 
@@ -301970,7 +301907,6 @@ Expecting one of '${allowedValues.join("', '")}'`);
 -  already used by option '${matchingOption.flags}'`);
     }
 
-    this._initOptionGroup(option);
     this.options.push(option);
   }
 
@@ -301998,7 +301934,6 @@ Expecting one of '${allowedValues.join("', '")}'`);
       );
     }
 
-    this._initCommandGroup(command);
     this.commands.push(command);
   }
 
@@ -302042,7 +301977,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
       if (val !== null && option.parseArg) {
         val = this._callParseArg(option, val, oldValue, invalidValueMessage);
       } else if (val !== null && option.variadic) {
-        val = option._collectValue(val, oldValue);
+        val = option._concatValue(val, oldValue);
       }
 
       // Fill-in appropriate missing values. Long winded but easy to follow.
@@ -302821,7 +302756,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
 
   _chainOrCall(promise, fn) {
     // thenable
-    if (promise?.then && typeof promise.then === 'function') {
+    if (promise && promise.then && typeof promise.then === 'function') {
       // already have a promise, chain callback
       return promise.then(() => fn());
     }
@@ -302952,7 +302887,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
       promiseChain = this._chainOrCallHooks(promiseChain, 'postAction');
       return promiseChain;
     }
-    if (this.parent?.listenerCount(commandEvent)) {
+    if (this.parent && this.parent.listenerCount(commandEvent)) {
       checkForUnknownOptions();
       this._processArguments();
       this.parent.emit(commandEvent, operands, unknown); // legacy
@@ -303082,49 +303017,33 @@ Expecting one of '${allowedValues.join("', '")}'`);
    *     sub --unknown uuu op => [sub], [--unknown uuu op]
    *     sub -- --unknown uuu op => [sub --unknown uuu op], []
    *
-   * @param {string[]} args
+   * @param {string[]} argv
    * @return {{operands: string[], unknown: string[]}}
    */
 
-  parseOptions(args) {
+  parseOptions(argv) {
     const operands = []; // operands, not options or values
     const unknown = []; // first unknown option and remaining unknown args
     let dest = operands;
+    const args = argv.slice();
 
     function maybeOption(arg) {
       return arg.length > 1 && arg[0] === '-';
     }
 
-    const negativeNumberArg = (arg) => {
-      // return false if not a negative number
-      if (!/^-\d*\.?\d+(e[+-]?\d+)?$/.test(arg)) return false;
-      // negative number is ok unless digit used as an option in command hierarchy
-      return !this._getCommandAndAncestors().some((cmd) =>
-        cmd.options
-          .map((opt) => opt.short)
-          .some((short) => /^-\d$/.test(short)),
-      );
-    };
-
     // parse options
     let activeVariadicOption = null;
-    let activeGroup = null; // working through group of short options, like -abc
-    let i = 0;
-    while (i < args.length || activeGroup) {
-      const arg = activeGroup ?? args[i++];
-      activeGroup = null;
+    while (args.length) {
+      const arg = args.shift();
 
       // literal
       if (arg === '--') {
         if (dest === unknown) dest.push(arg);
-        dest.push(...args.slice(i));
+        dest.push(...args);
         break;
       }
 
-      if (
-        activeVariadicOption &&
-        (!maybeOption(arg) || negativeNumberArg(arg))
-      ) {
+      if (activeVariadicOption && !maybeOption(arg)) {
         this.emit(`option:${activeVariadicOption.name()}`, arg);
         continue;
       }
@@ -303135,17 +303054,14 @@ Expecting one of '${allowedValues.join("', '")}'`);
         // recognised option, call listener to assign value with possible custom processing
         if (option) {
           if (option.required) {
-            const value = args[i++];
+            const value = args.shift();
             if (value === undefined) this.optionMissingArgument(option);
             this.emit(`option:${option.name()}`, value);
           } else if (option.optional) {
             let value = null;
             // historical behaviour is optional value is following arg unless an option
-            if (
-              i < args.length &&
-              (!maybeOption(args[i]) || negativeNumberArg(args[i]))
-            ) {
-              value = args[i++];
+            if (args.length > 0 && !maybeOption(args[0])) {
+              value = args.shift();
             }
             this.emit(`option:${option.name()}`, value);
           } else {
@@ -303168,10 +303084,9 @@ Expecting one of '${allowedValues.join("', '")}'`);
             // option with value following in same argument
             this.emit(`option:${option.name()}`, arg.slice(2));
           } else {
-            // boolean option
+            // boolean option, emit and put back remainder of arg for further processing
             this.emit(`option:${option.name()}`);
-            // remove the processed option and keep processing group
-            activeGroup = `-${arg.slice(2)}`;
+            args.unshift(`-${arg.slice(2)}`);
           }
           continue;
         }
@@ -303191,12 +303106,7 @@ Expecting one of '${allowedValues.join("', '")}'`);
       // Might be a command-argument, or subcommand option, or unknown option, or help command or option.
 
       // An unknown option means further arguments also classified as unknown so can be reprocessed by subcommands.
-      // A negative number in a leaf command is not an unknown option.
-      if (
-        dest === operands &&
-        maybeOption(arg) &&
-        !(this.commands.length === 0 && negativeNumberArg(arg))
-      ) {
+      if (maybeOption(arg)) {
         dest = unknown;
       }
 
@@ -303208,23 +303118,26 @@ Expecting one of '${allowedValues.join("', '")}'`);
       ) {
         if (this._findCommand(arg)) {
           operands.push(arg);
-          unknown.push(...args.slice(i));
+          if (args.length > 0) unknown.push(...args);
           break;
         } else if (
           this._getHelpCommand() &&
           arg === this._getHelpCommand().name()
         ) {
-          operands.push(arg, ...args.slice(i));
+          operands.push(arg);
+          if (args.length > 0) operands.push(...args);
           break;
         } else if (this._defaultCommandName) {
-          unknown.push(arg, ...args.slice(i));
+          unknown.push(arg);
+          if (args.length > 0) unknown.push(...args);
           break;
         }
       }
 
       // If using passThroughOptions, stop processing options at first command-argument.
       if (this._passThroughOptions) {
-        dest.push(arg, ...args.slice(i));
+        dest.push(arg);
+        if (args.length > 0) dest.push(...args);
         break;
       }
 
@@ -303676,75 +303589,6 @@ Expecting one of '${allowedValues.join("', '")}'`);
   }
 
   /**
-   * Set/get the help group heading for this subcommand in parent command's help.
-   *
-   * @param {string} [heading]
-   * @return {Command | string}
-   */
-
-  helpGroup(heading) {
-    if (heading === undefined) return this._helpGroupHeading ?? '';
-    this._helpGroupHeading = heading;
-    return this;
-  }
-
-  /**
-   * Set/get the default help group heading for subcommands added to this command.
-   * (This does not override a group set directly on the subcommand using .helpGroup().)
-   *
-   * @example
-   * program.commandsGroup('Development Commands:);
-   * program.command('watch')...
-   * program.command('lint')...
-   * ...
-   *
-   * @param {string} [heading]
-   * @returns {Command | string}
-   */
-  commandsGroup(heading) {
-    if (heading === undefined) return this._defaultCommandGroup ?? '';
-    this._defaultCommandGroup = heading;
-    return this;
-  }
-
-  /**
-   * Set/get the default help group heading for options added to this command.
-   * (This does not override a group set directly on the option using .helpGroup().)
-   *
-   * @example
-   * program
-   *   .optionsGroup('Development Options:')
-   *   .option('-d, --debug', 'output extra debugging')
-   *   .option('-p, --profile', 'output profiling information')
-   *
-   * @param {string} [heading]
-   * @returns {Command | string}
-   */
-  optionsGroup(heading) {
-    if (heading === undefined) return this._defaultOptionGroup ?? '';
-    this._defaultOptionGroup = heading;
-    return this;
-  }
-
-  /**
-   * @param {Option} option
-   * @private
-   */
-  _initOptionGroup(option) {
-    if (this._defaultOptionGroup && !option.helpGroupHeading)
-      option.helpGroup(this._defaultOptionGroup);
-  }
-
-  /**
-   * @param {Command} cmd
-   * @private
-   */
-  _initCommandGroup(cmd) {
-    if (this._defaultCommandGroup && !cmd.helpGroup())
-      cmd.helpGroup(this._defaultCommandGroup);
-  }
-
-  /**
    * Set the name of the command from script filename, such as process.argv[1],
    * or require.main.filename, or __filename.
    *
@@ -303898,14 +303742,12 @@ Expecting one of '${allowedValues.join("', '")}'`);
    */
 
   helpOption(flags, description) {
-    // Support enabling/disabling built-in help option.
+    // Support disabling built-in help option.
     if (typeof flags === 'boolean') {
+      // true is not an expected value. Do something sensible but no unit-test.
+      // istanbul ignore if
       if (flags) {
-        if (this._helpOption === null) this._helpOption = undefined; // reenable
-        if (this._defaultOptionGroup) {
-          // make the option to store the group
-          this._initOptionGroup(this._getHelpOption());
-        }
+        this._helpOption = this._helpOption ?? undefined; // preserve existing option
       } else {
         this._helpOption = null; // disable
       }
@@ -303913,12 +303755,9 @@ Expecting one of '${allowedValues.join("', '")}'`);
     }
 
     // Customise flags and description.
-    this._helpOption = this.createOption(
-      flags ?? '-h, --help',
-      description ?? 'display help for command',
-    );
-    // init group unless lazy create
-    if (flags || description) this._initOptionGroup(this._helpOption);
+    flags = flags ?? '-h, --help';
+    description = description ?? 'display help for command';
+    this._helpOption = this.createOption(flags, description);
 
     return this;
   }
@@ -303947,7 +303786,6 @@ Expecting one of '${allowedValues.join("', '")}'`);
    */
   addHelpOption(option) {
     this._helpOption = option;
-    this._initOptionGroup(option);
     return this;
   }
 
@@ -304297,6 +304135,7 @@ class TestSuiteConfig {
     adapterClass;
     authCookie;
     cpuLimit = 0;
+    cpuThrottling = 0;
     debug;
     devtools = false;
     failFolderPath = path$f.join(process.cwd(), "FailedTests");
@@ -304367,7 +304206,8 @@ class TestSuiteConfig {
             .option("--fail-fast", "Stop immediately when a test fails (by default, remaining tests continue).", false)
             .option("--run-forever", "Continue running tests even if a test fails.", false)
             .option("--mobile", "Enable mobile emulation (TODO: not fully implemented).", false)
-            .option("--cpu-limit <number>", "Maximum number of CPU cores to use when running tests.", parseInt, settings["cpuLimit"]);
+            .option("--cpu-limit <number>", "Maximum number of CPU cores to use when running tests.", parseInt, settings["cpuLimit"])
+            .option("--cpu-throttling <number>", "CPU throttling factor (0-100)", parseInt, 0);
         program.parse(process.argv);
         const rawOptions = program.opts();
         if ("suite" in rawOptions) {
@@ -304395,6 +304235,7 @@ class TestSuiteConfig {
         this.verbose = rawOptions.verbose;
         this.once = rawOptions.once;
         this.cpuLimit = rawOptions["cpuLimit"] ?? 0;
+        this.cpuThrottling = rawOptions["cpuThrottling"] ?? 0;
     }
     get baseSuiteURL() {
         // TODO - specific suite parameters to adapters
@@ -304532,6 +304373,9 @@ class HootAdapter extends TestSuiteAdapter {
         }
         return `${config.baseSuiteURL}&${queryParams.join("&")}`;
     }
+    getTestURL(config, testId) {
+        return `${config.baseSuiteURL}&id=${testId}&debugTest=True`.replace("manual=true", "manual=false");
+    }
     async metadataReady() {
         return Boolean(window.odoo?.loader?.modules?.get("@web/../lib/hoot/hoot"));
     }
@@ -304654,6 +304498,9 @@ class QUnitAdapter extends TestSuiteAdapter {
             queryParams.push("failfast=true");
         }
         return `${config.baseSuiteURL}&${queryParams.join("&")}`;
+    }
+    getTestURL(config, testId) {
+        return `${config.baseSuiteURL}&testId=${testId}&debugTest=True`;
     }
     async getMetadata() {
         const result = {
@@ -304807,7 +304654,7 @@ process.on("unhandledRejection", (reason) => {
         await oraPromise(async () => {
             browser = await launch({ headless: true, dumpio: config.verbose });
             [page] = await browser.pages();
-            await setupCache(page, config);
+            await setupCache(page, config, true);
             await page.setCookie(config.authCookie);
             await page.goto(config.baseSuiteURL);
             await page.waitForResponse((response) => {

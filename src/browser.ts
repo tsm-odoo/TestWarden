@@ -122,10 +122,13 @@ function addHeader(
  * Cache responses to speed up reload time.
  * TODO: better caching, especially for document. Check if XHR caching is OK.
  */
-export async function setupCache(page: Page, config: TestSuiteConfig) {
+export async function setupCache(page: Page, config: TestSuiteConfig, initialLoad=false) {
   setupCacheDeferred = new Deferred();
   const client = await page.target().createCDPSession();
   clients.push(client);
+  if (config.cpuThrottling && !initialLoad) {
+    await client.send("Emulation.setCPUThrottlingRate", { rate: config.cpuThrottling + 1});
+  }
   await client.send("ServiceWorker.enable");
   await client.send("ServiceWorker.unregister", { scopeURL: config.serverURL });
   await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });

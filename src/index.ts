@@ -59,7 +59,7 @@ process.on("unhandledRejection", (reason) => {
       async () => {
         browser = await launch({ headless: true, dumpio: config.verbose });
         [page] = await browser.pages();
-        await setupCache(page, config);
+        await setupCache(page, config, true);
         await page.setCookie(config.authCookie);
         await page.goto(config.baseSuiteURL);
         await page.waitForResponse((response) => {

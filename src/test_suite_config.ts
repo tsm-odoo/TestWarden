@@ -160,6 +160,7 @@ export class TestSuiteConfig {
   adapterClass: new () => TestSuiteAdapter;
   authCookie: AuthCookie;
   cpuLimit: number = 0;
+  cpuThrottling: number = 0;
   debug: boolean;
   devtools: boolean = false;
   failFolderPath = path.join(process.cwd(), "FailedTests");
@@ -295,7 +296,8 @@ export class TestSuiteConfig {
         "Maximum number of CPU cores to use when running tests.",
         parseInt,
         settings["cpuLimit"]
-      );
+      )
+      .option("--cpu-throttling <number>", "CPU throttling factor (0-100)", parseInt, 0)
     program.parse(process.argv);
 
     const rawOptions = program.opts();
@@ -327,6 +329,7 @@ export class TestSuiteConfig {
     this.verbose = rawOptions.verbose;
     this.once = rawOptions.once;
     this.cpuLimit = rawOptions["cpuLimit"] ?? 0;
+    this.cpuThrottling = rawOptions["cpuThrottling"] ?? 0;
   }
 
   get baseSuiteURL() {

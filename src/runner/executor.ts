@@ -181,9 +181,9 @@ export class Executor {
       });
       lastFail$.subscribe((r) => {
         const totalRuns = this.config.isSingleTest ? runs * this.splits.length : runs;
-        this.progressBar.log(
-          formatter.warn(`${totalRuns}. [${r.id}] ${r.name} - ${Math.round(r.duration * 100) / 100}s`),
-        );
+        const url = new this.config.adapterClass().getTestURL(this.config, r.id);
+        const text = `${totalRuns}. [${r.id}] ${r.name} - ${Math.round(r.duration * 100) / 100}s`;
+        this.progressBar.log(formatter.warn(`\u001B]8;;${url}\u0007${text}\u001B]8;;\u0007`));
         if (!this.config.runForever && (this.config.failfast || this.config.isSingleTest)) {
           this.splits.forEach((s) => s.stop());
         }

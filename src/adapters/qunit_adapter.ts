@@ -20,6 +20,10 @@ export class QUnitAdapter extends TestSuiteAdapter {
     return `${config.baseSuiteURL}&${queryParams.join("&")}`;
   }
 
+  getTestURL(config: any, testId: string): string {
+    return `${config.baseSuiteURL}&testId=${testId}&debugTest=True`;
+  }
+
   async getMetadata() {
     const result = {
       testById: {},

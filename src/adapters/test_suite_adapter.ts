@@ -43,6 +43,7 @@ export abstract class TestSuiteAdapter {
   abstract run(page: Page): Promise<void>;
   abstract abort(page: Page): Promise<void>;
   abstract getSuiteURL(config: TestSuiteConfig, testIds: string[]): string;
+  abstract getTestURL(config, testId: string): string;
 
   currentTest$ = new BehaviorSubject<Omit<Test, "pass">>(null);
   done$ = new BehaviorSubject<boolean>(false);
