@@ -1,8 +1,8 @@
 import { IMetadata } from "@warden/adapters/test_suite_adapter";
 import { StopExecution } from "@warden/errors";
+import { formatter } from "@warden/helpers/terminal";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 
-import chalk from "chalk";
 import { oraPromise } from "ora";
 import { Page } from "puppeteer";
 
@@ -70,8 +70,8 @@ export class TestSuiteMetadata {
           return new TestSuiteMetadata(config, await page.evaluate(adapter.getMetadata));
         },
         {
-          text: chalk.white("Fetching test suite metadata"),
-          failText: (e) => chalk.red("Failed to fetch test suite metadata:", e.message),
+          text: formatter.info("Fetching test suite metadata"),
+          failText: (e) => formatter.error(`Failed to fetch test suite metadata: ${e.message}`),
         },
       );
     } catch (e) {

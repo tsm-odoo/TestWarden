@@ -1,6 +1,6 @@
+import { formatter } from "@warden/helpers/terminal";
 import { ExecutorStatistics } from "@warden/runner/executor";
 
-import chalk from "chalk";
 import cliProgress from "cli-progress";
 
 export class ProgressBar {
@@ -37,7 +37,7 @@ export class ProgressBar {
         {},
         {
           format: (options, params, payload) => {
-            options.format = chalk[this.textColor](
+            options.format = formatter[this.textColor](
               "[run.s: {runs} | t: {duration_formatted} | Σt: {sum} | min: {min} | med: {median} | max: {max}]",
             );
             return cliProgress.Format.Formatter(options, params, payload);
@@ -50,7 +50,7 @@ export class ProgressBar {
         {},
         {
           format: (options, params, payload) => {
-            options.format = chalk[this.barColor]("{bar} {value}/{total}");
+            options.format = formatter[this.barColor]("{bar} {value}/{total}");
             return cliProgress.Format.Formatter(options, params, payload);
           },
         },
@@ -61,7 +61,7 @@ export class ProgressBar {
         {},
         {
           format: (options, params, payload) => {
-            options.format = chalk[this.textColor](payload.currentTestName ?? "");
+            options.format = formatter[this.textColor](payload.currentTestName ?? "");
             return cliProgress.Format.Formatter(options, params, payload);
           },
         },
@@ -113,10 +113,10 @@ export class ProgressBar {
   }
 
   get textColor() {
-    return this.stopped ? "gray" : "white";
+    return this.stopped ? "disabled" : "info";
   }
 
   get barColor() {
-    return this.stopped ? "gray" : "cyan";
+    return this.stopped ? "disabled" : "cyan";
   }
 }

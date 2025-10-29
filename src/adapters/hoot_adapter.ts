@@ -16,7 +16,6 @@ export class HootAdapter extends TestSuiteAdapter {
   FAIL_SELECTOR = ".HootTestResult:has(.bg-fail)";
 
   async run(page: Page) {
-    await new Promise((res) => setTimeout(res, 500));
     await page.waitForSelector(">>> .HootButtons button[title='Run']");
     await page.click(">>> .HootButtons button[title='Run']");
   }

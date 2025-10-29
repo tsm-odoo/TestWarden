@@ -3,13 +3,11 @@ import { TestSuiteConfig } from "@warden/test_suite_config";
 import { TestSuiteMetadata } from "@warden/test_suite_metadata";
 import { Executor } from "@warden/runner/executor";
 
-import chalk from "chalk";
 import enquirer from "enquirer";
 import fs from "fs";
 import fsPromises from "fs/promises";
 import path from "path";
 import { oraPromise } from "ora";
-import { cleanup } from "@warden/browser.js";
 
 export class TestSuiteRunner {
   constructor(
@@ -78,12 +76,12 @@ export class TestSuiteRunner {
     // @ts-ignore
     const mode = await enquirer.select({
       name: "mode",
-      message: chalk.white("What are you looking for?"),
+      message: formatter.info("What are you looking for?"),
       choices: ["Test", "Suite"],
     });
     // @ts-ignore
     const name = await enquirer.autocomplete({
-      message: chalk.white(`Which ${mode.toLowerCase()} should I run?`),
+      message: formatter.info(`Which ${mode.toLowerCase()} should I run?`),
       choices: mode === this.config.RUN_TYPE.TEST ? this.metadata.testNames : this.metadata.suiteNames,
       limit: 5,
     });

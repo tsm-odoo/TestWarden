@@ -1,7 +1,7 @@
 import { StopExecution } from "@warden/errors";
+import { formatter } from "@warden/helpers/terminal";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 
-import chalk from "chalk";
 import { oraPromise } from "ora";
 import { Page } from "puppeteer";
 import { BehaviorSubject, first, firstValueFrom } from "rxjs";
@@ -31,9 +31,9 @@ export abstract class TestSuiteAdapter {
         throw new StopExecution();
       },
       {
-        text: chalk.white("Looking for test suite adapter"),
-        failText: chalk.red("No adapter were found"),
-        successText: (result) => chalk.white(`${result.name} adapter will be used`),
+        text: formatter.info("Looking for test suite adapter"),
+        failText: formatter.error("No adapter were found"),
+        successText: (result) => formatter.info(`${result.name} adapter will be used`),
       },
     );
   }

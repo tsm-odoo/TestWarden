@@ -9,19 +9,19 @@
     "_make-bundle": "rollup --config",
     "build": "rimraf build/* && rimraf release/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && rollup --config",
     "start": "node release/test-warden.cjs",
-    "dev": "rimraf build/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node build/index.js"
+    "dev": "rimraf build/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node --enable-source-maps build/index.js",
+    "devDebug": "rimraf build/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node --max-old-space-size=4096 --inspect-brk=9250 --enable-source-maps build/index.js",
+    "startDebug": "node --max-old-space-size=4096 --inspect-brk=9250 --enable-source-maps build/index.js"
   },
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",
     "commander": "^13.1.0",
     "enquirer": "^2.4.1",
     "ora": "^7.0.1",
     "puppeteer": "^22.12.0",
-    "puppeteer-interceptor": "^2.1.0",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {

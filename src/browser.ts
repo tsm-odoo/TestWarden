@@ -1,11 +1,10 @@
-import { Deferred, Mutex } from "@warden/helpers/misc.js";
-import { formatter } from "@warden/helpers/terminal.js";
+import { Deferred } from "@warden/helpers/misc";
+import { formatter } from "@warden/helpers/terminal";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 
 import { exec } from "child_process";
 import { oraPromise } from "ora";
 import puppeteer, { Browser, CDPSession, Page, Protocol, PuppeteerLaunchOptions } from "puppeteer";
-import { last } from "rxjs";
 import { promisify } from "util";
 
 const execPromise = promisify(exec);
@@ -94,7 +93,7 @@ export async function cleanup() {
     {
       text: formatter.info("Cleaning up browsers and network caches"),
       successText: formatter.info("Browsers and network caches cleaned up"),
-      failText: (e) => formatter.error("Failed to clean up browsers, network caches:", e.message),
+      failText: (e) => formatter.error(`Failed to clean up browsers, network caches: ${e.message}`),
     },
   );
 }

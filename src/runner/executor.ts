@@ -8,7 +8,6 @@ import { TestSuiteMetadata } from "@warden/test_suite_metadata";
 import { ProgressBar } from "@warden/runner/progress_bar";
 import { uuid } from "@warden/helpers/misc";
 
-import chalk from "chalk";
 import fs from "fs";
 import path from "path";
 import { Browser, Page } from "puppeteer";
@@ -141,7 +140,7 @@ export class Executor {
     }
     const splits = result.map((ids) => new ExecutorSplit(this.config, ids));
     await oraPromise(() => Promise.all(splits.map((split) => split.initalize())), {
-      text: chalk.white(`Initializing ${result.length} split.s`),
+      text: formatter.info(`Initializing ${result.length} split.s`),
     });
     return splits;
   }

@@ -1,26 +1,26 @@
 'use strict';
 
-var require$$0$6 = require('stream');
-var require$$0$4 = require('events');
-var require$$0$8 = require('http');
+var require$$0$5 = require('stream');
+var require$$0$3 = require('events');
+var require$$0$7 = require('http');
 var require$$2 = require('crypto');
-var os$2 = require('os');
-var require$$0$3 = require('tty');
 var process$5 = require('node:process');
-var os$3 = require('node:os');
-var tty$1 = require('node:tty');
-var require$$0$5 = require('assert');
+var os$1 = require('node:os');
+var tty = require('node:tty');
+var require$$0$4 = require('assert');
 var readline = require('node:readline');
-var require$$0$7 = require('buffer');
+var require$$0$6 = require('buffer');
 var require$$1 = require('util');
 var childProcess$1 = require('child_process');
 var require$$1$4 = require('fs/promises');
+var os$2 = require('os');
 var path$f = require('path');
 var fs$n = require('fs');
 var readline$1 = require('readline');
 var require$$1$1 = require('https');
 var require$$5 = require('url');
-var require$$0$9 = require('net');
+var require$$0$8 = require('net');
+var require$$0$9 = require('tty');
 var require$$1$2 = require('tls');
 var require$$3$1 = require('dns');
 var require$$0$a = require('constants');
@@ -35,1986 +35,45 @@ var require$$7 = require('inspector');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
 function _interopNamespaceDefault(e) {
-	var n = Object.create(null);
-	if (e) {
-		Object.keys(e).forEach(function (k) {
-			if (k !== 'default') {
-				var d = Object.getOwnPropertyDescriptor(e, k);
-				Object.defineProperty(n, k, d.get ? d : {
-					enumerable: true,
-					get: function () { return e[k]; }
-				});
-			}
-		});
-	}
-	n.default = e;
-	return Object.freeze(n);
+    var n = Object.create(null);
+    if (e) {
+        Object.keys(e).forEach(function (k) {
+            if (k !== 'default') {
+                var d = Object.getOwnPropertyDescriptor(e, k);
+                Object.defineProperty(n, k, d.get ? d : {
+                    enumerable: true,
+                    get: function () { return e[k]; }
+                });
+            }
+        });
+    }
+    n.default = e;
+    return Object.freeze(n);
 }
 
-var require$$0__namespace = /*#__PURE__*/_interopNamespaceDefault(require$$0$8);
+var require$$0__namespace = /*#__PURE__*/_interopNamespaceDefault(require$$0$7);
 var require$$1__namespace = /*#__PURE__*/_interopNamespaceDefault(require$$1$1);
 
 class StopExecution extends Error {
 }
 
-var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-function getDefaultExportFromCjs (x) {
-	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
-}
-
-function getAugmentedNamespace(n) {
-  if (n.__esModule) return n;
-  var f = n.default;
-	if (typeof f == "function") {
-		var a = function a () {
-			if (this instanceof a) {
-        return Reflect.construct(f, arguments, this.constructor);
-			}
-			return f.apply(this, arguments);
-		};
-		a.prototype = f.prototype;
-  } else a = {};
-  Object.defineProperty(a, '__esModule', {value: true});
-	Object.keys(n).forEach(function (k) {
-		var d = Object.getOwnPropertyDescriptor(n, k);
-		Object.defineProperty(a, k, d.get ? d : {
-			enumerable: true,
-			get: function () {
-				return n[k];
-			}
-		});
-	});
-	return a;
-}
-
-var ansiStyles$5 = {exports: {}};
-
-var colorName$2;
-var hasRequiredColorName$2;
-
-function requireColorName$2 () {
-	if (hasRequiredColorName$2) return colorName$2;
-	hasRequiredColorName$2 = 1;
-
-	colorName$2 = {
-		"aliceblue": [240, 248, 255],
-		"antiquewhite": [250, 235, 215],
-		"aqua": [0, 255, 255],
-		"aquamarine": [127, 255, 212],
-		"azure": [240, 255, 255],
-		"beige": [245, 245, 220],
-		"bisque": [255, 228, 196],
-		"black": [0, 0, 0],
-		"blanchedalmond": [255, 235, 205],
-		"blue": [0, 0, 255],
-		"blueviolet": [138, 43, 226],
-		"brown": [165, 42, 42],
-		"burlywood": [222, 184, 135],
-		"cadetblue": [95, 158, 160],
-		"chartreuse": [127, 255, 0],
-		"chocolate": [210, 105, 30],
-		"coral": [255, 127, 80],
-		"cornflowerblue": [100, 149, 237],
-		"cornsilk": [255, 248, 220],
-		"crimson": [220, 20, 60],
-		"cyan": [0, 255, 255],
-		"darkblue": [0, 0, 139],
-		"darkcyan": [0, 139, 139],
-		"darkgoldenrod": [184, 134, 11],
-		"darkgray": [169, 169, 169],
-		"darkgreen": [0, 100, 0],
-		"darkgrey": [169, 169, 169],
-		"darkkhaki": [189, 183, 107],
-		"darkmagenta": [139, 0, 139],
-		"darkolivegreen": [85, 107, 47],
-		"darkorange": [255, 140, 0],
-		"darkorchid": [153, 50, 204],
-		"darkred": [139, 0, 0],
-		"darksalmon": [233, 150, 122],
-		"darkseagreen": [143, 188, 143],
-		"darkslateblue": [72, 61, 139],
-		"darkslategray": [47, 79, 79],
-		"darkslategrey": [47, 79, 79],
-		"darkturquoise": [0, 206, 209],
-		"darkviolet": [148, 0, 211],
-		"deeppink": [255, 20, 147],
-		"deepskyblue": [0, 191, 255],
-		"dimgray": [105, 105, 105],
-		"dimgrey": [105, 105, 105],
-		"dodgerblue": [30, 144, 255],
-		"firebrick": [178, 34, 34],
-		"floralwhite": [255, 250, 240],
-		"forestgreen": [34, 139, 34],
-		"fuchsia": [255, 0, 255],
-		"gainsboro": [220, 220, 220],
-		"ghostwhite": [248, 248, 255],
-		"gold": [255, 215, 0],
-		"goldenrod": [218, 165, 32],
-		"gray": [128, 128, 128],
-		"green": [0, 128, 0],
-		"greenyellow": [173, 255, 47],
-		"grey": [128, 128, 128],
-		"honeydew": [240, 255, 240],
-		"hotpink": [255, 105, 180],
-		"indianred": [205, 92, 92],
-		"indigo": [75, 0, 130],
-		"ivory": [255, 255, 240],
-		"khaki": [240, 230, 140],
-		"lavender": [230, 230, 250],
-		"lavenderblush": [255, 240, 245],
-		"lawngreen": [124, 252, 0],
-		"lemonchiffon": [255, 250, 205],
-		"lightblue": [173, 216, 230],
-		"lightcoral": [240, 128, 128],
-		"lightcyan": [224, 255, 255],
-		"lightgoldenrodyellow": [250, 250, 210],
-		"lightgray": [211, 211, 211],
-		"lightgreen": [144, 238, 144],
-		"lightgrey": [211, 211, 211],
-		"lightpink": [255, 182, 193],
-		"lightsalmon": [255, 160, 122],
-		"lightseagreen": [32, 178, 170],
-		"lightskyblue": [135, 206, 250],
-		"lightslategray": [119, 136, 153],
-		"lightslategrey": [119, 136, 153],
-		"lightsteelblue": [176, 196, 222],
-		"lightyellow": [255, 255, 224],
-		"lime": [0, 255, 0],
-		"limegreen": [50, 205, 50],
-		"linen": [250, 240, 230],
-		"magenta": [255, 0, 255],
-		"maroon": [128, 0, 0],
-		"mediumaquamarine": [102, 205, 170],
-		"mediumblue": [0, 0, 205],
-		"mediumorchid": [186, 85, 211],
-		"mediumpurple": [147, 112, 219],
-		"mediumseagreen": [60, 179, 113],
-		"mediumslateblue": [123, 104, 238],
-		"mediumspringgreen": [0, 250, 154],
-		"mediumturquoise": [72, 209, 204],
-		"mediumvioletred": [199, 21, 133],
-		"midnightblue": [25, 25, 112],
-		"mintcream": [245, 255, 250],
-		"mistyrose": [255, 228, 225],
-		"moccasin": [255, 228, 181],
-		"navajowhite": [255, 222, 173],
-		"navy": [0, 0, 128],
-		"oldlace": [253, 245, 230],
-		"olive": [128, 128, 0],
-		"olivedrab": [107, 142, 35],
-		"orange": [255, 165, 0],
-		"orangered": [255, 69, 0],
-		"orchid": [218, 112, 214],
-		"palegoldenrod": [238, 232, 170],
-		"palegreen": [152, 251, 152],
-		"paleturquoise": [175, 238, 238],
-		"palevioletred": [219, 112, 147],
-		"papayawhip": [255, 239, 213],
-		"peachpuff": [255, 218, 185],
-		"peru": [205, 133, 63],
-		"pink": [255, 192, 203],
-		"plum": [221, 160, 221],
-		"powderblue": [176, 224, 230],
-		"purple": [128, 0, 128],
-		"rebeccapurple": [102, 51, 153],
-		"red": [255, 0, 0],
-		"rosybrown": [188, 143, 143],
-		"royalblue": [65, 105, 225],
-		"saddlebrown": [139, 69, 19],
-		"salmon": [250, 128, 114],
-		"sandybrown": [244, 164, 96],
-		"seagreen": [46, 139, 87],
-		"seashell": [255, 245, 238],
-		"sienna": [160, 82, 45],
-		"silver": [192, 192, 192],
-		"skyblue": [135, 206, 235],
-		"slateblue": [106, 90, 205],
-		"slategray": [112, 128, 144],
-		"slategrey": [112, 128, 144],
-		"snow": [255, 250, 250],
-		"springgreen": [0, 255, 127],
-		"steelblue": [70, 130, 180],
-		"tan": [210, 180, 140],
-		"teal": [0, 128, 128],
-		"thistle": [216, 191, 216],
-		"tomato": [255, 99, 71],
-		"turquoise": [64, 224, 208],
-		"violet": [238, 130, 238],
-		"wheat": [245, 222, 179],
-		"white": [255, 255, 255],
-		"whitesmoke": [245, 245, 245],
-		"yellow": [255, 255, 0],
-		"yellowgreen": [154, 205, 50]
-	};
-	return colorName$2;
-}
-
-/* MIT license */
-
-var conversions$2;
-var hasRequiredConversions$2;
-
-function requireConversions$2 () {
-	if (hasRequiredConversions$2) return conversions$2;
-	hasRequiredConversions$2 = 1;
-	/* eslint-disable no-mixed-operators */
-	const cssKeywords = requireColorName$2();
-
-	// NOTE: conversions should only return primitive values (i.e. arrays, or
-	//       values that give correct `typeof` results).
-	//       do not use box values types (i.e. Number(), String(), etc.)
-
-	const reverseKeywords = {};
-	for (const key of Object.keys(cssKeywords)) {
-		reverseKeywords[cssKeywords[key]] = key;
-	}
-
-	const convert = {
-		rgb: {channels: 3, labels: 'rgb'},
-		hsl: {channels: 3, labels: 'hsl'},
-		hsv: {channels: 3, labels: 'hsv'},
-		hwb: {channels: 3, labels: 'hwb'},
-		cmyk: {channels: 4, labels: 'cmyk'},
-		xyz: {channels: 3, labels: 'xyz'},
-		lab: {channels: 3, labels: 'lab'},
-		lch: {channels: 3, labels: 'lch'},
-		hex: {channels: 1, labels: ['hex']},
-		keyword: {channels: 1, labels: ['keyword']},
-		ansi16: {channels: 1, labels: ['ansi16']},
-		ansi256: {channels: 1, labels: ['ansi256']},
-		hcg: {channels: 3, labels: ['h', 'c', 'g']},
-		apple: {channels: 3, labels: ['r16', 'g16', 'b16']},
-		gray: {channels: 1, labels: ['gray']}
-	};
-
-	conversions$2 = convert;
-
-	// Hide .channels and .labels properties
-	for (const model of Object.keys(convert)) {
-		if (!('channels' in convert[model])) {
-			throw new Error('missing channels property: ' + model);
-		}
-
-		if (!('labels' in convert[model])) {
-			throw new Error('missing channel labels property: ' + model);
-		}
-
-		if (convert[model].labels.length !== convert[model].channels) {
-			throw new Error('channel and label counts mismatch: ' + model);
-		}
-
-		const {channels, labels} = convert[model];
-		delete convert[model].channels;
-		delete convert[model].labels;
-		Object.defineProperty(convert[model], 'channels', {value: channels});
-		Object.defineProperty(convert[model], 'labels', {value: labels});
-	}
-
-	convert.rgb.hsl = function (rgb) {
-		const r = rgb[0] / 255;
-		const g = rgb[1] / 255;
-		const b = rgb[2] / 255;
-		const min = Math.min(r, g, b);
-		const max = Math.max(r, g, b);
-		const delta = max - min;
-		let h;
-		let s;
-
-		if (max === min) {
-			h = 0;
-		} else if (r === max) {
-			h = (g - b) / delta;
-		} else if (g === max) {
-			h = 2 + (b - r) / delta;
-		} else if (b === max) {
-			h = 4 + (r - g) / delta;
-		}
-
-		h = Math.min(h * 60, 360);
-
-		if (h < 0) {
-			h += 360;
-		}
-
-		const l = (min + max) / 2;
-
-		if (max === min) {
-			s = 0;
-		} else if (l <= 0.5) {
-			s = delta / (max + min);
-		} else {
-			s = delta / (2 - max - min);
-		}
-
-		return [h, s * 100, l * 100];
-	};
-
-	convert.rgb.hsv = function (rgb) {
-		let rdif;
-		let gdif;
-		let bdif;
-		let h;
-		let s;
-
-		const r = rgb[0] / 255;
-		const g = rgb[1] / 255;
-		const b = rgb[2] / 255;
-		const v = Math.max(r, g, b);
-		const diff = v - Math.min(r, g, b);
-		const diffc = function (c) {
-			return (v - c) / 6 / diff + 1 / 2;
-		};
-
-		if (diff === 0) {
-			h = 0;
-			s = 0;
-		} else {
-			s = diff / v;
-			rdif = diffc(r);
-			gdif = diffc(g);
-			bdif = diffc(b);
-
-			if (r === v) {
-				h = bdif - gdif;
-			} else if (g === v) {
-				h = (1 / 3) + rdif - bdif;
-			} else if (b === v) {
-				h = (2 / 3) + gdif - rdif;
-			}
-
-			if (h < 0) {
-				h += 1;
-			} else if (h > 1) {
-				h -= 1;
-			}
-		}
-
-		return [
-			h * 360,
-			s * 100,
-			v * 100
-		];
-	};
-
-	convert.rgb.hwb = function (rgb) {
-		const r = rgb[0];
-		const g = rgb[1];
-		let b = rgb[2];
-		const h = convert.rgb.hsl(rgb)[0];
-		const w = 1 / 255 * Math.min(r, Math.min(g, b));
-
-		b = 1 - 1 / 255 * Math.max(r, Math.max(g, b));
-
-		return [h, w * 100, b * 100];
-	};
-
-	convert.rgb.cmyk = function (rgb) {
-		const r = rgb[0] / 255;
-		const g = rgb[1] / 255;
-		const b = rgb[2] / 255;
-
-		const k = Math.min(1 - r, 1 - g, 1 - b);
-		const c = (1 - r - k) / (1 - k) || 0;
-		const m = (1 - g - k) / (1 - k) || 0;
-		const y = (1 - b - k) / (1 - k) || 0;
-
-		return [c * 100, m * 100, y * 100, k * 100];
-	};
-
-	function comparativeDistance(x, y) {
-		/*
-			See https://en.m.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance
-		*/
-		return (
-			((x[0] - y[0]) ** 2) +
-			((x[1] - y[1]) ** 2) +
-			((x[2] - y[2]) ** 2)
-		);
-	}
-
-	convert.rgb.keyword = function (rgb) {
-		const reversed = reverseKeywords[rgb];
-		if (reversed) {
-			return reversed;
-		}
-
-		let currentClosestDistance = Infinity;
-		let currentClosestKeyword;
-
-		for (const keyword of Object.keys(cssKeywords)) {
-			const value = cssKeywords[keyword];
-
-			// Compute comparative distance
-			const distance = comparativeDistance(rgb, value);
-
-			// Check if its less, if so set as closest
-			if (distance < currentClosestDistance) {
-				currentClosestDistance = distance;
-				currentClosestKeyword = keyword;
-			}
-		}
-
-		return currentClosestKeyword;
-	};
-
-	convert.keyword.rgb = function (keyword) {
-		return cssKeywords[keyword];
-	};
-
-	convert.rgb.xyz = function (rgb) {
-		let r = rgb[0] / 255;
-		let g = rgb[1] / 255;
-		let b = rgb[2] / 255;
-
-		// Assume sRGB
-		r = r > 0.04045 ? (((r + 0.055) / 1.055) ** 2.4) : (r / 12.92);
-		g = g > 0.04045 ? (((g + 0.055) / 1.055) ** 2.4) : (g / 12.92);
-		b = b > 0.04045 ? (((b + 0.055) / 1.055) ** 2.4) : (b / 12.92);
-
-		const x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
-		const y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
-		const z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
-
-		return [x * 100, y * 100, z * 100];
-	};
-
-	convert.rgb.lab = function (rgb) {
-		const xyz = convert.rgb.xyz(rgb);
-		let x = xyz[0];
-		let y = xyz[1];
-		let z = xyz[2];
-
-		x /= 95.047;
-		y /= 100;
-		z /= 108.883;
-
-		x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
-		y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
-		z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
-
-		const l = (116 * y) - 16;
-		const a = 500 * (x - y);
-		const b = 200 * (y - z);
-
-		return [l, a, b];
-	};
-
-	convert.hsl.rgb = function (hsl) {
-		const h = hsl[0] / 360;
-		const s = hsl[1] / 100;
-		const l = hsl[2] / 100;
-		let t2;
-		let t3;
-		let val;
-
-		if (s === 0) {
-			val = l * 255;
-			return [val, val, val];
-		}
-
-		if (l < 0.5) {
-			t2 = l * (1 + s);
-		} else {
-			t2 = l + s - l * s;
-		}
-
-		const t1 = 2 * l - t2;
-
-		const rgb = [0, 0, 0];
-		for (let i = 0; i < 3; i++) {
-			t3 = h + 1 / 3 * -(i - 1);
-			if (t3 < 0) {
-				t3++;
-			}
-
-			if (t3 > 1) {
-				t3--;
-			}
-
-			if (6 * t3 < 1) {
-				val = t1 + (t2 - t1) * 6 * t3;
-			} else if (2 * t3 < 1) {
-				val = t2;
-			} else if (3 * t3 < 2) {
-				val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
-			} else {
-				val = t1;
-			}
-
-			rgb[i] = val * 255;
-		}
-
-		return rgb;
-	};
-
-	convert.hsl.hsv = function (hsl) {
-		const h = hsl[0];
-		let s = hsl[1] / 100;
-		let l = hsl[2] / 100;
-		let smin = s;
-		const lmin = Math.max(l, 0.01);
-
-		l *= 2;
-		s *= (l <= 1) ? l : 2 - l;
-		smin *= lmin <= 1 ? lmin : 2 - lmin;
-		const v = (l + s) / 2;
-		const sv = l === 0 ? (2 * smin) / (lmin + smin) : (2 * s) / (l + s);
-
-		return [h, sv * 100, v * 100];
-	};
-
-	convert.hsv.rgb = function (hsv) {
-		const h = hsv[0] / 60;
-		const s = hsv[1] / 100;
-		let v = hsv[2] / 100;
-		const hi = Math.floor(h) % 6;
-
-		const f = h - Math.floor(h);
-		const p = 255 * v * (1 - s);
-		const q = 255 * v * (1 - (s * f));
-		const t = 255 * v * (1 - (s * (1 - f)));
-		v *= 255;
-
-		switch (hi) {
-			case 0:
-				return [v, t, p];
-			case 1:
-				return [q, v, p];
-			case 2:
-				return [p, v, t];
-			case 3:
-				return [p, q, v];
-			case 4:
-				return [t, p, v];
-			case 5:
-				return [v, p, q];
-		}
-	};
-
-	convert.hsv.hsl = function (hsv) {
-		const h = hsv[0];
-		const s = hsv[1] / 100;
-		const v = hsv[2] / 100;
-		const vmin = Math.max(v, 0.01);
-		let sl;
-		let l;
-
-		l = (2 - s) * v;
-		const lmin = (2 - s) * vmin;
-		sl = s * vmin;
-		sl /= (lmin <= 1) ? lmin : 2 - lmin;
-		sl = sl || 0;
-		l /= 2;
-
-		return [h, sl * 100, l * 100];
-	};
-
-	// http://dev.w3.org/csswg/css-color/#hwb-to-rgb
-	convert.hwb.rgb = function (hwb) {
-		const h = hwb[0] / 360;
-		let wh = hwb[1] / 100;
-		let bl = hwb[2] / 100;
-		const ratio = wh + bl;
-		let f;
-
-		// Wh + bl cant be > 1
-		if (ratio > 1) {
-			wh /= ratio;
-			bl /= ratio;
-		}
-
-		const i = Math.floor(6 * h);
-		const v = 1 - bl;
-		f = 6 * h - i;
-
-		if ((i & 0x01) !== 0) {
-			f = 1 - f;
-		}
-
-		const n = wh + f * (v - wh); // Linear interpolation
-
-		let r;
-		let g;
-		let b;
-		/* eslint-disable max-statements-per-line,no-multi-spaces */
-		switch (i) {
-			default:
-			case 6:
-			case 0: r = v;  g = n;  b = wh; break;
-			case 1: r = n;  g = v;  b = wh; break;
-			case 2: r = wh; g = v;  b = n; break;
-			case 3: r = wh; g = n;  b = v; break;
-			case 4: r = n;  g = wh; b = v; break;
-			case 5: r = v;  g = wh; b = n; break;
-		}
-		/* eslint-enable max-statements-per-line,no-multi-spaces */
-
-		return [r * 255, g * 255, b * 255];
-	};
-
-	convert.cmyk.rgb = function (cmyk) {
-		const c = cmyk[0] / 100;
-		const m = cmyk[1] / 100;
-		const y = cmyk[2] / 100;
-		const k = cmyk[3] / 100;
-
-		const r = 1 - Math.min(1, c * (1 - k) + k);
-		const g = 1 - Math.min(1, m * (1 - k) + k);
-		const b = 1 - Math.min(1, y * (1 - k) + k);
-
-		return [r * 255, g * 255, b * 255];
-	};
-
-	convert.xyz.rgb = function (xyz) {
-		const x = xyz[0] / 100;
-		const y = xyz[1] / 100;
-		const z = xyz[2] / 100;
-		let r;
-		let g;
-		let b;
-
-		r = (x * 3.2406) + (y * -1.5372) + (z * -0.4986);
-		g = (x * -0.9689) + (y * 1.8758) + (z * 0.0415);
-		b = (x * 0.0557) + (y * -0.2040) + (z * 1.0570);
-
-		// Assume sRGB
-		r = r > 0.0031308
-			? ((1.055 * (r ** (1.0 / 2.4))) - 0.055)
-			: r * 12.92;
-
-		g = g > 0.0031308
-			? ((1.055 * (g ** (1.0 / 2.4))) - 0.055)
-			: g * 12.92;
-
-		b = b > 0.0031308
-			? ((1.055 * (b ** (1.0 / 2.4))) - 0.055)
-			: b * 12.92;
-
-		r = Math.min(Math.max(0, r), 1);
-		g = Math.min(Math.max(0, g), 1);
-		b = Math.min(Math.max(0, b), 1);
-
-		return [r * 255, g * 255, b * 255];
-	};
-
-	convert.xyz.lab = function (xyz) {
-		let x = xyz[0];
-		let y = xyz[1];
-		let z = xyz[2];
-
-		x /= 95.047;
-		y /= 100;
-		z /= 108.883;
-
-		x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
-		y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
-		z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
-
-		const l = (116 * y) - 16;
-		const a = 500 * (x - y);
-		const b = 200 * (y - z);
-
-		return [l, a, b];
-	};
-
-	convert.lab.xyz = function (lab) {
-		const l = lab[0];
-		const a = lab[1];
-		const b = lab[2];
-		let x;
-		let y;
-		let z;
-
-		y = (l + 16) / 116;
-		x = a / 500 + y;
-		z = y - b / 200;
-
-		const y2 = y ** 3;
-		const x2 = x ** 3;
-		const z2 = z ** 3;
-		y = y2 > 0.008856 ? y2 : (y - 16 / 116) / 7.787;
-		x = x2 > 0.008856 ? x2 : (x - 16 / 116) / 7.787;
-		z = z2 > 0.008856 ? z2 : (z - 16 / 116) / 7.787;
-
-		x *= 95.047;
-		y *= 100;
-		z *= 108.883;
-
-		return [x, y, z];
-	};
-
-	convert.lab.lch = function (lab) {
-		const l = lab[0];
-		const a = lab[1];
-		const b = lab[2];
-		let h;
-
-		const hr = Math.atan2(b, a);
-		h = hr * 360 / 2 / Math.PI;
-
-		if (h < 0) {
-			h += 360;
-		}
-
-		const c = Math.sqrt(a * a + b * b);
-
-		return [l, c, h];
-	};
-
-	convert.lch.lab = function (lch) {
-		const l = lch[0];
-		const c = lch[1];
-		const h = lch[2];
-
-		const hr = h / 360 * 2 * Math.PI;
-		const a = c * Math.cos(hr);
-		const b = c * Math.sin(hr);
-
-		return [l, a, b];
-	};
-
-	convert.rgb.ansi16 = function (args, saturation = null) {
-		const [r, g, b] = args;
-		let value = saturation === null ? convert.rgb.hsv(args)[2] : saturation; // Hsv -> ansi16 optimization
-
-		value = Math.round(value / 50);
-
-		if (value === 0) {
-			return 30;
-		}
-
-		let ansi = 30
-			+ ((Math.round(b / 255) << 2)
-			| (Math.round(g / 255) << 1)
-			| Math.round(r / 255));
-
-		if (value === 2) {
-			ansi += 60;
-		}
-
-		return ansi;
-	};
-
-	convert.hsv.ansi16 = function (args) {
-		// Optimization here; we already know the value and don't need to get
-		// it converted for us.
-		return convert.rgb.ansi16(convert.hsv.rgb(args), args[2]);
-	};
-
-	convert.rgb.ansi256 = function (args) {
-		const r = args[0];
-		const g = args[1];
-		const b = args[2];
-
-		// We use the extended greyscale palette here, with the exception of
-		// black and white. normal palette only has 4 greyscale shades.
-		if (r === g && g === b) {
-			if (r < 8) {
-				return 16;
-			}
-
-			if (r > 248) {
-				return 231;
-			}
-
-			return Math.round(((r - 8) / 247) * 24) + 232;
-		}
-
-		const ansi = 16
-			+ (36 * Math.round(r / 255 * 5))
-			+ (6 * Math.round(g / 255 * 5))
-			+ Math.round(b / 255 * 5);
-
-		return ansi;
-	};
-
-	convert.ansi16.rgb = function (args) {
-		let color = args % 10;
-
-		// Handle greyscale
-		if (color === 0 || color === 7) {
-			if (args > 50) {
-				color += 3.5;
-			}
-
-			color = color / 10.5 * 255;
-
-			return [color, color, color];
-		}
-
-		const mult = (~~(args > 50) + 1) * 0.5;
-		const r = ((color & 1) * mult) * 255;
-		const g = (((color >> 1) & 1) * mult) * 255;
-		const b = (((color >> 2) & 1) * mult) * 255;
-
-		return [r, g, b];
-	};
-
-	convert.ansi256.rgb = function (args) {
-		// Handle greyscale
-		if (args >= 232) {
-			const c = (args - 232) * 10 + 8;
-			return [c, c, c];
-		}
-
-		args -= 16;
-
-		let rem;
-		const r = Math.floor(args / 36) / 5 * 255;
-		const g = Math.floor((rem = args % 36) / 6) / 5 * 255;
-		const b = (rem % 6) / 5 * 255;
-
-		return [r, g, b];
-	};
-
-	convert.rgb.hex = function (args) {
-		const integer = ((Math.round(args[0]) & 0xFF) << 16)
-			+ ((Math.round(args[1]) & 0xFF) << 8)
-			+ (Math.round(args[2]) & 0xFF);
-
-		const string = integer.toString(16).toUpperCase();
-		return '000000'.substring(string.length) + string;
-	};
-
-	convert.hex.rgb = function (args) {
-		const match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i);
-		if (!match) {
-			return [0, 0, 0];
-		}
-
-		let colorString = match[0];
-
-		if (match[0].length === 3) {
-			colorString = colorString.split('').map(char => {
-				return char + char;
-			}).join('');
-		}
-
-		const integer = parseInt(colorString, 16);
-		const r = (integer >> 16) & 0xFF;
-		const g = (integer >> 8) & 0xFF;
-		const b = integer & 0xFF;
-
-		return [r, g, b];
-	};
-
-	convert.rgb.hcg = function (rgb) {
-		const r = rgb[0] / 255;
-		const g = rgb[1] / 255;
-		const b = rgb[2] / 255;
-		const max = Math.max(Math.max(r, g), b);
-		const min = Math.min(Math.min(r, g), b);
-		const chroma = (max - min);
-		let grayscale;
-		let hue;
-
-		if (chroma < 1) {
-			grayscale = min / (1 - chroma);
-		} else {
-			grayscale = 0;
-		}
-
-		if (chroma <= 0) {
-			hue = 0;
-		} else
-		if (max === r) {
-			hue = ((g - b) / chroma) % 6;
-		} else
-		if (max === g) {
-			hue = 2 + (b - r) / chroma;
-		} else {
-			hue = 4 + (r - g) / chroma;
-		}
-
-		hue /= 6;
-		hue %= 1;
-
-		return [hue * 360, chroma * 100, grayscale * 100];
-	};
-
-	convert.hsl.hcg = function (hsl) {
-		const s = hsl[1] / 100;
-		const l = hsl[2] / 100;
-
-		const c = l < 0.5 ? (2.0 * s * l) : (2.0 * s * (1.0 - l));
-
-		let f = 0;
-		if (c < 1.0) {
-			f = (l - 0.5 * c) / (1.0 - c);
-		}
-
-		return [hsl[0], c * 100, f * 100];
-	};
-
-	convert.hsv.hcg = function (hsv) {
-		const s = hsv[1] / 100;
-		const v = hsv[2] / 100;
-
-		const c = s * v;
-		let f = 0;
-
-		if (c < 1.0) {
-			f = (v - c) / (1 - c);
-		}
-
-		return [hsv[0], c * 100, f * 100];
-	};
-
-	convert.hcg.rgb = function (hcg) {
-		const h = hcg[0] / 360;
-		const c = hcg[1] / 100;
-		const g = hcg[2] / 100;
-
-		if (c === 0.0) {
-			return [g * 255, g * 255, g * 255];
-		}
-
-		const pure = [0, 0, 0];
-		const hi = (h % 1) * 6;
-		const v = hi % 1;
-		const w = 1 - v;
-		let mg = 0;
-
-		/* eslint-disable max-statements-per-line */
-		switch (Math.floor(hi)) {
-			case 0:
-				pure[0] = 1; pure[1] = v; pure[2] = 0; break;
-			case 1:
-				pure[0] = w; pure[1] = 1; pure[2] = 0; break;
-			case 2:
-				pure[0] = 0; pure[1] = 1; pure[2] = v; break;
-			case 3:
-				pure[0] = 0; pure[1] = w; pure[2] = 1; break;
-			case 4:
-				pure[0] = v; pure[1] = 0; pure[2] = 1; break;
-			default:
-				pure[0] = 1; pure[1] = 0; pure[2] = w;
-		}
-		/* eslint-enable max-statements-per-line */
-
-		mg = (1.0 - c) * g;
-
-		return [
-			(c * pure[0] + mg) * 255,
-			(c * pure[1] + mg) * 255,
-			(c * pure[2] + mg) * 255
-		];
-	};
-
-	convert.hcg.hsv = function (hcg) {
-		const c = hcg[1] / 100;
-		const g = hcg[2] / 100;
-
-		const v = c + g * (1.0 - c);
-		let f = 0;
-
-		if (v > 0.0) {
-			f = c / v;
-		}
-
-		return [hcg[0], f * 100, v * 100];
-	};
-
-	convert.hcg.hsl = function (hcg) {
-		const c = hcg[1] / 100;
-		const g = hcg[2] / 100;
-
-		const l = g * (1.0 - c) + 0.5 * c;
-		let s = 0;
-
-		if (l > 0.0 && l < 0.5) {
-			s = c / (2 * l);
-		} else
-		if (l >= 0.5 && l < 1.0) {
-			s = c / (2 * (1 - l));
-		}
-
-		return [hcg[0], s * 100, l * 100];
-	};
-
-	convert.hcg.hwb = function (hcg) {
-		const c = hcg[1] / 100;
-		const g = hcg[2] / 100;
-		const v = c + g * (1.0 - c);
-		return [hcg[0], (v - c) * 100, (1 - v) * 100];
-	};
-
-	convert.hwb.hcg = function (hwb) {
-		const w = hwb[1] / 100;
-		const b = hwb[2] / 100;
-		const v = 1 - b;
-		const c = v - w;
-		let g = 0;
-
-		if (c < 1) {
-			g = (v - c) / (1 - c);
-		}
-
-		return [hwb[0], c * 100, g * 100];
-	};
-
-	convert.apple.rgb = function (apple) {
-		return [(apple[0] / 65535) * 255, (apple[1] / 65535) * 255, (apple[2] / 65535) * 255];
-	};
-
-	convert.rgb.apple = function (rgb) {
-		return [(rgb[0] / 255) * 65535, (rgb[1] / 255) * 65535, (rgb[2] / 255) * 65535];
-	};
-
-	convert.gray.rgb = function (args) {
-		return [args[0] / 100 * 255, args[0] / 100 * 255, args[0] / 100 * 255];
-	};
-
-	convert.gray.hsl = function (args) {
-		return [0, 0, args[0]];
-	};
-
-	convert.gray.hsv = convert.gray.hsl;
-
-	convert.gray.hwb = function (gray) {
-		return [0, 100, gray[0]];
-	};
-
-	convert.gray.cmyk = function (gray) {
-		return [0, 0, 0, gray[0]];
-	};
-
-	convert.gray.lab = function (gray) {
-		return [gray[0], 0, 0];
-	};
-
-	convert.gray.hex = function (gray) {
-		const val = Math.round(gray[0] / 100 * 255) & 0xFF;
-		const integer = (val << 16) + (val << 8) + val;
-
-		const string = integer.toString(16).toUpperCase();
-		return '000000'.substring(string.length) + string;
-	};
-
-	convert.rgb.gray = function (rgb) {
-		const val = (rgb[0] + rgb[1] + rgb[2]) / 3;
-		return [val / 255 * 100];
-	};
-	return conversions$2;
-}
-
-var route$2;
-var hasRequiredRoute$2;
-
-function requireRoute$2 () {
-	if (hasRequiredRoute$2) return route$2;
-	hasRequiredRoute$2 = 1;
-	const conversions = requireConversions$2();
-
-	/*
-		This function routes a model to all other models.
-
-		all functions that are routed have a property `.conversion` attached
-		to the returned synthetic function. This property is an array
-		of strings, each with the steps in between the 'from' and 'to'
-		color models (inclusive).
-
-		conversions that are not possible simply are not included.
-	*/
-
-	function buildGraph() {
-		const graph = {};
-		// https://jsperf.com/object-keys-vs-for-in-with-closure/3
-		const models = Object.keys(conversions);
-
-		for (let len = models.length, i = 0; i < len; i++) {
-			graph[models[i]] = {
-				// http://jsperf.com/1-vs-infinity
-				// micro-opt, but this is simple.
-				distance: -1,
-				parent: null
-			};
-		}
-
-		return graph;
-	}
-
-	// https://en.wikipedia.org/wiki/Breadth-first_search
-	function deriveBFS(fromModel) {
-		const graph = buildGraph();
-		const queue = [fromModel]; // Unshift -> queue -> pop
-
-		graph[fromModel].distance = 0;
-
-		while (queue.length) {
-			const current = queue.pop();
-			const adjacents = Object.keys(conversions[current]);
-
-			for (let len = adjacents.length, i = 0; i < len; i++) {
-				const adjacent = adjacents[i];
-				const node = graph[adjacent];
-
-				if (node.distance === -1) {
-					node.distance = graph[current].distance + 1;
-					node.parent = current;
-					queue.unshift(adjacent);
-				}
-			}
-		}
-
-		return graph;
-	}
-
-	function link(from, to) {
-		return function (args) {
-			return to(from(args));
-		};
-	}
-
-	function wrapConversion(toModel, graph) {
-		const path = [graph[toModel].parent, toModel];
-		let fn = conversions[graph[toModel].parent][toModel];
-
-		let cur = graph[toModel].parent;
-		while (graph[cur].parent) {
-			path.unshift(graph[cur].parent);
-			fn = link(conversions[graph[cur].parent][cur], fn);
-			cur = graph[cur].parent;
-		}
-
-		fn.conversion = path;
-		return fn;
-	}
-
-	route$2 = function (fromModel) {
-		const graph = deriveBFS(fromModel);
-		const conversion = {};
-
-		const models = Object.keys(graph);
-		for (let len = models.length, i = 0; i < len; i++) {
-			const toModel = models[i];
-			const node = graph[toModel];
-
-			if (node.parent === null) {
-				// No possible conversion, or this node is the source model.
-				continue;
-			}
-
-			conversion[toModel] = wrapConversion(toModel, graph);
-		}
-
-		return conversion;
-	};
-	return route$2;
-}
-
-var colorConvert$2;
-var hasRequiredColorConvert$2;
-
-function requireColorConvert$2 () {
-	if (hasRequiredColorConvert$2) return colorConvert$2;
-	hasRequiredColorConvert$2 = 1;
-	const conversions = requireConversions$2();
-	const route = requireRoute$2();
-
-	const convert = {};
-
-	const models = Object.keys(conversions);
-
-	function wrapRaw(fn) {
-		const wrappedFn = function (...args) {
-			const arg0 = args[0];
-			if (arg0 === undefined || arg0 === null) {
-				return arg0;
-			}
-
-			if (arg0.length > 1) {
-				args = arg0;
-			}
-
-			return fn(args);
-		};
-
-		// Preserve .conversion property if there is one
-		if ('conversion' in fn) {
-			wrappedFn.conversion = fn.conversion;
-		}
-
-		return wrappedFn;
-	}
-
-	function wrapRounded(fn) {
-		const wrappedFn = function (...args) {
-			const arg0 = args[0];
-
-			if (arg0 === undefined || arg0 === null) {
-				return arg0;
-			}
-
-			if (arg0.length > 1) {
-				args = arg0;
-			}
-
-			const result = fn(args);
-
-			// We're assuming the result is an array here.
-			// see notice in conversions.js; don't use box types
-			// in conversion functions.
-			if (typeof result === 'object') {
-				for (let len = result.length, i = 0; i < len; i++) {
-					result[i] = Math.round(result[i]);
-				}
-			}
-
-			return result;
-		};
-
-		// Preserve .conversion property if there is one
-		if ('conversion' in fn) {
-			wrappedFn.conversion = fn.conversion;
-		}
-
-		return wrappedFn;
-	}
-
-	models.forEach(fromModel => {
-		convert[fromModel] = {};
-
-		Object.defineProperty(convert[fromModel], 'channels', {value: conversions[fromModel].channels});
-		Object.defineProperty(convert[fromModel], 'labels', {value: conversions[fromModel].labels});
-
-		const routes = route(fromModel);
-		const routeModels = Object.keys(routes);
-
-		routeModels.forEach(toModel => {
-			const fn = routes[toModel];
-
-			convert[fromModel][toModel] = wrapRounded(fn);
-			convert[fromModel][toModel].raw = wrapRaw(fn);
-		});
-	});
-
-	colorConvert$2 = convert;
-	return colorConvert$2;
-}
-
-ansiStyles$5.exports;
-
-(function (module) {
-
-	const wrapAnsi16 = (fn, offset) => (...args) => {
-		const code = fn(...args);
-		return `\u001B[${code + offset}m`;
-	};
-
-	const wrapAnsi256 = (fn, offset) => (...args) => {
-		const code = fn(...args);
-		return `\u001B[${38 + offset};5;${code}m`;
-	};
-
-	const wrapAnsi16m = (fn, offset) => (...args) => {
-		const rgb = fn(...args);
-		return `\u001B[${38 + offset};2;${rgb[0]};${rgb[1]};${rgb[2]}m`;
-	};
-
-	const ansi2ansi = n => n;
-	const rgb2rgb = (r, g, b) => [r, g, b];
-
-	const setLazyProperty = (object, property, get) => {
-		Object.defineProperty(object, property, {
-			get: () => {
-				const value = get();
-
-				Object.defineProperty(object, property, {
-					value,
-					enumerable: true,
-					configurable: true
-				});
-
-				return value;
-			},
-			enumerable: true,
-			configurable: true
-		});
-	};
-
-	/** @type {typeof import('color-convert')} */
-	let colorConvert;
-	const makeDynamicStyles = (wrap, targetSpace, identity, isBackground) => {
-		if (colorConvert === undefined) {
-			colorConvert = requireColorConvert$2();
-		}
-
-		const offset = isBackground ? 10 : 0;
-		const styles = {};
-
-		for (const [sourceSpace, suite] of Object.entries(colorConvert)) {
-			const name = sourceSpace === 'ansi16' ? 'ansi' : sourceSpace;
-			if (sourceSpace === targetSpace) {
-				styles[name] = wrap(identity, offset);
-			} else if (typeof suite === 'object') {
-				styles[name] = wrap(suite[targetSpace], offset);
-			}
-		}
-
-		return styles;
-	};
-
-	function assembleStyles() {
-		const codes = new Map();
-		const styles = {
-			modifier: {
-				reset: [0, 0],
-				// 21 isn't widely supported and 22 does the same thing
-				bold: [1, 22],
-				dim: [2, 22],
-				italic: [3, 23],
-				underline: [4, 24],
-				inverse: [7, 27],
-				hidden: [8, 28],
-				strikethrough: [9, 29]
-			},
-			color: {
-				black: [30, 39],
-				red: [31, 39],
-				green: [32, 39],
-				yellow: [33, 39],
-				blue: [34, 39],
-				magenta: [35, 39],
-				cyan: [36, 39],
-				white: [37, 39],
-
-				// Bright color
-				blackBright: [90, 39],
-				redBright: [91, 39],
-				greenBright: [92, 39],
-				yellowBright: [93, 39],
-				blueBright: [94, 39],
-				magentaBright: [95, 39],
-				cyanBright: [96, 39],
-				whiteBright: [97, 39]
-			},
-			bgColor: {
-				bgBlack: [40, 49],
-				bgRed: [41, 49],
-				bgGreen: [42, 49],
-				bgYellow: [43, 49],
-				bgBlue: [44, 49],
-				bgMagenta: [45, 49],
-				bgCyan: [46, 49],
-				bgWhite: [47, 49],
-
-				// Bright color
-				bgBlackBright: [100, 49],
-				bgRedBright: [101, 49],
-				bgGreenBright: [102, 49],
-				bgYellowBright: [103, 49],
-				bgBlueBright: [104, 49],
-				bgMagentaBright: [105, 49],
-				bgCyanBright: [106, 49],
-				bgWhiteBright: [107, 49]
-			}
-		};
-
-		// Alias bright black as gray (and grey)
-		styles.color.gray = styles.color.blackBright;
-		styles.bgColor.bgGray = styles.bgColor.bgBlackBright;
-		styles.color.grey = styles.color.blackBright;
-		styles.bgColor.bgGrey = styles.bgColor.bgBlackBright;
-
-		for (const [groupName, group] of Object.entries(styles)) {
-			for (const [styleName, style] of Object.entries(group)) {
-				styles[styleName] = {
-					open: `\u001B[${style[0]}m`,
-					close: `\u001B[${style[1]}m`
-				};
-
-				group[styleName] = styles[styleName];
-
-				codes.set(style[0], style[1]);
-			}
-
-			Object.defineProperty(styles, groupName, {
-				value: group,
-				enumerable: false
-			});
-		}
-
-		Object.defineProperty(styles, 'codes', {
-			value: codes,
-			enumerable: false
-		});
-
-		styles.color.close = '\u001B[39m';
-		styles.bgColor.close = '\u001B[49m';
-
-		setLazyProperty(styles.color, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, false));
-		setLazyProperty(styles.color, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, false));
-		setLazyProperty(styles.color, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, false));
-		setLazyProperty(styles.bgColor, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, true));
-		setLazyProperty(styles.bgColor, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, true));
-		setLazyProperty(styles.bgColor, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, true));
-
-		return styles;
-	}
-
-	// Make the export immutable
-	Object.defineProperty(module, 'exports', {
-		enumerable: true,
-		get: assembleStyles
-	}); 
-} (ansiStyles$5));
-
-var ansiStylesExports = ansiStyles$5.exports;
-
-var hasFlag$5 = (flag, argv = process.argv) => {
-	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
-	const position = argv.indexOf(prefix + flag);
-	const terminatorPosition = argv.indexOf('--');
-	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
+const formatMessages = (...messages) => messages
+    .map((m) => typeof m === "string" ? m : JSON.stringify(m, null, 2))
+    .join(" ");
+const formatter$1 = {
+    info: (str) => `\x1b[37m${str}\x1b[0m`,
+    warn: (str) => `\x1b[33m${str}\x1b[0m`,
+    error: (str) => `\x1b[31m${str}\x1b[0m`,
+    success: (str) => `\x1b[32m${str}\x1b[0m`,
+    disabled: (str) => `\x1b[90m${str}\x1b[0m`,
+    cyan: (str) => `\x1b[36m${str}\x1b[0m`,
 };
-
-const os$1 = os$2;
-const tty = require$$0$3;
-const hasFlag$4 = hasFlag$5;
-
-const {env: env$4} = process;
-
-let forceColor;
-if (hasFlag$4('no-color') ||
-	hasFlag$4('no-colors') ||
-	hasFlag$4('color=false') ||
-	hasFlag$4('color=never')) {
-	forceColor = 0;
-} else if (hasFlag$4('color') ||
-	hasFlag$4('colors') ||
-	hasFlag$4('color=true') ||
-	hasFlag$4('color=always')) {
-	forceColor = 1;
-}
-
-if ('FORCE_COLOR' in env$4) {
-	if (env$4.FORCE_COLOR === 'true') {
-		forceColor = 1;
-	} else if (env$4.FORCE_COLOR === 'false') {
-		forceColor = 0;
-	} else {
-		forceColor = env$4.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env$4.FORCE_COLOR, 10), 3);
-	}
-}
-
-function translateLevel$2(level) {
-	if (level === 0) {
-		return false;
-	}
-
-	return {
-		level,
-		hasBasic: true,
-		has256: level >= 2,
-		has16m: level >= 3
-	};
-}
-
-function supportsColor$2(haveStream, streamIsTTY) {
-	if (forceColor === 0) {
-		return 0;
-	}
-
-	if (hasFlag$4('color=16m') ||
-		hasFlag$4('color=full') ||
-		hasFlag$4('color=truecolor')) {
-		return 3;
-	}
-
-	if (hasFlag$4('color=256')) {
-		return 2;
-	}
-
-	if (haveStream && !streamIsTTY && forceColor === undefined) {
-		return 0;
-	}
-
-	const min = forceColor || 0;
-
-	if (env$4.TERM === 'dumb') {
-		return min;
-	}
-
-	if (process.platform === 'win32') {
-		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
-		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
-		const osRelease = os$1.release().split('.');
-		if (
-			Number(osRelease[0]) >= 10 &&
-			Number(osRelease[2]) >= 10586
-		) {
-			return Number(osRelease[2]) >= 14931 ? 3 : 2;
-		}
-
-		return 1;
-	}
-
-	if ('CI' in env$4) {
-		if (['TRAVIS', 'CIRCLECI', 'APPVEYOR', 'GITLAB_CI', 'GITHUB_ACTIONS', 'BUILDKITE'].some(sign => sign in env$4) || env$4.CI_NAME === 'codeship') {
-			return 1;
-		}
-
-		return min;
-	}
-
-	if ('TEAMCITY_VERSION' in env$4) {
-		return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env$4.TEAMCITY_VERSION) ? 1 : 0;
-	}
-
-	if (env$4.COLORTERM === 'truecolor') {
-		return 3;
-	}
-
-	if ('TERM_PROGRAM' in env$4) {
-		const version = parseInt((env$4.TERM_PROGRAM_VERSION || '').split('.')[0], 10);
-
-		switch (env$4.TERM_PROGRAM) {
-			case 'iTerm.app':
-				return version >= 3 ? 3 : 2;
-			case 'Apple_Terminal':
-				return 2;
-			// No default
-		}
-	}
-
-	if (/-256(color)?$/i.test(env$4.TERM)) {
-		return 2;
-	}
-
-	if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env$4.TERM)) {
-		return 1;
-	}
-
-	if ('COLORTERM' in env$4) {
-		return 1;
-	}
-
-	return min;
-}
-
-function getSupportLevel(stream) {
-	const level = supportsColor$2(stream, stream && stream.isTTY);
-	return translateLevel$2(level);
-}
-
-var supportsColor_1$2 = {
-	supportsColor: getSupportLevel,
-	stdout: translateLevel$2(supportsColor$2(true, tty.isatty(1))),
-	stderr: translateLevel$2(supportsColor$2(true, tty.isatty(2)))
+const logger = {
+    info: (...messages) => console.log(formatter$1.info(`${formatter$1.cyan("ℹ")} ${formatMessages(...messages)}`)),
+    warn: (...messages) => console.log(formatter$1.warn(`⚠️ ${formatMessages(...messages)}`)),
+    error: (...messages) => console.log(formatter$1.error(`❌ ${formatMessages(...messages)}`)),
+    success: (...messages) => console.log(formatter$1.success(`✅ ${formatMessages(...messages)}`)),
 };
-
-const stringReplaceAll$3 = (string, substring, replacer) => {
-	let index = string.indexOf(substring);
-	if (index === -1) {
-		return string;
-	}
-
-	const substringLength = substring.length;
-	let endIndex = 0;
-	let returnValue = '';
-	do {
-		returnValue += string.substr(endIndex, index - endIndex) + substring + replacer;
-		endIndex = index + substringLength;
-		index = string.indexOf(substring, endIndex);
-	} while (index !== -1);
-
-	returnValue += string.substr(endIndex);
-	return returnValue;
-};
-
-const stringEncaseCRLFWithFirstIndex$3 = (string, prefix, postfix, index) => {
-	let endIndex = 0;
-	let returnValue = '';
-	do {
-		const gotCR = string[index - 1] === '\r';
-		returnValue += string.substr(endIndex, (gotCR ? index - 1 : index) - endIndex) + prefix + (gotCR ? '\r\n' : '\n') + postfix;
-		endIndex = index + 1;
-		index = string.indexOf('\n', endIndex);
-	} while (index !== -1);
-
-	returnValue += string.substr(endIndex);
-	return returnValue;
-};
-
-var util$8 = {
-	stringReplaceAll: stringReplaceAll$3,
-	stringEncaseCRLFWithFirstIndex: stringEncaseCRLFWithFirstIndex$3
-};
-
-var templates$2;
-var hasRequiredTemplates$2;
-
-function requireTemplates$2 () {
-	if (hasRequiredTemplates$2) return templates$2;
-	hasRequiredTemplates$2 = 1;
-	const TEMPLATE_REGEX = /(?:\\(u(?:[a-f\d]{4}|\{[a-f\d]{1,6}\})|x[a-f\d]{2}|.))|(?:\{(~)?(\w+(?:\([^)]*\))?(?:\.\w+(?:\([^)]*\))?)*)(?:[ \t]|(?=\r?\n)))|(\})|((?:.|[\r\n\f])+?)/gi;
-	const STYLE_REGEX = /(?:^|\.)(\w+)(?:\(([^)]*)\))?/g;
-	const STRING_REGEX = /^(['"])((?:\\.|(?!\1)[^\\])*)\1$/;
-	const ESCAPE_REGEX = /\\(u(?:[a-f\d]{4}|{[a-f\d]{1,6}})|x[a-f\d]{2}|.)|([^\\])/gi;
-
-	const ESCAPES = new Map([
-		['n', '\n'],
-		['r', '\r'],
-		['t', '\t'],
-		['b', '\b'],
-		['f', '\f'],
-		['v', '\v'],
-		['0', '\0'],
-		['\\', '\\'],
-		['e', '\u001B'],
-		['a', '\u0007']
-	]);
-
-	function unescape(c) {
-		const u = c[0] === 'u';
-		const bracket = c[1] === '{';
-
-		if ((u && !bracket && c.length === 5) || (c[0] === 'x' && c.length === 3)) {
-			return String.fromCharCode(parseInt(c.slice(1), 16));
-		}
-
-		if (u && bracket) {
-			return String.fromCodePoint(parseInt(c.slice(2, -1), 16));
-		}
-
-		return ESCAPES.get(c) || c;
-	}
-
-	function parseArguments(name, arguments_) {
-		const results = [];
-		const chunks = arguments_.trim().split(/\s*,\s*/g);
-		let matches;
-
-		for (const chunk of chunks) {
-			const number = Number(chunk);
-			if (!Number.isNaN(number)) {
-				results.push(number);
-			} else if ((matches = chunk.match(STRING_REGEX))) {
-				results.push(matches[2].replace(ESCAPE_REGEX, (m, escape, character) => escape ? unescape(escape) : character));
-			} else {
-				throw new Error(`Invalid Chalk template style argument: ${chunk} (in style '${name}')`);
-			}
-		}
-
-		return results;
-	}
-
-	function parseStyle(style) {
-		STYLE_REGEX.lastIndex = 0;
-
-		const results = [];
-		let matches;
-
-		while ((matches = STYLE_REGEX.exec(style)) !== null) {
-			const name = matches[1];
-
-			if (matches[2]) {
-				const args = parseArguments(name, matches[2]);
-				results.push([name].concat(args));
-			} else {
-				results.push([name]);
-			}
-		}
-
-		return results;
-	}
-
-	function buildStyle(chalk, styles) {
-		const enabled = {};
-
-		for (const layer of styles) {
-			for (const style of layer.styles) {
-				enabled[style[0]] = layer.inverse ? null : style.slice(1);
-			}
-		}
-
-		let current = chalk;
-		for (const [styleName, styles] of Object.entries(enabled)) {
-			if (!Array.isArray(styles)) {
-				continue;
-			}
-
-			if (!(styleName in current)) {
-				throw new Error(`Unknown Chalk style: ${styleName}`);
-			}
-
-			current = styles.length > 0 ? current[styleName](...styles) : current[styleName];
-		}
-
-		return current;
-	}
-
-	templates$2 = (chalk, temporary) => {
-		const styles = [];
-		const chunks = [];
-		let chunk = [];
-
-		// eslint-disable-next-line max-params
-		temporary.replace(TEMPLATE_REGEX, (m, escapeCharacter, inverse, style, close, character) => {
-			if (escapeCharacter) {
-				chunk.push(unescape(escapeCharacter));
-			} else if (style) {
-				const string = chunk.join('');
-				chunk = [];
-				chunks.push(styles.length === 0 ? string : buildStyle(chalk, styles)(string));
-				styles.push({inverse, styles: parseStyle(style)});
-			} else if (close) {
-				if (styles.length === 0) {
-					throw new Error('Found extraneous } in Chalk template literal');
-				}
-
-				chunks.push(buildStyle(chalk, styles)(chunk.join('')));
-				chunk = [];
-				styles.pop();
-			} else {
-				chunk.push(character);
-			}
-		});
-
-		chunks.push(chunk.join(''));
-
-		if (styles.length > 0) {
-			const errMessage = `Chalk template literal is missing ${styles.length} closing bracket${styles.length === 1 ? '' : 's'} (\`}\`)`;
-			throw new Error(errMessage);
-		}
-
-		return chunks.join('');
-	};
-	return templates$2;
-}
-
-const ansiStyles$4 = ansiStylesExports;
-const {stdout: stdoutColor$2, stderr: stderrColor$2} = supportsColor_1$2;
-const {
-	stringReplaceAll: stringReplaceAll$2,
-	stringEncaseCRLFWithFirstIndex: stringEncaseCRLFWithFirstIndex$2
-} = util$8;
-
-const {isArray: isArray$4} = Array;
-
-// `supportsColor.level` → `ansiStyles.color[name]` mapping
-const levelMapping$2 = [
-	'ansi',
-	'ansi',
-	'ansi256',
-	'ansi16m'
-];
-
-const styles$4 = Object.create(null);
-
-const applyOptions$2 = (object, options = {}) => {
-	if (options.level && !(Number.isInteger(options.level) && options.level >= 0 && options.level <= 3)) {
-		throw new Error('The `level` option should be an integer from 0 to 3');
-	}
-
-	// Detect level if not set manually
-	const colorLevel = stdoutColor$2 ? stdoutColor$2.level : 0;
-	object.level = options.level === undefined ? colorLevel : options.level;
-};
-
-class ChalkClass {
-	constructor(options) {
-		// eslint-disable-next-line no-constructor-return
-		return chalkFactory$2(options);
-	}
-}
-
-const chalkFactory$2 = options => {
-	const chalk = {};
-	applyOptions$2(chalk, options);
-
-	chalk.template = (...arguments_) => chalkTag(chalk.template, ...arguments_);
-
-	Object.setPrototypeOf(chalk, Chalk.prototype);
-	Object.setPrototypeOf(chalk.template, chalk);
-
-	chalk.template.constructor = () => {
-		throw new Error('`chalk.constructor()` is deprecated. Use `new chalk.Instance()` instead.');
-	};
-
-	chalk.template.Instance = ChalkClass;
-
-	return chalk.template;
-};
-
-function Chalk(options) {
-	return chalkFactory$2(options);
-}
-
-for (const [styleName, style] of Object.entries(ansiStyles$4)) {
-	styles$4[styleName] = {
-		get() {
-			const builder = createBuilder$2(this, createStyler$2(style.open, style.close, this._styler), this._isEmpty);
-			Object.defineProperty(this, styleName, {value: builder});
-			return builder;
-		}
-	};
-}
-
-styles$4.visible = {
-	get() {
-		const builder = createBuilder$2(this, this._styler, true);
-		Object.defineProperty(this, 'visible', {value: builder});
-		return builder;
-	}
-};
-
-const usedModels$2 = ['rgb', 'hex', 'keyword', 'hsl', 'hsv', 'hwb', 'ansi', 'ansi256'];
-
-for (const model of usedModels$2) {
-	styles$4[model] = {
-		get() {
-			const {level} = this;
-			return function (...arguments_) {
-				const styler = createStyler$2(ansiStyles$4.color[levelMapping$2[level]][model](...arguments_), ansiStyles$4.color.close, this._styler);
-				return createBuilder$2(this, styler, this._isEmpty);
-			};
-		}
-	};
-}
-
-for (const model of usedModels$2) {
-	const bgModel = 'bg' + model[0].toUpperCase() + model.slice(1);
-	styles$4[bgModel] = {
-		get() {
-			const {level} = this;
-			return function (...arguments_) {
-				const styler = createStyler$2(ansiStyles$4.bgColor[levelMapping$2[level]][model](...arguments_), ansiStyles$4.bgColor.close, this._styler);
-				return createBuilder$2(this, styler, this._isEmpty);
-			};
-		}
-	};
-}
-
-const proto$2 = Object.defineProperties(() => {}, {
-	...styles$4,
-	level: {
-		enumerable: true,
-		get() {
-			return this._generator.level;
-		},
-		set(level) {
-			this._generator.level = level;
-		}
-	}
-});
-
-const createStyler$2 = (open, close, parent) => {
-	let openAll;
-	let closeAll;
-	if (parent === undefined) {
-		openAll = open;
-		closeAll = close;
-	} else {
-		openAll = parent.openAll + open;
-		closeAll = close + parent.closeAll;
-	}
-
-	return {
-		open,
-		close,
-		openAll,
-		closeAll,
-		parent
-	};
-};
-
-const createBuilder$2 = (self, _styler, _isEmpty) => {
-	const builder = (...arguments_) => {
-		if (isArray$4(arguments_[0]) && isArray$4(arguments_[0].raw)) {
-			// Called as a template literal, for example: chalk.red`2 + 3 = {bold ${2+3}}`
-			return applyStyle$2(builder, chalkTag(builder, ...arguments_));
-		}
-
-		// Single argument is hot path, implicit coercion is faster than anything
-		// eslint-disable-next-line no-implicit-coercion
-		return applyStyle$2(builder, (arguments_.length === 1) ? ('' + arguments_[0]) : arguments_.join(' '));
-	};
-
-	// We alter the prototype because we must return a function, but there is
-	// no way to create a function with a different prototype
-	Object.setPrototypeOf(builder, proto$2);
-
-	builder._generator = self;
-	builder._styler = _styler;
-	builder._isEmpty = _isEmpty;
-
-	return builder;
-};
-
-const applyStyle$2 = (self, string) => {
-	if (self.level <= 0 || !string) {
-		return self._isEmpty ? '' : string;
-	}
-
-	let styler = self._styler;
-
-	if (styler === undefined) {
-		return string;
-	}
-
-	const {openAll, closeAll} = styler;
-	if (string.indexOf('\u001B') !== -1) {
-		while (styler !== undefined) {
-			// Replace any instances already present with a re-opening code
-			// otherwise only the part of the string until said closing code
-			// will be colored, and the rest will simply be 'plain'.
-			string = stringReplaceAll$2(string, styler.close, styler.open);
-
-			styler = styler.parent;
-		}
-	}
-
-	// We can move both next actions out of loop, because remaining actions in loop won't have
-	// any/visible effect on parts we add here. Close the styling before a linebreak and reopen
-	// after next line to fix a bleed issue on macOS: https://github.com/chalk/chalk/pull/92
-	const lfIndex = string.indexOf('\n');
-	if (lfIndex !== -1) {
-		string = stringEncaseCRLFWithFirstIndex$2(string, closeAll, openAll, lfIndex);
-	}
-
-	return openAll + string + closeAll;
-};
-
-let template;
-const chalkTag = (chalk, ...strings) => {
-	const [firstString] = strings;
-
-	if (!isArray$4(firstString) || !isArray$4(firstString.raw)) {
-		// If chalk() was called by itself or with a string,
-		// return the string itself as a string.
-		return strings.join(' ');
-	}
-
-	const arguments_ = strings.slice(1);
-	const parts = [firstString.raw[0]];
-
-	for (let i = 1; i < firstString.length; i++) {
-		parts.push(
-			String(arguments_[i - 1]).replace(/[{}\\]/g, '\\$&'),
-			String(firstString.raw[i])
-		);
-	}
-
-	if (template === undefined) {
-		template = requireTemplates$2();
-	}
-
-	return template(chalk, parts.join(''));
-};
-
-Object.defineProperties(Chalk.prototype, styles$4);
-
-const chalk$4 = Chalk(); // eslint-disable-line new-cap
-chalk$4.supportsColor = stdoutColor$2;
-chalk$4.stderr = Chalk({level: stderrColor$2 ? stderrColor$2.level : 0}); // eslint-disable-line new-cap
-chalk$4.stderr.supportsColor = stderrColor$2;
-
-var source$1 = chalk$4;
-
-var chalk$5 = /*@__PURE__*/getDefaultExportFromCjs(source$1);
 
 const ANSI_BACKGROUND_OFFSET$1 = 10;
 
@@ -2236,11 +295,11 @@ function assembleStyles$1() {
 	return styles$3;
 }
 
-const ansiStyles$3 = assembleStyles$1();
+const ansiStyles$4 = assembleStyles$1();
 
 // From: https://github.com/sindresorhus/has-flag/blob/main/index.js
 /// function hasFlag(flag, argv = globalThis.Deno?.args ?? process.argv) {
-function hasFlag$3(flag, argv = globalThis.Deno ? globalThis.Deno.args : process$5.argv) {
+function hasFlag$4(flag, argv = globalThis.Deno ? globalThis.Deno.args : process$5.argv) {
 	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
 	const position = argv.indexOf(prefix + flag);
 	const terminatorPosition = argv.indexOf('--');
@@ -2251,17 +310,17 @@ const {env: env$3} = process$5;
 
 let flagForceColor$1;
 if (
-	hasFlag$3('no-color')
-	|| hasFlag$3('no-colors')
-	|| hasFlag$3('color=false')
-	|| hasFlag$3('color=never')
+	hasFlag$4('no-color')
+	|| hasFlag$4('no-colors')
+	|| hasFlag$4('color=false')
+	|| hasFlag$4('color=never')
 ) {
 	flagForceColor$1 = 0;
 } else if (
-	hasFlag$3('color')
-	|| hasFlag$3('colors')
-	|| hasFlag$3('color=true')
-	|| hasFlag$3('color=always')
+	hasFlag$4('color')
+	|| hasFlag$4('colors')
+	|| hasFlag$4('color=true')
+	|| hasFlag$4('color=always')
 ) {
 	flagForceColor$1 = 1;
 }
@@ -2306,13 +365,13 @@ function _supportsColor$1(haveStream, {streamIsTTY, sniffFlags = true} = {}) {
 	}
 
 	if (sniffFlags) {
-		if (hasFlag$3('color=16m')
-			|| hasFlag$3('color=full')
-			|| hasFlag$3('color=truecolor')) {
+		if (hasFlag$4('color=16m')
+			|| hasFlag$4('color=full')
+			|| hasFlag$4('color=truecolor')) {
 			return 3;
 		}
 
-		if (hasFlag$3('color=256')) {
+		if (hasFlag$4('color=256')) {
 			return 2;
 		}
 	}
@@ -2336,7 +395,7 @@ function _supportsColor$1(haveStream, {streamIsTTY, sniffFlags = true} = {}) {
 	if (process$5.platform === 'win32') {
 		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
 		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
-		const osRelease = os$3.release().split('.');
+		const osRelease = os$1.release().split('.');
 		if (
 			Number(osRelease[0]) >= 10
 			&& Number(osRelease[2]) >= 10_586
@@ -2411,8 +470,8 @@ function createSupportsColor$1(stream, options = {}) {
 }
 
 const supportsColor$1 = {
-	stdout: createSupportsColor$1({isTTY: tty$1.isatty(1)}),
-	stderr: createSupportsColor$1({isTTY: tty$1.isatty(2)}),
+	stdout: createSupportsColor$1({isTTY: tty.isatty(1)}),
+	stderr: createSupportsColor$1({isTTY: tty.isatty(2)}),
 };
 
 // TODO: When targeting Node.js 16, use `String.prototype.replaceAll`.
@@ -2490,7 +549,7 @@ function createChalk$1(options) {
 
 Object.setPrototypeOf(createChalk$1.prototype, Function.prototype);
 
-for (const [styleName, style] of Object.entries(ansiStyles$3)) {
+for (const [styleName, style] of Object.entries(ansiStyles$4)) {
 	styles$2[styleName] = {
 		get() {
 			const builder = createBuilder$1(this, createStyler$1(style.open, style.close, this[STYLER$1]), this[IS_EMPTY$1]);
@@ -2511,21 +570,21 @@ styles$2.visible = {
 const getModelAnsi$1 = (model, level, type, ...arguments_) => {
 	if (model === 'rgb') {
 		if (level === 'ansi16m') {
-			return ansiStyles$3[type].ansi16m(...arguments_);
+			return ansiStyles$4[type].ansi16m(...arguments_);
 		}
 
 		if (level === 'ansi256') {
-			return ansiStyles$3[type].ansi256(ansiStyles$3.rgbToAnsi256(...arguments_));
+			return ansiStyles$4[type].ansi256(ansiStyles$4.rgbToAnsi256(...arguments_));
 		}
 
-		return ansiStyles$3[type].ansi(ansiStyles$3.rgbToAnsi(...arguments_));
+		return ansiStyles$4[type].ansi(ansiStyles$4.rgbToAnsi(...arguments_));
 	}
 
 	if (model === 'hex') {
-		return getModelAnsi$1('rgb', level, type, ...ansiStyles$3.hexToRgb(...arguments_));
+		return getModelAnsi$1('rgb', level, type, ...ansiStyles$4.hexToRgb(...arguments_));
 	}
 
-	return ansiStyles$3[type][model](...arguments_);
+	return ansiStyles$4[type][model](...arguments_);
 };
 
 const usedModels$1 = ['rgb', 'hex', 'ansi256'];
@@ -2535,7 +594,7 @@ for (const model of usedModels$1) {
 		get() {
 			const {level} = this;
 			return function (...arguments_) {
-				const styler = createStyler$1(getModelAnsi$1(model, levelMapping$1[level], 'color', ...arguments_), ansiStyles$3.color.close, this[STYLER$1]);
+				const styler = createStyler$1(getModelAnsi$1(model, levelMapping$1[level], 'color', ...arguments_), ansiStyles$4.color.close, this[STYLER$1]);
 				return createBuilder$1(this, styler, this[IS_EMPTY$1]);
 			};
 		},
@@ -2546,7 +605,7 @@ for (const model of usedModels$1) {
 		get() {
 			const {level} = this;
 			return function (...arguments_) {
-				const styler = createStyler$1(getModelAnsi$1(model, levelMapping$1[level], 'bgColor', ...arguments_), ansiStyles$3.bgColor.close, this[STYLER$1]);
+				const styler = createStyler$1(getModelAnsi$1(model, levelMapping$1[level], 'bgColor', ...arguments_), ansiStyles$4.bgColor.close, this[STYLER$1]);
 				return createBuilder$1(this, styler, this[IS_EMPTY$1]);
 			};
 		},
@@ -2640,6 +699,37 @@ Object.defineProperties(createChalk$1.prototype, styles$2);
 
 const chalk$3 = createChalk$1();
 createChalk$1({level: stderrColor$1 ? stderrColor$1.level : 0});
+
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function getDefaultExportFromCjs (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+function getAugmentedNamespace(n) {
+  if (n.__esModule) return n;
+  var f = n.default;
+	if (typeof f == "function") {
+		var a = function a () {
+			if (this instanceof a) {
+        return Reflect.construct(f, arguments, this.constructor);
+			}
+			return f.apply(this, arguments);
+		};
+		a.prototype = f.prototype;
+  } else a = {};
+  Object.defineProperty(a, '__esModule', {value: true});
+	Object.keys(n).forEach(function (k) {
+		var d = Object.getOwnPropertyDescriptor(n, k);
+		Object.defineProperty(a, k, d.get ? d : {
+			enumerable: true,
+			get: function () {
+				return n[k];
+			}
+		});
+	});
+	return a;
+}
 
 var onetime$2 = {exports: {}};
 
@@ -2798,11 +888,11 @@ if (!processOk(process$4)) {
     return function () {}
   };
 } else {
-  var assert$5 = require$$0$5;
+  var assert$5 = require$$0$4;
   var signals$1 = requireSignals();
   var isWin = /^win/i.test(process$4.platform);
 
-  var EE = require$$0$4;
+  var EE = require$$0$3;
   /* istanbul ignore if */
   if (typeof EE !== 'function') {
     EE = EE.EventEmitter;
@@ -4965,11 +3055,11 @@ function assembleStyles() {
 	return styles$1;
 }
 
-const ansiStyles$2 = assembleStyles();
+const ansiStyles$3 = assembleStyles();
 
 // From: https://github.com/sindresorhus/has-flag/blob/main/index.js
 /// function hasFlag(flag, argv = globalThis.Deno?.args ?? process.argv) {
-function hasFlag$2(flag, argv = globalThis.Deno ? globalThis.Deno.args : process$5.argv) {
+function hasFlag$3(flag, argv = globalThis.Deno ? globalThis.Deno.args : process$5.argv) {
 	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
 	const position = argv.indexOf(prefix + flag);
 	const terminatorPosition = argv.indexOf('--');
@@ -4980,17 +3070,17 @@ const {env: env$2} = process$5;
 
 let flagForceColor;
 if (
-	hasFlag$2('no-color')
-	|| hasFlag$2('no-colors')
-	|| hasFlag$2('color=false')
-	|| hasFlag$2('color=never')
+	hasFlag$3('no-color')
+	|| hasFlag$3('no-colors')
+	|| hasFlag$3('color=false')
+	|| hasFlag$3('color=never')
 ) {
 	flagForceColor = 0;
 } else if (
-	hasFlag$2('color')
-	|| hasFlag$2('colors')
-	|| hasFlag$2('color=true')
-	|| hasFlag$2('color=always')
+	hasFlag$3('color')
+	|| hasFlag$3('colors')
+	|| hasFlag$3('color=true')
+	|| hasFlag$3('color=always')
 ) {
 	flagForceColor = 1;
 }
@@ -5035,13 +3125,13 @@ function _supportsColor(haveStream, {streamIsTTY, sniffFlags = true} = {}) {
 	}
 
 	if (sniffFlags) {
-		if (hasFlag$2('color=16m')
-			|| hasFlag$2('color=full')
-			|| hasFlag$2('color=truecolor')) {
+		if (hasFlag$3('color=16m')
+			|| hasFlag$3('color=full')
+			|| hasFlag$3('color=truecolor')) {
 			return 3;
 		}
 
-		if (hasFlag$2('color=256')) {
+		if (hasFlag$3('color=256')) {
 			return 2;
 		}
 	}
@@ -5065,7 +3155,7 @@ function _supportsColor(haveStream, {streamIsTTY, sniffFlags = true} = {}) {
 	if (process$5.platform === 'win32') {
 		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
 		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
-		const osRelease = os$3.release().split('.');
+		const osRelease = os$1.release().split('.');
 		if (
 			Number(osRelease[0]) >= 10
 			&& Number(osRelease[2]) >= 10_586
@@ -5140,8 +3230,8 @@ function createSupportsColor(stream, options = {}) {
 }
 
 const supportsColor = {
-	stdout: createSupportsColor({isTTY: tty$1.isatty(1)}),
-	stderr: createSupportsColor({isTTY: tty$1.isatty(2)}),
+	stdout: createSupportsColor({isTTY: tty.isatty(1)}),
+	stderr: createSupportsColor({isTTY: tty.isatty(2)}),
 };
 
 // TODO: When targeting Node.js 16, use `String.prototype.replaceAll`.
@@ -5219,7 +3309,7 @@ function createChalk(options) {
 
 Object.setPrototypeOf(createChalk.prototype, Function.prototype);
 
-for (const [styleName, style] of Object.entries(ansiStyles$2)) {
+for (const [styleName, style] of Object.entries(ansiStyles$3)) {
 	styles[styleName] = {
 		get() {
 			const builder = createBuilder(this, createStyler(style.open, style.close, this[STYLER]), this[IS_EMPTY]);
@@ -5240,21 +3330,21 @@ styles.visible = {
 const getModelAnsi = (model, level, type, ...arguments_) => {
 	if (model === 'rgb') {
 		if (level === 'ansi16m') {
-			return ansiStyles$2[type].ansi16m(...arguments_);
+			return ansiStyles$3[type].ansi16m(...arguments_);
 		}
 
 		if (level === 'ansi256') {
-			return ansiStyles$2[type].ansi256(ansiStyles$2.rgbToAnsi256(...arguments_));
+			return ansiStyles$3[type].ansi256(ansiStyles$3.rgbToAnsi256(...arguments_));
 		}
 
-		return ansiStyles$2[type].ansi(ansiStyles$2.rgbToAnsi(...arguments_));
+		return ansiStyles$3[type].ansi(ansiStyles$3.rgbToAnsi(...arguments_));
 	}
 
 	if (model === 'hex') {
-		return getModelAnsi('rgb', level, type, ...ansiStyles$2.hexToRgb(...arguments_));
+		return getModelAnsi('rgb', level, type, ...ansiStyles$3.hexToRgb(...arguments_));
 	}
 
-	return ansiStyles$2[type][model](...arguments_);
+	return ansiStyles$3[type][model](...arguments_);
 };
 
 const usedModels = ['rgb', 'hex', 'ansi256'];
@@ -5264,7 +3354,7 @@ for (const model of usedModels) {
 		get() {
 			const {level} = this;
 			return function (...arguments_) {
-				const styler = createStyler(getModelAnsi(model, levelMapping[level], 'color', ...arguments_), ansiStyles$2.color.close, this[STYLER]);
+				const styler = createStyler(getModelAnsi(model, levelMapping[level], 'color', ...arguments_), ansiStyles$3.color.close, this[STYLER]);
 				return createBuilder(this, styler, this[IS_EMPTY]);
 			};
 		},
@@ -5275,7 +3365,7 @@ for (const model of usedModels) {
 		get() {
 			const {level} = this;
 			return function (...arguments_) {
-				const styler = createStyler(getModelAnsi(model, levelMapping[level], 'bgColor', ...arguments_), ansiStyles$2.bgColor.close, this[STYLER]);
+				const styler = createStyler(getModelAnsi(model, levelMapping[level], 'bgColor', ...arguments_), ansiStyles$3.bgColor.close, this[STYLER]);
 				return createBuilder(this, styler, this[IS_EMPTY]);
 			};
 		},
@@ -5826,7 +3916,7 @@ var hasRequiredStream;
 function requireStream () {
 	if (hasRequiredStream) return stream$3;
 	hasRequiredStream = 1;
-	stream$3 = require$$0$6;
+	stream$3 = require$$0$5;
 	return stream$3;
 }
 
@@ -5845,7 +3935,7 @@ function requireBuffer_list () {
 	function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 	function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return typeof key === "symbol" ? key : String(key); }
 	function _toPrimitive(input, hint) { if (typeof input !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (typeof res !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-	var _require = require$$0$7,
+	var _require = require$$0$6,
 	  Buffer = _require.Buffer;
 	var _require2 = require$$1,
 	  inspect = _require2.inspect;
@@ -6382,7 +4472,7 @@ function require_stream_writable () {
 	var Stream = requireStream();
 	/*</replacement>*/
 
-	var Buffer = require$$0$7.Buffer;
+	var Buffer = require$$0$6.Buffer;
 	var OurUint8Array = (typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 	function _uint8ArrayToBuffer(chunk) {
 	  return Buffer.from(chunk);
@@ -7082,7 +5172,7 @@ function requireSafeBuffer () {
 	hasRequiredSafeBuffer = 1;
 	(function (module, exports) {
 		/* eslint-disable node/no-deprecated-api */
-		var buffer = require$$0$7;
+		var buffer = require$$0$6;
 		var Buffer = buffer.Buffer;
 
 		// alternative to using Object.keys for old browsers
@@ -7785,7 +5875,7 @@ function require_stream_readable () {
 	Readable.ReadableState = ReadableState;
 
 	/*<replacement>*/
-	require$$0$4.EventEmitter;
+	require$$0$3.EventEmitter;
 	var EElistenerCount = function EElistenerCount(emitter, type) {
 	  return emitter.listeners(type).length;
 	};
@@ -7795,7 +5885,7 @@ function require_stream_readable () {
 	var Stream = requireStream();
 	/*</replacement>*/
 
-	var Buffer = require$$0$7.Buffer;
+	var Buffer = require$$0$6.Buffer;
 	var OurUint8Array = (typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {}).Uint8Array || function () {};
 	function _uint8ArrayToBuffer(chunk) {
 	  return Buffer.from(chunk);
@@ -9030,7 +7120,7 @@ function requirePipeline () {
 }
 
 (function (module, exports) {
-	var Stream = require$$0$6;
+	var Stream = require$$0$5;
 	if (process.env.READABLE_STREAM === 'disable' && Stream) {
 	  module.exports = Stream.Readable;
 	  Object.assign(module.exports, Stream);
@@ -9050,7 +7140,7 @@ function requirePipeline () {
 
 var readableExports = readable.exports;
 
-const { Buffer: Buffer$4 } = require$$0$7;
+const { Buffer: Buffer$4 } = require$$0$6;
 const symbol = Symbol.for('BufferList');
 
 function BufferList$1 (buf) {
@@ -17714,9 +15804,9 @@ class TestSuiteAdapter {
             }
             throw new StopExecution();
         }, {
-            text: chalk$5.white("Looking for test suite adapter"),
-            failText: chalk$5.red("No adapter were found"),
-            successText: (result) => chalk$5.white(`${result.name} adapter will be used`),
+            text: formatter$1.info("Looking for test suite adapter"),
+            failText: formatter$1.error("No adapter were found"),
+            successText: (result) => formatter$1.info(`${result.name} adapter will be used`),
         });
     }
     currentTest$ = new cjs.BehaviorSubject(null);
@@ -17779,19 +15869,6 @@ let Deferred$3 = class Deferred extends Promise {
 function uuid$1() {
     return `${Math.random().toString(36).substring(2, 15)}`.toUpperCase();
 }
-
-const logger = {
-    info: (...messages) => console.log(formatter$1.info(logSymbols.info, ...messages)),
-    warn: (...messages) => console.log(formatter$1.warn(logSymbols.warning, ...messages)),
-    error: (...messages) => console.log(formatter$1.error(logSymbols.error, ...messages)),
-    success: (...messages) => console.log(formatter$1.success(logSymbols.success, ...messages)),
-};
-const formatter$1 = {
-    info: chalk$5.white.bind(chalk$5),
-    warn: chalk$5.yellow.bind(chalk$5),
-    error: chalk$5.red.bind(chalk$5),
-    success: chalk$5.green.bind(chalk$5),
-};
 
 /**
                                Apache License
@@ -32949,12 +31026,12 @@ class CdpHTTPRequest extends HTTPRequest {
             requestId: this._interceptionId,
             responseCode: status,
             responsePhrase: STATUS_TEXTS[status],
-            responseHeaders: [],
+            responseHeaders: headersArray(responseHeaders),
             body: responseBody ? responseBody.toString('base64') : undefined,
         })
             .catch(error => {
-                console.warn(headersArray(responseHeaders));
-            debugError(error);
+            this.interception.handled = false;
+            return handleError(error);
         });
     }
     async _abort(errorReason) {
@@ -36879,8 +34956,8 @@ class BrowserWebSocketTransport {
 }
 
 var BrowserWebSocketTransport$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	BrowserWebSocketTransport: BrowserWebSocketTransport
+    __proto__: null,
+    BrowserWebSocketTransport: BrowserWebSocketTransport
 });
 
 /**
@@ -42917,7 +40994,7 @@ var __importStar$a = (commonjsGlobal && commonjsGlobal.__importStar) || function
 };
 Object.defineProperty(helpers$3, "__esModule", { value: true });
 helpers$3.req = helpers$3.json = helpers$3.toBuffer = void 0;
-const http$2 = __importStar$a(require$$0$8);
+const http$2 = __importStar$a(require$$0$7);
 const https$3 = __importStar$a(require$$1$1);
 async function toBuffer$4(stream) {
     let length = 0;
@@ -42986,8 +41063,8 @@ helpers$3.req = req;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.Agent = void 0;
-	const net = __importStar(require$$0$9);
-	const http = __importStar(require$$0$8);
+	const net = __importStar(require$$0$8);
+	const http = __importStar(require$$0$7);
 	const https_1 = require$$1$1;
 	__exportStar(helpers$3, exports);
 	const INTERNAL = Symbol('AgentBaseInternalState');
@@ -43872,6 +41949,165 @@ function requireBrowser$1 () {
 
 var node$2 = {exports: {}};
 
+var hasFlag$2;
+var hasRequiredHasFlag$2;
+
+function requireHasFlag$2 () {
+	if (hasRequiredHasFlag$2) return hasFlag$2;
+	hasRequiredHasFlag$2 = 1;
+
+	hasFlag$2 = (flag, argv = process.argv) => {
+		const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
+		const position = argv.indexOf(prefix + flag);
+		const terminatorPosition = argv.indexOf('--');
+		return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
+	};
+	return hasFlag$2;
+}
+
+var supportsColor_1$2;
+var hasRequiredSupportsColor$2;
+
+function requireSupportsColor$2 () {
+	if (hasRequiredSupportsColor$2) return supportsColor_1$2;
+	hasRequiredSupportsColor$2 = 1;
+	const os = os$2;
+	const tty = require$$0$9;
+	const hasFlag = requireHasFlag$2();
+
+	const {env} = process;
+
+	let forceColor;
+	if (hasFlag('no-color') ||
+		hasFlag('no-colors') ||
+		hasFlag('color=false') ||
+		hasFlag('color=never')) {
+		forceColor = 0;
+	} else if (hasFlag('color') ||
+		hasFlag('colors') ||
+		hasFlag('color=true') ||
+		hasFlag('color=always')) {
+		forceColor = 1;
+	}
+
+	if ('FORCE_COLOR' in env) {
+		if (env.FORCE_COLOR === 'true') {
+			forceColor = 1;
+		} else if (env.FORCE_COLOR === 'false') {
+			forceColor = 0;
+		} else {
+			forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
+		}
+	}
+
+	function translateLevel(level) {
+		if (level === 0) {
+			return false;
+		}
+
+		return {
+			level,
+			hasBasic: true,
+			has256: level >= 2,
+			has16m: level >= 3
+		};
+	}
+
+	function supportsColor(haveStream, streamIsTTY) {
+		if (forceColor === 0) {
+			return 0;
+		}
+
+		if (hasFlag('color=16m') ||
+			hasFlag('color=full') ||
+			hasFlag('color=truecolor')) {
+			return 3;
+		}
+
+		if (hasFlag('color=256')) {
+			return 2;
+		}
+
+		if (haveStream && !streamIsTTY && forceColor === undefined) {
+			return 0;
+		}
+
+		const min = forceColor || 0;
+
+		if (env.TERM === 'dumb') {
+			return min;
+		}
+
+		if (process.platform === 'win32') {
+			// Windows 10 build 10586 is the first Windows release that supports 256 colors.
+			// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
+			const osRelease = os.release().split('.');
+			if (
+				Number(osRelease[0]) >= 10 &&
+				Number(osRelease[2]) >= 10586
+			) {
+				return Number(osRelease[2]) >= 14931 ? 3 : 2;
+			}
+
+			return 1;
+		}
+
+		if ('CI' in env) {
+			if (['TRAVIS', 'CIRCLECI', 'APPVEYOR', 'GITLAB_CI', 'GITHUB_ACTIONS', 'BUILDKITE'].some(sign => sign in env) || env.CI_NAME === 'codeship') {
+				return 1;
+			}
+
+			return min;
+		}
+
+		if ('TEAMCITY_VERSION' in env) {
+			return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
+		}
+
+		if (env.COLORTERM === 'truecolor') {
+			return 3;
+		}
+
+		if ('TERM_PROGRAM' in env) {
+			const version = parseInt((env.TERM_PROGRAM_VERSION || '').split('.')[0], 10);
+
+			switch (env.TERM_PROGRAM) {
+				case 'iTerm.app':
+					return version >= 3 ? 3 : 2;
+				case 'Apple_Terminal':
+					return 2;
+				// No default
+			}
+		}
+
+		if (/-256(color)?$/i.test(env.TERM)) {
+			return 2;
+		}
+
+		if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
+			return 1;
+		}
+
+		if ('COLORTERM' in env) {
+			return 1;
+		}
+
+		return min;
+	}
+
+	function getSupportLevel(stream) {
+		const level = supportsColor(stream, stream && stream.isTTY);
+		return translateLevel(level);
+	}
+
+	supportsColor_1$2 = {
+		supportsColor: getSupportLevel,
+		stdout: translateLevel(supportsColor(true, tty.isatty(1))),
+		stderr: translateLevel(supportsColor(true, tty.isatty(2)))
+	};
+	return supportsColor_1$2;
+}
+
 /**
  * Module dependencies.
  */
@@ -43882,7 +42118,7 @@ function requireNode$1 () {
 	if (hasRequiredNode$1) return node$2.exports;
 	hasRequiredNode$1 = 1;
 	(function (module, exports) {
-		const tty = require$$0$3;
+		const tty = require$$0$9;
 		const util = require$$1;
 
 		/**
@@ -43909,7 +42145,7 @@ function requireNode$1 () {
 		try {
 			// Optional dependency (as in, doesn't need to be installed, NOT like optionalDependencies in package.json)
 			// eslint-disable-next-line import/no-extraneous-dependencies
-			const supportsColor = supportsColor_1$2;
+			const supportsColor = requireSupportsColor$2();
 
 			if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
 				exports.colors = [
@@ -44300,10 +42536,10 @@ var __importDefault$e = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(dist$8, "__esModule", { value: true });
 dist$8.HttpProxyAgent = void 0;
-const net$5 = __importStar$9(require$$0$9);
+const net$5 = __importStar$9(require$$0$8);
 const tls$4 = __importStar$9(require$$1$2);
 const debug_1$8 = __importDefault$e(srcExports$1);
-const events_1$1 = require$$0$4;
+const events_1$1 = require$$0$3;
 const agent_base_1$3 = dist$a;
 const url_1$4 = require$$5;
 const debug$a = (0, debug_1$8.default)('http-proxy-agent');
@@ -44551,9 +42787,9 @@ var __importDefault$c = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(dist$7, "__esModule", { value: true });
 dist$7.HttpsProxyAgent = void 0;
-const net$4 = __importStar$8(require$$0$9);
+const net$4 = __importStar$8(require$$0$8);
 const tls$3 = __importStar$8(require$$1$2);
-const assert_1 = __importDefault$c(require$$0$5);
+const assert_1 = __importDefault$c(require$$0$4);
 const debug_1$6 = __importDefault$c(srcExports$1);
 const agent_base_1$2 = dist$a;
 const url_1$3 = require$$5;
@@ -44708,7 +42944,7 @@ var smartbuffer = {};
 var utils$5 = {};
 
 Object.defineProperty(utils$5, "__esModule", { value: true });
-const buffer_1 = require$$0$7;
+const buffer_1 = require$$0$6;
 /**
  * Error strings
  */
@@ -49415,9 +47651,9 @@ Object.defineProperty(helpers$2, "__esModule", { value: true });
 helpers$2.ipToBuffer = helpers$2.int32ToIpv4 = helpers$2.ipv4ToInt32 = helpers$2.validateSocksClientChainOptions = helpers$2.validateSocksClientOptions = void 0;
 const util_1$7 = util$6;
 const constants_1 = constants$7;
-const stream$2 = require$$0$6;
+const stream$2 = require$$0$5;
 const ip_address_1 = ipAddress;
-const net$3 = require$$0$9;
+const net$3 = require$$0$8;
 /**
  * Validates the provided SocksClientOptions
  * @param options { SocksClientOptions }
@@ -49632,8 +47868,8 @@ receivebuffer.ReceiveBuffer = ReceiveBuffer;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.SocksClientError = exports.SocksClient = void 0;
-	const events_1 = require$$0$4;
-	const net = require$$0$9;
+	const events_1 = require$$0$3;
+	const net = require$$0$8;
 	const smart_buffer_1 = smartbuffer;
 	const constants_1 = constants$7;
 	const helpers_1 = helpers$2;
@@ -50467,7 +48703,7 @@ const socks_1 = build$5;
 const agent_base_1$1 = dist$a;
 const debug_1$5 = __importDefault$b(srcExports$1);
 const dns = __importStar$4(require$$3$1);
-const net$2 = __importStar$4(require$$0$9);
+const net$2 = __importStar$4(require$$0$8);
 const tls$2 = __importStar$4(require$$1$2);
 const url_1$2 = require$$5;
 const debug$7 = (0, debug_1$5.default)('socks-proxy-agent');
@@ -50730,7 +48966,7 @@ var __importDefault$a = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 Object.defineProperty(data$1, "__esModule", { value: true });
 data$1.data = void 0;
 const debug_1$4 = __importDefault$a(srcExports$1);
-const stream_1$3 = require$$0$6;
+const stream_1$3 = require$$0$5;
 const crypto_1 = require$$2;
 const data_uri_to_buffer_1 = node$1;
 const notmodified_1$2 = __importDefault$a(notmodified);
@@ -51151,7 +49387,7 @@ function patch$1 (fs) {
   }
 }
 
-var Stream = require$$0$6.Stream;
+var Stream = require$$0$5.Stream;
 
 var legacyStreams = legacy$2;
 
@@ -51378,7 +49614,7 @@ if (!fs$k[gracefulQueue]) {
   if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
     process.on('exit', function() {
       debug$5(fs$k[gracefulQueue]);
-      require$$0$5.equal(fs$k[gracefulQueue].length, 0);
+      require$$0$4.equal(fs$k[gracefulQueue].length, 0);
     });
   }
 }
@@ -53359,7 +51595,7 @@ function isNotBlank$1(str) {
 
 Object.defineProperty(FtpContext, "__esModule", { value: true });
 FtpContext.FTPContext = FtpContext.FTPError = void 0;
-const net_1$1 = require$$0$9;
+const net_1$1 = require$$0$8;
 const parseControlResponse_1$2 = parseControlResponse$1;
 /**
  * Describes an FTP server error response including the FTP response code.
@@ -54369,7 +52605,7 @@ var StringWriter$1 = {};
 
 Object.defineProperty(StringWriter$1, "__esModule", { value: true });
 StringWriter$1.StringWriter = void 0;
-const stream_1$2 = require$$0$6;
+const stream_1$2 = require$$0$5;
 class StringWriter extends stream_1$2.Writable {
     constructor() {
         super(...arguments);
@@ -54464,7 +52700,7 @@ var transfer = {};
 Object.defineProperty(transfer, "__esModule", { value: true });
 transfer.downloadTo = transfer.uploadFrom = transfer.connectForPassiveTransfer = transfer.parsePasvResponse = transfer.enterPassiveModeIPv4 = transfer.parseEpsvResponse = transfer.enterPassiveModeIPv6 = void 0;
 const netUtils_1$1 = netUtils;
-const stream_1$1 = require$$0$6;
+const stream_1$1 = require$$0$5;
 const tls_1$1 = require$$1$2;
 const parseControlResponse_1$1 = parseControlResponse$1;
 /**
@@ -55571,7 +53807,7 @@ var __importDefault$8 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 Object.defineProperty(ftp$1, "__esModule", { value: true });
 ftp$1.ftp = void 0;
 const basic_ftp_1 = dist$4;
-const stream_1 = require$$0$6;
+const stream_1 = require$$0$5;
 const path_1$3 = path$f;
 const debug_1$2 = __importDefault$8(srcExports$1);
 const notfound_1 = __importDefault$8(notfound);
@@ -55662,7 +53898,7 @@ var http$1 = {};
 var httpError = {};
 
 Object.defineProperty(httpError, "__esModule", { value: true });
-const http_1$1 = require$$0$8;
+const http_1$1 = require$$0$7;
 /**
  * Error subclass to use when an HTTP application error has occurred.
  */
@@ -55681,9 +53917,9 @@ httpError.default = HTTPError;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.http = void 0;
-	const http_1 = __importDefault(require$$0$8);
+	const http_1 = __importDefault(require$$0$7);
 	const https_1 = __importDefault(require$$1$1);
-	const events_1 = require$$0$4;
+	const events_1 = require$$0$3;
 	const debug_1 = __importDefault(srcExports$1);
 	const http_error_1 = __importDefault(httpError);
 	const notfound_1 = __importDefault(notfound);
@@ -70253,39 +68489,39 @@ var tslib_es6 = {
 };
 
 var tslib_es6$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	__addDisposableResource: __addDisposableResource$5,
-	get __assign () { return __assign; },
-	__asyncDelegator: __asyncDelegator,
-	__asyncGenerator: __asyncGenerator,
-	__asyncValues: __asyncValues,
-	__await: __await,
-	__awaiter: __awaiter,
-	__classPrivateFieldGet: __classPrivateFieldGet,
-	__classPrivateFieldIn: __classPrivateFieldIn,
-	__classPrivateFieldSet: __classPrivateFieldSet,
-	__createBinding: __createBinding$2,
-	__decorate: __decorate,
-	__disposeResources: __disposeResources$5,
-	__esDecorate: __esDecorate$f,
-	__exportStar: __exportStar,
-	__extends: __extends,
-	__generator: __generator,
-	__importDefault: __importDefault$6,
-	__importStar: __importStar$2,
-	__makeTemplateObject: __makeTemplateObject,
-	__metadata: __metadata,
-	__param: __param,
-	__propKey: __propKey,
-	__read: __read,
-	__rest: __rest,
-	__runInitializers: __runInitializers$f,
-	__setFunctionName: __setFunctionName$3,
-	__spread: __spread,
-	__spreadArray: __spreadArray,
-	__spreadArrays: __spreadArrays,
-	__values: __values,
-	default: tslib_es6
+    __proto__: null,
+    __addDisposableResource: __addDisposableResource$5,
+    get __assign () { return __assign; },
+    __asyncDelegator: __asyncDelegator,
+    __asyncGenerator: __asyncGenerator,
+    __asyncValues: __asyncValues,
+    __await: __await,
+    __awaiter: __awaiter,
+    __classPrivateFieldGet: __classPrivateFieldGet,
+    __classPrivateFieldIn: __classPrivateFieldIn,
+    __classPrivateFieldSet: __classPrivateFieldSet,
+    __createBinding: __createBinding$2,
+    __decorate: __decorate,
+    __disposeResources: __disposeResources$5,
+    __esDecorate: __esDecorate$f,
+    __exportStar: __exportStar,
+    __extends: __extends,
+    __generator: __generator,
+    __importDefault: __importDefault$6,
+    __importStar: __importStar$2,
+    __makeTemplateObject: __makeTemplateObject,
+    __metadata: __metadata,
+    __param: __param,
+    __propKey: __propKey,
+    __read: __read,
+    __rest: __rest,
+    __runInitializers: __runInitializers$f,
+    __setFunctionName: __setFunctionName$3,
+    __spread: __spread,
+    __spreadArray: __spreadArray,
+    __spreadArrays: __spreadArrays,
+    __values: __values,
+    default: tslib_es6
 });
 
 var require$$0$1 = /*@__PURE__*/getAugmentedNamespace(tslib_es6$1);
@@ -75561,7 +73797,7 @@ var __importDefault$5 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(myIpAddress$1, "__esModule", { value: true });
 const ip_1 = ip;
-const net_1 = __importDefault$5(require$$0$9);
+const net_1 = __importDefault$5(require$$0$8);
 /**
  * Returns the IP address of the host that the Navigator is running on, as
  * a string in the dot-separated integer format.
@@ -78993,10 +77229,10 @@ var __importDefault$4 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(dist$9, "__esModule", { value: true });
 dist$9.PacProxyAgent = void 0;
-const net$1 = __importStar$1(require$$0$9);
+const net$1 = __importStar$1(require$$0$8);
 const tls$1 = __importStar$1(require$$1$2);
 const crypto = __importStar$1(require$$2);
-const events_1 = require$$0$4;
+const events_1 = require$$0$3;
 const debug_1 = __importDefault$4(srcExports$1);
 const url_1 = require$$5;
 const agent_base_1 = dist$a;
@@ -79243,7 +77479,7 @@ dist$9.PacProxyAgent = PacProxyAgent;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.ProxyAgent = exports.proxies = void 0;
-	const http = __importStar(require$$0$8);
+	const http = __importStar(require$$0$7);
 	const https = __importStar(require$$1$1);
 	const url_1 = require$$5;
 	const lru_cache_1 = __importDefault(lruCache);
@@ -81064,7 +79300,7 @@ var pump$1 = function () {
 
 var pump_1 = pump$1;
 
-const {PassThrough: PassThroughStream} = require$$0$6;
+const {PassThrough: PassThroughStream} = require$$0$5;
 
 var bufferStream$1 = options => {
 	options = {...options};
@@ -81116,7 +79352,7 @@ var bufferStream$1 = options => {
 	return stream;
 };
 
-const {constants: BufferConstants} = require$$0$7;
+const {constants: BufferConstants} = require$$0$6;
 const pump = pump_1;
 const bufferStream = bufferStream$1;
 
@@ -81238,12 +79474,12 @@ function pendGo(self, fn) {
 
 var fs$2 = fs$n;
 var util$2 = require$$1;
-var stream$1 = require$$0$6;
+var stream$1 = require$$0$5;
 var Readable = stream$1.Readable;
 var Writable$2 = stream$1.Writable;
 var PassThrough$1 = stream$1.PassThrough;
 var Pend = pend;
-var EventEmitter$5 = require$$0$4.EventEmitter;
+var EventEmitter$5 = require$$0$3.EventEmitter;
 
 fdSlicer.createFromBuffer = createFromBuffer;
 fdSlicer.createFromFd = createFromFd;
@@ -81533,7 +79769,7 @@ function createFromFd(fd, options) {
   return new FdSlicer(fd, options);
 }
 
-var Buffer$3 = require$$0$7.Buffer;
+var Buffer$3 = require$$0$6.Buffer;
 
 var CRC_TABLE = [
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
@@ -81650,10 +79886,10 @@ var zlib$1 = require$$1$3;
 var fd_slicer = fdSlicer;
 var crc32 = bufferCrc32;
 var util$1 = require$$1;
-var EventEmitter$4 = require$$0$4.EventEmitter;
-var Transform = require$$0$6.Transform;
-var PassThrough = require$$0$6.PassThrough;
-var Writable$1 = require$$0$6.Writable;
+var EventEmitter$4 = require$$0$3.EventEmitter;
+var Transform = require$$0$5.Transform;
+var PassThrough = require$$0$5.PassThrough;
+var Writable$1 = require$$0$5.Writable;
 
 yauzl$1.open = open;
 yauzl$1.fromFd = fromFd;
@@ -82444,7 +80680,7 @@ function defaultCallback(err) {
 
 srcExports$1('extract-zip');
 const { promisify } = require$$1;
-const stream = require$$0$6;
+const stream = require$$0$5;
 const yauzl = yauzl$1;
 
 promisify(yauzl.open);
@@ -82650,7 +80886,7 @@ b4a.alloc(1024);
 var through = {exports: {}};
 
 (function (module, exports) {
-	var Stream = require$$0$6;
+	var Stream = require$$0$5;
 
 	// through
 	//
@@ -85192,8 +83428,8 @@ const mainFilename = __dirname$1.substring(0, __dirname$1.lastIndexOf('node_modu
 
 ({
   assert: {
-    notStrictEqual: require$$0$5.notStrictEqual,
-    strictEqual: require$$0$5.strictEqual
+    notStrictEqual: require$$0$4.notStrictEqual,
+    strictEqual: require$$0$4.strictEqual
   },
   cliui: ui,
   findUp: escalade,
@@ -86652,6 +84888,1386 @@ stringWidth$1.exports.default = stringWidth;
 
 var stringWidthExports = stringWidth$1.exports;
 
+var ansiStyles$2 = {exports: {}};
+
+var colorName$2;
+var hasRequiredColorName$2;
+
+function requireColorName$2 () {
+	if (hasRequiredColorName$2) return colorName$2;
+	hasRequiredColorName$2 = 1;
+
+	colorName$2 = {
+		"aliceblue": [240, 248, 255],
+		"antiquewhite": [250, 235, 215],
+		"aqua": [0, 255, 255],
+		"aquamarine": [127, 255, 212],
+		"azure": [240, 255, 255],
+		"beige": [245, 245, 220],
+		"bisque": [255, 228, 196],
+		"black": [0, 0, 0],
+		"blanchedalmond": [255, 235, 205],
+		"blue": [0, 0, 255],
+		"blueviolet": [138, 43, 226],
+		"brown": [165, 42, 42],
+		"burlywood": [222, 184, 135],
+		"cadetblue": [95, 158, 160],
+		"chartreuse": [127, 255, 0],
+		"chocolate": [210, 105, 30],
+		"coral": [255, 127, 80],
+		"cornflowerblue": [100, 149, 237],
+		"cornsilk": [255, 248, 220],
+		"crimson": [220, 20, 60],
+		"cyan": [0, 255, 255],
+		"darkblue": [0, 0, 139],
+		"darkcyan": [0, 139, 139],
+		"darkgoldenrod": [184, 134, 11],
+		"darkgray": [169, 169, 169],
+		"darkgreen": [0, 100, 0],
+		"darkgrey": [169, 169, 169],
+		"darkkhaki": [189, 183, 107],
+		"darkmagenta": [139, 0, 139],
+		"darkolivegreen": [85, 107, 47],
+		"darkorange": [255, 140, 0],
+		"darkorchid": [153, 50, 204],
+		"darkred": [139, 0, 0],
+		"darksalmon": [233, 150, 122],
+		"darkseagreen": [143, 188, 143],
+		"darkslateblue": [72, 61, 139],
+		"darkslategray": [47, 79, 79],
+		"darkslategrey": [47, 79, 79],
+		"darkturquoise": [0, 206, 209],
+		"darkviolet": [148, 0, 211],
+		"deeppink": [255, 20, 147],
+		"deepskyblue": [0, 191, 255],
+		"dimgray": [105, 105, 105],
+		"dimgrey": [105, 105, 105],
+		"dodgerblue": [30, 144, 255],
+		"firebrick": [178, 34, 34],
+		"floralwhite": [255, 250, 240],
+		"forestgreen": [34, 139, 34],
+		"fuchsia": [255, 0, 255],
+		"gainsboro": [220, 220, 220],
+		"ghostwhite": [248, 248, 255],
+		"gold": [255, 215, 0],
+		"goldenrod": [218, 165, 32],
+		"gray": [128, 128, 128],
+		"green": [0, 128, 0],
+		"greenyellow": [173, 255, 47],
+		"grey": [128, 128, 128],
+		"honeydew": [240, 255, 240],
+		"hotpink": [255, 105, 180],
+		"indianred": [205, 92, 92],
+		"indigo": [75, 0, 130],
+		"ivory": [255, 255, 240],
+		"khaki": [240, 230, 140],
+		"lavender": [230, 230, 250],
+		"lavenderblush": [255, 240, 245],
+		"lawngreen": [124, 252, 0],
+		"lemonchiffon": [255, 250, 205],
+		"lightblue": [173, 216, 230],
+		"lightcoral": [240, 128, 128],
+		"lightcyan": [224, 255, 255],
+		"lightgoldenrodyellow": [250, 250, 210],
+		"lightgray": [211, 211, 211],
+		"lightgreen": [144, 238, 144],
+		"lightgrey": [211, 211, 211],
+		"lightpink": [255, 182, 193],
+		"lightsalmon": [255, 160, 122],
+		"lightseagreen": [32, 178, 170],
+		"lightskyblue": [135, 206, 250],
+		"lightslategray": [119, 136, 153],
+		"lightslategrey": [119, 136, 153],
+		"lightsteelblue": [176, 196, 222],
+		"lightyellow": [255, 255, 224],
+		"lime": [0, 255, 0],
+		"limegreen": [50, 205, 50],
+		"linen": [250, 240, 230],
+		"magenta": [255, 0, 255],
+		"maroon": [128, 0, 0],
+		"mediumaquamarine": [102, 205, 170],
+		"mediumblue": [0, 0, 205],
+		"mediumorchid": [186, 85, 211],
+		"mediumpurple": [147, 112, 219],
+		"mediumseagreen": [60, 179, 113],
+		"mediumslateblue": [123, 104, 238],
+		"mediumspringgreen": [0, 250, 154],
+		"mediumturquoise": [72, 209, 204],
+		"mediumvioletred": [199, 21, 133],
+		"midnightblue": [25, 25, 112],
+		"mintcream": [245, 255, 250],
+		"mistyrose": [255, 228, 225],
+		"moccasin": [255, 228, 181],
+		"navajowhite": [255, 222, 173],
+		"navy": [0, 0, 128],
+		"oldlace": [253, 245, 230],
+		"olive": [128, 128, 0],
+		"olivedrab": [107, 142, 35],
+		"orange": [255, 165, 0],
+		"orangered": [255, 69, 0],
+		"orchid": [218, 112, 214],
+		"palegoldenrod": [238, 232, 170],
+		"palegreen": [152, 251, 152],
+		"paleturquoise": [175, 238, 238],
+		"palevioletred": [219, 112, 147],
+		"papayawhip": [255, 239, 213],
+		"peachpuff": [255, 218, 185],
+		"peru": [205, 133, 63],
+		"pink": [255, 192, 203],
+		"plum": [221, 160, 221],
+		"powderblue": [176, 224, 230],
+		"purple": [128, 0, 128],
+		"rebeccapurple": [102, 51, 153],
+		"red": [255, 0, 0],
+		"rosybrown": [188, 143, 143],
+		"royalblue": [65, 105, 225],
+		"saddlebrown": [139, 69, 19],
+		"salmon": [250, 128, 114],
+		"sandybrown": [244, 164, 96],
+		"seagreen": [46, 139, 87],
+		"seashell": [255, 245, 238],
+		"sienna": [160, 82, 45],
+		"silver": [192, 192, 192],
+		"skyblue": [135, 206, 235],
+		"slateblue": [106, 90, 205],
+		"slategray": [112, 128, 144],
+		"slategrey": [112, 128, 144],
+		"snow": [255, 250, 250],
+		"springgreen": [0, 255, 127],
+		"steelblue": [70, 130, 180],
+		"tan": [210, 180, 140],
+		"teal": [0, 128, 128],
+		"thistle": [216, 191, 216],
+		"tomato": [255, 99, 71],
+		"turquoise": [64, 224, 208],
+		"violet": [238, 130, 238],
+		"wheat": [245, 222, 179],
+		"white": [255, 255, 255],
+		"whitesmoke": [245, 245, 245],
+		"yellow": [255, 255, 0],
+		"yellowgreen": [154, 205, 50]
+	};
+	return colorName$2;
+}
+
+/* MIT license */
+
+var conversions$2;
+var hasRequiredConversions$2;
+
+function requireConversions$2 () {
+	if (hasRequiredConversions$2) return conversions$2;
+	hasRequiredConversions$2 = 1;
+	/* eslint-disable no-mixed-operators */
+	const cssKeywords = requireColorName$2();
+
+	// NOTE: conversions should only return primitive values (i.e. arrays, or
+	//       values that give correct `typeof` results).
+	//       do not use box values types (i.e. Number(), String(), etc.)
+
+	const reverseKeywords = {};
+	for (const key of Object.keys(cssKeywords)) {
+		reverseKeywords[cssKeywords[key]] = key;
+	}
+
+	const convert = {
+		rgb: {channels: 3, labels: 'rgb'},
+		hsl: {channels: 3, labels: 'hsl'},
+		hsv: {channels: 3, labels: 'hsv'},
+		hwb: {channels: 3, labels: 'hwb'},
+		cmyk: {channels: 4, labels: 'cmyk'},
+		xyz: {channels: 3, labels: 'xyz'},
+		lab: {channels: 3, labels: 'lab'},
+		lch: {channels: 3, labels: 'lch'},
+		hex: {channels: 1, labels: ['hex']},
+		keyword: {channels: 1, labels: ['keyword']},
+		ansi16: {channels: 1, labels: ['ansi16']},
+		ansi256: {channels: 1, labels: ['ansi256']},
+		hcg: {channels: 3, labels: ['h', 'c', 'g']},
+		apple: {channels: 3, labels: ['r16', 'g16', 'b16']},
+		gray: {channels: 1, labels: ['gray']}
+	};
+
+	conversions$2 = convert;
+
+	// Hide .channels and .labels properties
+	for (const model of Object.keys(convert)) {
+		if (!('channels' in convert[model])) {
+			throw new Error('missing channels property: ' + model);
+		}
+
+		if (!('labels' in convert[model])) {
+			throw new Error('missing channel labels property: ' + model);
+		}
+
+		if (convert[model].labels.length !== convert[model].channels) {
+			throw new Error('channel and label counts mismatch: ' + model);
+		}
+
+		const {channels, labels} = convert[model];
+		delete convert[model].channels;
+		delete convert[model].labels;
+		Object.defineProperty(convert[model], 'channels', {value: channels});
+		Object.defineProperty(convert[model], 'labels', {value: labels});
+	}
+
+	convert.rgb.hsl = function (rgb) {
+		const r = rgb[0] / 255;
+		const g = rgb[1] / 255;
+		const b = rgb[2] / 255;
+		const min = Math.min(r, g, b);
+		const max = Math.max(r, g, b);
+		const delta = max - min;
+		let h;
+		let s;
+
+		if (max === min) {
+			h = 0;
+		} else if (r === max) {
+			h = (g - b) / delta;
+		} else if (g === max) {
+			h = 2 + (b - r) / delta;
+		} else if (b === max) {
+			h = 4 + (r - g) / delta;
+		}
+
+		h = Math.min(h * 60, 360);
+
+		if (h < 0) {
+			h += 360;
+		}
+
+		const l = (min + max) / 2;
+
+		if (max === min) {
+			s = 0;
+		} else if (l <= 0.5) {
+			s = delta / (max + min);
+		} else {
+			s = delta / (2 - max - min);
+		}
+
+		return [h, s * 100, l * 100];
+	};
+
+	convert.rgb.hsv = function (rgb) {
+		let rdif;
+		let gdif;
+		let bdif;
+		let h;
+		let s;
+
+		const r = rgb[0] / 255;
+		const g = rgb[1] / 255;
+		const b = rgb[2] / 255;
+		const v = Math.max(r, g, b);
+		const diff = v - Math.min(r, g, b);
+		const diffc = function (c) {
+			return (v - c) / 6 / diff + 1 / 2;
+		};
+
+		if (diff === 0) {
+			h = 0;
+			s = 0;
+		} else {
+			s = diff / v;
+			rdif = diffc(r);
+			gdif = diffc(g);
+			bdif = diffc(b);
+
+			if (r === v) {
+				h = bdif - gdif;
+			} else if (g === v) {
+				h = (1 / 3) + rdif - bdif;
+			} else if (b === v) {
+				h = (2 / 3) + gdif - rdif;
+			}
+
+			if (h < 0) {
+				h += 1;
+			} else if (h > 1) {
+				h -= 1;
+			}
+		}
+
+		return [
+			h * 360,
+			s * 100,
+			v * 100
+		];
+	};
+
+	convert.rgb.hwb = function (rgb) {
+		const r = rgb[0];
+		const g = rgb[1];
+		let b = rgb[2];
+		const h = convert.rgb.hsl(rgb)[0];
+		const w = 1 / 255 * Math.min(r, Math.min(g, b));
+
+		b = 1 - 1 / 255 * Math.max(r, Math.max(g, b));
+
+		return [h, w * 100, b * 100];
+	};
+
+	convert.rgb.cmyk = function (rgb) {
+		const r = rgb[0] / 255;
+		const g = rgb[1] / 255;
+		const b = rgb[2] / 255;
+
+		const k = Math.min(1 - r, 1 - g, 1 - b);
+		const c = (1 - r - k) / (1 - k) || 0;
+		const m = (1 - g - k) / (1 - k) || 0;
+		const y = (1 - b - k) / (1 - k) || 0;
+
+		return [c * 100, m * 100, y * 100, k * 100];
+	};
+
+	function comparativeDistance(x, y) {
+		/*
+			See https://en.m.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance
+		*/
+		return (
+			((x[0] - y[0]) ** 2) +
+			((x[1] - y[1]) ** 2) +
+			((x[2] - y[2]) ** 2)
+		);
+	}
+
+	convert.rgb.keyword = function (rgb) {
+		const reversed = reverseKeywords[rgb];
+		if (reversed) {
+			return reversed;
+		}
+
+		let currentClosestDistance = Infinity;
+		let currentClosestKeyword;
+
+		for (const keyword of Object.keys(cssKeywords)) {
+			const value = cssKeywords[keyword];
+
+			// Compute comparative distance
+			const distance = comparativeDistance(rgb, value);
+
+			// Check if its less, if so set as closest
+			if (distance < currentClosestDistance) {
+				currentClosestDistance = distance;
+				currentClosestKeyword = keyword;
+			}
+		}
+
+		return currentClosestKeyword;
+	};
+
+	convert.keyword.rgb = function (keyword) {
+		return cssKeywords[keyword];
+	};
+
+	convert.rgb.xyz = function (rgb) {
+		let r = rgb[0] / 255;
+		let g = rgb[1] / 255;
+		let b = rgb[2] / 255;
+
+		// Assume sRGB
+		r = r > 0.04045 ? (((r + 0.055) / 1.055) ** 2.4) : (r / 12.92);
+		g = g > 0.04045 ? (((g + 0.055) / 1.055) ** 2.4) : (g / 12.92);
+		b = b > 0.04045 ? (((b + 0.055) / 1.055) ** 2.4) : (b / 12.92);
+
+		const x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
+		const y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
+		const z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
+
+		return [x * 100, y * 100, z * 100];
+	};
+
+	convert.rgb.lab = function (rgb) {
+		const xyz = convert.rgb.xyz(rgb);
+		let x = xyz[0];
+		let y = xyz[1];
+		let z = xyz[2];
+
+		x /= 95.047;
+		y /= 100;
+		z /= 108.883;
+
+		x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
+		y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
+		z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
+
+		const l = (116 * y) - 16;
+		const a = 500 * (x - y);
+		const b = 200 * (y - z);
+
+		return [l, a, b];
+	};
+
+	convert.hsl.rgb = function (hsl) {
+		const h = hsl[0] / 360;
+		const s = hsl[1] / 100;
+		const l = hsl[2] / 100;
+		let t2;
+		let t3;
+		let val;
+
+		if (s === 0) {
+			val = l * 255;
+			return [val, val, val];
+		}
+
+		if (l < 0.5) {
+			t2 = l * (1 + s);
+		} else {
+			t2 = l + s - l * s;
+		}
+
+		const t1 = 2 * l - t2;
+
+		const rgb = [0, 0, 0];
+		for (let i = 0; i < 3; i++) {
+			t3 = h + 1 / 3 * -(i - 1);
+			if (t3 < 0) {
+				t3++;
+			}
+
+			if (t3 > 1) {
+				t3--;
+			}
+
+			if (6 * t3 < 1) {
+				val = t1 + (t2 - t1) * 6 * t3;
+			} else if (2 * t3 < 1) {
+				val = t2;
+			} else if (3 * t3 < 2) {
+				val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
+			} else {
+				val = t1;
+			}
+
+			rgb[i] = val * 255;
+		}
+
+		return rgb;
+	};
+
+	convert.hsl.hsv = function (hsl) {
+		const h = hsl[0];
+		let s = hsl[1] / 100;
+		let l = hsl[2] / 100;
+		let smin = s;
+		const lmin = Math.max(l, 0.01);
+
+		l *= 2;
+		s *= (l <= 1) ? l : 2 - l;
+		smin *= lmin <= 1 ? lmin : 2 - lmin;
+		const v = (l + s) / 2;
+		const sv = l === 0 ? (2 * smin) / (lmin + smin) : (2 * s) / (l + s);
+
+		return [h, sv * 100, v * 100];
+	};
+
+	convert.hsv.rgb = function (hsv) {
+		const h = hsv[0] / 60;
+		const s = hsv[1] / 100;
+		let v = hsv[2] / 100;
+		const hi = Math.floor(h) % 6;
+
+		const f = h - Math.floor(h);
+		const p = 255 * v * (1 - s);
+		const q = 255 * v * (1 - (s * f));
+		const t = 255 * v * (1 - (s * (1 - f)));
+		v *= 255;
+
+		switch (hi) {
+			case 0:
+				return [v, t, p];
+			case 1:
+				return [q, v, p];
+			case 2:
+				return [p, v, t];
+			case 3:
+				return [p, q, v];
+			case 4:
+				return [t, p, v];
+			case 5:
+				return [v, p, q];
+		}
+	};
+
+	convert.hsv.hsl = function (hsv) {
+		const h = hsv[0];
+		const s = hsv[1] / 100;
+		const v = hsv[2] / 100;
+		const vmin = Math.max(v, 0.01);
+		let sl;
+		let l;
+
+		l = (2 - s) * v;
+		const lmin = (2 - s) * vmin;
+		sl = s * vmin;
+		sl /= (lmin <= 1) ? lmin : 2 - lmin;
+		sl = sl || 0;
+		l /= 2;
+
+		return [h, sl * 100, l * 100];
+	};
+
+	// http://dev.w3.org/csswg/css-color/#hwb-to-rgb
+	convert.hwb.rgb = function (hwb) {
+		const h = hwb[0] / 360;
+		let wh = hwb[1] / 100;
+		let bl = hwb[2] / 100;
+		const ratio = wh + bl;
+		let f;
+
+		// Wh + bl cant be > 1
+		if (ratio > 1) {
+			wh /= ratio;
+			bl /= ratio;
+		}
+
+		const i = Math.floor(6 * h);
+		const v = 1 - bl;
+		f = 6 * h - i;
+
+		if ((i & 0x01) !== 0) {
+			f = 1 - f;
+		}
+
+		const n = wh + f * (v - wh); // Linear interpolation
+
+		let r;
+		let g;
+		let b;
+		/* eslint-disable max-statements-per-line,no-multi-spaces */
+		switch (i) {
+			default:
+			case 6:
+			case 0: r = v;  g = n;  b = wh; break;
+			case 1: r = n;  g = v;  b = wh; break;
+			case 2: r = wh; g = v;  b = n; break;
+			case 3: r = wh; g = n;  b = v; break;
+			case 4: r = n;  g = wh; b = v; break;
+			case 5: r = v;  g = wh; b = n; break;
+		}
+		/* eslint-enable max-statements-per-line,no-multi-spaces */
+
+		return [r * 255, g * 255, b * 255];
+	};
+
+	convert.cmyk.rgb = function (cmyk) {
+		const c = cmyk[0] / 100;
+		const m = cmyk[1] / 100;
+		const y = cmyk[2] / 100;
+		const k = cmyk[3] / 100;
+
+		const r = 1 - Math.min(1, c * (1 - k) + k);
+		const g = 1 - Math.min(1, m * (1 - k) + k);
+		const b = 1 - Math.min(1, y * (1 - k) + k);
+
+		return [r * 255, g * 255, b * 255];
+	};
+
+	convert.xyz.rgb = function (xyz) {
+		const x = xyz[0] / 100;
+		const y = xyz[1] / 100;
+		const z = xyz[2] / 100;
+		let r;
+		let g;
+		let b;
+
+		r = (x * 3.2406) + (y * -1.5372) + (z * -0.4986);
+		g = (x * -0.9689) + (y * 1.8758) + (z * 0.0415);
+		b = (x * 0.0557) + (y * -0.2040) + (z * 1.0570);
+
+		// Assume sRGB
+		r = r > 0.0031308
+			? ((1.055 * (r ** (1.0 / 2.4))) - 0.055)
+			: r * 12.92;
+
+		g = g > 0.0031308
+			? ((1.055 * (g ** (1.0 / 2.4))) - 0.055)
+			: g * 12.92;
+
+		b = b > 0.0031308
+			? ((1.055 * (b ** (1.0 / 2.4))) - 0.055)
+			: b * 12.92;
+
+		r = Math.min(Math.max(0, r), 1);
+		g = Math.min(Math.max(0, g), 1);
+		b = Math.min(Math.max(0, b), 1);
+
+		return [r * 255, g * 255, b * 255];
+	};
+
+	convert.xyz.lab = function (xyz) {
+		let x = xyz[0];
+		let y = xyz[1];
+		let z = xyz[2];
+
+		x /= 95.047;
+		y /= 100;
+		z /= 108.883;
+
+		x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
+		y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
+		z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
+
+		const l = (116 * y) - 16;
+		const a = 500 * (x - y);
+		const b = 200 * (y - z);
+
+		return [l, a, b];
+	};
+
+	convert.lab.xyz = function (lab) {
+		const l = lab[0];
+		const a = lab[1];
+		const b = lab[2];
+		let x;
+		let y;
+		let z;
+
+		y = (l + 16) / 116;
+		x = a / 500 + y;
+		z = y - b / 200;
+
+		const y2 = y ** 3;
+		const x2 = x ** 3;
+		const z2 = z ** 3;
+		y = y2 > 0.008856 ? y2 : (y - 16 / 116) / 7.787;
+		x = x2 > 0.008856 ? x2 : (x - 16 / 116) / 7.787;
+		z = z2 > 0.008856 ? z2 : (z - 16 / 116) / 7.787;
+
+		x *= 95.047;
+		y *= 100;
+		z *= 108.883;
+
+		return [x, y, z];
+	};
+
+	convert.lab.lch = function (lab) {
+		const l = lab[0];
+		const a = lab[1];
+		const b = lab[2];
+		let h;
+
+		const hr = Math.atan2(b, a);
+		h = hr * 360 / 2 / Math.PI;
+
+		if (h < 0) {
+			h += 360;
+		}
+
+		const c = Math.sqrt(a * a + b * b);
+
+		return [l, c, h];
+	};
+
+	convert.lch.lab = function (lch) {
+		const l = lch[0];
+		const c = lch[1];
+		const h = lch[2];
+
+		const hr = h / 360 * 2 * Math.PI;
+		const a = c * Math.cos(hr);
+		const b = c * Math.sin(hr);
+
+		return [l, a, b];
+	};
+
+	convert.rgb.ansi16 = function (args, saturation = null) {
+		const [r, g, b] = args;
+		let value = saturation === null ? convert.rgb.hsv(args)[2] : saturation; // Hsv -> ansi16 optimization
+
+		value = Math.round(value / 50);
+
+		if (value === 0) {
+			return 30;
+		}
+
+		let ansi = 30
+			+ ((Math.round(b / 255) << 2)
+			| (Math.round(g / 255) << 1)
+			| Math.round(r / 255));
+
+		if (value === 2) {
+			ansi += 60;
+		}
+
+		return ansi;
+	};
+
+	convert.hsv.ansi16 = function (args) {
+		// Optimization here; we already know the value and don't need to get
+		// it converted for us.
+		return convert.rgb.ansi16(convert.hsv.rgb(args), args[2]);
+	};
+
+	convert.rgb.ansi256 = function (args) {
+		const r = args[0];
+		const g = args[1];
+		const b = args[2];
+
+		// We use the extended greyscale palette here, with the exception of
+		// black and white. normal palette only has 4 greyscale shades.
+		if (r === g && g === b) {
+			if (r < 8) {
+				return 16;
+			}
+
+			if (r > 248) {
+				return 231;
+			}
+
+			return Math.round(((r - 8) / 247) * 24) + 232;
+		}
+
+		const ansi = 16
+			+ (36 * Math.round(r / 255 * 5))
+			+ (6 * Math.round(g / 255 * 5))
+			+ Math.round(b / 255 * 5);
+
+		return ansi;
+	};
+
+	convert.ansi16.rgb = function (args) {
+		let color = args % 10;
+
+		// Handle greyscale
+		if (color === 0 || color === 7) {
+			if (args > 50) {
+				color += 3.5;
+			}
+
+			color = color / 10.5 * 255;
+
+			return [color, color, color];
+		}
+
+		const mult = (~~(args > 50) + 1) * 0.5;
+		const r = ((color & 1) * mult) * 255;
+		const g = (((color >> 1) & 1) * mult) * 255;
+		const b = (((color >> 2) & 1) * mult) * 255;
+
+		return [r, g, b];
+	};
+
+	convert.ansi256.rgb = function (args) {
+		// Handle greyscale
+		if (args >= 232) {
+			const c = (args - 232) * 10 + 8;
+			return [c, c, c];
+		}
+
+		args -= 16;
+
+		let rem;
+		const r = Math.floor(args / 36) / 5 * 255;
+		const g = Math.floor((rem = args % 36) / 6) / 5 * 255;
+		const b = (rem % 6) / 5 * 255;
+
+		return [r, g, b];
+	};
+
+	convert.rgb.hex = function (args) {
+		const integer = ((Math.round(args[0]) & 0xFF) << 16)
+			+ ((Math.round(args[1]) & 0xFF) << 8)
+			+ (Math.round(args[2]) & 0xFF);
+
+		const string = integer.toString(16).toUpperCase();
+		return '000000'.substring(string.length) + string;
+	};
+
+	convert.hex.rgb = function (args) {
+		const match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i);
+		if (!match) {
+			return [0, 0, 0];
+		}
+
+		let colorString = match[0];
+
+		if (match[0].length === 3) {
+			colorString = colorString.split('').map(char => {
+				return char + char;
+			}).join('');
+		}
+
+		const integer = parseInt(colorString, 16);
+		const r = (integer >> 16) & 0xFF;
+		const g = (integer >> 8) & 0xFF;
+		const b = integer & 0xFF;
+
+		return [r, g, b];
+	};
+
+	convert.rgb.hcg = function (rgb) {
+		const r = rgb[0] / 255;
+		const g = rgb[1] / 255;
+		const b = rgb[2] / 255;
+		const max = Math.max(Math.max(r, g), b);
+		const min = Math.min(Math.min(r, g), b);
+		const chroma = (max - min);
+		let grayscale;
+		let hue;
+
+		if (chroma < 1) {
+			grayscale = min / (1 - chroma);
+		} else {
+			grayscale = 0;
+		}
+
+		if (chroma <= 0) {
+			hue = 0;
+		} else
+		if (max === r) {
+			hue = ((g - b) / chroma) % 6;
+		} else
+		if (max === g) {
+			hue = 2 + (b - r) / chroma;
+		} else {
+			hue = 4 + (r - g) / chroma;
+		}
+
+		hue /= 6;
+		hue %= 1;
+
+		return [hue * 360, chroma * 100, grayscale * 100];
+	};
+
+	convert.hsl.hcg = function (hsl) {
+		const s = hsl[1] / 100;
+		const l = hsl[2] / 100;
+
+		const c = l < 0.5 ? (2.0 * s * l) : (2.0 * s * (1.0 - l));
+
+		let f = 0;
+		if (c < 1.0) {
+			f = (l - 0.5 * c) / (1.0 - c);
+		}
+
+		return [hsl[0], c * 100, f * 100];
+	};
+
+	convert.hsv.hcg = function (hsv) {
+		const s = hsv[1] / 100;
+		const v = hsv[2] / 100;
+
+		const c = s * v;
+		let f = 0;
+
+		if (c < 1.0) {
+			f = (v - c) / (1 - c);
+		}
+
+		return [hsv[0], c * 100, f * 100];
+	};
+
+	convert.hcg.rgb = function (hcg) {
+		const h = hcg[0] / 360;
+		const c = hcg[1] / 100;
+		const g = hcg[2] / 100;
+
+		if (c === 0.0) {
+			return [g * 255, g * 255, g * 255];
+		}
+
+		const pure = [0, 0, 0];
+		const hi = (h % 1) * 6;
+		const v = hi % 1;
+		const w = 1 - v;
+		let mg = 0;
+
+		/* eslint-disable max-statements-per-line */
+		switch (Math.floor(hi)) {
+			case 0:
+				pure[0] = 1; pure[1] = v; pure[2] = 0; break;
+			case 1:
+				pure[0] = w; pure[1] = 1; pure[2] = 0; break;
+			case 2:
+				pure[0] = 0; pure[1] = 1; pure[2] = v; break;
+			case 3:
+				pure[0] = 0; pure[1] = w; pure[2] = 1; break;
+			case 4:
+				pure[0] = v; pure[1] = 0; pure[2] = 1; break;
+			default:
+				pure[0] = 1; pure[1] = 0; pure[2] = w;
+		}
+		/* eslint-enable max-statements-per-line */
+
+		mg = (1.0 - c) * g;
+
+		return [
+			(c * pure[0] + mg) * 255,
+			(c * pure[1] + mg) * 255,
+			(c * pure[2] + mg) * 255
+		];
+	};
+
+	convert.hcg.hsv = function (hcg) {
+		const c = hcg[1] / 100;
+		const g = hcg[2] / 100;
+
+		const v = c + g * (1.0 - c);
+		let f = 0;
+
+		if (v > 0.0) {
+			f = c / v;
+		}
+
+		return [hcg[0], f * 100, v * 100];
+	};
+
+	convert.hcg.hsl = function (hcg) {
+		const c = hcg[1] / 100;
+		const g = hcg[2] / 100;
+
+		const l = g * (1.0 - c) + 0.5 * c;
+		let s = 0;
+
+		if (l > 0.0 && l < 0.5) {
+			s = c / (2 * l);
+		} else
+		if (l >= 0.5 && l < 1.0) {
+			s = c / (2 * (1 - l));
+		}
+
+		return [hcg[0], s * 100, l * 100];
+	};
+
+	convert.hcg.hwb = function (hcg) {
+		const c = hcg[1] / 100;
+		const g = hcg[2] / 100;
+		const v = c + g * (1.0 - c);
+		return [hcg[0], (v - c) * 100, (1 - v) * 100];
+	};
+
+	convert.hwb.hcg = function (hwb) {
+		const w = hwb[1] / 100;
+		const b = hwb[2] / 100;
+		const v = 1 - b;
+		const c = v - w;
+		let g = 0;
+
+		if (c < 1) {
+			g = (v - c) / (1 - c);
+		}
+
+		return [hwb[0], c * 100, g * 100];
+	};
+
+	convert.apple.rgb = function (apple) {
+		return [(apple[0] / 65535) * 255, (apple[1] / 65535) * 255, (apple[2] / 65535) * 255];
+	};
+
+	convert.rgb.apple = function (rgb) {
+		return [(rgb[0] / 255) * 65535, (rgb[1] / 255) * 65535, (rgb[2] / 255) * 65535];
+	};
+
+	convert.gray.rgb = function (args) {
+		return [args[0] / 100 * 255, args[0] / 100 * 255, args[0] / 100 * 255];
+	};
+
+	convert.gray.hsl = function (args) {
+		return [0, 0, args[0]];
+	};
+
+	convert.gray.hsv = convert.gray.hsl;
+
+	convert.gray.hwb = function (gray) {
+		return [0, 100, gray[0]];
+	};
+
+	convert.gray.cmyk = function (gray) {
+		return [0, 0, 0, gray[0]];
+	};
+
+	convert.gray.lab = function (gray) {
+		return [gray[0], 0, 0];
+	};
+
+	convert.gray.hex = function (gray) {
+		const val = Math.round(gray[0] / 100 * 255) & 0xFF;
+		const integer = (val << 16) + (val << 8) + val;
+
+		const string = integer.toString(16).toUpperCase();
+		return '000000'.substring(string.length) + string;
+	};
+
+	convert.rgb.gray = function (rgb) {
+		const val = (rgb[0] + rgb[1] + rgb[2]) / 3;
+		return [val / 255 * 100];
+	};
+	return conversions$2;
+}
+
+var route$2;
+var hasRequiredRoute$2;
+
+function requireRoute$2 () {
+	if (hasRequiredRoute$2) return route$2;
+	hasRequiredRoute$2 = 1;
+	const conversions = requireConversions$2();
+
+	/*
+		This function routes a model to all other models.
+
+		all functions that are routed have a property `.conversion` attached
+		to the returned synthetic function. This property is an array
+		of strings, each with the steps in between the 'from' and 'to'
+		color models (inclusive).
+
+		conversions that are not possible simply are not included.
+	*/
+
+	function buildGraph() {
+		const graph = {};
+		// https://jsperf.com/object-keys-vs-for-in-with-closure/3
+		const models = Object.keys(conversions);
+
+		for (let len = models.length, i = 0; i < len; i++) {
+			graph[models[i]] = {
+				// http://jsperf.com/1-vs-infinity
+				// micro-opt, but this is simple.
+				distance: -1,
+				parent: null
+			};
+		}
+
+		return graph;
+	}
+
+	// https://en.wikipedia.org/wiki/Breadth-first_search
+	function deriveBFS(fromModel) {
+		const graph = buildGraph();
+		const queue = [fromModel]; // Unshift -> queue -> pop
+
+		graph[fromModel].distance = 0;
+
+		while (queue.length) {
+			const current = queue.pop();
+			const adjacents = Object.keys(conversions[current]);
+
+			for (let len = adjacents.length, i = 0; i < len; i++) {
+				const adjacent = adjacents[i];
+				const node = graph[adjacent];
+
+				if (node.distance === -1) {
+					node.distance = graph[current].distance + 1;
+					node.parent = current;
+					queue.unshift(adjacent);
+				}
+			}
+		}
+
+		return graph;
+	}
+
+	function link(from, to) {
+		return function (args) {
+			return to(from(args));
+		};
+	}
+
+	function wrapConversion(toModel, graph) {
+		const path = [graph[toModel].parent, toModel];
+		let fn = conversions[graph[toModel].parent][toModel];
+
+		let cur = graph[toModel].parent;
+		while (graph[cur].parent) {
+			path.unshift(graph[cur].parent);
+			fn = link(conversions[graph[cur].parent][cur], fn);
+			cur = graph[cur].parent;
+		}
+
+		fn.conversion = path;
+		return fn;
+	}
+
+	route$2 = function (fromModel) {
+		const graph = deriveBFS(fromModel);
+		const conversion = {};
+
+		const models = Object.keys(graph);
+		for (let len = models.length, i = 0; i < len; i++) {
+			const toModel = models[i];
+			const node = graph[toModel];
+
+			if (node.parent === null) {
+				// No possible conversion, or this node is the source model.
+				continue;
+			}
+
+			conversion[toModel] = wrapConversion(toModel, graph);
+		}
+
+		return conversion;
+	};
+	return route$2;
+}
+
+var colorConvert$2;
+var hasRequiredColorConvert$2;
+
+function requireColorConvert$2 () {
+	if (hasRequiredColorConvert$2) return colorConvert$2;
+	hasRequiredColorConvert$2 = 1;
+	const conversions = requireConversions$2();
+	const route = requireRoute$2();
+
+	const convert = {};
+
+	const models = Object.keys(conversions);
+
+	function wrapRaw(fn) {
+		const wrappedFn = function (...args) {
+			const arg0 = args[0];
+			if (arg0 === undefined || arg0 === null) {
+				return arg0;
+			}
+
+			if (arg0.length > 1) {
+				args = arg0;
+			}
+
+			return fn(args);
+		};
+
+		// Preserve .conversion property if there is one
+		if ('conversion' in fn) {
+			wrappedFn.conversion = fn.conversion;
+		}
+
+		return wrappedFn;
+	}
+
+	function wrapRounded(fn) {
+		const wrappedFn = function (...args) {
+			const arg0 = args[0];
+
+			if (arg0 === undefined || arg0 === null) {
+				return arg0;
+			}
+
+			if (arg0.length > 1) {
+				args = arg0;
+			}
+
+			const result = fn(args);
+
+			// We're assuming the result is an array here.
+			// see notice in conversions.js; don't use box types
+			// in conversion functions.
+			if (typeof result === 'object') {
+				for (let len = result.length, i = 0; i < len; i++) {
+					result[i] = Math.round(result[i]);
+				}
+			}
+
+			return result;
+		};
+
+		// Preserve .conversion property if there is one
+		if ('conversion' in fn) {
+			wrappedFn.conversion = fn.conversion;
+		}
+
+		return wrappedFn;
+	}
+
+	models.forEach(fromModel => {
+		convert[fromModel] = {};
+
+		Object.defineProperty(convert[fromModel], 'channels', {value: conversions[fromModel].channels});
+		Object.defineProperty(convert[fromModel], 'labels', {value: conversions[fromModel].labels});
+
+		const routes = route(fromModel);
+		const routeModels = Object.keys(routes);
+
+		routeModels.forEach(toModel => {
+			const fn = routes[toModel];
+
+			convert[fromModel][toModel] = wrapRounded(fn);
+			convert[fromModel][toModel].raw = wrapRaw(fn);
+		});
+	});
+
+	colorConvert$2 = convert;
+	return colorConvert$2;
+}
+
+ansiStyles$2.exports;
+
+var hasRequiredAnsiStyles$2;
+
+function requireAnsiStyles$2 () {
+	if (hasRequiredAnsiStyles$2) return ansiStyles$2.exports;
+	hasRequiredAnsiStyles$2 = 1;
+	(function (module) {
+
+		const wrapAnsi16 = (fn, offset) => (...args) => {
+			const code = fn(...args);
+			return `\u001B[${code + offset}m`;
+		};
+
+		const wrapAnsi256 = (fn, offset) => (...args) => {
+			const code = fn(...args);
+			return `\u001B[${38 + offset};5;${code}m`;
+		};
+
+		const wrapAnsi16m = (fn, offset) => (...args) => {
+			const rgb = fn(...args);
+			return `\u001B[${38 + offset};2;${rgb[0]};${rgb[1]};${rgb[2]}m`;
+		};
+
+		const ansi2ansi = n => n;
+		const rgb2rgb = (r, g, b) => [r, g, b];
+
+		const setLazyProperty = (object, property, get) => {
+			Object.defineProperty(object, property, {
+				get: () => {
+					const value = get();
+
+					Object.defineProperty(object, property, {
+						value,
+						enumerable: true,
+						configurable: true
+					});
+
+					return value;
+				},
+				enumerable: true,
+				configurable: true
+			});
+		};
+
+		/** @type {typeof import('color-convert')} */
+		let colorConvert;
+		const makeDynamicStyles = (wrap, targetSpace, identity, isBackground) => {
+			if (colorConvert === undefined) {
+				colorConvert = requireColorConvert$2();
+			}
+
+			const offset = isBackground ? 10 : 0;
+			const styles = {};
+
+			for (const [sourceSpace, suite] of Object.entries(colorConvert)) {
+				const name = sourceSpace === 'ansi16' ? 'ansi' : sourceSpace;
+				if (sourceSpace === targetSpace) {
+					styles[name] = wrap(identity, offset);
+				} else if (typeof suite === 'object') {
+					styles[name] = wrap(suite[targetSpace], offset);
+				}
+			}
+
+			return styles;
+		};
+
+		function assembleStyles() {
+			const codes = new Map();
+			const styles = {
+				modifier: {
+					reset: [0, 0],
+					// 21 isn't widely supported and 22 does the same thing
+					bold: [1, 22],
+					dim: [2, 22],
+					italic: [3, 23],
+					underline: [4, 24],
+					inverse: [7, 27],
+					hidden: [8, 28],
+					strikethrough: [9, 29]
+				},
+				color: {
+					black: [30, 39],
+					red: [31, 39],
+					green: [32, 39],
+					yellow: [33, 39],
+					blue: [34, 39],
+					magenta: [35, 39],
+					cyan: [36, 39],
+					white: [37, 39],
+
+					// Bright color
+					blackBright: [90, 39],
+					redBright: [91, 39],
+					greenBright: [92, 39],
+					yellowBright: [93, 39],
+					blueBright: [94, 39],
+					magentaBright: [95, 39],
+					cyanBright: [96, 39],
+					whiteBright: [97, 39]
+				},
+				bgColor: {
+					bgBlack: [40, 49],
+					bgRed: [41, 49],
+					bgGreen: [42, 49],
+					bgYellow: [43, 49],
+					bgBlue: [44, 49],
+					bgMagenta: [45, 49],
+					bgCyan: [46, 49],
+					bgWhite: [47, 49],
+
+					// Bright color
+					bgBlackBright: [100, 49],
+					bgRedBright: [101, 49],
+					bgGreenBright: [102, 49],
+					bgYellowBright: [103, 49],
+					bgBlueBright: [104, 49],
+					bgMagentaBright: [105, 49],
+					bgCyanBright: [106, 49],
+					bgWhiteBright: [107, 49]
+				}
+			};
+
+			// Alias bright black as gray (and grey)
+			styles.color.gray = styles.color.blackBright;
+			styles.bgColor.bgGray = styles.bgColor.bgBlackBright;
+			styles.color.grey = styles.color.blackBright;
+			styles.bgColor.bgGrey = styles.bgColor.bgBlackBright;
+
+			for (const [groupName, group] of Object.entries(styles)) {
+				for (const [styleName, style] of Object.entries(group)) {
+					styles[styleName] = {
+						open: `\u001B[${style[0]}m`,
+						close: `\u001B[${style[1]}m`
+					};
+
+					group[styleName] = styles[styleName];
+
+					codes.set(style[0], style[1]);
+				}
+
+				Object.defineProperty(styles, groupName, {
+					value: group,
+					enumerable: false
+				});
+			}
+
+			Object.defineProperty(styles, 'codes', {
+				value: codes,
+				enumerable: false
+			});
+
+			styles.color.close = '\u001B[39m';
+			styles.bgColor.close = '\u001B[49m';
+
+			setLazyProperty(styles.color, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, false));
+			setLazyProperty(styles.color, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, false));
+			setLazyProperty(styles.color, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, false));
+			setLazyProperty(styles.bgColor, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, true));
+			setLazyProperty(styles.bgColor, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, true));
+			setLazyProperty(styles.bgColor, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, true));
+
+			return styles;
+		}
+
+		// Make the export immutable
+		Object.defineProperty(module, 'exports', {
+			enumerable: true,
+			get: assembleStyles
+		}); 
+	} (ansiStyles$2));
+	return ansiStyles$2.exports;
+}
+
 var wrapAnsi_1;
 var hasRequiredWrapAnsi;
 
@@ -86660,7 +86276,7 @@ function requireWrapAnsi () {
 	hasRequiredWrapAnsi = 1;
 	const stringWidth = stringWidthExports;
 	const stripAnsi = requireStripAnsi();
-	const ansiStyles = ansiStylesExports;
+	const ansiStyles = requireAnsiStyles$2();
 
 	const ESCAPES = new Set([
 		'\u001B',
@@ -87338,7 +86954,7 @@ function requireRequireDirectory () {
 	return requireDirectory.exports;
 }
 
-var t=require$$0$5;class e extends Error{constructor(t){super(t||"yargs error"),this.name="YError",Error.captureStackTrace&&Error.captureStackTrace(this,e);}}let s,i=[];function n(t,o,a,h){s=h;let l={};if(Object.prototype.hasOwnProperty.call(t,"extends")){if("string"!=typeof t.extends)return l;const r=/\.json|\..*rc$/.test(t.extends);let h=null;if(r)h=function(t,e){return s.path.resolve(t,e)}(o,t.extends);else try{h=require.resolve(t.extends);}catch(e){return t}!function(t){if(i.indexOf(t)>-1)throw new e(`Circular extended configurations: '${t}'.`)}(h),i.push(h),l=r?JSON.parse(s.readFileSync(h,"utf8")):commonjsRequire(t.extends),delete t.extends,l=n(l,s.path.dirname(h),a,s);}return i=[],a?r(l,t):Object.assign({},l,t)}function r(t,e){const s={};function i(t){return t&&"object"==typeof t&&!Array.isArray(t)}Object.assign(s,t);for(const n of Object.keys(e))i(e[n])&&i(s[n])?s[n]=r(t[n],e[n]):s[n]=e[n];return s}function o(t){const e=t.replace(/\s{2,}/g," ").split(/\s+(?![^[]*]|[^<]*>)/),s=/\.*[\][<>]/g,i=e.shift();if(!i)throw new Error(`No command found in: ${t}`);const n={cmd:i.replace(s,""),demanded:[],optional:[]};return e.forEach(((t,i)=>{let r=!1;t=t.replace(/\s/g,""),/\.+[\]>]/.test(t)&&i===e.length-1&&(r=!0),/^\[/.test(t)?n.optional.push({cmd:t.replace(s,"").split("|"),variadic:r}):n.demanded.push({cmd:t.replace(s,"").split("|"),variadic:r});})),n}const a=["first","second","third","fourth","fifth","sixth"];function h(t,s,i){try{let n=0;const[r,a,h]="object"==typeof t?[{demanded:[],optional:[]},t,s]:[o(`cmd ${t}`),s,i],f=[].slice.call(a);for(;f.length&&void 0===f[f.length-1];)f.pop();const d=h||f.length;if(d<r.demanded.length)throw new e(`Not enough arguments provided. Expected ${r.demanded.length} but received ${f.length}.`);const u=r.demanded.length+r.optional.length;if(d>u)throw new e(`Too many arguments provided. Expected max ${u} but received ${d}.`);r.demanded.forEach((t=>{const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1;})),r.optional.forEach((t=>{if(0===f.length)return;const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1;}));}catch(t){console.warn(t.stack);}}function l(t){return Array.isArray(t)?"array":null===t?"null":typeof t}function c(t,s,i){throw new e(`Invalid ${a[i]||"manyith"} argument. Expected ${s.join(" or ")} but received ${t}.`)}function f(t){return !!t&&!!t.then&&"function"==typeof t.then}function d(t,e,s,i){s.assert.notStrictEqual(t,e,i);}function u(t,e){e.assert.strictEqual(typeof t,"string");}function p(t){return Object.keys(t)}function g(t={},e=(()=>!0)){const s={};return p(t).forEach((i=>{e(i,t[i])&&(s[i]=t[i]);})),s}function m(){return process.versions.electron&&!process.defaultApp?0:1}function y$1(){return process.argv[m()]}var b$1=Object.freeze({__proto__:null,hideBin:function(t){return t.slice(m()+1)},getProcessArgvBin:y$1});function v$1(t,e,s,i){if("a"===s&&!i)throw new TypeError("Private accessor was defined without a getter");if("function"==typeof e?t!==e||!i:!e.has(t))throw new TypeError("Cannot read private member from an object whose class did not declare it");return "m"===s?i:"a"===s?i.call(t):i?i.value:e.get(t)}function O(t,e,s,i,n){if("function"==typeof e?t!==e||!n:!e.has(t))throw new TypeError("Cannot write private member to an object whose class did not declare it");return e.set(t,s),s}let w$1 = class w{constructor(t){this.globalMiddleware=[],this.frozens=[],this.yargs=t;}addMiddleware(t,e,s=!0,i=!1){if(h("<array|function> [boolean] [boolean] [boolean]",[t,e,s],arguments.length),Array.isArray(t)){for(let i=0;i<t.length;i++){if("function"!=typeof t[i])throw Error("middleware must be a function");const n=t[i];n.applyBeforeValidation=e,n.global=s;}Array.prototype.push.apply(this.globalMiddleware,t);}else if("function"==typeof t){const n=t;n.applyBeforeValidation=e,n.global=s,n.mutates=i,this.globalMiddleware.push(t);}return this.yargs}addCoerceMiddleware(t,e){const s=this.yargs.getAliases();return this.globalMiddleware=this.globalMiddleware.filter((t=>{const i=[...s[e]||[],e];return !t.option||!i.includes(t.option)})),t.option=e,this.addMiddleware(t,!0,!0,!0)}getMiddleware(){return this.globalMiddleware}freeze(){this.frozens.push([...this.globalMiddleware]);}unfreeze(){const t=this.frozens.pop();void 0!==t&&(this.globalMiddleware=t);}reset(){this.globalMiddleware=this.globalMiddleware.filter((t=>t.global));}};function C$1(t,e,s,i){return s.reduce(((t,s)=>{if(s.applyBeforeValidation!==i)return t;if(s.mutates){if(s.applied)return t;s.applied=!0;}if(f(t))return t.then((t=>Promise.all([t,s(t,e)]))).then((([t,e])=>Object.assign(t,e)));{const i=s(t,e);return f(i)?i.then((e=>Object.assign(t,e))):Object.assign(t,i)}}),t)}function j$1(t,e,s=(t=>{throw t})){try{const s="function"==typeof t?t():t;return f(s)?s.then((t=>e(t))):e(s)}catch(t){return s(t)}}const M$1=/(^\*)|(^\$0)/;let _$1 = class _{constructor(t,e,s,i){this.requireCache=new Set,this.handlers={},this.aliasMap={},this.frozens=[],this.shim=i,this.usage=t,this.globalMiddleware=s,this.validation=e;}addDirectory(t,e,s,i){"boolean"!=typeof(i=i||{}).recurse&&(i.recurse=!1),Array.isArray(i.extensions)||(i.extensions=["js"]);const n="function"==typeof i.visit?i.visit:t=>t;i.visit=(t,e,s)=>{const i=n(t,e,s);if(i){if(this.requireCache.has(e))return i;this.requireCache.add(e),this.addHandler(i);}return i},this.shim.requireDirectory({require:e,filename:s},t,i);}addHandler(t,e,s,i,n,r){let a=[];const h=function(t){return t?t.map((t=>(t.applyBeforeValidation=!1,t))):[]}(n);if(i=i||(()=>{}),Array.isArray(t))if(function(t){return t.every((t=>"string"==typeof t))}(t))[t,...a]=t;else for(const e of t)this.addHandler(e);else {if(function(t){return "object"==typeof t&&!Array.isArray(t)}(t)){let e=Array.isArray(t.command)||"string"==typeof t.command?t.command:this.moduleName(t);return t.aliases&&(e=[].concat(e).concat(t.aliases)),void this.addHandler(e,this.extractDesc(t),t.builder,t.handler,t.middlewares,t.deprecated)}if(k$1(s))return void this.addHandler([t].concat(a),e,s.builder,s.handler,s.middlewares,s.deprecated)}if("string"==typeof t){const n=o(t);a=a.map((t=>o(t).cmd));let l=!1;const c=[n.cmd].concat(a).filter((t=>!M$1.test(t)||(l=!0,!1)));0===c.length&&l&&c.push("$0"),l&&(n.cmd=c[0],a=c.slice(1),t=t.replace(M$1,n.cmd)),a.forEach((t=>{this.aliasMap[t]=n.cmd;})),!1!==e&&this.usage.command(t,e,l,a,r),this.handlers[n.cmd]={original:t,description:e,handler:i,builder:s||{},middlewares:h,deprecated:r,demanded:n.demanded,optional:n.optional},l&&(this.defaultCommand=this.handlers[n.cmd]);}}getCommandHandlers(){return this.handlers}getCommands(){return Object.keys(this.handlers).concat(Object.keys(this.aliasMap))}hasDefaultCommand(){return !!this.defaultCommand}runCommand(t,e,s,i,n,r){const o=this.handlers[t]||this.handlers[this.aliasMap[t]]||this.defaultCommand,a=e.getInternalMethods().getContext(),h=a.commands.slice(),l=!t;t&&(a.commands.push(t),a.fullCommands.push(o.original));const c=this.applyBuilderUpdateUsageAndParse(l,o,e,s.aliases,h,i,n,r);return f(c)?c.then((t=>this.applyMiddlewareAndGetResult(l,o,t.innerArgv,a,n,t.aliases,e))):this.applyMiddlewareAndGetResult(l,o,c.innerArgv,a,n,c.aliases,e)}applyBuilderUpdateUsageAndParse(t,e,s,i,n,r,o,a){const h=e.builder;let l=s;if(x$1(h)){s.getInternalMethods().getUsageInstance().freeze();const c=h(s.getInternalMethods().reset(i),a);if(f(c))return c.then((i=>{var a;return l=(a=i)&&"function"==typeof a.getInternalMethods?i:s,this.parseAndUpdateUsage(t,e,l,n,r,o)}))}else (function(t){return "object"==typeof t})(h)&&(s.getInternalMethods().getUsageInstance().freeze(),l=s.getInternalMethods().reset(i),Object.keys(e.builder).forEach((t=>{l.option(t,h[t]);})));return this.parseAndUpdateUsage(t,e,l,n,r,o)}parseAndUpdateUsage(t,e,s,i,n,r){t&&s.getInternalMethods().getUsageInstance().unfreeze(!0),this.shouldUpdateUsage(s)&&s.getInternalMethods().getUsageInstance().usage(this.usageFromParentCommandsCommandHandler(i,e),e.description);const o=s.getInternalMethods().runYargsParserAndExecuteCommands(null,void 0,!0,n,r);return f(o)?o.then((t=>({aliases:s.parsed.aliases,innerArgv:t}))):{aliases:s.parsed.aliases,innerArgv:o}}shouldUpdateUsage(t){return !t.getInternalMethods().getUsageInstance().getUsageDisabled()&&0===t.getInternalMethods().getUsageInstance().getUsage().length}usageFromParentCommandsCommandHandler(t,e){const s=M$1.test(e.original)?e.original.replace(M$1,"").trim():e.original,i=t.filter((t=>!M$1.test(t)));return i.push(s),`$0 ${i.join(" ")}`}handleValidationAndGetResult(t,e,s,i,n,r,o,a){if(!r.getInternalMethods().getHasOutput()){const e=r.getInternalMethods().runValidation(n,a,r.parsed.error,t);s=j$1(s,(t=>(e(t),t)));}if(e.handler&&!r.getInternalMethods().getHasOutput()){r.getInternalMethods().setHasOutput();const i=!!r.getOptions().configuration["populate--"];r.getInternalMethods().postProcess(s,i,!1,!1),s=j$1(s=C$1(s,r,o,!1),(t=>{const s=e.handler(t);return f(s)?s.then((()=>t)):t})),t||r.getInternalMethods().getUsageInstance().cacheHelpMessage(),f(s)&&!r.getInternalMethods().hasParseCallback()&&s.catch((t=>{try{r.getInternalMethods().getUsageInstance().fail(null,t);}catch(t){}}));}return t||(i.commands.pop(),i.fullCommands.pop()),s}applyMiddlewareAndGetResult(t,e,s,i,n,r,o){let a={};if(n)return s;o.getInternalMethods().getHasOutput()||(a=this.populatePositionals(e,s,i,o));const h=this.globalMiddleware.getMiddleware().slice(0).concat(e.middlewares),l=C$1(s,o,h,!0);return f(l)?l.then((s=>this.handleValidationAndGetResult(t,e,s,i,r,o,h,a))):this.handleValidationAndGetResult(t,e,l,i,r,o,h,a)}populatePositionals(t,e,s,i){e._=e._.slice(s.commands.length);const n=t.demanded.slice(0),r=t.optional.slice(0),o={};for(this.validation.positionalCount(n.length,e._.length);n.length;){const t=n.shift();this.populatePositional(t,e,o);}for(;r.length;){const t=r.shift();this.populatePositional(t,e,o);}return e._=s.commands.concat(e._.map((t=>""+t))),this.postProcessPositionals(e,o,this.cmdToParseOptions(t.original),i),o}populatePositional(t,e,s){const i=t.cmd[0];t.variadic?s[i]=e._.splice(0).map(String):e._.length&&(s[i]=[String(e._.shift())]);}cmdToParseOptions(t){const e={array:[],default:{},alias:{},demand:{}},s=o(t);return s.demanded.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i,e.demand[s]=!0;})),s.optional.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i;})),e}postProcessPositionals(t,e,s,i){const n=Object.assign({},i.getOptions());n.default=Object.assign(s.default,n.default);for(const t of Object.keys(s.alias))n.alias[t]=(n.alias[t]||[]).concat(s.alias[t]);n.array=n.array.concat(s.array),n.config={};const r=[];if(Object.keys(e).forEach((t=>{e[t].map((e=>{n.configuration["unknown-options-as-args"]&&(n.key[t]=!0),r.push(`--${t}`),r.push(e);}));})),!r.length)return;const o=Object.assign({},n.configuration,{"populate--":!1}),a=this.shim.Parser.detailed(r,Object.assign({},n,{configuration:o}));if(a.error)i.getInternalMethods().getUsageInstance().fail(a.error.message,a.error);else {const s=Object.keys(e);Object.keys(e).forEach((t=>{s.push(...a.aliases[t]);})),Object.keys(a.argv).forEach((n=>{s.includes(n)&&(e[n]||(e[n]=a.argv[n]),!this.isInConfigs(i,n)&&!this.isDefaulted(i,n)&&Object.prototype.hasOwnProperty.call(t,n)&&Object.prototype.hasOwnProperty.call(a.argv,n)&&(Array.isArray(t[n])||Array.isArray(a.argv[n]))?t[n]=[].concat(t[n],a.argv[n]):t[n]=a.argv[n]);}));}}isDefaulted(t,e){const{default:s}=t.getOptions();return Object.prototype.hasOwnProperty.call(s,e)||Object.prototype.hasOwnProperty.call(s,this.shim.Parser.camelCase(e))}isInConfigs(t,e){const{configObjects:s}=t.getOptions();return s.some((t=>Object.prototype.hasOwnProperty.call(t,e)))||s.some((t=>Object.prototype.hasOwnProperty.call(t,this.shim.Parser.camelCase(e))))}runDefaultBuilderOn(t){if(!this.defaultCommand)return;if(this.shouldUpdateUsage(t)){const e=M$1.test(this.defaultCommand.original)?this.defaultCommand.original:this.defaultCommand.original.replace(/^[^[\]<>]*/,"$0 ");t.getInternalMethods().getUsageInstance().usage(e,this.defaultCommand.description);}const e=this.defaultCommand.builder;if(x$1(e))return e(t,!0);k$1(e)||Object.keys(e).forEach((s=>{t.option(s,e[s]);}));}moduleName(t){const e=function(t){if("undefined"==typeof commonjsRequire)return null;for(let e,s=0,i=Object.keys(require.cache);s<i.length;s++)if(e=require.cache[i[s]],e.exports===t)return e;return null}(t);if(!e)throw new Error(`No command name given for module: ${this.shim.inspect(t)}`);return this.commandFromFilename(e.filename)}commandFromFilename(t){return this.shim.path.basename(t,this.shim.path.extname(t))}extractDesc({describe:t,description:e,desc:s}){for(const i of [t,e,s]){if("string"==typeof i||!1===i)return i;d(i,!0,this.shim);}return !1}freeze(){this.frozens.push({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand});}unfreeze(){const t=this.frozens.pop();d(t,void 0,this.shim),({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand}=t);}reset(){return this.handlers={},this.aliasMap={},this.defaultCommand=void 0,this.requireCache=new Set,this}};function k$1(t){return "object"==typeof t&&!!t.builder&&"function"==typeof t.handler}function x$1(t){return "function"==typeof t}function E$1(t){"undefined"!=typeof process&&[process.stdout,process.stderr].forEach((e=>{const s=e;s._handle&&s.isTTY&&"function"==typeof s._handle.setBlocking&&s._handle.setBlocking(t);}));}function A(t){return "boolean"==typeof t}function P(t,s){const i=s.y18n.__,n={},r=[];n.failFn=function(t){r.push(t);};let o=null,a=null,h=!0;n.showHelpOnFail=function(e=!0,s){const[i,r]="string"==typeof e?[!0,e]:[e,s];return t.getInternalMethods().isGlobalContext()&&(a=r),o=r,h=i,n};let l=!1;n.fail=function(s,i){const c=t.getInternalMethods().getLoggerInstance();if(!r.length){if(t.getExitProcess()&&E$1(!0),!l){l=!0,h&&(t.showHelp("error"),c.error()),(s||i)&&c.error(s||i);const e=o||a;e&&((s||i)&&c.error(""),c.error(e));}if(i=i||new e(s),t.getExitProcess())return t.exit(1);if(t.getInternalMethods().hasParseCallback())return t.exit(1,i);throw i}for(let t=r.length-1;t>=0;--t){const e=r[t];if(A(e)){if(i)throw i;if(s)throw Error(s)}else e(s,i,n);}};let c=[],f=!1;n.usage=(t,e)=>null===t?(f=!0,c=[],n):(f=!1,c.push([t,e||""]),n),n.getUsage=()=>c,n.getUsageDisabled=()=>f,n.getPositionalGroupName=()=>i("Positionals:");let d=[];n.example=(t,e)=>{d.push([t,e||""]);};let u=[];n.command=function(t,e,s,i,n=!1){s&&(u=u.map((t=>(t[2]=!1,t)))),u.push([t,e||"",s,i,n]);},n.getCommands=()=>u;let p={};n.describe=function(t,e){Array.isArray(t)?t.forEach((t=>{n.describe(t,e);})):"object"==typeof t?Object.keys(t).forEach((e=>{n.describe(e,t[e]);})):p[t]=e;},n.getDescriptions=()=>p;let m=[];n.epilog=t=>{m.push(t);};let y,b=!1;n.wrap=t=>{b=!0,y=t;},n.getWrap=()=>s.getEnv("YARGS_DISABLE_WRAP")?null:(b||(y=function(){const t=80;return s.process.stdColumns?Math.min(t,s.process.stdColumns):t}(),b=!0),y);const v="__yargsString__:";function O(t,e,i){let n=0;return Array.isArray(t)||(t=Object.values(t).map((t=>[t]))),t.forEach((t=>{n=Math.max(s.stringWidth(i?`${i} ${I(t[0])}`:I(t[0]))+$(t[0]),n);})),e&&(n=Math.min(n,parseInt((.5*e).toString(),10))),n}let w;function C(e){return t.getOptions().hiddenOptions.indexOf(e)<0||t.parsed.argv[t.getOptions().showHiddenOpt]}function j(t,e){let s=`[${i("default:")} `;if(void 0===t&&!e)return null;if(e)s+=e;else switch(typeof t){case"string":s+=`"${t}"`;break;case"object":s+=JSON.stringify(t);break;default:s+=t;}return `${s}]`}n.deferY18nLookup=t=>v+t,n.help=function(){if(w)return w;!function(){const e=t.getDemandedOptions(),s=t.getOptions();(Object.keys(s.alias)||[]).forEach((i=>{s.alias[i].forEach((r=>{p[r]&&n.describe(i,p[r]),r in e&&t.demandOption(i,e[r]),s.boolean.includes(r)&&t.boolean(i),s.count.includes(r)&&t.count(i),s.string.includes(r)&&t.string(i),s.normalize.includes(r)&&t.normalize(i),s.array.includes(r)&&t.array(i),s.number.includes(r)&&t.number(i);}));}));}();const e=t.customScriptName?t.$0:s.path.basename(t.$0),r=t.getDemandedOptions(),o=t.getDemandedCommands(),a=t.getDeprecatedOptions(),h=t.getGroups(),l=t.getOptions();let g=[];g=g.concat(Object.keys(p)),g=g.concat(Object.keys(r)),g=g.concat(Object.keys(o)),g=g.concat(Object.keys(l.default)),g=g.filter(C),g=Object.keys(g.reduce(((t,e)=>("_"!==e&&(t[e]=!0),t)),{}));const y=n.getWrap(),b=s.cliui({width:y,wrap:!!y});if(!f)if(c.length)c.forEach((t=>{b.div({text:`${t[0].replace(/\$0/g,e)}`}),t[1]&&b.div({text:`${t[1]}`,padding:[1,0,0,0]});})),b.div();else if(u.length){let t=null;t=o._?`${e} <${i("command")}>\n`:`${e} [${i("command")}]\n`,b.div(`${t}`);}if(u.length>1||1===u.length&&!u[0][2]){b.div(i("Commands:"));const s=t.getInternalMethods().getContext(),n=s.commands.length?`${s.commands.join(" ")} `:"";!0===t.getInternalMethods().getParserConfiguration()["sort-commands"]&&(u=u.sort(((t,e)=>t[0].localeCompare(e[0]))));const r=e?`${e} `:"";u.forEach((t=>{const s=`${r}${n}${t[0].replace(/^\$0 ?/,"")}`;b.span({text:s,padding:[0,2,0,2],width:O(u,y,`${e}${n}`)+4},{text:t[1]});const o=[];t[2]&&o.push(`[${i("default")}]`),t[3]&&t[3].length&&o.push(`[${i("aliases:")} ${t[3].join(", ")}]`),t[4]&&("string"==typeof t[4]?o.push(`[${i("deprecated: %s",t[4])}]`):o.push(`[${i("deprecated")}]`)),o.length?b.div({text:o.join(" "),padding:[0,0,0,2],align:"right"}):b.div();})),b.div();}const M=(Object.keys(l.alias)||[]).concat(Object.keys(t.parsed.newAliases)||[]);g=g.filter((e=>!t.parsed.newAliases[e]&&M.every((t=>-1===(l.alias[t]||[]).indexOf(e)))));const _=i("Options:");h[_]||(h[_]=[]),function(t,e,s,i){let n=[],r=null;Object.keys(s).forEach((t=>{n=n.concat(s[t]);})),t.forEach((t=>{r=[t].concat(e[t]),r.some((t=>-1!==n.indexOf(t)))||s[i].push(t);}));}(g,l.alias,h,_);const k=t=>/^--/.test(I(t)),x=Object.keys(h).filter((t=>h[t].length>0)).map((t=>({groupName:t,normalizedKeys:h[t].filter(C).map((t=>{if(M.includes(t))return t;for(let e,s=0;void 0!==(e=M[s]);s++)if((l.alias[e]||[]).includes(t))return e;return t}))}))).filter((({normalizedKeys:t})=>t.length>0)).map((({groupName:t,normalizedKeys:e})=>{const s=e.reduce(((e,s)=>(e[s]=[s].concat(l.alias[s]||[]).map((e=>t===n.getPositionalGroupName()?e:(/^[0-9]$/.test(e)?l.boolean.includes(s)?"-":"--":e.length>1?"--":"-")+e)).sort(((t,e)=>k(t)===k(e)?0:k(t)?1:-1)).join(", "),e)),{});return {groupName:t,normalizedKeys:e,switches:s}}));if(x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).some((({normalizedKeys:t,switches:e})=>!t.every((t=>k(e[t])))))&&x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).forEach((({normalizedKeys:t,switches:e})=>{t.forEach((t=>{var s,i;k(e[t])&&(e[t]=(s=e[t],i=4,S$1(s)?{text:s.text,indentation:s.indentation+i}:{text:s,indentation:i}));}));})),x.forEach((({groupName:e,normalizedKeys:s,switches:o})=>{b.div(e),s.forEach((e=>{const s=o[e];let h=p[e]||"",c=null;h.includes(v)&&(h=i(h.substring(16))),l.boolean.includes(e)&&(c=`[${i("boolean")}]`),l.count.includes(e)&&(c=`[${i("count")}]`),l.string.includes(e)&&(c=`[${i("string")}]`),l.normalize.includes(e)&&(c=`[${i("string")}]`),l.array.includes(e)&&(c=`[${i("array")}]`),l.number.includes(e)&&(c=`[${i("number")}]`);const f=[e in a?(d=a[e],"string"==typeof d?`[${i("deprecated: %s",d)}]`:`[${i("deprecated")}]`):null,c,e in r?`[${i("required")}]`:null,l.choices&&l.choices[e]?`[${i("choices:")} ${n.stringifiedValues(l.choices[e])}]`:null,j(l.default[e],l.defaultDescription[e])].filter(Boolean).join(" ");var d;b.span({text:I(s),padding:[0,2,0,2+$(s)],width:O(o,y)+4},h);const u=!0===t.getInternalMethods().getUsageConfiguration()["hide-types"];f&&!u?b.div({text:f,padding:[0,0,0,2],align:"right"}):b.div();})),b.div();})),d.length&&(b.div(i("Examples:")),d.forEach((t=>{t[0]=t[0].replace(/\$0/g,e);})),d.forEach((t=>{""===t[1]?b.div({text:t[0],padding:[0,2,0,2]}):b.div({text:t[0],padding:[0,2,0,2],width:O(d,y)+4},{text:t[1]});})),b.div()),m.length>0){const t=m.map((t=>t.replace(/\$0/g,e))).join("\n");b.div(`${t}\n`);}return b.toString().replace(/\s*$/,"")},n.cacheHelpMessage=function(){w=this.help();},n.clearCachedHelpMessage=function(){w=void 0;},n.hasCachedHelpMessage=function(){return !!w},n.showHelp=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(n.help());},n.functionDescription=t=>["(",t.name?s.Parser.decamelize(t.name,"-"):i("generated-value"),")"].join(""),n.stringifiedValues=function(t,e){let s="";const i=e||", ",n=[].concat(t);return t&&n.length?(n.forEach((t=>{s.length&&(s+=i),s+=JSON.stringify(t);})),s):s};let M=null;n.version=t=>{M=t;},n.showVersion=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(M);},n.reset=function(t){return o=null,l=!1,c=[],f=!1,m=[],d=[],u=[],p=g(p,(e=>!t[e])),n};const _=[];return n.freeze=function(){_.push({failMessage:o,failureOutput:l,usages:c,usageDisabled:f,epilogs:m,examples:d,commands:u,descriptions:p});},n.unfreeze=function(t=!1){const e=_.pop();e&&(t?(p={...e.descriptions,...p},u=[...e.commands,...u],c=[...e.usages,...c],d=[...e.examples,...d],m=[...e.epilogs,...m]):({failMessage:o,failureOutput:l,usages:c,usageDisabled:f,epilogs:m,examples:d,commands:u,descriptions:p}=e));},n}function S$1(t){return "object"==typeof t}function $(t){return S$1(t)?t.indentation:0}function I(t){return S$1(t)?t.text:t}let D$1 = class D{constructor(t,e,s,i){var n,r,o;this.yargs=t,this.usage=e,this.command=s,this.shim=i,this.completionKey="get-yargs-completions",this.aliases=null,this.customCompletionFunction=null,this.indexAfterLastReset=0,this.zshShell=null!==(o=(null===(n=this.shim.getEnv("SHELL"))||void 0===n?void 0:n.includes("zsh"))||(null===(r=this.shim.getEnv("ZSH_NAME"))||void 0===r?void 0:r.includes("zsh")))&&void 0!==o&&o;}defaultCompletion(t,e,s,i){const n=this.command.getCommandHandlers();for(let e=0,s=t.length;e<s;++e)if(n[t[e]]&&n[t[e]].builder){const s=n[t[e]].builder;if(x$1(s)){this.indexAfterLastReset=e+1;const t=this.yargs.getInternalMethods().reset();return s(t,!0),t.argv}}const r=[];this.commandCompletions(r,t,s),this.optionCompletions(r,t,e,s),this.choicesFromOptionsCompletions(r,t,e,s),this.choicesFromPositionalsCompletions(r,t,e,s),i(null,r);}commandCompletions(t,e,s){const i=this.yargs.getInternalMethods().getContext().commands;s.match(/^-/)||i[i.length-1]===s||this.previousArgHasChoices(e)||this.usage.getCommands().forEach((s=>{const i=o(s[0]).cmd;if(-1===e.indexOf(i))if(this.zshShell){const e=s[1]||"";t.push(i.replace(/:/g,"\\:")+":"+e);}else t.push(i);}));}optionCompletions(t,e,s,i){if((i.match(/^-/)||""===i&&0===t.length)&&!this.previousArgHasChoices(e)){const s=this.yargs.getOptions(),n=this.yargs.getGroups()[this.usage.getPositionalGroupName()]||[];Object.keys(s.key).forEach((r=>{const o=!!s.configuration["boolean-negation"]&&s.boolean.includes(r);n.includes(r)||s.hiddenOptions.includes(r)||this.argsContainKey(e,r,o)||this.completeOptionKey(r,t,i,o&&!!s.default[r]);}));}}choicesFromOptionsCompletions(t,e,s,i){if(this.previousArgHasChoices(e)){const s=this.getPreviousArgChoices(e);s&&s.length>0&&t.push(...s.map((t=>t.replace(/:/g,"\\:"))));}}choicesFromPositionalsCompletions(t,e,s,i){if(""===i&&t.length>0&&this.previousArgHasChoices(e))return;const n=this.yargs.getGroups()[this.usage.getPositionalGroupName()]||[],r=Math.max(this.indexAfterLastReset,this.yargs.getInternalMethods().getContext().commands.length+1),o=n[s._.length-r-1];if(!o)return;const a=this.yargs.getOptions().choices[o]||[];for(const e of a)e.startsWith(i)&&t.push(e.replace(/:/g,"\\:"));}getPreviousArgChoices(t){if(t.length<1)return;let e=t[t.length-1],s="";if(!e.startsWith("-")&&t.length>1&&(s=e,e=t[t.length-2]),!e.startsWith("-"))return;const i=e.replace(/^-+/,""),n=this.yargs.getOptions(),r=[i,...this.yargs.getAliases()[i]||[]];let o;for(const t of r)if(Object.prototype.hasOwnProperty.call(n.key,t)&&Array.isArray(n.choices[t])){o=n.choices[t];break}return o?o.filter((t=>!s||t.startsWith(s))):void 0}previousArgHasChoices(t){const e=this.getPreviousArgChoices(t);return void 0!==e&&e.length>0}argsContainKey(t,e,s){const i=e=>-1!==t.indexOf((/^[^0-9]$/.test(e)?"-":"--")+e);if(i(e))return !0;if(s&&i(`no-${e}`))return !0;if(this.aliases)for(const t of this.aliases[e])if(i(t))return !0;return !1}completeOptionKey(t,e,s,i){var n,r,o,a;let h=t;if(this.zshShell){const e=this.usage.getDescriptions(),s=null===(r=null===(n=null==this?void 0:this.aliases)||void 0===n?void 0:n[t])||void 0===r?void 0:r.find((t=>{const s=e[t];return "string"==typeof s&&s.length>0})),i=s?e[s]:void 0,l=null!==(a=null!==(o=e[t])&&void 0!==o?o:i)&&void 0!==a?a:"";h=`${t.replace(/:/g,"\\:")}:${l.replace("__yargsString__:","").replace(/(\r\n|\n|\r)/gm," ")}`;}const l=!/^--/.test(s)&&(t=>/^[^0-9]$/.test(t))(t)?"-":"--";e.push(l+h),i&&e.push(l+"no-"+h);}customCompletion(t,e,s,i){if(d(this.customCompletionFunction,null,this.shim),this.customCompletionFunction.length<3){const t=this.customCompletionFunction(s,e);return f(t)?t.then((t=>{this.shim.process.nextTick((()=>{i(null,t);}));})).catch((t=>{this.shim.process.nextTick((()=>{i(t,void 0);}));})):i(null,t)}return function(t){return t.length>3}(this.customCompletionFunction)?this.customCompletionFunction(s,e,((n=i)=>this.defaultCompletion(t,e,s,n)),(t=>{i(null,t);})):this.customCompletionFunction(s,e,(t=>{i(null,t);}))}getCompletion(t,e){const s=t.length?t[t.length-1]:"",i=this.yargs.parse(t,!0),n=this.customCompletionFunction?i=>this.customCompletion(t,i,s,e):i=>this.defaultCompletion(t,i,s,e);return f(i)?i.then(n):n(i)}generateCompletionScript(t,e){let s=this.zshShell?'#compdef {{app_name}}\n###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.zshrc\n#    or {{app_path}} {{completion_command}} >> ~/.zprofile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n  local reply\n  local si=$IFS\n  IFS=$\'\n\' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" {{app_path}} --get-yargs-completions "${words[@]}"))\n  IFS=$si\n  _describe \'values\' reply\n}\ncompdef _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n':'###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.bashrc\n#    or {{app_path}} {{completion_command}} >> ~/.bash_profile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n    local cur_word args type_list\n\n    cur_word="${COMP_WORDS[COMP_CWORD]}"\n    args=("${COMP_WORDS[@]}")\n\n    # ask yargs to generate completions.\n    type_list=$({{app_path}} --get-yargs-completions "${args[@]}")\n\n    COMPREPLY=( $(compgen -W "${type_list}" -- ${cur_word}) )\n\n    # if no match was found, fall back to filename completion\n    if [ ${#COMPREPLY[@]} -eq 0 ]; then\n      COMPREPLY=()\n    fi\n\n    return 0\n}\ncomplete -o bashdefault -o default -F _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n';const i=this.shim.path.basename(t);return t.match(/\.js$/)&&(t=`./${t}`),s=s.replace(/{{app_name}}/g,i),s=s.replace(/{{completion_command}}/g,e),s.replace(/{{app_path}}/g,t)}registerFunction(t){this.customCompletionFunction=t;}setParsed(t){this.aliases=t.aliases;}};function N$1(t,e){if(0===t.length)return e.length;if(0===e.length)return t.length;const s=[];let i,n;for(i=0;i<=e.length;i++)s[i]=[i];for(n=0;n<=t.length;n++)s[0][n]=n;for(i=1;i<=e.length;i++)for(n=1;n<=t.length;n++)e.charAt(i-1)===t.charAt(n-1)?s[i][n]=s[i-1][n-1]:i>1&&n>1&&e.charAt(i-2)===t.charAt(n-1)&&e.charAt(i-1)===t.charAt(n-2)?s[i][n]=s[i-2][n-2]+1:s[i][n]=Math.min(s[i-1][n-1]+1,Math.min(s[i][n-1]+1,s[i-1][n]+1));return s[e.length][t.length]}const H$1=["$0","--","_"];var z$1,W$1,q$1,U,F$1,L,V$1,G$1,R$1,T,B$1,Y$1,K$1,J$1,Z,X,Q$1,tt,et,st,it,nt,rt,ot,at,ht,lt,ct,ft,dt,ut,pt,gt,mt,yt;const bt=Symbol("copyDoubleDash"),vt=Symbol("copyDoubleDash"),Ot=Symbol("deleteFromParserHintObject"),wt=Symbol("emitWarning"),Ct=Symbol("freeze"),jt=Symbol("getDollarZero"),Mt=Symbol("getParserConfiguration"),_t=Symbol("getUsageConfiguration"),kt=Symbol("guessLocale"),xt=Symbol("guessVersion"),Et=Symbol("parsePositionalNumbers"),At=Symbol("pkgUp"),Pt=Symbol("populateParserHintArray"),St=Symbol("populateParserHintSingleValueDictionary"),$t=Symbol("populateParserHintArrayDictionary"),It=Symbol("populateParserHintDictionary"),Dt=Symbol("sanitizeKey"),Nt=Symbol("setKey"),Ht=Symbol("unfreeze"),zt=Symbol("validateAsync"),Wt=Symbol("getCommandInstance"),qt=Symbol("getContext"),Ut=Symbol("getHasOutput"),Ft=Symbol("getLoggerInstance"),Lt=Symbol("getParseContext"),Vt=Symbol("getUsageInstance"),Gt=Symbol("getValidationInstance"),Rt=Symbol("hasParseCallback"),Tt=Symbol("isGlobalContext"),Bt=Symbol("postProcess"),Yt=Symbol("rebase"),Kt=Symbol("reset"),Jt=Symbol("runYargsParserAndExecuteCommands"),Zt=Symbol("runValidation"),Xt=Symbol("setHasOutput"),Qt=Symbol("kTrackManuallySetKeys");let te$1 = class te{constructor(t=[],e,s,i){this.customScriptName=!1,this.parsed=!1,z$1.set(this,void 0),W$1.set(this,void 0),q$1.set(this,{commands:[],fullCommands:[]}),U.set(this,null),F$1.set(this,null),L.set(this,"show-hidden"),V$1.set(this,null),G$1.set(this,!0),R$1.set(this,{}),T.set(this,!0),B$1.set(this,[]),Y$1.set(this,void 0),K$1.set(this,{}),J$1.set(this,!1),Z.set(this,null),X.set(this,!0),Q$1.set(this,void 0),tt.set(this,""),et.set(this,void 0),st.set(this,void 0),it.set(this,{}),nt.set(this,null),rt.set(this,null),ot.set(this,{}),at.set(this,{}),ht.set(this,void 0),lt.set(this,!1),ct.set(this,void 0),ft.set(this,!1),dt.set(this,!1),ut.set(this,!1),pt.set(this,void 0),gt.set(this,{}),mt.set(this,null),yt.set(this,void 0),O(this,ct,i),O(this,ht,t),O(this,W$1,e),O(this,st,s),O(this,Y$1,new w$1(this)),this.$0=this[jt](),this[Kt](),O(this,z$1,v$1(this,z$1,"f")),O(this,pt,v$1(this,pt,"f")),O(this,yt,v$1(this,yt,"f")),O(this,et,v$1(this,et,"f")),v$1(this,et,"f").showHiddenOpt=v$1(this,L,"f"),O(this,Q$1,this[vt]());}addHelpOpt(t,e){return h("[string|boolean] [string]",[t,e],arguments.length),v$1(this,Z,"f")&&(this[Ot](v$1(this,Z,"f")),O(this,Z,null)),!1===t&&void 0===e||(O(this,Z,"string"==typeof t?t:"help"),this.boolean(v$1(this,Z,"f")),this.describe(v$1(this,Z,"f"),e||v$1(this,pt,"f").deferY18nLookup("Show help"))),this}help(t,e){return this.addHelpOpt(t,e)}addShowHiddenOpt(t,e){if(h("[string|boolean] [string]",[t,e],arguments.length),!1===t&&void 0===e)return this;const s="string"==typeof t?t:v$1(this,L,"f");return this.boolean(s),this.describe(s,e||v$1(this,pt,"f").deferY18nLookup("Show hidden options")),v$1(this,et,"f").showHiddenOpt=s,this}showHidden(t,e){return this.addShowHiddenOpt(t,e)}alias(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[$t](this.alias.bind(this),"alias",t,e),this}array(t){return h("<array|string>",[t],arguments.length),this[Pt]("array",t),this[Qt](t),this}boolean(t){return h("<array|string>",[t],arguments.length),this[Pt]("boolean",t),this[Qt](t),this}check(t,e){return h("<function> [boolean]",[t,e],arguments.length),this.middleware(((e,s)=>j$1((()=>t(e,s.getOptions())),(s=>(s?("string"==typeof s||s instanceof Error)&&v$1(this,pt,"f").fail(s.toString(),s):v$1(this,pt,"f").fail(v$1(this,ct,"f").y18n.__("Argument check failed: %s",t.toString())),e)),(t=>(v$1(this,pt,"f").fail(t.message?t.message:t.toString(),t),e)))),!1,e),this}choices(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[$t](this.choices.bind(this),"choices",t,e),this}coerce(t,s){if(h("<object|string|array> [function]",[t,s],arguments.length),Array.isArray(t)){if(!s)throw new e("coerce callback must be provided");for(const e of t)this.coerce(e,s);return this}if("object"==typeof t){for(const e of Object.keys(t))this.coerce(e,t[e]);return this}if(!s)throw new e("coerce callback must be provided");return v$1(this,et,"f").key[t]=!0,v$1(this,Y$1,"f").addCoerceMiddleware(((i,n)=>{let r;return Object.prototype.hasOwnProperty.call(i,t)?j$1((()=>(r=n.getAliases(),s(i[t]))),(e=>{i[t]=e;const s=n.getInternalMethods().getParserConfiguration()["strip-aliased"];if(r[t]&&!0!==s)for(const s of r[t])i[s]=e;return i}),(t=>{throw new e(t.message)})):i}),t),this}conflicts(t,e){return h("<string|object> [string|array]",[t,e],arguments.length),v$1(this,yt,"f").conflicts(t,e),this}config(t="config",e,s){return h("[object|string] [string|function] [function]",[t,e,s],arguments.length),"object"!=typeof t||Array.isArray(t)?("function"==typeof e&&(s=e,e=void 0),this.describe(t,e||v$1(this,pt,"f").deferY18nLookup("Path to JSON config file")),(Array.isArray(t)?t:[t]).forEach((t=>{v$1(this,et,"f").config[t]=s||!0;})),this):(t=n(t,v$1(this,W$1,"f"),this[Mt]()["deep-merge-config"]||!1,v$1(this,ct,"f")),v$1(this,et,"f").configObjects=(v$1(this,et,"f").configObjects||[]).concat(t),this)}completion(t,e,s){return h("[string] [string|boolean|function] [function]",[t,e,s],arguments.length),"function"==typeof e&&(s=e,e=void 0),O(this,F$1,t||v$1(this,F$1,"f")||"completion"),e||!1===e||(e="generate completion script"),this.command(v$1(this,F$1,"f"),e),s&&v$1(this,U,"f").registerFunction(s),this}command(t,e,s,i,n,r){return h("<string|array|object> [string|boolean] [function|object] [function] [array] [boolean|string]",[t,e,s,i,n,r],arguments.length),v$1(this,z$1,"f").addHandler(t,e,s,i,n,r),this}commands(t,e,s,i,n,r){return this.command(t,e,s,i,n,r)}commandDir(t,e){h("<string> [object]",[t,e],arguments.length);const s=v$1(this,st,"f")||v$1(this,ct,"f").require;return v$1(this,z$1,"f").addDirectory(t,s,v$1(this,ct,"f").getCallerFile(),e),this}count(t){return h("<array|string>",[t],arguments.length),this[Pt]("count",t),this[Qt](t),this}default(t,e,s){return h("<object|string|array> [*] [string]",[t,e,s],arguments.length),s&&(u(t,v$1(this,ct,"f")),v$1(this,et,"f").defaultDescription[t]=s),"function"==typeof e&&(u(t,v$1(this,ct,"f")),v$1(this,et,"f").defaultDescription[t]||(v$1(this,et,"f").defaultDescription[t]=v$1(this,pt,"f").functionDescription(e)),e=e.call()),this[St](this.default.bind(this),"default",t,e),this}defaults(t,e,s){return this.default(t,e,s)}demandCommand(t=1,e,s,i){return h("[number] [number|string] [string|null|undefined] [string|null|undefined]",[t,e,s,i],arguments.length),"number"!=typeof e&&(s=e,e=1/0),this.global("_",!1),v$1(this,et,"f").demandedCommands._={min:t,max:e,minMsg:s,maxMsg:i},this}demand(t,e,s){return Array.isArray(e)?(e.forEach((t=>{d(s,!0,v$1(this,ct,"f")),this.demandOption(t,s);})),e=1/0):"number"!=typeof e&&(s=e,e=1/0),"number"==typeof t?(d(s,!0,v$1(this,ct,"f")),this.demandCommand(t,e,s,s)):Array.isArray(t)?t.forEach((t=>{d(s,!0,v$1(this,ct,"f")),this.demandOption(t,s);})):"string"==typeof s?this.demandOption(t,s):!0!==s&&void 0!==s||this.demandOption(t),this}demandOption(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[St](this.demandOption.bind(this),"demandedOptions",t,e),this}deprecateOption(t,e){return h("<string> [string|boolean]",[t,e],arguments.length),v$1(this,et,"f").deprecatedOptions[t]=e,this}describe(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[Nt](t,!0),v$1(this,pt,"f").describe(t,e),this}detectLocale(t){return h("<boolean>",[t],arguments.length),O(this,G$1,t),this}env(t){return h("[string|boolean]",[t],arguments.length),!1===t?delete v$1(this,et,"f").envPrefix:v$1(this,et,"f").envPrefix=t||"",this}epilogue(t){return h("<string>",[t],arguments.length),v$1(this,pt,"f").epilog(t),this}epilog(t){return this.epilogue(t)}example(t,e){return h("<string|array> [string]",[t,e],arguments.length),Array.isArray(t)?t.forEach((t=>this.example(...t))):v$1(this,pt,"f").example(t,e),this}exit(t,e){O(this,J$1,!0),O(this,V$1,e),v$1(this,T,"f")&&v$1(this,ct,"f").process.exit(t);}exitProcess(t=!0){return h("[boolean]",[t],arguments.length),O(this,T,t),this}fail(t){if(h("<function|boolean>",[t],arguments.length),"boolean"==typeof t&&!1!==t)throw new e("Invalid first argument. Expected function or boolean 'false'");return v$1(this,pt,"f").failFn(t),this}getAliases(){return this.parsed?this.parsed.aliases:{}}async getCompletion(t,e){return h("<array> [function]",[t,e],arguments.length),e?v$1(this,U,"f").getCompletion(t,e):new Promise(((e,s)=>{v$1(this,U,"f").getCompletion(t,((t,i)=>{t?s(t):e(i);}));}))}getDemandedOptions(){return h([],0),v$1(this,et,"f").demandedOptions}getDemandedCommands(){return h([],0),v$1(this,et,"f").demandedCommands}getDeprecatedOptions(){return h([],0),v$1(this,et,"f").deprecatedOptions}getDetectLocale(){return v$1(this,G$1,"f")}getExitProcess(){return v$1(this,T,"f")}getGroups(){return Object.assign({},v$1(this,K$1,"f"),v$1(this,at,"f"))}getHelp(){if(O(this,J$1,!0),!v$1(this,pt,"f").hasCachedHelpMessage()){if(!this.parsed){const t=this[Jt](v$1(this,ht,"f"),void 0,void 0,0,!0);if(f(t))return t.then((()=>v$1(this,pt,"f").help()))}const t=v$1(this,z$1,"f").runDefaultBuilderOn(this);if(f(t))return t.then((()=>v$1(this,pt,"f").help()))}return Promise.resolve(v$1(this,pt,"f").help())}getOptions(){return v$1(this,et,"f")}getStrict(){return v$1(this,ft,"f")}getStrictCommands(){return v$1(this,dt,"f")}getStrictOptions(){return v$1(this,ut,"f")}global(t,e){return h("<string|array> [boolean]",[t,e],arguments.length),t=[].concat(t),!1!==e?v$1(this,et,"f").local=v$1(this,et,"f").local.filter((e=>-1===t.indexOf(e))):t.forEach((t=>{v$1(this,et,"f").local.includes(t)||v$1(this,et,"f").local.push(t);})),this}group(t,e){h("<string|array> <string>",[t,e],arguments.length);const s=v$1(this,at,"f")[e]||v$1(this,K$1,"f")[e];v$1(this,at,"f")[e]&&delete v$1(this,at,"f")[e];const i={};return v$1(this,K$1,"f")[e]=(s||[]).concat(t).filter((t=>!i[t]&&(i[t]=!0))),this}hide(t){return h("<string>",[t],arguments.length),v$1(this,et,"f").hiddenOptions.push(t),this}implies(t,e){return h("<string|object> [number|string|array]",[t,e],arguments.length),v$1(this,yt,"f").implies(t,e),this}locale(t){return h("[string]",[t],arguments.length),void 0===t?(this[kt](),v$1(this,ct,"f").y18n.getLocale()):(O(this,G$1,!1),v$1(this,ct,"f").y18n.setLocale(t),this)}middleware(t,e,s){return v$1(this,Y$1,"f").addMiddleware(t,!!e,s)}nargs(t,e){return h("<string|object|array> [number]",[t,e],arguments.length),this[St](this.nargs.bind(this),"narg",t,e),this}normalize(t){return h("<array|string>",[t],arguments.length),this[Pt]("normalize",t),this}number(t){return h("<array|string>",[t],arguments.length),this[Pt]("number",t),this[Qt](t),this}option(t,e){if(h("<string|object> [object]",[t,e],arguments.length),"object"==typeof t)Object.keys(t).forEach((e=>{this.options(e,t[e]);}));else {"object"!=typeof e&&(e={}),this[Qt](t),!v$1(this,mt,"f")||"version"!==t&&"version"!==(null==e?void 0:e.alias)||this[wt](['"version" is a reserved word.',"Please do one of the following:",'- Disable version with `yargs.version(false)` if using "version" as an option',"- Use the built-in `yargs.version` method instead (if applicable)","- Use a different option key","https://yargs.js.org/docs/#api-reference-version"].join("\n"),void 0,"versionWarning"),v$1(this,et,"f").key[t]=!0,e.alias&&this.alias(t,e.alias);const s=e.deprecate||e.deprecated;s&&this.deprecateOption(t,s);const i=e.demand||e.required||e.require;i&&this.demand(t,i),e.demandOption&&this.demandOption(t,"string"==typeof e.demandOption?e.demandOption:void 0),e.conflicts&&this.conflicts(t,e.conflicts),"default"in e&&this.default(t,e.default),void 0!==e.implies&&this.implies(t,e.implies),void 0!==e.nargs&&this.nargs(t,e.nargs),e.config&&this.config(t,e.configParser),e.normalize&&this.normalize(t),e.choices&&this.choices(t,e.choices),e.coerce&&this.coerce(t,e.coerce),e.group&&this.group(t,e.group),(e.boolean||"boolean"===e.type)&&(this.boolean(t),e.alias&&this.boolean(e.alias)),(e.array||"array"===e.type)&&(this.array(t),e.alias&&this.array(e.alias)),(e.number||"number"===e.type)&&(this.number(t),e.alias&&this.number(e.alias)),(e.string||"string"===e.type)&&(this.string(t),e.alias&&this.string(e.alias)),(e.count||"count"===e.type)&&this.count(t),"boolean"==typeof e.global&&this.global(t,e.global),e.defaultDescription&&(v$1(this,et,"f").defaultDescription[t]=e.defaultDescription),e.skipValidation&&this.skipValidation(t);const n=e.describe||e.description||e.desc,r=v$1(this,pt,"f").getDescriptions();Object.prototype.hasOwnProperty.call(r,t)&&"string"!=typeof n||this.describe(t,n),e.hidden&&this.hide(t),e.requiresArg&&this.requiresArg(t);}return this}options(t,e){return this.option(t,e)}parse(t,e,s){h("[string|array] [function|boolean|object] [function]",[t,e,s],arguments.length),this[Ct](),void 0===t&&(t=v$1(this,ht,"f")),"object"==typeof e&&(O(this,rt,e),e=s),"function"==typeof e&&(O(this,nt,e),e=!1),e||O(this,ht,t),v$1(this,nt,"f")&&O(this,T,!1);const i=this[Jt](t,!!e),n=this.parsed;return v$1(this,U,"f").setParsed(this.parsed),f(i)?i.then((t=>(v$1(this,nt,"f")&&v$1(this,nt,"f").call(this,v$1(this,V$1,"f"),t,v$1(this,tt,"f")),t))).catch((t=>{throw v$1(this,nt,"f")&&v$1(this,nt,"f")(t,this.parsed.argv,v$1(this,tt,"f")),t})).finally((()=>{this[Ht](),this.parsed=n;})):(v$1(this,nt,"f")&&v$1(this,nt,"f").call(this,v$1(this,V$1,"f"),i,v$1(this,tt,"f")),this[Ht](),this.parsed=n,i)}parseAsync(t,e,s){const i=this.parse(t,e,s);return f(i)?i:Promise.resolve(i)}parseSync(t,s,i){const n=this.parse(t,s,i);if(f(n))throw new e(".parseSync() must not be used with asynchronous builders, handlers, or middleware");return n}parserConfiguration(t){return h("<object>",[t],arguments.length),O(this,it,t),this}pkgConf(t,e){h("<string> [string]",[t,e],arguments.length);let s=null;const i=this[At](e||v$1(this,W$1,"f"));return i[t]&&"object"==typeof i[t]&&(s=n(i[t],e||v$1(this,W$1,"f"),this[Mt]()["deep-merge-config"]||!1,v$1(this,ct,"f")),v$1(this,et,"f").configObjects=(v$1(this,et,"f").configObjects||[]).concat(s)),this}positional(t,e){h("<string> <object>",[t,e],arguments.length);const s=["default","defaultDescription","implies","normalize","choices","conflicts","coerce","type","describe","desc","description","alias"];e=g(e,((t,e)=>!("type"===t&&!["string","number","boolean"].includes(e))&&s.includes(t)));const i=v$1(this,q$1,"f").fullCommands[v$1(this,q$1,"f").fullCommands.length-1],n=i?v$1(this,z$1,"f").cmdToParseOptions(i):{array:[],alias:{},default:{},demand:{}};return p(n).forEach((s=>{const i=n[s];Array.isArray(i)?-1!==i.indexOf(t)&&(e[s]=!0):i[t]&&!(s in e)&&(e[s]=i[t]);})),this.group(t,v$1(this,pt,"f").getPositionalGroupName()),this.option(t,e)}recommendCommands(t=!0){return h("[boolean]",[t],arguments.length),O(this,lt,t),this}required(t,e,s){return this.demand(t,e,s)}require(t,e,s){return this.demand(t,e,s)}requiresArg(t){return h("<array|string|object> [number]",[t],arguments.length),"string"==typeof t&&v$1(this,et,"f").narg[t]||this[St](this.requiresArg.bind(this),"narg",t,NaN),this}showCompletionScript(t,e){return h("[string] [string]",[t,e],arguments.length),t=t||this.$0,v$1(this,Q$1,"f").log(v$1(this,U,"f").generateCompletionScript(t,e||v$1(this,F$1,"f")||"completion")),this}showHelp(t){if(h("[string|function]",[t],arguments.length),O(this,J$1,!0),!v$1(this,pt,"f").hasCachedHelpMessage()){if(!this.parsed){const e=this[Jt](v$1(this,ht,"f"),void 0,void 0,0,!0);if(f(e))return e.then((()=>{v$1(this,pt,"f").showHelp(t);})),this}const e=v$1(this,z$1,"f").runDefaultBuilderOn(this);if(f(e))return e.then((()=>{v$1(this,pt,"f").showHelp(t);})),this}return v$1(this,pt,"f").showHelp(t),this}scriptName(t){return this.customScriptName=!0,this.$0=t,this}showHelpOnFail(t,e){return h("[boolean|string] [string]",[t,e],arguments.length),v$1(this,pt,"f").showHelpOnFail(t,e),this}showVersion(t){return h("[string|function]",[t],arguments.length),v$1(this,pt,"f").showVersion(t),this}skipValidation(t){return h("<array|string>",[t],arguments.length),this[Pt]("skipValidation",t),this}strict(t){return h("[boolean]",[t],arguments.length),O(this,ft,!1!==t),this}strictCommands(t){return h("[boolean]",[t],arguments.length),O(this,dt,!1!==t),this}strictOptions(t){return h("[boolean]",[t],arguments.length),O(this,ut,!1!==t),this}string(t){return h("<array|string>",[t],arguments.length),this[Pt]("string",t),this[Qt](t),this}terminalWidth(){return h([],0),v$1(this,ct,"f").process.stdColumns}updateLocale(t){return this.updateStrings(t)}updateStrings(t){return h("<object>",[t],arguments.length),O(this,G$1,!1),v$1(this,ct,"f").y18n.updateLocale(t),this}usage(t,s,i,n){if(h("<string|null|undefined> [string|boolean] [function|object] [function]",[t,s,i,n],arguments.length),void 0!==s){if(d(t,null,v$1(this,ct,"f")),(t||"").match(/^\$0( |$)/))return this.command(t,s,i,n);throw new e(".usage() description must start with $0 if being used as alias for .command()")}return v$1(this,pt,"f").usage(t),this}usageConfiguration(t){return h("<object>",[t],arguments.length),O(this,gt,t),this}version(t,e,s){const i="version";if(h("[boolean|string] [string] [string]",[t,e,s],arguments.length),v$1(this,mt,"f")&&(this[Ot](v$1(this,mt,"f")),v$1(this,pt,"f").version(void 0),O(this,mt,null)),0===arguments.length)s=this[xt](),t=i;else if(1===arguments.length){if(!1===t)return this;s=t,t=i;}else 2===arguments.length&&(s=e,e=void 0);return O(this,mt,"string"==typeof t?t:i),e=e||v$1(this,pt,"f").deferY18nLookup("Show version number"),v$1(this,pt,"f").version(s||void 0),this.boolean(v$1(this,mt,"f")),this.describe(v$1(this,mt,"f"),e),this}wrap(t){return h("<number|null|undefined>",[t],arguments.length),v$1(this,pt,"f").wrap(t),this}[(z$1=new WeakMap,W$1=new WeakMap,q$1=new WeakMap,U=new WeakMap,F$1=new WeakMap,L=new WeakMap,V$1=new WeakMap,G$1=new WeakMap,R$1=new WeakMap,T=new WeakMap,B$1=new WeakMap,Y$1=new WeakMap,K$1=new WeakMap,J$1=new WeakMap,Z=new WeakMap,X=new WeakMap,Q$1=new WeakMap,tt=new WeakMap,et=new WeakMap,st=new WeakMap,it=new WeakMap,nt=new WeakMap,rt=new WeakMap,ot=new WeakMap,at=new WeakMap,ht=new WeakMap,lt=new WeakMap,ct=new WeakMap,ft=new WeakMap,dt=new WeakMap,ut=new WeakMap,pt=new WeakMap,gt=new WeakMap,mt=new WeakMap,yt=new WeakMap,bt)](t){if(!t._||!t["--"])return t;t._.push.apply(t._,t["--"]);try{delete t["--"];}catch(t){}return t}[vt](){return {log:(...t)=>{this[Rt]()||console.log(...t),O(this,J$1,!0),v$1(this,tt,"f").length&&O(this,tt,v$1(this,tt,"f")+"\n"),O(this,tt,v$1(this,tt,"f")+t.join(" "));},error:(...t)=>{this[Rt]()||console.error(...t),O(this,J$1,!0),v$1(this,tt,"f").length&&O(this,tt,v$1(this,tt,"f")+"\n"),O(this,tt,v$1(this,tt,"f")+t.join(" "));}}}[Ot](t){p(v$1(this,et,"f")).forEach((e=>{if("configObjects"===e)return;const s=v$1(this,et,"f")[e];Array.isArray(s)?s.includes(t)&&s.splice(s.indexOf(t),1):"object"==typeof s&&delete s[t];})),delete v$1(this,pt,"f").getDescriptions()[t];}[wt](t,e,s){v$1(this,R$1,"f")[s]||(v$1(this,ct,"f").process.emitWarning(t,e),v$1(this,R$1,"f")[s]=!0);}[Ct](){v$1(this,B$1,"f").push({options:v$1(this,et,"f"),configObjects:v$1(this,et,"f").configObjects.slice(0),exitProcess:v$1(this,T,"f"),groups:v$1(this,K$1,"f"),strict:v$1(this,ft,"f"),strictCommands:v$1(this,dt,"f"),strictOptions:v$1(this,ut,"f"),completionCommand:v$1(this,F$1,"f"),output:v$1(this,tt,"f"),exitError:v$1(this,V$1,"f"),hasOutput:v$1(this,J$1,"f"),parsed:this.parsed,parseFn:v$1(this,nt,"f"),parseContext:v$1(this,rt,"f")}),v$1(this,pt,"f").freeze(),v$1(this,yt,"f").freeze(),v$1(this,z$1,"f").freeze(),v$1(this,Y$1,"f").freeze();}[jt](){let t,e="";return t=/\b(node|iojs|electron)(\.exe)?$/.test(v$1(this,ct,"f").process.argv()[0])?v$1(this,ct,"f").process.argv().slice(1,2):v$1(this,ct,"f").process.argv().slice(0,1),e=t.map((t=>{const e=this[Yt](v$1(this,W$1,"f"),t);return t.match(/^(\/|([a-zA-Z]:)?\\)/)&&e.length<t.length?e:t})).join(" ").trim(),v$1(this,ct,"f").getEnv("_")&&v$1(this,ct,"f").getProcessArgvBin()===v$1(this,ct,"f").getEnv("_")&&(e=v$1(this,ct,"f").getEnv("_").replace(`${v$1(this,ct,"f").path.dirname(v$1(this,ct,"f").process.execPath())}/`,"")),e}[Mt](){return v$1(this,it,"f")}[_t](){return v$1(this,gt,"f")}[kt](){if(!v$1(this,G$1,"f"))return;const t=v$1(this,ct,"f").getEnv("LC_ALL")||v$1(this,ct,"f").getEnv("LC_MESSAGES")||v$1(this,ct,"f").getEnv("LANG")||v$1(this,ct,"f").getEnv("LANGUAGE")||"en_US";this.locale(t.replace(/[.:].*/,""));}[xt](){return this[At]().version||"unknown"}[Et](t){const e=t["--"]?t["--"]:t._;for(let t,s=0;void 0!==(t=e[s]);s++)v$1(this,ct,"f").Parser.looksLikeNumber(t)&&Number.isSafeInteger(Math.floor(parseFloat(`${t}`)))&&(e[s]=Number(t));return t}[At](t){const e=t||"*";if(v$1(this,ot,"f")[e])return v$1(this,ot,"f")[e];let s={};try{let e=t||v$1(this,ct,"f").mainFilename;!t&&v$1(this,ct,"f").path.extname(e)&&(e=v$1(this,ct,"f").path.dirname(e));const i=v$1(this,ct,"f").findUp(e,((t,e)=>e.includes("package.json")?"package.json":void 0));d(i,void 0,v$1(this,ct,"f")),s=JSON.parse(v$1(this,ct,"f").readFileSync(i,"utf8"));}catch(t){}return v$1(this,ot,"f")[e]=s||{},v$1(this,ot,"f")[e]}[Pt](t,e){(e=[].concat(e)).forEach((e=>{e=this[Dt](e),v$1(this,et,"f")[t].push(e);}));}[St](t,e,s,i){this[It](t,e,s,i,((t,e,s)=>{v$1(this,et,"f")[t][e]=s;}));}[$t](t,e,s,i){this[It](t,e,s,i,((t,e,s)=>{v$1(this,et,"f")[t][e]=(v$1(this,et,"f")[t][e]||[]).concat(s);}));}[It](t,e,s,i,n){if(Array.isArray(s))s.forEach((e=>{t(e,i);}));else if((t=>"object"==typeof t)(s))for(const e of p(s))t(e,s[e]);else n(e,this[Dt](s),i);}[Dt](t){return "__proto__"===t?"___proto___":t}[Nt](t,e){return this[St](this[Nt].bind(this),"key",t,e),this}[Ht](){var t,e,s,i,n,r,o,a,h,l,c,f;const u=v$1(this,B$1,"f").pop();let p;d(u,void 0,v$1(this,ct,"f")),t=this,e=this,s=this,i=this,n=this,r=this,o=this,a=this,h=this,l=this,c=this,f=this,({options:{set value(e){O(t,et,e);}}.value,configObjects:p,exitProcess:{set value(t){O(e,T,t);}}.value,groups:{set value(t){O(s,K$1,t);}}.value,output:{set value(t){O(i,tt,t);}}.value,exitError:{set value(t){O(n,V$1,t);}}.value,hasOutput:{set value(t){O(r,J$1,t);}}.value,parsed:this.parsed,strict:{set value(t){O(o,ft,t);}}.value,strictCommands:{set value(t){O(a,dt,t);}}.value,strictOptions:{set value(t){O(h,ut,t);}}.value,completionCommand:{set value(t){O(l,F$1,t);}}.value,parseFn:{set value(t){O(c,nt,t);}}.value,parseContext:{set value(t){O(f,rt,t);}}.value}=u),v$1(this,et,"f").configObjects=p,v$1(this,pt,"f").unfreeze(),v$1(this,yt,"f").unfreeze(),v$1(this,z$1,"f").unfreeze(),v$1(this,Y$1,"f").unfreeze();}[zt](t,e){return j$1(e,(e=>(t(e),e)))}getInternalMethods(){return {getCommandInstance:this[Wt].bind(this),getContext:this[qt].bind(this),getHasOutput:this[Ut].bind(this),getLoggerInstance:this[Ft].bind(this),getParseContext:this[Lt].bind(this),getParserConfiguration:this[Mt].bind(this),getUsageConfiguration:this[_t].bind(this),getUsageInstance:this[Vt].bind(this),getValidationInstance:this[Gt].bind(this),hasParseCallback:this[Rt].bind(this),isGlobalContext:this[Tt].bind(this),postProcess:this[Bt].bind(this),reset:this[Kt].bind(this),runValidation:this[Zt].bind(this),runYargsParserAndExecuteCommands:this[Jt].bind(this),setHasOutput:this[Xt].bind(this)}}[Wt](){return v$1(this,z$1,"f")}[qt](){return v$1(this,q$1,"f")}[Ut](){return v$1(this,J$1,"f")}[Ft](){return v$1(this,Q$1,"f")}[Lt](){return v$1(this,rt,"f")||{}}[Vt](){return v$1(this,pt,"f")}[Gt](){return v$1(this,yt,"f")}[Rt](){return !!v$1(this,nt,"f")}[Tt](){return v$1(this,X,"f")}[Bt](t,e,s,i){if(s)return t;if(f(t))return t;e||(t=this[bt](t));return (this[Mt]()["parse-positional-numbers"]||void 0===this[Mt]()["parse-positional-numbers"])&&(t=this[Et](t)),i&&(t=C$1(t,this,v$1(this,Y$1,"f").getMiddleware(),!1)),t}[Kt](t={}){O(this,et,v$1(this,et,"f")||{});const e={};e.local=v$1(this,et,"f").local||[],e.configObjects=v$1(this,et,"f").configObjects||[];const s={};e.local.forEach((e=>{s[e]=!0,(t[e]||[]).forEach((t=>{s[t]=!0;}));})),Object.assign(v$1(this,at,"f"),Object.keys(v$1(this,K$1,"f")).reduce(((t,e)=>{const i=v$1(this,K$1,"f")[e].filter((t=>!(t in s)));return i.length>0&&(t[e]=i),t}),{})),O(this,K$1,{});return ["array","boolean","string","skipValidation","count","normalize","number","hiddenOptions"].forEach((t=>{e[t]=(v$1(this,et,"f")[t]||[]).filter((t=>!s[t]));})),["narg","key","alias","default","defaultDescription","config","choices","demandedOptions","demandedCommands","deprecatedOptions"].forEach((t=>{e[t]=g(v$1(this,et,"f")[t],(t=>!s[t]));})),e.envPrefix=v$1(this,et,"f").envPrefix,O(this,et,e),O(this,pt,v$1(this,pt,"f")?v$1(this,pt,"f").reset(s):P(this,v$1(this,ct,"f"))),O(this,yt,v$1(this,yt,"f")?v$1(this,yt,"f").reset(s):function(t,e,s){const i=s.y18n.__,n=s.y18n.__n,r={nonOptionCount:function(s){const i=t.getDemandedCommands(),r=s._.length+(s["--"]?s["--"].length:0)-t.getInternalMethods().getContext().commands.length;i._&&(r<i._.min||r>i._.max)&&(r<i._.min?void 0!==i._.minMsg?e.fail(i._.minMsg?i._.minMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.min.toString()):null):e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",r,r.toString(),i._.min.toString())):r>i._.max&&(void 0!==i._.maxMsg?e.fail(i._.maxMsg?i._.maxMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.max.toString()):null):e.fail(n("Too many non-option arguments: got %s, maximum of %s","Too many non-option arguments: got %s, maximum of %s",r,r.toString(),i._.max.toString()))));},positionalCount:function(t,s){s<t&&e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",s,s+"",t+""));},requiredArguments:function(t,s){let i=null;for(const e of Object.keys(s))Object.prototype.hasOwnProperty.call(t,e)&&void 0!==t[e]||(i=i||{},i[e]=s[e]);if(i){const t=[];for(const e of Object.keys(i)){const s=i[e];s&&t.indexOf(s)<0&&t.push(s);}const s=t.length?`\n${t.join("\n")}`:"";e.fail(n("Missing required argument: %s","Missing required arguments: %s",Object.keys(i).length,Object.keys(i).join(", ")+s));}},unknownArguments:function(s,i,o,a,h=!0){var l;const c=t.getInternalMethods().getCommandInstance().getCommands(),f=[],d=t.getInternalMethods().getContext();if(Object.keys(s).forEach((e=>{H$1.includes(e)||Object.prototype.hasOwnProperty.call(o,e)||Object.prototype.hasOwnProperty.call(t.getInternalMethods().getParseContext(),e)||r.isValidAndSomeAliasIsNotNew(e,i)||f.push(e);})),h&&(d.commands.length>0||c.length>0||a)&&s._.slice(d.commands.length).forEach((t=>{c.includes(""+t)||f.push(""+t);})),h){const e=(null===(l=t.getDemandedCommands()._)||void 0===l?void 0:l.max)||0,i=d.commands.length+e;i<s._.length&&s._.slice(i).forEach((t=>{t=String(t),d.commands.includes(t)||f.includes(t)||f.push(t);}));}f.length&&e.fail(n("Unknown argument: %s","Unknown arguments: %s",f.length,f.map((t=>t.trim()?t:`"${t}"`)).join(", ")));},unknownCommands:function(s){const i=t.getInternalMethods().getCommandInstance().getCommands(),r=[],o=t.getInternalMethods().getContext();return (o.commands.length>0||i.length>0)&&s._.slice(o.commands.length).forEach((t=>{i.includes(""+t)||r.push(""+t);})),r.length>0&&(e.fail(n("Unknown command: %s","Unknown commands: %s",r.length,r.join(", "))),!0)},isValidAndSomeAliasIsNotNew:function(e,s){if(!Object.prototype.hasOwnProperty.call(s,e))return !1;const i=t.parsed.newAliases;return [e,...s[e]].some((t=>!Object.prototype.hasOwnProperty.call(i,t)||!i[e]))},limitedChoices:function(s){const n=t.getOptions(),r={};if(!Object.keys(n.choices).length)return;Object.keys(s).forEach((t=>{-1===H$1.indexOf(t)&&Object.prototype.hasOwnProperty.call(n.choices,t)&&[].concat(s[t]).forEach((e=>{-1===n.choices[t].indexOf(e)&&void 0!==e&&(r[t]=(r[t]||[]).concat(e));}));}));const o=Object.keys(r);if(!o.length)return;let a=i("Invalid values:");o.forEach((t=>{a+=`\n  ${i("Argument: %s, Given: %s, Choices: %s",t,e.stringifiedValues(r[t]),e.stringifiedValues(n.choices[t]))}`;})),e.fail(a);}};let o={};function a(t,e){const s=Number(e);return "number"==typeof(e=isNaN(s)?e:s)?e=t._.length>=e:e.match(/^--no-.+/)?(e=e.match(/^--no-(.+)/)[1],e=!Object.prototype.hasOwnProperty.call(t,e)):e=Object.prototype.hasOwnProperty.call(t,e),e}r.implies=function(e,i){h("<string|object> [array|number|string]",[e,i],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.implies(t,e[t]);})):(t.global(e),o[e]||(o[e]=[]),Array.isArray(i)?i.forEach((t=>r.implies(e,t))):(d(i,void 0,s),o[e].push(i)));},r.getImplied=function(){return o},r.implications=function(t){const s=[];if(Object.keys(o).forEach((e=>{const i=e;(o[e]||[]).forEach((e=>{let n=i;const r=e;n=a(t,n),e=a(t,e),n&&!e&&s.push(` ${i} -> ${r}`);}));})),s.length){let t=`${i("Implications failed:")}\n`;s.forEach((e=>{t+=e;})),e.fail(t);}};let l={};r.conflicts=function(e,s){h("<string|object> [array|string]",[e,s],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.conflicts(t,e[t]);})):(t.global(e),l[e]||(l[e]=[]),Array.isArray(s)?s.forEach((t=>r.conflicts(e,t))):l[e].push(s));},r.getConflicting=()=>l,r.conflicting=function(n){Object.keys(n).forEach((t=>{l[t]&&l[t].forEach((s=>{s&&void 0!==n[t]&&void 0!==n[s]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,s));}));})),t.getInternalMethods().getParserConfiguration()["strip-dashed"]&&Object.keys(l).forEach((t=>{l[t].forEach((r=>{r&&void 0!==n[s.Parser.camelCase(t)]&&void 0!==n[s.Parser.camelCase(r)]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,r));}));}));},r.recommendCommands=function(t,s){s=s.sort(((t,e)=>e.length-t.length));let n=null,r=1/0;for(let e,i=0;void 0!==(e=s[i]);i++){const s=N$1(t,e);s<=3&&s<r&&(r=s,n=e);}n&&e.fail(i("Did you mean %s?",n));},r.reset=function(t){return o=g(o,(e=>!t[e])),l=g(l,(e=>!t[e])),r};const c=[];return r.freeze=function(){c.push({implied:o,conflicting:l});},r.unfreeze=function(){const t=c.pop();d(t,void 0,s),({implied:o,conflicting:l}=t);},r}(this,v$1(this,pt,"f"),v$1(this,ct,"f"))),O(this,z$1,v$1(this,z$1,"f")?v$1(this,z$1,"f").reset():function(t,e,s,i){return new _$1(t,e,s,i)}(v$1(this,pt,"f"),v$1(this,yt,"f"),v$1(this,Y$1,"f"),v$1(this,ct,"f"))),v$1(this,U,"f")||O(this,U,function(t,e,s,i){return new D$1(t,e,s,i)}(this,v$1(this,pt,"f"),v$1(this,z$1,"f"),v$1(this,ct,"f"))),v$1(this,Y$1,"f").reset(),O(this,F$1,null),O(this,tt,""),O(this,V$1,null),O(this,J$1,!1),this.parsed=!1,this}[Yt](t,e){return v$1(this,ct,"f").path.relative(t,e)}[Jt](t,s,i,n=0,r=!1){let o=!!i||r;t=t||v$1(this,ht,"f"),v$1(this,et,"f").__=v$1(this,ct,"f").y18n.__,v$1(this,et,"f").configuration=this[Mt]();const a=!!v$1(this,et,"f").configuration["populate--"],h=Object.assign({},v$1(this,et,"f").configuration,{"populate--":!0}),l=v$1(this,ct,"f").Parser.detailed(t,Object.assign({},v$1(this,et,"f"),{configuration:{"parse-positional-numbers":!1,...h}})),c=Object.assign(l.argv,v$1(this,rt,"f"));let d;const u=l.aliases;let p=!1,g=!1;Object.keys(c).forEach((t=>{t===v$1(this,Z,"f")&&c[t]?p=!0:t===v$1(this,mt,"f")&&c[t]&&(g=!0);})),c.$0=this.$0,this.parsed=l,0===n&&v$1(this,pt,"f").clearCachedHelpMessage();try{if(this[kt](),s)return this[Bt](c,a,!!i,!1);if(v$1(this,Z,"f")){[v$1(this,Z,"f")].concat(u[v$1(this,Z,"f")]||[]).filter((t=>t.length>1)).includes(""+c._[c._.length-1])&&(c._.pop(),p=!0);}O(this,X,!1,"f");const h=v$1(this,z$1,"f").getCommands(),m=v$1(this,U,"f").completionKey in c,y=p||m||r;if(c._.length){if(h.length){let t;for(let e,s=n||0;void 0!==c._[s];s++){if(e=String(c._[s]),h.includes(e)&&e!==v$1(this,F$1,"f")){const t=v$1(this,z$1,"f").runCommand(e,this,l,s+1,r,p||g||r);return this[Bt](t,a,!!i,!1)}if(!t&&e!==v$1(this,F$1,"f")){t=e;break}}!v$1(this,z$1,"f").hasDefaultCommand()&&v$1(this,lt,"f")&&t&&!y&&v$1(this,yt,"f").recommendCommands(t,h);}v$1(this,F$1,"f")&&c._.includes(v$1(this,F$1,"f"))&&!m&&(v$1(this,T,"f")&&E$1(!0),this.showCompletionScript(),this.exit(0));}if(v$1(this,z$1,"f").hasDefaultCommand()&&!y){const t=v$1(this,z$1,"f").runCommand(null,this,l,0,r,p||g||r);return this[Bt](t,a,!!i,!1)}if(m){v$1(this,T,"f")&&E$1(!0);const s=(t=[].concat(t)).slice(t.indexOf(`--${v$1(this,U,"f").completionKey}`)+1);return v$1(this,U,"f").getCompletion(s,((t,s)=>{if(t)throw new e(t.message);(s||[]).forEach((t=>{v$1(this,Q$1,"f").log(t);})),this.exit(0);})),this[Bt](c,!a,!!i,!1)}if(v$1(this,J$1,"f")||(p?(v$1(this,T,"f")&&E$1(!0),o=!0,this.showHelp("log"),this.exit(0)):g&&(v$1(this,T,"f")&&E$1(!0),o=!0,v$1(this,pt,"f").showVersion("log"),this.exit(0))),!o&&v$1(this,et,"f").skipValidation.length>0&&(o=Object.keys(c).some((t=>v$1(this,et,"f").skipValidation.indexOf(t)>=0&&!0===c[t]))),!o){if(l.error)throw new e(l.error.message);if(!m){const t=this[Zt](u,{},l.error);i||(d=C$1(c,this,v$1(this,Y$1,"f").getMiddleware(),!0)),d=this[zt](t,null!=d?d:c),f(d)&&!i&&(d=d.then((()=>C$1(c,this,v$1(this,Y$1,"f").getMiddleware(),!1))));}}}catch(t){if(!(t instanceof e))throw t;v$1(this,pt,"f").fail(t.message,t);}return this[Bt](null!=d?d:c,a,!!i,!0)}[Zt](t,s,i,n){const r={...this.getDemandedOptions()};return o=>{if(i)throw new e(i.message);v$1(this,yt,"f").nonOptionCount(o),v$1(this,yt,"f").requiredArguments(o,r);let a=!1;v$1(this,dt,"f")&&(a=v$1(this,yt,"f").unknownCommands(o)),v$1(this,ft,"f")&&!a?v$1(this,yt,"f").unknownArguments(o,t,s,!!n):v$1(this,ut,"f")&&v$1(this,yt,"f").unknownArguments(o,t,{},!1,!1),v$1(this,yt,"f").limitedChoices(o),v$1(this,yt,"f").implications(o),v$1(this,yt,"f").conflicting(o);}}[Xt](){O(this,J$1,!0);}[Qt](t){if("string"==typeof t)v$1(this,et,"f").key[t]=!0;else for(const e of t)v$1(this,et,"f").key[e]=!0;}};var ee$1,se$1;const{readFileSync:ie$1}=fs$n,{inspect:ne$1}=require$$1,{resolve:re$1}=path$f,oe$1=requireBuild$3(),ae$1=requireBuild$2();var he$1,le$1={assert:{notStrictEqual:t.notStrictEqual,strictEqual:t.strictEqual},cliui:requireBuild$1(),findUp:requireSync(),getEnv:t=>process.env[t],getCallerFile:requireGetCallerFile(),getProcessArgvBin:y$1,inspect:ne$1,mainFilename:null!==(se$1=null===(ee$1=null===commonjsRequire||void 0===commonjsRequire?void 0:require.main)||void 0===ee$1?void 0:ee$1.filename)&&void 0!==se$1?se$1:process.cwd(),Parser:ae$1,path:path$f,process:{argv:()=>process.argv,cwd:process.cwd,emitWarning:(t,e)=>process.emitWarning(t,e),execPath:()=>process.execPath,exit:t=>{process.exit(t);},nextTick:process.nextTick,stdColumns:void 0!==process.stdout.columns?process.stdout.columns:null},readFileSync:ie$1,require:commonjsRequire,requireDirectory:requireRequireDirectory(),stringWidth:stringWidthExports,y18n:oe$1({directory:re$1(__dirname,"../locales"),updateFiles:!1})};const ce$1=(null===(he$1=null===process||void 0===process?void 0:process.env)||void 0===he$1?void 0:he$1.YARGS_MIN_NODE_VERSION)?Number(process.env.YARGS_MIN_NODE_VERSION):12;if(process&&process.version){if(Number(process.version.match(/v([^.]+)/)[1])<ce$1)throw Error(`yargs supports a minimum Node.js version of ${ce$1}. Read our version support policy: https://github.com/yargs/yargs#supported-nodejs-versions`)}const fe$1=requireBuild$2();var de$1,ue$1={applyExtends:n,cjsPlatformShim:le$1,Yargs:(de$1=le$1,(t=[],e=de$1.process.cwd(),s)=>{const i=new te$1(t,e,s,de$1);return Object.defineProperty(i,"argv",{get:()=>i.parse(),enumerable:!0}),i.help(),i.version(),i}),argsert:h,isPromise:f,objFilter:g,parseCommand:o,Parser:fe$1,processArgv:b$1,YError:e};var build$1=ue$1;
+var t=require$$0$4;class e extends Error{constructor(t){super(t||"yargs error"),this.name="YError",Error.captureStackTrace&&Error.captureStackTrace(this,e);}}let s,i=[];function n(t,o,a,h){s=h;let l={};if(Object.prototype.hasOwnProperty.call(t,"extends")){if("string"!=typeof t.extends)return l;const r=/\.json|\..*rc$/.test(t.extends);let h=null;if(r)h=function(t,e){return s.path.resolve(t,e)}(o,t.extends);else try{h=require.resolve(t.extends);}catch(e){return t}!function(t){if(i.indexOf(t)>-1)throw new e(`Circular extended configurations: '${t}'.`)}(h),i.push(h),l=r?JSON.parse(s.readFileSync(h,"utf8")):commonjsRequire(t.extends),delete t.extends,l=n(l,s.path.dirname(h),a,s);}return i=[],a?r(l,t):Object.assign({},l,t)}function r(t,e){const s={};function i(t){return t&&"object"==typeof t&&!Array.isArray(t)}Object.assign(s,t);for(const n of Object.keys(e))i(e[n])&&i(s[n])?s[n]=r(t[n],e[n]):s[n]=e[n];return s}function o(t){const e=t.replace(/\s{2,}/g," ").split(/\s+(?![^[]*]|[^<]*>)/),s=/\.*[\][<>]/g,i=e.shift();if(!i)throw new Error(`No command found in: ${t}`);const n={cmd:i.replace(s,""),demanded:[],optional:[]};return e.forEach(((t,i)=>{let r=!1;t=t.replace(/\s/g,""),/\.+[\]>]/.test(t)&&i===e.length-1&&(r=!0),/^\[/.test(t)?n.optional.push({cmd:t.replace(s,"").split("|"),variadic:r}):n.demanded.push({cmd:t.replace(s,"").split("|"),variadic:r});})),n}const a=["first","second","third","fourth","fifth","sixth"];function h(t,s,i){try{let n=0;const[r,a,h]="object"==typeof t?[{demanded:[],optional:[]},t,s]:[o(`cmd ${t}`),s,i],f=[].slice.call(a);for(;f.length&&void 0===f[f.length-1];)f.pop();const d=h||f.length;if(d<r.demanded.length)throw new e(`Not enough arguments provided. Expected ${r.demanded.length} but received ${f.length}.`);const u=r.demanded.length+r.optional.length;if(d>u)throw new e(`Too many arguments provided. Expected max ${u} but received ${d}.`);r.demanded.forEach((t=>{const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1;})),r.optional.forEach((t=>{if(0===f.length)return;const e=l(f.shift());0===t.cmd.filter((t=>t===e||"*"===t)).length&&c(e,t.cmd,n),n+=1;}));}catch(t){console.warn(t.stack);}}function l(t){return Array.isArray(t)?"array":null===t?"null":typeof t}function c(t,s,i){throw new e(`Invalid ${a[i]||"manyith"} argument. Expected ${s.join(" or ")} but received ${t}.`)}function f(t){return !!t&&!!t.then&&"function"==typeof t.then}function d(t,e,s,i){s.assert.notStrictEqual(t,e,i);}function u(t,e){e.assert.strictEqual(typeof t,"string");}function p(t){return Object.keys(t)}function g(t={},e=(()=>!0)){const s={};return p(t).forEach((i=>{e(i,t[i])&&(s[i]=t[i]);})),s}function m(){return process.versions.electron&&!process.defaultApp?0:1}function y$1(){return process.argv[m()]}var b$1=Object.freeze({__proto__:null,hideBin:function(t){return t.slice(m()+1)},getProcessArgvBin:y$1});function v$1(t,e,s,i){if("a"===s&&!i)throw new TypeError("Private accessor was defined without a getter");if("function"==typeof e?t!==e||!i:!e.has(t))throw new TypeError("Cannot read private member from an object whose class did not declare it");return "m"===s?i:"a"===s?i.call(t):i?i.value:e.get(t)}function O(t,e,s,i,n){if("function"==typeof e?t!==e||!n:!e.has(t))throw new TypeError("Cannot write private member to an object whose class did not declare it");return e.set(t,s),s}let w$1 = class w{constructor(t){this.globalMiddleware=[],this.frozens=[],this.yargs=t;}addMiddleware(t,e,s=!0,i=!1){if(h("<array|function> [boolean] [boolean] [boolean]",[t,e,s],arguments.length),Array.isArray(t)){for(let i=0;i<t.length;i++){if("function"!=typeof t[i])throw Error("middleware must be a function");const n=t[i];n.applyBeforeValidation=e,n.global=s;}Array.prototype.push.apply(this.globalMiddleware,t);}else if("function"==typeof t){const n=t;n.applyBeforeValidation=e,n.global=s,n.mutates=i,this.globalMiddleware.push(t);}return this.yargs}addCoerceMiddleware(t,e){const s=this.yargs.getAliases();return this.globalMiddleware=this.globalMiddleware.filter((t=>{const i=[...s[e]||[],e];return !t.option||!i.includes(t.option)})),t.option=e,this.addMiddleware(t,!0,!0,!0)}getMiddleware(){return this.globalMiddleware}freeze(){this.frozens.push([...this.globalMiddleware]);}unfreeze(){const t=this.frozens.pop();void 0!==t&&(this.globalMiddleware=t);}reset(){this.globalMiddleware=this.globalMiddleware.filter((t=>t.global));}};function C$1(t,e,s,i){return s.reduce(((t,s)=>{if(s.applyBeforeValidation!==i)return t;if(s.mutates){if(s.applied)return t;s.applied=!0;}if(f(t))return t.then((t=>Promise.all([t,s(t,e)]))).then((([t,e])=>Object.assign(t,e)));{const i=s(t,e);return f(i)?i.then((e=>Object.assign(t,e))):Object.assign(t,i)}}),t)}function j$1(t,e,s=(t=>{throw t})){try{const s="function"==typeof t?t():t;return f(s)?s.then((t=>e(t))):e(s)}catch(t){return s(t)}}const M$1=/(^\*)|(^\$0)/;let _$1 = class _{constructor(t,e,s,i){this.requireCache=new Set,this.handlers={},this.aliasMap={},this.frozens=[],this.shim=i,this.usage=t,this.globalMiddleware=s,this.validation=e;}addDirectory(t,e,s,i){"boolean"!=typeof(i=i||{}).recurse&&(i.recurse=!1),Array.isArray(i.extensions)||(i.extensions=["js"]);const n="function"==typeof i.visit?i.visit:t=>t;i.visit=(t,e,s)=>{const i=n(t,e,s);if(i){if(this.requireCache.has(e))return i;this.requireCache.add(e),this.addHandler(i);}return i},this.shim.requireDirectory({require:e,filename:s},t,i);}addHandler(t,e,s,i,n,r){let a=[];const h=function(t){return t?t.map((t=>(t.applyBeforeValidation=!1,t))):[]}(n);if(i=i||(()=>{}),Array.isArray(t))if(function(t){return t.every((t=>"string"==typeof t))}(t))[t,...a]=t;else for(const e of t)this.addHandler(e);else {if(function(t){return "object"==typeof t&&!Array.isArray(t)}(t)){let e=Array.isArray(t.command)||"string"==typeof t.command?t.command:this.moduleName(t);return t.aliases&&(e=[].concat(e).concat(t.aliases)),void this.addHandler(e,this.extractDesc(t),t.builder,t.handler,t.middlewares,t.deprecated)}if(k$1(s))return void this.addHandler([t].concat(a),e,s.builder,s.handler,s.middlewares,s.deprecated)}if("string"==typeof t){const n=o(t);a=a.map((t=>o(t).cmd));let l=!1;const c=[n.cmd].concat(a).filter((t=>!M$1.test(t)||(l=!0,!1)));0===c.length&&l&&c.push("$0"),l&&(n.cmd=c[0],a=c.slice(1),t=t.replace(M$1,n.cmd)),a.forEach((t=>{this.aliasMap[t]=n.cmd;})),!1!==e&&this.usage.command(t,e,l,a,r),this.handlers[n.cmd]={original:t,description:e,handler:i,builder:s||{},middlewares:h,deprecated:r,demanded:n.demanded,optional:n.optional},l&&(this.defaultCommand=this.handlers[n.cmd]);}}getCommandHandlers(){return this.handlers}getCommands(){return Object.keys(this.handlers).concat(Object.keys(this.aliasMap))}hasDefaultCommand(){return !!this.defaultCommand}runCommand(t,e,s,i,n,r){const o=this.handlers[t]||this.handlers[this.aliasMap[t]]||this.defaultCommand,a=e.getInternalMethods().getContext(),h=a.commands.slice(),l=!t;t&&(a.commands.push(t),a.fullCommands.push(o.original));const c=this.applyBuilderUpdateUsageAndParse(l,o,e,s.aliases,h,i,n,r);return f(c)?c.then((t=>this.applyMiddlewareAndGetResult(l,o,t.innerArgv,a,n,t.aliases,e))):this.applyMiddlewareAndGetResult(l,o,c.innerArgv,a,n,c.aliases,e)}applyBuilderUpdateUsageAndParse(t,e,s,i,n,r,o,a){const h=e.builder;let l=s;if(x$1(h)){s.getInternalMethods().getUsageInstance().freeze();const c=h(s.getInternalMethods().reset(i),a);if(f(c))return c.then((i=>{var a;return l=(a=i)&&"function"==typeof a.getInternalMethods?i:s,this.parseAndUpdateUsage(t,e,l,n,r,o)}))}else (function(t){return "object"==typeof t})(h)&&(s.getInternalMethods().getUsageInstance().freeze(),l=s.getInternalMethods().reset(i),Object.keys(e.builder).forEach((t=>{l.option(t,h[t]);})));return this.parseAndUpdateUsage(t,e,l,n,r,o)}parseAndUpdateUsage(t,e,s,i,n,r){t&&s.getInternalMethods().getUsageInstance().unfreeze(!0),this.shouldUpdateUsage(s)&&s.getInternalMethods().getUsageInstance().usage(this.usageFromParentCommandsCommandHandler(i,e),e.description);const o=s.getInternalMethods().runYargsParserAndExecuteCommands(null,void 0,!0,n,r);return f(o)?o.then((t=>({aliases:s.parsed.aliases,innerArgv:t}))):{aliases:s.parsed.aliases,innerArgv:o}}shouldUpdateUsage(t){return !t.getInternalMethods().getUsageInstance().getUsageDisabled()&&0===t.getInternalMethods().getUsageInstance().getUsage().length}usageFromParentCommandsCommandHandler(t,e){const s=M$1.test(e.original)?e.original.replace(M$1,"").trim():e.original,i=t.filter((t=>!M$1.test(t)));return i.push(s),`$0 ${i.join(" ")}`}handleValidationAndGetResult(t,e,s,i,n,r,o,a){if(!r.getInternalMethods().getHasOutput()){const e=r.getInternalMethods().runValidation(n,a,r.parsed.error,t);s=j$1(s,(t=>(e(t),t)));}if(e.handler&&!r.getInternalMethods().getHasOutput()){r.getInternalMethods().setHasOutput();const i=!!r.getOptions().configuration["populate--"];r.getInternalMethods().postProcess(s,i,!1,!1),s=j$1(s=C$1(s,r,o,!1),(t=>{const s=e.handler(t);return f(s)?s.then((()=>t)):t})),t||r.getInternalMethods().getUsageInstance().cacheHelpMessage(),f(s)&&!r.getInternalMethods().hasParseCallback()&&s.catch((t=>{try{r.getInternalMethods().getUsageInstance().fail(null,t);}catch(t){}}));}return t||(i.commands.pop(),i.fullCommands.pop()),s}applyMiddlewareAndGetResult(t,e,s,i,n,r,o){let a={};if(n)return s;o.getInternalMethods().getHasOutput()||(a=this.populatePositionals(e,s,i,o));const h=this.globalMiddleware.getMiddleware().slice(0).concat(e.middlewares),l=C$1(s,o,h,!0);return f(l)?l.then((s=>this.handleValidationAndGetResult(t,e,s,i,r,o,h,a))):this.handleValidationAndGetResult(t,e,l,i,r,o,h,a)}populatePositionals(t,e,s,i){e._=e._.slice(s.commands.length);const n=t.demanded.slice(0),r=t.optional.slice(0),o={};for(this.validation.positionalCount(n.length,e._.length);n.length;){const t=n.shift();this.populatePositional(t,e,o);}for(;r.length;){const t=r.shift();this.populatePositional(t,e,o);}return e._=s.commands.concat(e._.map((t=>""+t))),this.postProcessPositionals(e,o,this.cmdToParseOptions(t.original),i),o}populatePositional(t,e,s){const i=t.cmd[0];t.variadic?s[i]=e._.splice(0).map(String):e._.length&&(s[i]=[String(e._.shift())]);}cmdToParseOptions(t){const e={array:[],default:{},alias:{},demand:{}},s=o(t);return s.demanded.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i,e.demand[s]=!0;})),s.optional.forEach((t=>{const[s,...i]=t.cmd;t.variadic&&(e.array.push(s),e.default[s]=[]),e.alias[s]=i;})),e}postProcessPositionals(t,e,s,i){const n=Object.assign({},i.getOptions());n.default=Object.assign(s.default,n.default);for(const t of Object.keys(s.alias))n.alias[t]=(n.alias[t]||[]).concat(s.alias[t]);n.array=n.array.concat(s.array),n.config={};const r=[];if(Object.keys(e).forEach((t=>{e[t].map((e=>{n.configuration["unknown-options-as-args"]&&(n.key[t]=!0),r.push(`--${t}`),r.push(e);}));})),!r.length)return;const o=Object.assign({},n.configuration,{"populate--":!1}),a=this.shim.Parser.detailed(r,Object.assign({},n,{configuration:o}));if(a.error)i.getInternalMethods().getUsageInstance().fail(a.error.message,a.error);else {const s=Object.keys(e);Object.keys(e).forEach((t=>{s.push(...a.aliases[t]);})),Object.keys(a.argv).forEach((n=>{s.includes(n)&&(e[n]||(e[n]=a.argv[n]),!this.isInConfigs(i,n)&&!this.isDefaulted(i,n)&&Object.prototype.hasOwnProperty.call(t,n)&&Object.prototype.hasOwnProperty.call(a.argv,n)&&(Array.isArray(t[n])||Array.isArray(a.argv[n]))?t[n]=[].concat(t[n],a.argv[n]):t[n]=a.argv[n]);}));}}isDefaulted(t,e){const{default:s}=t.getOptions();return Object.prototype.hasOwnProperty.call(s,e)||Object.prototype.hasOwnProperty.call(s,this.shim.Parser.camelCase(e))}isInConfigs(t,e){const{configObjects:s}=t.getOptions();return s.some((t=>Object.prototype.hasOwnProperty.call(t,e)))||s.some((t=>Object.prototype.hasOwnProperty.call(t,this.shim.Parser.camelCase(e))))}runDefaultBuilderOn(t){if(!this.defaultCommand)return;if(this.shouldUpdateUsage(t)){const e=M$1.test(this.defaultCommand.original)?this.defaultCommand.original:this.defaultCommand.original.replace(/^[^[\]<>]*/,"$0 ");t.getInternalMethods().getUsageInstance().usage(e,this.defaultCommand.description);}const e=this.defaultCommand.builder;if(x$1(e))return e(t,!0);k$1(e)||Object.keys(e).forEach((s=>{t.option(s,e[s]);}));}moduleName(t){const e=function(t){if("undefined"==typeof commonjsRequire)return null;for(let e,s=0,i=Object.keys(require.cache);s<i.length;s++)if(e=require.cache[i[s]],e.exports===t)return e;return null}(t);if(!e)throw new Error(`No command name given for module: ${this.shim.inspect(t)}`);return this.commandFromFilename(e.filename)}commandFromFilename(t){return this.shim.path.basename(t,this.shim.path.extname(t))}extractDesc({describe:t,description:e,desc:s}){for(const i of [t,e,s]){if("string"==typeof i||!1===i)return i;d(i,!0,this.shim);}return !1}freeze(){this.frozens.push({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand});}unfreeze(){const t=this.frozens.pop();d(t,void 0,this.shim),({handlers:this.handlers,aliasMap:this.aliasMap,defaultCommand:this.defaultCommand}=t);}reset(){return this.handlers={},this.aliasMap={},this.defaultCommand=void 0,this.requireCache=new Set,this}};function k$1(t){return "object"==typeof t&&!!t.builder&&"function"==typeof t.handler}function x$1(t){return "function"==typeof t}function E$1(t){"undefined"!=typeof process&&[process.stdout,process.stderr].forEach((e=>{const s=e;s._handle&&s.isTTY&&"function"==typeof s._handle.setBlocking&&s._handle.setBlocking(t);}));}function A(t){return "boolean"==typeof t}function P(t,s){const i=s.y18n.__,n={},r=[];n.failFn=function(t){r.push(t);};let o=null,a=null,h=!0;n.showHelpOnFail=function(e=!0,s){const[i,r]="string"==typeof e?[!0,e]:[e,s];return t.getInternalMethods().isGlobalContext()&&(a=r),o=r,h=i,n};let l=!1;n.fail=function(s,i){const c=t.getInternalMethods().getLoggerInstance();if(!r.length){if(t.getExitProcess()&&E$1(!0),!l){l=!0,h&&(t.showHelp("error"),c.error()),(s||i)&&c.error(s||i);const e=o||a;e&&((s||i)&&c.error(""),c.error(e));}if(i=i||new e(s),t.getExitProcess())return t.exit(1);if(t.getInternalMethods().hasParseCallback())return t.exit(1,i);throw i}for(let t=r.length-1;t>=0;--t){const e=r[t];if(A(e)){if(i)throw i;if(s)throw Error(s)}else e(s,i,n);}};let c=[],f=!1;n.usage=(t,e)=>null===t?(f=!0,c=[],n):(f=!1,c.push([t,e||""]),n),n.getUsage=()=>c,n.getUsageDisabled=()=>f,n.getPositionalGroupName=()=>i("Positionals:");let d=[];n.example=(t,e)=>{d.push([t,e||""]);};let u=[];n.command=function(t,e,s,i,n=!1){s&&(u=u.map((t=>(t[2]=!1,t)))),u.push([t,e||"",s,i,n]);},n.getCommands=()=>u;let p={};n.describe=function(t,e){Array.isArray(t)?t.forEach((t=>{n.describe(t,e);})):"object"==typeof t?Object.keys(t).forEach((e=>{n.describe(e,t[e]);})):p[t]=e;},n.getDescriptions=()=>p;let m=[];n.epilog=t=>{m.push(t);};let y,b=!1;n.wrap=t=>{b=!0,y=t;},n.getWrap=()=>s.getEnv("YARGS_DISABLE_WRAP")?null:(b||(y=function(){const t=80;return s.process.stdColumns?Math.min(t,s.process.stdColumns):t}(),b=!0),y);const v="__yargsString__:";function O(t,e,i){let n=0;return Array.isArray(t)||(t=Object.values(t).map((t=>[t]))),t.forEach((t=>{n=Math.max(s.stringWidth(i?`${i} ${I(t[0])}`:I(t[0]))+$(t[0]),n);})),e&&(n=Math.min(n,parseInt((.5*e).toString(),10))),n}let w;function C(e){return t.getOptions().hiddenOptions.indexOf(e)<0||t.parsed.argv[t.getOptions().showHiddenOpt]}function j(t,e){let s=`[${i("default:")} `;if(void 0===t&&!e)return null;if(e)s+=e;else switch(typeof t){case"string":s+=`"${t}"`;break;case"object":s+=JSON.stringify(t);break;default:s+=t;}return `${s}]`}n.deferY18nLookup=t=>v+t,n.help=function(){if(w)return w;!function(){const e=t.getDemandedOptions(),s=t.getOptions();(Object.keys(s.alias)||[]).forEach((i=>{s.alias[i].forEach((r=>{p[r]&&n.describe(i,p[r]),r in e&&t.demandOption(i,e[r]),s.boolean.includes(r)&&t.boolean(i),s.count.includes(r)&&t.count(i),s.string.includes(r)&&t.string(i),s.normalize.includes(r)&&t.normalize(i),s.array.includes(r)&&t.array(i),s.number.includes(r)&&t.number(i);}));}));}();const e=t.customScriptName?t.$0:s.path.basename(t.$0),r=t.getDemandedOptions(),o=t.getDemandedCommands(),a=t.getDeprecatedOptions(),h=t.getGroups(),l=t.getOptions();let g=[];g=g.concat(Object.keys(p)),g=g.concat(Object.keys(r)),g=g.concat(Object.keys(o)),g=g.concat(Object.keys(l.default)),g=g.filter(C),g=Object.keys(g.reduce(((t,e)=>("_"!==e&&(t[e]=!0),t)),{}));const y=n.getWrap(),b=s.cliui({width:y,wrap:!!y});if(!f)if(c.length)c.forEach((t=>{b.div({text:`${t[0].replace(/\$0/g,e)}`}),t[1]&&b.div({text:`${t[1]}`,padding:[1,0,0,0]});})),b.div();else if(u.length){let t=null;t=o._?`${e} <${i("command")}>\n`:`${e} [${i("command")}]\n`,b.div(`${t}`);}if(u.length>1||1===u.length&&!u[0][2]){b.div(i("Commands:"));const s=t.getInternalMethods().getContext(),n=s.commands.length?`${s.commands.join(" ")} `:"";!0===t.getInternalMethods().getParserConfiguration()["sort-commands"]&&(u=u.sort(((t,e)=>t[0].localeCompare(e[0]))));const r=e?`${e} `:"";u.forEach((t=>{const s=`${r}${n}${t[0].replace(/^\$0 ?/,"")}`;b.span({text:s,padding:[0,2,0,2],width:O(u,y,`${e}${n}`)+4},{text:t[1]});const o=[];t[2]&&o.push(`[${i("default")}]`),t[3]&&t[3].length&&o.push(`[${i("aliases:")} ${t[3].join(", ")}]`),t[4]&&("string"==typeof t[4]?o.push(`[${i("deprecated: %s",t[4])}]`):o.push(`[${i("deprecated")}]`)),o.length?b.div({text:o.join(" "),padding:[0,0,0,2],align:"right"}):b.div();})),b.div();}const M=(Object.keys(l.alias)||[]).concat(Object.keys(t.parsed.newAliases)||[]);g=g.filter((e=>!t.parsed.newAliases[e]&&M.every((t=>-1===(l.alias[t]||[]).indexOf(e)))));const _=i("Options:");h[_]||(h[_]=[]),function(t,e,s,i){let n=[],r=null;Object.keys(s).forEach((t=>{n=n.concat(s[t]);})),t.forEach((t=>{r=[t].concat(e[t]),r.some((t=>-1!==n.indexOf(t)))||s[i].push(t);}));}(g,l.alias,h,_);const k=t=>/^--/.test(I(t)),x=Object.keys(h).filter((t=>h[t].length>0)).map((t=>({groupName:t,normalizedKeys:h[t].filter(C).map((t=>{if(M.includes(t))return t;for(let e,s=0;void 0!==(e=M[s]);s++)if((l.alias[e]||[]).includes(t))return e;return t}))}))).filter((({normalizedKeys:t})=>t.length>0)).map((({groupName:t,normalizedKeys:e})=>{const s=e.reduce(((e,s)=>(e[s]=[s].concat(l.alias[s]||[]).map((e=>t===n.getPositionalGroupName()?e:(/^[0-9]$/.test(e)?l.boolean.includes(s)?"-":"--":e.length>1?"--":"-")+e)).sort(((t,e)=>k(t)===k(e)?0:k(t)?1:-1)).join(", "),e)),{});return {groupName:t,normalizedKeys:e,switches:s}}));if(x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).some((({normalizedKeys:t,switches:e})=>!t.every((t=>k(e[t])))))&&x.filter((({groupName:t})=>t!==n.getPositionalGroupName())).forEach((({normalizedKeys:t,switches:e})=>{t.forEach((t=>{var s,i;k(e[t])&&(e[t]=(s=e[t],i=4,S$1(s)?{text:s.text,indentation:s.indentation+i}:{text:s,indentation:i}));}));})),x.forEach((({groupName:e,normalizedKeys:s,switches:o})=>{b.div(e),s.forEach((e=>{const s=o[e];let h=p[e]||"",c=null;h.includes(v)&&(h=i(h.substring(16))),l.boolean.includes(e)&&(c=`[${i("boolean")}]`),l.count.includes(e)&&(c=`[${i("count")}]`),l.string.includes(e)&&(c=`[${i("string")}]`),l.normalize.includes(e)&&(c=`[${i("string")}]`),l.array.includes(e)&&(c=`[${i("array")}]`),l.number.includes(e)&&(c=`[${i("number")}]`);const f=[e in a?(d=a[e],"string"==typeof d?`[${i("deprecated: %s",d)}]`:`[${i("deprecated")}]`):null,c,e in r?`[${i("required")}]`:null,l.choices&&l.choices[e]?`[${i("choices:")} ${n.stringifiedValues(l.choices[e])}]`:null,j(l.default[e],l.defaultDescription[e])].filter(Boolean).join(" ");var d;b.span({text:I(s),padding:[0,2,0,2+$(s)],width:O(o,y)+4},h);const u=!0===t.getInternalMethods().getUsageConfiguration()["hide-types"];f&&!u?b.div({text:f,padding:[0,0,0,2],align:"right"}):b.div();})),b.div();})),d.length&&(b.div(i("Examples:")),d.forEach((t=>{t[0]=t[0].replace(/\$0/g,e);})),d.forEach((t=>{""===t[1]?b.div({text:t[0],padding:[0,2,0,2]}):b.div({text:t[0],padding:[0,2,0,2],width:O(d,y)+4},{text:t[1]});})),b.div()),m.length>0){const t=m.map((t=>t.replace(/\$0/g,e))).join("\n");b.div(`${t}\n`);}return b.toString().replace(/\s*$/,"")},n.cacheHelpMessage=function(){w=this.help();},n.clearCachedHelpMessage=function(){w=void 0;},n.hasCachedHelpMessage=function(){return !!w},n.showHelp=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(n.help());},n.functionDescription=t=>["(",t.name?s.Parser.decamelize(t.name,"-"):i("generated-value"),")"].join(""),n.stringifiedValues=function(t,e){let s="";const i=e||", ",n=[].concat(t);return t&&n.length?(n.forEach((t=>{s.length&&(s+=i),s+=JSON.stringify(t);})),s):s};let M=null;n.version=t=>{M=t;},n.showVersion=e=>{const s=t.getInternalMethods().getLoggerInstance();e||(e="error");("function"==typeof e?e:s[e])(M);},n.reset=function(t){return o=null,l=!1,c=[],f=!1,m=[],d=[],u=[],p=g(p,(e=>!t[e])),n};const _=[];return n.freeze=function(){_.push({failMessage:o,failureOutput:l,usages:c,usageDisabled:f,epilogs:m,examples:d,commands:u,descriptions:p});},n.unfreeze=function(t=!1){const e=_.pop();e&&(t?(p={...e.descriptions,...p},u=[...e.commands,...u],c=[...e.usages,...c],d=[...e.examples,...d],m=[...e.epilogs,...m]):({failMessage:o,failureOutput:l,usages:c,usageDisabled:f,epilogs:m,examples:d,commands:u,descriptions:p}=e));},n}function S$1(t){return "object"==typeof t}function $(t){return S$1(t)?t.indentation:0}function I(t){return S$1(t)?t.text:t}let D$1 = class D{constructor(t,e,s,i){var n,r,o;this.yargs=t,this.usage=e,this.command=s,this.shim=i,this.completionKey="get-yargs-completions",this.aliases=null,this.customCompletionFunction=null,this.indexAfterLastReset=0,this.zshShell=null!==(o=(null===(n=this.shim.getEnv("SHELL"))||void 0===n?void 0:n.includes("zsh"))||(null===(r=this.shim.getEnv("ZSH_NAME"))||void 0===r?void 0:r.includes("zsh")))&&void 0!==o&&o;}defaultCompletion(t,e,s,i){const n=this.command.getCommandHandlers();for(let e=0,s=t.length;e<s;++e)if(n[t[e]]&&n[t[e]].builder){const s=n[t[e]].builder;if(x$1(s)){this.indexAfterLastReset=e+1;const t=this.yargs.getInternalMethods().reset();return s(t,!0),t.argv}}const r=[];this.commandCompletions(r,t,s),this.optionCompletions(r,t,e,s),this.choicesFromOptionsCompletions(r,t,e,s),this.choicesFromPositionalsCompletions(r,t,e,s),i(null,r);}commandCompletions(t,e,s){const i=this.yargs.getInternalMethods().getContext().commands;s.match(/^-/)||i[i.length-1]===s||this.previousArgHasChoices(e)||this.usage.getCommands().forEach((s=>{const i=o(s[0]).cmd;if(-1===e.indexOf(i))if(this.zshShell){const e=s[1]||"";t.push(i.replace(/:/g,"\\:")+":"+e);}else t.push(i);}));}optionCompletions(t,e,s,i){if((i.match(/^-/)||""===i&&0===t.length)&&!this.previousArgHasChoices(e)){const s=this.yargs.getOptions(),n=this.yargs.getGroups()[this.usage.getPositionalGroupName()]||[];Object.keys(s.key).forEach((r=>{const o=!!s.configuration["boolean-negation"]&&s.boolean.includes(r);n.includes(r)||s.hiddenOptions.includes(r)||this.argsContainKey(e,r,o)||this.completeOptionKey(r,t,i,o&&!!s.default[r]);}));}}choicesFromOptionsCompletions(t,e,s,i){if(this.previousArgHasChoices(e)){const s=this.getPreviousArgChoices(e);s&&s.length>0&&t.push(...s.map((t=>t.replace(/:/g,"\\:"))));}}choicesFromPositionalsCompletions(t,e,s,i){if(""===i&&t.length>0&&this.previousArgHasChoices(e))return;const n=this.yargs.getGroups()[this.usage.getPositionalGroupName()]||[],r=Math.max(this.indexAfterLastReset,this.yargs.getInternalMethods().getContext().commands.length+1),o=n[s._.length-r-1];if(!o)return;const a=this.yargs.getOptions().choices[o]||[];for(const e of a)e.startsWith(i)&&t.push(e.replace(/:/g,"\\:"));}getPreviousArgChoices(t){if(t.length<1)return;let e=t[t.length-1],s="";if(!e.startsWith("-")&&t.length>1&&(s=e,e=t[t.length-2]),!e.startsWith("-"))return;const i=e.replace(/^-+/,""),n=this.yargs.getOptions(),r=[i,...this.yargs.getAliases()[i]||[]];let o;for(const t of r)if(Object.prototype.hasOwnProperty.call(n.key,t)&&Array.isArray(n.choices[t])){o=n.choices[t];break}return o?o.filter((t=>!s||t.startsWith(s))):void 0}previousArgHasChoices(t){const e=this.getPreviousArgChoices(t);return void 0!==e&&e.length>0}argsContainKey(t,e,s){const i=e=>-1!==t.indexOf((/^[^0-9]$/.test(e)?"-":"--")+e);if(i(e))return !0;if(s&&i(`no-${e}`))return !0;if(this.aliases)for(const t of this.aliases[e])if(i(t))return !0;return !1}completeOptionKey(t,e,s,i){var n,r,o,a;let h=t;if(this.zshShell){const e=this.usage.getDescriptions(),s=null===(r=null===(n=null==this?void 0:this.aliases)||void 0===n?void 0:n[t])||void 0===r?void 0:r.find((t=>{const s=e[t];return "string"==typeof s&&s.length>0})),i=s?e[s]:void 0,l=null!==(a=null!==(o=e[t])&&void 0!==o?o:i)&&void 0!==a?a:"";h=`${t.replace(/:/g,"\\:")}:${l.replace("__yargsString__:","").replace(/(\r\n|\n|\r)/gm," ")}`;}const l=!/^--/.test(s)&&(t=>/^[^0-9]$/.test(t))(t)?"-":"--";e.push(l+h),i&&e.push(l+"no-"+h);}customCompletion(t,e,s,i){if(d(this.customCompletionFunction,null,this.shim),this.customCompletionFunction.length<3){const t=this.customCompletionFunction(s,e);return f(t)?t.then((t=>{this.shim.process.nextTick((()=>{i(null,t);}));})).catch((t=>{this.shim.process.nextTick((()=>{i(t,void 0);}));})):i(null,t)}return function(t){return t.length>3}(this.customCompletionFunction)?this.customCompletionFunction(s,e,((n=i)=>this.defaultCompletion(t,e,s,n)),(t=>{i(null,t);})):this.customCompletionFunction(s,e,(t=>{i(null,t);}))}getCompletion(t,e){const s=t.length?t[t.length-1]:"",i=this.yargs.parse(t,!0),n=this.customCompletionFunction?i=>this.customCompletion(t,i,s,e):i=>this.defaultCompletion(t,i,s,e);return f(i)?i.then(n):n(i)}generateCompletionScript(t,e){let s=this.zshShell?'#compdef {{app_name}}\n###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.zshrc\n#    or {{app_path}} {{completion_command}} >> ~/.zprofile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n  local reply\n  local si=$IFS\n  IFS=$\'\n\' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" {{app_path}} --get-yargs-completions "${words[@]}"))\n  IFS=$si\n  _describe \'values\' reply\n}\ncompdef _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n':'###-begin-{{app_name}}-completions-###\n#\n# yargs command completion script\n#\n# Installation: {{app_path}} {{completion_command}} >> ~/.bashrc\n#    or {{app_path}} {{completion_command}} >> ~/.bash_profile on OSX.\n#\n_{{app_name}}_yargs_completions()\n{\n    local cur_word args type_list\n\n    cur_word="${COMP_WORDS[COMP_CWORD]}"\n    args=("${COMP_WORDS[@]}")\n\n    # ask yargs to generate completions.\n    type_list=$({{app_path}} --get-yargs-completions "${args[@]}")\n\n    COMPREPLY=( $(compgen -W "${type_list}" -- ${cur_word}) )\n\n    # if no match was found, fall back to filename completion\n    if [ ${#COMPREPLY[@]} -eq 0 ]; then\n      COMPREPLY=()\n    fi\n\n    return 0\n}\ncomplete -o bashdefault -o default -F _{{app_name}}_yargs_completions {{app_name}}\n###-end-{{app_name}}-completions-###\n';const i=this.shim.path.basename(t);return t.match(/\.js$/)&&(t=`./${t}`),s=s.replace(/{{app_name}}/g,i),s=s.replace(/{{completion_command}}/g,e),s.replace(/{{app_path}}/g,t)}registerFunction(t){this.customCompletionFunction=t;}setParsed(t){this.aliases=t.aliases;}};function N$1(t,e){if(0===t.length)return e.length;if(0===e.length)return t.length;const s=[];let i,n;for(i=0;i<=e.length;i++)s[i]=[i];for(n=0;n<=t.length;n++)s[0][n]=n;for(i=1;i<=e.length;i++)for(n=1;n<=t.length;n++)e.charAt(i-1)===t.charAt(n-1)?s[i][n]=s[i-1][n-1]:i>1&&n>1&&e.charAt(i-2)===t.charAt(n-1)&&e.charAt(i-1)===t.charAt(n-2)?s[i][n]=s[i-2][n-2]+1:s[i][n]=Math.min(s[i-1][n-1]+1,Math.min(s[i][n-1]+1,s[i-1][n]+1));return s[e.length][t.length]}const H$1=["$0","--","_"];var z$1,W$1,q$1,U,F$1,L,V$1,G$1,R$1,T,B$1,Y$1,K$1,J$1,Z,X,Q$1,tt,et,st,it,nt,rt,ot,at,ht,lt,ct,ft,dt,ut,pt,gt,mt,yt;const bt=Symbol("copyDoubleDash"),vt=Symbol("copyDoubleDash"),Ot=Symbol("deleteFromParserHintObject"),wt=Symbol("emitWarning"),Ct=Symbol("freeze"),jt=Symbol("getDollarZero"),Mt=Symbol("getParserConfiguration"),_t=Symbol("getUsageConfiguration"),kt=Symbol("guessLocale"),xt=Symbol("guessVersion"),Et=Symbol("parsePositionalNumbers"),At=Symbol("pkgUp"),Pt=Symbol("populateParserHintArray"),St=Symbol("populateParserHintSingleValueDictionary"),$t=Symbol("populateParserHintArrayDictionary"),It=Symbol("populateParserHintDictionary"),Dt=Symbol("sanitizeKey"),Nt=Symbol("setKey"),Ht=Symbol("unfreeze"),zt=Symbol("validateAsync"),Wt=Symbol("getCommandInstance"),qt=Symbol("getContext"),Ut=Symbol("getHasOutput"),Ft=Symbol("getLoggerInstance"),Lt=Symbol("getParseContext"),Vt=Symbol("getUsageInstance"),Gt=Symbol("getValidationInstance"),Rt=Symbol("hasParseCallback"),Tt=Symbol("isGlobalContext"),Bt=Symbol("postProcess"),Yt=Symbol("rebase"),Kt=Symbol("reset"),Jt=Symbol("runYargsParserAndExecuteCommands"),Zt=Symbol("runValidation"),Xt=Symbol("setHasOutput"),Qt=Symbol("kTrackManuallySetKeys");let te$1 = class te{constructor(t=[],e,s,i){this.customScriptName=!1,this.parsed=!1,z$1.set(this,void 0),W$1.set(this,void 0),q$1.set(this,{commands:[],fullCommands:[]}),U.set(this,null),F$1.set(this,null),L.set(this,"show-hidden"),V$1.set(this,null),G$1.set(this,!0),R$1.set(this,{}),T.set(this,!0),B$1.set(this,[]),Y$1.set(this,void 0),K$1.set(this,{}),J$1.set(this,!1),Z.set(this,null),X.set(this,!0),Q$1.set(this,void 0),tt.set(this,""),et.set(this,void 0),st.set(this,void 0),it.set(this,{}),nt.set(this,null),rt.set(this,null),ot.set(this,{}),at.set(this,{}),ht.set(this,void 0),lt.set(this,!1),ct.set(this,void 0),ft.set(this,!1),dt.set(this,!1),ut.set(this,!1),pt.set(this,void 0),gt.set(this,{}),mt.set(this,null),yt.set(this,void 0),O(this,ct,i),O(this,ht,t),O(this,W$1,e),O(this,st,s),O(this,Y$1,new w$1(this)),this.$0=this[jt](),this[Kt](),O(this,z$1,v$1(this,z$1,"f")),O(this,pt,v$1(this,pt,"f")),O(this,yt,v$1(this,yt,"f")),O(this,et,v$1(this,et,"f")),v$1(this,et,"f").showHiddenOpt=v$1(this,L,"f"),O(this,Q$1,this[vt]());}addHelpOpt(t,e){return h("[string|boolean] [string]",[t,e],arguments.length),v$1(this,Z,"f")&&(this[Ot](v$1(this,Z,"f")),O(this,Z,null)),!1===t&&void 0===e||(O(this,Z,"string"==typeof t?t:"help"),this.boolean(v$1(this,Z,"f")),this.describe(v$1(this,Z,"f"),e||v$1(this,pt,"f").deferY18nLookup("Show help"))),this}help(t,e){return this.addHelpOpt(t,e)}addShowHiddenOpt(t,e){if(h("[string|boolean] [string]",[t,e],arguments.length),!1===t&&void 0===e)return this;const s="string"==typeof t?t:v$1(this,L,"f");return this.boolean(s),this.describe(s,e||v$1(this,pt,"f").deferY18nLookup("Show hidden options")),v$1(this,et,"f").showHiddenOpt=s,this}showHidden(t,e){return this.addShowHiddenOpt(t,e)}alias(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[$t](this.alias.bind(this),"alias",t,e),this}array(t){return h("<array|string>",[t],arguments.length),this[Pt]("array",t),this[Qt](t),this}boolean(t){return h("<array|string>",[t],arguments.length),this[Pt]("boolean",t),this[Qt](t),this}check(t,e){return h("<function> [boolean]",[t,e],arguments.length),this.middleware(((e,s)=>j$1((()=>t(e,s.getOptions())),(s=>(s?("string"==typeof s||s instanceof Error)&&v$1(this,pt,"f").fail(s.toString(),s):v$1(this,pt,"f").fail(v$1(this,ct,"f").y18n.__("Argument check failed: %s",t.toString())),e)),(t=>(v$1(this,pt,"f").fail(t.message?t.message:t.toString(),t),e)))),!1,e),this}choices(t,e){return h("<object|string|array> [string|array]",[t,e],arguments.length),this[$t](this.choices.bind(this),"choices",t,e),this}coerce(t,s){if(h("<object|string|array> [function]",[t,s],arguments.length),Array.isArray(t)){if(!s)throw new e("coerce callback must be provided");for(const e of t)this.coerce(e,s);return this}if("object"==typeof t){for(const e of Object.keys(t))this.coerce(e,t[e]);return this}if(!s)throw new e("coerce callback must be provided");return v$1(this,et,"f").key[t]=!0,v$1(this,Y$1,"f").addCoerceMiddleware(((i,n)=>{let r;return Object.prototype.hasOwnProperty.call(i,t)?j$1((()=>(r=n.getAliases(),s(i[t]))),(e=>{i[t]=e;const s=n.getInternalMethods().getParserConfiguration()["strip-aliased"];if(r[t]&&!0!==s)for(const s of r[t])i[s]=e;return i}),(t=>{throw new e(t.message)})):i}),t),this}conflicts(t,e){return h("<string|object> [string|array]",[t,e],arguments.length),v$1(this,yt,"f").conflicts(t,e),this}config(t="config",e,s){return h("[object|string] [string|function] [function]",[t,e,s],arguments.length),"object"!=typeof t||Array.isArray(t)?("function"==typeof e&&(s=e,e=void 0),this.describe(t,e||v$1(this,pt,"f").deferY18nLookup("Path to JSON config file")),(Array.isArray(t)?t:[t]).forEach((t=>{v$1(this,et,"f").config[t]=s||!0;})),this):(t=n(t,v$1(this,W$1,"f"),this[Mt]()["deep-merge-config"]||!1,v$1(this,ct,"f")),v$1(this,et,"f").configObjects=(v$1(this,et,"f").configObjects||[]).concat(t),this)}completion(t,e,s){return h("[string] [string|boolean|function] [function]",[t,e,s],arguments.length),"function"==typeof e&&(s=e,e=void 0),O(this,F$1,t||v$1(this,F$1,"f")||"completion"),e||!1===e||(e="generate completion script"),this.command(v$1(this,F$1,"f"),e),s&&v$1(this,U,"f").registerFunction(s),this}command(t,e,s,i,n,r){return h("<string|array|object> [string|boolean] [function|object] [function] [array] [boolean|string]",[t,e,s,i,n,r],arguments.length),v$1(this,z$1,"f").addHandler(t,e,s,i,n,r),this}commands(t,e,s,i,n,r){return this.command(t,e,s,i,n,r)}commandDir(t,e){h("<string> [object]",[t,e],arguments.length);const s=v$1(this,st,"f")||v$1(this,ct,"f").require;return v$1(this,z$1,"f").addDirectory(t,s,v$1(this,ct,"f").getCallerFile(),e),this}count(t){return h("<array|string>",[t],arguments.length),this[Pt]("count",t),this[Qt](t),this}default(t,e,s){return h("<object|string|array> [*] [string]",[t,e,s],arguments.length),s&&(u(t,v$1(this,ct,"f")),v$1(this,et,"f").defaultDescription[t]=s),"function"==typeof e&&(u(t,v$1(this,ct,"f")),v$1(this,et,"f").defaultDescription[t]||(v$1(this,et,"f").defaultDescription[t]=v$1(this,pt,"f").functionDescription(e)),e=e.call()),this[St](this.default.bind(this),"default",t,e),this}defaults(t,e,s){return this.default(t,e,s)}demandCommand(t=1,e,s,i){return h("[number] [number|string] [string|null|undefined] [string|null|undefined]",[t,e,s,i],arguments.length),"number"!=typeof e&&(s=e,e=1/0),this.global("_",!1),v$1(this,et,"f").demandedCommands._={min:t,max:e,minMsg:s,maxMsg:i},this}demand(t,e,s){return Array.isArray(e)?(e.forEach((t=>{d(s,!0,v$1(this,ct,"f")),this.demandOption(t,s);})),e=1/0):"number"!=typeof e&&(s=e,e=1/0),"number"==typeof t?(d(s,!0,v$1(this,ct,"f")),this.demandCommand(t,e,s,s)):Array.isArray(t)?t.forEach((t=>{d(s,!0,v$1(this,ct,"f")),this.demandOption(t,s);})):"string"==typeof s?this.demandOption(t,s):!0!==s&&void 0!==s||this.demandOption(t),this}demandOption(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[St](this.demandOption.bind(this),"demandedOptions",t,e),this}deprecateOption(t,e){return h("<string> [string|boolean]",[t,e],arguments.length),v$1(this,et,"f").deprecatedOptions[t]=e,this}describe(t,e){return h("<object|string|array> [string]",[t,e],arguments.length),this[Nt](t,!0),v$1(this,pt,"f").describe(t,e),this}detectLocale(t){return h("<boolean>",[t],arguments.length),O(this,G$1,t),this}env(t){return h("[string|boolean]",[t],arguments.length),!1===t?delete v$1(this,et,"f").envPrefix:v$1(this,et,"f").envPrefix=t||"",this}epilogue(t){return h("<string>",[t],arguments.length),v$1(this,pt,"f").epilog(t),this}epilog(t){return this.epilogue(t)}example(t,e){return h("<string|array> [string]",[t,e],arguments.length),Array.isArray(t)?t.forEach((t=>this.example(...t))):v$1(this,pt,"f").example(t,e),this}exit(t,e){O(this,J$1,!0),O(this,V$1,e),v$1(this,T,"f")&&v$1(this,ct,"f").process.exit(t);}exitProcess(t=!0){return h("[boolean]",[t],arguments.length),O(this,T,t),this}fail(t){if(h("<function|boolean>",[t],arguments.length),"boolean"==typeof t&&!1!==t)throw new e("Invalid first argument. Expected function or boolean 'false'");return v$1(this,pt,"f").failFn(t),this}getAliases(){return this.parsed?this.parsed.aliases:{}}async getCompletion(t,e){return h("<array> [function]",[t,e],arguments.length),e?v$1(this,U,"f").getCompletion(t,e):new Promise(((e,s)=>{v$1(this,U,"f").getCompletion(t,((t,i)=>{t?s(t):e(i);}));}))}getDemandedOptions(){return h([],0),v$1(this,et,"f").demandedOptions}getDemandedCommands(){return h([],0),v$1(this,et,"f").demandedCommands}getDeprecatedOptions(){return h([],0),v$1(this,et,"f").deprecatedOptions}getDetectLocale(){return v$1(this,G$1,"f")}getExitProcess(){return v$1(this,T,"f")}getGroups(){return Object.assign({},v$1(this,K$1,"f"),v$1(this,at,"f"))}getHelp(){if(O(this,J$1,!0),!v$1(this,pt,"f").hasCachedHelpMessage()){if(!this.parsed){const t=this[Jt](v$1(this,ht,"f"),void 0,void 0,0,!0);if(f(t))return t.then((()=>v$1(this,pt,"f").help()))}const t=v$1(this,z$1,"f").runDefaultBuilderOn(this);if(f(t))return t.then((()=>v$1(this,pt,"f").help()))}return Promise.resolve(v$1(this,pt,"f").help())}getOptions(){return v$1(this,et,"f")}getStrict(){return v$1(this,ft,"f")}getStrictCommands(){return v$1(this,dt,"f")}getStrictOptions(){return v$1(this,ut,"f")}global(t,e){return h("<string|array> [boolean]",[t,e],arguments.length),t=[].concat(t),!1!==e?v$1(this,et,"f").local=v$1(this,et,"f").local.filter((e=>-1===t.indexOf(e))):t.forEach((t=>{v$1(this,et,"f").local.includes(t)||v$1(this,et,"f").local.push(t);})),this}group(t,e){h("<string|array> <string>",[t,e],arguments.length);const s=v$1(this,at,"f")[e]||v$1(this,K$1,"f")[e];v$1(this,at,"f")[e]&&delete v$1(this,at,"f")[e];const i={};return v$1(this,K$1,"f")[e]=(s||[]).concat(t).filter((t=>!i[t]&&(i[t]=!0))),this}hide(t){return h("<string>",[t],arguments.length),v$1(this,et,"f").hiddenOptions.push(t),this}implies(t,e){return h("<string|object> [number|string|array]",[t,e],arguments.length),v$1(this,yt,"f").implies(t,e),this}locale(t){return h("[string]",[t],arguments.length),void 0===t?(this[kt](),v$1(this,ct,"f").y18n.getLocale()):(O(this,G$1,!1),v$1(this,ct,"f").y18n.setLocale(t),this)}middleware(t,e,s){return v$1(this,Y$1,"f").addMiddleware(t,!!e,s)}nargs(t,e){return h("<string|object|array> [number]",[t,e],arguments.length),this[St](this.nargs.bind(this),"narg",t,e),this}normalize(t){return h("<array|string>",[t],arguments.length),this[Pt]("normalize",t),this}number(t){return h("<array|string>",[t],arguments.length),this[Pt]("number",t),this[Qt](t),this}option(t,e){if(h("<string|object> [object]",[t,e],arguments.length),"object"==typeof t)Object.keys(t).forEach((e=>{this.options(e,t[e]);}));else {"object"!=typeof e&&(e={}),this[Qt](t),!v$1(this,mt,"f")||"version"!==t&&"version"!==(null==e?void 0:e.alias)||this[wt](['"version" is a reserved word.',"Please do one of the following:",'- Disable version with `yargs.version(false)` if using "version" as an option',"- Use the built-in `yargs.version` method instead (if applicable)","- Use a different option key","https://yargs.js.org/docs/#api-reference-version"].join("\n"),void 0,"versionWarning"),v$1(this,et,"f").key[t]=!0,e.alias&&this.alias(t,e.alias);const s=e.deprecate||e.deprecated;s&&this.deprecateOption(t,s);const i=e.demand||e.required||e.require;i&&this.demand(t,i),e.demandOption&&this.demandOption(t,"string"==typeof e.demandOption?e.demandOption:void 0),e.conflicts&&this.conflicts(t,e.conflicts),"default"in e&&this.default(t,e.default),void 0!==e.implies&&this.implies(t,e.implies),void 0!==e.nargs&&this.nargs(t,e.nargs),e.config&&this.config(t,e.configParser),e.normalize&&this.normalize(t),e.choices&&this.choices(t,e.choices),e.coerce&&this.coerce(t,e.coerce),e.group&&this.group(t,e.group),(e.boolean||"boolean"===e.type)&&(this.boolean(t),e.alias&&this.boolean(e.alias)),(e.array||"array"===e.type)&&(this.array(t),e.alias&&this.array(e.alias)),(e.number||"number"===e.type)&&(this.number(t),e.alias&&this.number(e.alias)),(e.string||"string"===e.type)&&(this.string(t),e.alias&&this.string(e.alias)),(e.count||"count"===e.type)&&this.count(t),"boolean"==typeof e.global&&this.global(t,e.global),e.defaultDescription&&(v$1(this,et,"f").defaultDescription[t]=e.defaultDescription),e.skipValidation&&this.skipValidation(t);const n=e.describe||e.description||e.desc,r=v$1(this,pt,"f").getDescriptions();Object.prototype.hasOwnProperty.call(r,t)&&"string"!=typeof n||this.describe(t,n),e.hidden&&this.hide(t),e.requiresArg&&this.requiresArg(t);}return this}options(t,e){return this.option(t,e)}parse(t,e,s){h("[string|array] [function|boolean|object] [function]",[t,e,s],arguments.length),this[Ct](),void 0===t&&(t=v$1(this,ht,"f")),"object"==typeof e&&(O(this,rt,e),e=s),"function"==typeof e&&(O(this,nt,e),e=!1),e||O(this,ht,t),v$1(this,nt,"f")&&O(this,T,!1);const i=this[Jt](t,!!e),n=this.parsed;return v$1(this,U,"f").setParsed(this.parsed),f(i)?i.then((t=>(v$1(this,nt,"f")&&v$1(this,nt,"f").call(this,v$1(this,V$1,"f"),t,v$1(this,tt,"f")),t))).catch((t=>{throw v$1(this,nt,"f")&&v$1(this,nt,"f")(t,this.parsed.argv,v$1(this,tt,"f")),t})).finally((()=>{this[Ht](),this.parsed=n;})):(v$1(this,nt,"f")&&v$1(this,nt,"f").call(this,v$1(this,V$1,"f"),i,v$1(this,tt,"f")),this[Ht](),this.parsed=n,i)}parseAsync(t,e,s){const i=this.parse(t,e,s);return f(i)?i:Promise.resolve(i)}parseSync(t,s,i){const n=this.parse(t,s,i);if(f(n))throw new e(".parseSync() must not be used with asynchronous builders, handlers, or middleware");return n}parserConfiguration(t){return h("<object>",[t],arguments.length),O(this,it,t),this}pkgConf(t,e){h("<string> [string]",[t,e],arguments.length);let s=null;const i=this[At](e||v$1(this,W$1,"f"));return i[t]&&"object"==typeof i[t]&&(s=n(i[t],e||v$1(this,W$1,"f"),this[Mt]()["deep-merge-config"]||!1,v$1(this,ct,"f")),v$1(this,et,"f").configObjects=(v$1(this,et,"f").configObjects||[]).concat(s)),this}positional(t,e){h("<string> <object>",[t,e],arguments.length);const s=["default","defaultDescription","implies","normalize","choices","conflicts","coerce","type","describe","desc","description","alias"];e=g(e,((t,e)=>!("type"===t&&!["string","number","boolean"].includes(e))&&s.includes(t)));const i=v$1(this,q$1,"f").fullCommands[v$1(this,q$1,"f").fullCommands.length-1],n=i?v$1(this,z$1,"f").cmdToParseOptions(i):{array:[],alias:{},default:{},demand:{}};return p(n).forEach((s=>{const i=n[s];Array.isArray(i)?-1!==i.indexOf(t)&&(e[s]=!0):i[t]&&!(s in e)&&(e[s]=i[t]);})),this.group(t,v$1(this,pt,"f").getPositionalGroupName()),this.option(t,e)}recommendCommands(t=!0){return h("[boolean]",[t],arguments.length),O(this,lt,t),this}required(t,e,s){return this.demand(t,e,s)}require(t,e,s){return this.demand(t,e,s)}requiresArg(t){return h("<array|string|object> [number]",[t],arguments.length),"string"==typeof t&&v$1(this,et,"f").narg[t]||this[St](this.requiresArg.bind(this),"narg",t,NaN),this}showCompletionScript(t,e){return h("[string] [string]",[t,e],arguments.length),t=t||this.$0,v$1(this,Q$1,"f").log(v$1(this,U,"f").generateCompletionScript(t,e||v$1(this,F$1,"f")||"completion")),this}showHelp(t){if(h("[string|function]",[t],arguments.length),O(this,J$1,!0),!v$1(this,pt,"f").hasCachedHelpMessage()){if(!this.parsed){const e=this[Jt](v$1(this,ht,"f"),void 0,void 0,0,!0);if(f(e))return e.then((()=>{v$1(this,pt,"f").showHelp(t);})),this}const e=v$1(this,z$1,"f").runDefaultBuilderOn(this);if(f(e))return e.then((()=>{v$1(this,pt,"f").showHelp(t);})),this}return v$1(this,pt,"f").showHelp(t),this}scriptName(t){return this.customScriptName=!0,this.$0=t,this}showHelpOnFail(t,e){return h("[boolean|string] [string]",[t,e],arguments.length),v$1(this,pt,"f").showHelpOnFail(t,e),this}showVersion(t){return h("[string|function]",[t],arguments.length),v$1(this,pt,"f").showVersion(t),this}skipValidation(t){return h("<array|string>",[t],arguments.length),this[Pt]("skipValidation",t),this}strict(t){return h("[boolean]",[t],arguments.length),O(this,ft,!1!==t),this}strictCommands(t){return h("[boolean]",[t],arguments.length),O(this,dt,!1!==t),this}strictOptions(t){return h("[boolean]",[t],arguments.length),O(this,ut,!1!==t),this}string(t){return h("<array|string>",[t],arguments.length),this[Pt]("string",t),this[Qt](t),this}terminalWidth(){return h([],0),v$1(this,ct,"f").process.stdColumns}updateLocale(t){return this.updateStrings(t)}updateStrings(t){return h("<object>",[t],arguments.length),O(this,G$1,!1),v$1(this,ct,"f").y18n.updateLocale(t),this}usage(t,s,i,n){if(h("<string|null|undefined> [string|boolean] [function|object] [function]",[t,s,i,n],arguments.length),void 0!==s){if(d(t,null,v$1(this,ct,"f")),(t||"").match(/^\$0( |$)/))return this.command(t,s,i,n);throw new e(".usage() description must start with $0 if being used as alias for .command()")}return v$1(this,pt,"f").usage(t),this}usageConfiguration(t){return h("<object>",[t],arguments.length),O(this,gt,t),this}version(t,e,s){const i="version";if(h("[boolean|string] [string] [string]",[t,e,s],arguments.length),v$1(this,mt,"f")&&(this[Ot](v$1(this,mt,"f")),v$1(this,pt,"f").version(void 0),O(this,mt,null)),0===arguments.length)s=this[xt](),t=i;else if(1===arguments.length){if(!1===t)return this;s=t,t=i;}else 2===arguments.length&&(s=e,e=void 0);return O(this,mt,"string"==typeof t?t:i),e=e||v$1(this,pt,"f").deferY18nLookup("Show version number"),v$1(this,pt,"f").version(s||void 0),this.boolean(v$1(this,mt,"f")),this.describe(v$1(this,mt,"f"),e),this}wrap(t){return h("<number|null|undefined>",[t],arguments.length),v$1(this,pt,"f").wrap(t),this}[(z$1=new WeakMap,W$1=new WeakMap,q$1=new WeakMap,U=new WeakMap,F$1=new WeakMap,L=new WeakMap,V$1=new WeakMap,G$1=new WeakMap,R$1=new WeakMap,T=new WeakMap,B$1=new WeakMap,Y$1=new WeakMap,K$1=new WeakMap,J$1=new WeakMap,Z=new WeakMap,X=new WeakMap,Q$1=new WeakMap,tt=new WeakMap,et=new WeakMap,st=new WeakMap,it=new WeakMap,nt=new WeakMap,rt=new WeakMap,ot=new WeakMap,at=new WeakMap,ht=new WeakMap,lt=new WeakMap,ct=new WeakMap,ft=new WeakMap,dt=new WeakMap,ut=new WeakMap,pt=new WeakMap,gt=new WeakMap,mt=new WeakMap,yt=new WeakMap,bt)](t){if(!t._||!t["--"])return t;t._.push.apply(t._,t["--"]);try{delete t["--"];}catch(t){}return t}[vt](){return {log:(...t)=>{this[Rt]()||console.log(...t),O(this,J$1,!0),v$1(this,tt,"f").length&&O(this,tt,v$1(this,tt,"f")+"\n"),O(this,tt,v$1(this,tt,"f")+t.join(" "));},error:(...t)=>{this[Rt]()||console.error(...t),O(this,J$1,!0),v$1(this,tt,"f").length&&O(this,tt,v$1(this,tt,"f")+"\n"),O(this,tt,v$1(this,tt,"f")+t.join(" "));}}}[Ot](t){p(v$1(this,et,"f")).forEach((e=>{if("configObjects"===e)return;const s=v$1(this,et,"f")[e];Array.isArray(s)?s.includes(t)&&s.splice(s.indexOf(t),1):"object"==typeof s&&delete s[t];})),delete v$1(this,pt,"f").getDescriptions()[t];}[wt](t,e,s){v$1(this,R$1,"f")[s]||(v$1(this,ct,"f").process.emitWarning(t,e),v$1(this,R$1,"f")[s]=!0);}[Ct](){v$1(this,B$1,"f").push({options:v$1(this,et,"f"),configObjects:v$1(this,et,"f").configObjects.slice(0),exitProcess:v$1(this,T,"f"),groups:v$1(this,K$1,"f"),strict:v$1(this,ft,"f"),strictCommands:v$1(this,dt,"f"),strictOptions:v$1(this,ut,"f"),completionCommand:v$1(this,F$1,"f"),output:v$1(this,tt,"f"),exitError:v$1(this,V$1,"f"),hasOutput:v$1(this,J$1,"f"),parsed:this.parsed,parseFn:v$1(this,nt,"f"),parseContext:v$1(this,rt,"f")}),v$1(this,pt,"f").freeze(),v$1(this,yt,"f").freeze(),v$1(this,z$1,"f").freeze(),v$1(this,Y$1,"f").freeze();}[jt](){let t,e="";return t=/\b(node|iojs|electron)(\.exe)?$/.test(v$1(this,ct,"f").process.argv()[0])?v$1(this,ct,"f").process.argv().slice(1,2):v$1(this,ct,"f").process.argv().slice(0,1),e=t.map((t=>{const e=this[Yt](v$1(this,W$1,"f"),t);return t.match(/^(\/|([a-zA-Z]:)?\\)/)&&e.length<t.length?e:t})).join(" ").trim(),v$1(this,ct,"f").getEnv("_")&&v$1(this,ct,"f").getProcessArgvBin()===v$1(this,ct,"f").getEnv("_")&&(e=v$1(this,ct,"f").getEnv("_").replace(`${v$1(this,ct,"f").path.dirname(v$1(this,ct,"f").process.execPath())}/`,"")),e}[Mt](){return v$1(this,it,"f")}[_t](){return v$1(this,gt,"f")}[kt](){if(!v$1(this,G$1,"f"))return;const t=v$1(this,ct,"f").getEnv("LC_ALL")||v$1(this,ct,"f").getEnv("LC_MESSAGES")||v$1(this,ct,"f").getEnv("LANG")||v$1(this,ct,"f").getEnv("LANGUAGE")||"en_US";this.locale(t.replace(/[.:].*/,""));}[xt](){return this[At]().version||"unknown"}[Et](t){const e=t["--"]?t["--"]:t._;for(let t,s=0;void 0!==(t=e[s]);s++)v$1(this,ct,"f").Parser.looksLikeNumber(t)&&Number.isSafeInteger(Math.floor(parseFloat(`${t}`)))&&(e[s]=Number(t));return t}[At](t){const e=t||"*";if(v$1(this,ot,"f")[e])return v$1(this,ot,"f")[e];let s={};try{let e=t||v$1(this,ct,"f").mainFilename;!t&&v$1(this,ct,"f").path.extname(e)&&(e=v$1(this,ct,"f").path.dirname(e));const i=v$1(this,ct,"f").findUp(e,((t,e)=>e.includes("package.json")?"package.json":void 0));d(i,void 0,v$1(this,ct,"f")),s=JSON.parse(v$1(this,ct,"f").readFileSync(i,"utf8"));}catch(t){}return v$1(this,ot,"f")[e]=s||{},v$1(this,ot,"f")[e]}[Pt](t,e){(e=[].concat(e)).forEach((e=>{e=this[Dt](e),v$1(this,et,"f")[t].push(e);}));}[St](t,e,s,i){this[It](t,e,s,i,((t,e,s)=>{v$1(this,et,"f")[t][e]=s;}));}[$t](t,e,s,i){this[It](t,e,s,i,((t,e,s)=>{v$1(this,et,"f")[t][e]=(v$1(this,et,"f")[t][e]||[]).concat(s);}));}[It](t,e,s,i,n){if(Array.isArray(s))s.forEach((e=>{t(e,i);}));else if((t=>"object"==typeof t)(s))for(const e of p(s))t(e,s[e]);else n(e,this[Dt](s),i);}[Dt](t){return "__proto__"===t?"___proto___":t}[Nt](t,e){return this[St](this[Nt].bind(this),"key",t,e),this}[Ht](){var t,e,s,i,n,r,o,a,h,l,c,f;const u=v$1(this,B$1,"f").pop();let p;d(u,void 0,v$1(this,ct,"f")),t=this,e=this,s=this,i=this,n=this,r=this,o=this,a=this,h=this,l=this,c=this,f=this,({options:{set value(e){O(t,et,e);}}.value,configObjects:p,exitProcess:{set value(t){O(e,T,t);}}.value,groups:{set value(t){O(s,K$1,t);}}.value,output:{set value(t){O(i,tt,t);}}.value,exitError:{set value(t){O(n,V$1,t);}}.value,hasOutput:{set value(t){O(r,J$1,t);}}.value,parsed:this.parsed,strict:{set value(t){O(o,ft,t);}}.value,strictCommands:{set value(t){O(a,dt,t);}}.value,strictOptions:{set value(t){O(h,ut,t);}}.value,completionCommand:{set value(t){O(l,F$1,t);}}.value,parseFn:{set value(t){O(c,nt,t);}}.value,parseContext:{set value(t){O(f,rt,t);}}.value}=u),v$1(this,et,"f").configObjects=p,v$1(this,pt,"f").unfreeze(),v$1(this,yt,"f").unfreeze(),v$1(this,z$1,"f").unfreeze(),v$1(this,Y$1,"f").unfreeze();}[zt](t,e){return j$1(e,(e=>(t(e),e)))}getInternalMethods(){return {getCommandInstance:this[Wt].bind(this),getContext:this[qt].bind(this),getHasOutput:this[Ut].bind(this),getLoggerInstance:this[Ft].bind(this),getParseContext:this[Lt].bind(this),getParserConfiguration:this[Mt].bind(this),getUsageConfiguration:this[_t].bind(this),getUsageInstance:this[Vt].bind(this),getValidationInstance:this[Gt].bind(this),hasParseCallback:this[Rt].bind(this),isGlobalContext:this[Tt].bind(this),postProcess:this[Bt].bind(this),reset:this[Kt].bind(this),runValidation:this[Zt].bind(this),runYargsParserAndExecuteCommands:this[Jt].bind(this),setHasOutput:this[Xt].bind(this)}}[Wt](){return v$1(this,z$1,"f")}[qt](){return v$1(this,q$1,"f")}[Ut](){return v$1(this,J$1,"f")}[Ft](){return v$1(this,Q$1,"f")}[Lt](){return v$1(this,rt,"f")||{}}[Vt](){return v$1(this,pt,"f")}[Gt](){return v$1(this,yt,"f")}[Rt](){return !!v$1(this,nt,"f")}[Tt](){return v$1(this,X,"f")}[Bt](t,e,s,i){if(s)return t;if(f(t))return t;e||(t=this[bt](t));return (this[Mt]()["parse-positional-numbers"]||void 0===this[Mt]()["parse-positional-numbers"])&&(t=this[Et](t)),i&&(t=C$1(t,this,v$1(this,Y$1,"f").getMiddleware(),!1)),t}[Kt](t={}){O(this,et,v$1(this,et,"f")||{});const e={};e.local=v$1(this,et,"f").local||[],e.configObjects=v$1(this,et,"f").configObjects||[];const s={};e.local.forEach((e=>{s[e]=!0,(t[e]||[]).forEach((t=>{s[t]=!0;}));})),Object.assign(v$1(this,at,"f"),Object.keys(v$1(this,K$1,"f")).reduce(((t,e)=>{const i=v$1(this,K$1,"f")[e].filter((t=>!(t in s)));return i.length>0&&(t[e]=i),t}),{})),O(this,K$1,{});return ["array","boolean","string","skipValidation","count","normalize","number","hiddenOptions"].forEach((t=>{e[t]=(v$1(this,et,"f")[t]||[]).filter((t=>!s[t]));})),["narg","key","alias","default","defaultDescription","config","choices","demandedOptions","demandedCommands","deprecatedOptions"].forEach((t=>{e[t]=g(v$1(this,et,"f")[t],(t=>!s[t]));})),e.envPrefix=v$1(this,et,"f").envPrefix,O(this,et,e),O(this,pt,v$1(this,pt,"f")?v$1(this,pt,"f").reset(s):P(this,v$1(this,ct,"f"))),O(this,yt,v$1(this,yt,"f")?v$1(this,yt,"f").reset(s):function(t,e,s){const i=s.y18n.__,n=s.y18n.__n,r={nonOptionCount:function(s){const i=t.getDemandedCommands(),r=s._.length+(s["--"]?s["--"].length:0)-t.getInternalMethods().getContext().commands.length;i._&&(r<i._.min||r>i._.max)&&(r<i._.min?void 0!==i._.minMsg?e.fail(i._.minMsg?i._.minMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.min.toString()):null):e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",r,r.toString(),i._.min.toString())):r>i._.max&&(void 0!==i._.maxMsg?e.fail(i._.maxMsg?i._.maxMsg.replace(/\$0/g,r.toString()).replace(/\$1/,i._.max.toString()):null):e.fail(n("Too many non-option arguments: got %s, maximum of %s","Too many non-option arguments: got %s, maximum of %s",r,r.toString(),i._.max.toString()))));},positionalCount:function(t,s){s<t&&e.fail(n("Not enough non-option arguments: got %s, need at least %s","Not enough non-option arguments: got %s, need at least %s",s,s+"",t+""));},requiredArguments:function(t,s){let i=null;for(const e of Object.keys(s))Object.prototype.hasOwnProperty.call(t,e)&&void 0!==t[e]||(i=i||{},i[e]=s[e]);if(i){const t=[];for(const e of Object.keys(i)){const s=i[e];s&&t.indexOf(s)<0&&t.push(s);}const s=t.length?`\n${t.join("\n")}`:"";e.fail(n("Missing required argument: %s","Missing required arguments: %s",Object.keys(i).length,Object.keys(i).join(", ")+s));}},unknownArguments:function(s,i,o,a,h=!0){var l;const c=t.getInternalMethods().getCommandInstance().getCommands(),f=[],d=t.getInternalMethods().getContext();if(Object.keys(s).forEach((e=>{H$1.includes(e)||Object.prototype.hasOwnProperty.call(o,e)||Object.prototype.hasOwnProperty.call(t.getInternalMethods().getParseContext(),e)||r.isValidAndSomeAliasIsNotNew(e,i)||f.push(e);})),h&&(d.commands.length>0||c.length>0||a)&&s._.slice(d.commands.length).forEach((t=>{c.includes(""+t)||f.push(""+t);})),h){const e=(null===(l=t.getDemandedCommands()._)||void 0===l?void 0:l.max)||0,i=d.commands.length+e;i<s._.length&&s._.slice(i).forEach((t=>{t=String(t),d.commands.includes(t)||f.includes(t)||f.push(t);}));}f.length&&e.fail(n("Unknown argument: %s","Unknown arguments: %s",f.length,f.map((t=>t.trim()?t:`"${t}"`)).join(", ")));},unknownCommands:function(s){const i=t.getInternalMethods().getCommandInstance().getCommands(),r=[],o=t.getInternalMethods().getContext();return (o.commands.length>0||i.length>0)&&s._.slice(o.commands.length).forEach((t=>{i.includes(""+t)||r.push(""+t);})),r.length>0&&(e.fail(n("Unknown command: %s","Unknown commands: %s",r.length,r.join(", "))),!0)},isValidAndSomeAliasIsNotNew:function(e,s){if(!Object.prototype.hasOwnProperty.call(s,e))return !1;const i=t.parsed.newAliases;return [e,...s[e]].some((t=>!Object.prototype.hasOwnProperty.call(i,t)||!i[e]))},limitedChoices:function(s){const n=t.getOptions(),r={};if(!Object.keys(n.choices).length)return;Object.keys(s).forEach((t=>{-1===H$1.indexOf(t)&&Object.prototype.hasOwnProperty.call(n.choices,t)&&[].concat(s[t]).forEach((e=>{-1===n.choices[t].indexOf(e)&&void 0!==e&&(r[t]=(r[t]||[]).concat(e));}));}));const o=Object.keys(r);if(!o.length)return;let a=i("Invalid values:");o.forEach((t=>{a+=`\n  ${i("Argument: %s, Given: %s, Choices: %s",t,e.stringifiedValues(r[t]),e.stringifiedValues(n.choices[t]))}`;})),e.fail(a);}};let o={};function a(t,e){const s=Number(e);return "number"==typeof(e=isNaN(s)?e:s)?e=t._.length>=e:e.match(/^--no-.+/)?(e=e.match(/^--no-(.+)/)[1],e=!Object.prototype.hasOwnProperty.call(t,e)):e=Object.prototype.hasOwnProperty.call(t,e),e}r.implies=function(e,i){h("<string|object> [array|number|string]",[e,i],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.implies(t,e[t]);})):(t.global(e),o[e]||(o[e]=[]),Array.isArray(i)?i.forEach((t=>r.implies(e,t))):(d(i,void 0,s),o[e].push(i)));},r.getImplied=function(){return o},r.implications=function(t){const s=[];if(Object.keys(o).forEach((e=>{const i=e;(o[e]||[]).forEach((e=>{let n=i;const r=e;n=a(t,n),e=a(t,e),n&&!e&&s.push(` ${i} -> ${r}`);}));})),s.length){let t=`${i("Implications failed:")}\n`;s.forEach((e=>{t+=e;})),e.fail(t);}};let l={};r.conflicts=function(e,s){h("<string|object> [array|string]",[e,s],arguments.length),"object"==typeof e?Object.keys(e).forEach((t=>{r.conflicts(t,e[t]);})):(t.global(e),l[e]||(l[e]=[]),Array.isArray(s)?s.forEach((t=>r.conflicts(e,t))):l[e].push(s));},r.getConflicting=()=>l,r.conflicting=function(n){Object.keys(n).forEach((t=>{l[t]&&l[t].forEach((s=>{s&&void 0!==n[t]&&void 0!==n[s]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,s));}));})),t.getInternalMethods().getParserConfiguration()["strip-dashed"]&&Object.keys(l).forEach((t=>{l[t].forEach((r=>{r&&void 0!==n[s.Parser.camelCase(t)]&&void 0!==n[s.Parser.camelCase(r)]&&e.fail(i("Arguments %s and %s are mutually exclusive",t,r));}));}));},r.recommendCommands=function(t,s){s=s.sort(((t,e)=>e.length-t.length));let n=null,r=1/0;for(let e,i=0;void 0!==(e=s[i]);i++){const s=N$1(t,e);s<=3&&s<r&&(r=s,n=e);}n&&e.fail(i("Did you mean %s?",n));},r.reset=function(t){return o=g(o,(e=>!t[e])),l=g(l,(e=>!t[e])),r};const c=[];return r.freeze=function(){c.push({implied:o,conflicting:l});},r.unfreeze=function(){const t=c.pop();d(t,void 0,s),({implied:o,conflicting:l}=t);},r}(this,v$1(this,pt,"f"),v$1(this,ct,"f"))),O(this,z$1,v$1(this,z$1,"f")?v$1(this,z$1,"f").reset():function(t,e,s,i){return new _$1(t,e,s,i)}(v$1(this,pt,"f"),v$1(this,yt,"f"),v$1(this,Y$1,"f"),v$1(this,ct,"f"))),v$1(this,U,"f")||O(this,U,function(t,e,s,i){return new D$1(t,e,s,i)}(this,v$1(this,pt,"f"),v$1(this,z$1,"f"),v$1(this,ct,"f"))),v$1(this,Y$1,"f").reset(),O(this,F$1,null),O(this,tt,""),O(this,V$1,null),O(this,J$1,!1),this.parsed=!1,this}[Yt](t,e){return v$1(this,ct,"f").path.relative(t,e)}[Jt](t,s,i,n=0,r=!1){let o=!!i||r;t=t||v$1(this,ht,"f"),v$1(this,et,"f").__=v$1(this,ct,"f").y18n.__,v$1(this,et,"f").configuration=this[Mt]();const a=!!v$1(this,et,"f").configuration["populate--"],h=Object.assign({},v$1(this,et,"f").configuration,{"populate--":!0}),l=v$1(this,ct,"f").Parser.detailed(t,Object.assign({},v$1(this,et,"f"),{configuration:{"parse-positional-numbers":!1,...h}})),c=Object.assign(l.argv,v$1(this,rt,"f"));let d;const u=l.aliases;let p=!1,g=!1;Object.keys(c).forEach((t=>{t===v$1(this,Z,"f")&&c[t]?p=!0:t===v$1(this,mt,"f")&&c[t]&&(g=!0);})),c.$0=this.$0,this.parsed=l,0===n&&v$1(this,pt,"f").clearCachedHelpMessage();try{if(this[kt](),s)return this[Bt](c,a,!!i,!1);if(v$1(this,Z,"f")){[v$1(this,Z,"f")].concat(u[v$1(this,Z,"f")]||[]).filter((t=>t.length>1)).includes(""+c._[c._.length-1])&&(c._.pop(),p=!0);}O(this,X,!1,"f");const h=v$1(this,z$1,"f").getCommands(),m=v$1(this,U,"f").completionKey in c,y=p||m||r;if(c._.length){if(h.length){let t;for(let e,s=n||0;void 0!==c._[s];s++){if(e=String(c._[s]),h.includes(e)&&e!==v$1(this,F$1,"f")){const t=v$1(this,z$1,"f").runCommand(e,this,l,s+1,r,p||g||r);return this[Bt](t,a,!!i,!1)}if(!t&&e!==v$1(this,F$1,"f")){t=e;break}}!v$1(this,z$1,"f").hasDefaultCommand()&&v$1(this,lt,"f")&&t&&!y&&v$1(this,yt,"f").recommendCommands(t,h);}v$1(this,F$1,"f")&&c._.includes(v$1(this,F$1,"f"))&&!m&&(v$1(this,T,"f")&&E$1(!0),this.showCompletionScript(),this.exit(0));}if(v$1(this,z$1,"f").hasDefaultCommand()&&!y){const t=v$1(this,z$1,"f").runCommand(null,this,l,0,r,p||g||r);return this[Bt](t,a,!!i,!1)}if(m){v$1(this,T,"f")&&E$1(!0);const s=(t=[].concat(t)).slice(t.indexOf(`--${v$1(this,U,"f").completionKey}`)+1);return v$1(this,U,"f").getCompletion(s,((t,s)=>{if(t)throw new e(t.message);(s||[]).forEach((t=>{v$1(this,Q$1,"f").log(t);})),this.exit(0);})),this[Bt](c,!a,!!i,!1)}if(v$1(this,J$1,"f")||(p?(v$1(this,T,"f")&&E$1(!0),o=!0,this.showHelp("log"),this.exit(0)):g&&(v$1(this,T,"f")&&E$1(!0),o=!0,v$1(this,pt,"f").showVersion("log"),this.exit(0))),!o&&v$1(this,et,"f").skipValidation.length>0&&(o=Object.keys(c).some((t=>v$1(this,et,"f").skipValidation.indexOf(t)>=0&&!0===c[t]))),!o){if(l.error)throw new e(l.error.message);if(!m){const t=this[Zt](u,{},l.error);i||(d=C$1(c,this,v$1(this,Y$1,"f").getMiddleware(),!0)),d=this[zt](t,null!=d?d:c),f(d)&&!i&&(d=d.then((()=>C$1(c,this,v$1(this,Y$1,"f").getMiddleware(),!1))));}}}catch(t){if(!(t instanceof e))throw t;v$1(this,pt,"f").fail(t.message,t);}return this[Bt](null!=d?d:c,a,!!i,!0)}[Zt](t,s,i,n){const r={...this.getDemandedOptions()};return o=>{if(i)throw new e(i.message);v$1(this,yt,"f").nonOptionCount(o),v$1(this,yt,"f").requiredArguments(o,r);let a=!1;v$1(this,dt,"f")&&(a=v$1(this,yt,"f").unknownCommands(o)),v$1(this,ft,"f")&&!a?v$1(this,yt,"f").unknownArguments(o,t,s,!!n):v$1(this,ut,"f")&&v$1(this,yt,"f").unknownArguments(o,t,{},!1,!1),v$1(this,yt,"f").limitedChoices(o),v$1(this,yt,"f").implications(o),v$1(this,yt,"f").conflicting(o);}}[Xt](){O(this,J$1,!0);}[Qt](t){if("string"==typeof t)v$1(this,et,"f").key[t]=!0;else for(const e of t)v$1(this,et,"f").key[e]=!0;}};var ee$1,se$1;const{readFileSync:ie$1}=fs$n,{inspect:ne$1}=require$$1,{resolve:re$1}=path$f,oe$1=requireBuild$3(),ae$1=requireBuild$2();var he$1,le$1={assert:{notStrictEqual:t.notStrictEqual,strictEqual:t.strictEqual},cliui:requireBuild$1(),findUp:requireSync(),getEnv:t=>process.env[t],getCallerFile:requireGetCallerFile(),getProcessArgvBin:y$1,inspect:ne$1,mainFilename:null!==(se$1=null===(ee$1=null===commonjsRequire||void 0===commonjsRequire?void 0:require.main)||void 0===ee$1?void 0:ee$1.filename)&&void 0!==se$1?se$1:process.cwd(),Parser:ae$1,path:path$f,process:{argv:()=>process.argv,cwd:process.cwd,emitWarning:(t,e)=>process.emitWarning(t,e),execPath:()=>process.execPath,exit:t=>{process.exit(t);},nextTick:process.nextTick,stdColumns:void 0!==process.stdout.columns?process.stdout.columns:null},readFileSync:ie$1,require:commonjsRequire,requireDirectory:requireRequireDirectory(),stringWidth:stringWidthExports,y18n:oe$1({directory:re$1(__dirname,"../locales"),updateFiles:!1})};const ce$1=(null===(he$1=null===process||void 0===process?void 0:process.env)||void 0===he$1?void 0:he$1.YARGS_MIN_NODE_VERSION)?Number(process.env.YARGS_MIN_NODE_VERSION):12;if(process&&process.version){if(Number(process.version.match(/v([^.]+)/)[1])<ce$1)throw Error(`yargs supports a minimum Node.js version of ${ce$1}. Read our version support policy: https://github.com/yargs/yargs#supported-nodejs-versions`)}const fe$1=requireBuild$2();var de$1,ue$1={applyExtends:n,cjsPlatformShim:le$1,Yargs:(de$1=le$1,(t=[],e=de$1.process.cwd(),s)=>{const i=new te$1(t,e,s,de$1);return Object.defineProperty(i,"argv",{get:()=>i.parse(),enumerable:!0}),i.help(),i.version(),i}),argsert:h,isPromise:f,objFilter:g,parseCommand:o,Parser:fe$1,processArgv:b$1,YError:e};var build$1=ue$1;
 
 var pkg = /*@__PURE__*/getDefaultExportFromCjs(build$1);
 
@@ -88070,7 +87686,7 @@ var validation = {exports: {}};
 
 var isValidUTF8_1;
 
-const { isUtf8 } = require$$0$7;
+const { isUtf8 } = require$$0$6;
 
 //
 // Allowed token characters:
@@ -88201,7 +87817,7 @@ if (isUtf8) {
 
 var validationExports = validation.exports;
 
-const { Writable } = require$$0$6;
+const { Writable } = require$$0$5;
 
 const PerMessageDeflate$2 = permessageDeflate;
 const {
@@ -89893,10 +89509,10 @@ var extension = { format: format$1, parse: parse$1 };
 
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "^Duplex|Readable$", "caughtErrors": "none" }] */
 
-const EventEmitter$3 = require$$0$4;
+const EventEmitter$3 = require$$0$3;
 const https = require$$1$1;
-const http = require$$0$8;
-const net = require$$0$9;
+const http = require$$0$7;
+const net = require$$0$8;
 const tls = require$$1$2;
 const { randomBytes, createHash } = require$$2;
 const { URL: URL$1 } = require$$5;
@@ -91289,8 +90905,8 @@ class NodeWebSocketTransport {
 }
 
 var NodeWebSocketTransport$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	NodeWebSocketTransport: NodeWebSocketTransport
+    __proto__: null,
+    NodeWebSocketTransport: NodeWebSocketTransport
 });
 
 /**
@@ -92918,7 +92534,7 @@ function requireNode () {
 	if (hasRequiredNode) return node.exports;
 	hasRequiredNode = 1;
 	(function (module, exports) {
-		const tty = require$$0$3;
+		const tty = require$$0$9;
 		const util = require$$1;
 
 		/**
@@ -92945,7 +92561,7 @@ function requireNode () {
 		try {
 			// Optional dependency (as in, doesn't need to be installed, NOT like optionalDependencies in package.json)
 			// eslint-disable-next-line import/no-extraneous-dependencies
-			const supportsColor = supportsColor_1$2;
+			const supportsColor = requireSupportsColor$2();
 
 			if (supportsColor && (supportsColor.stderr || supportsColor).level >= 2) {
 				exports.colors = [
@@ -93196,8 +92812,8 @@ var srcExports = src.exports;
 var debug = /*@__PURE__*/getDefaultExportFromCjs(srcExports);
 
 var index = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	default: debug
+    __proto__: null,
+    default: debug
 });
 
 /**
@@ -93250,7 +92866,7 @@ const debugFfmpeg = debug('puppeteer:ffmpeg');
  * @public
  */
 let ScreenRecorder = (() => {
-    let _classSuper = require$$0$6.PassThrough;
+    let _classSuper = require$$0$5.PassThrough;
     let _instanceExtraInitializers = [];
     let _private_writeFrame_decorators;
     let _private_writeFrame_descriptor;
@@ -93409,8 +93025,8 @@ let ScreenRecorder = (() => {
 })();
 
 var ScreenRecorder$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	ScreenRecorder: ScreenRecorder
+    __proto__: null,
+    ScreenRecorder: ScreenRecorder
 });
 
 /**
@@ -109378,7 +108994,7 @@ ${lanes.join("\n")}
 		          }
 		          let activeSession;
 		          let profilePath = "./profile.cpuprofile";
-		          const Buffer2 =   require$$0$7.Buffer;
+		          const Buffer2 =   require$$0$6.Buffer;
 		          const isLinuxOrMacOs = process.platform === "linux" || process.platform === "darwin";
 		          const platform = _os.platform();
 		          const useCaseSensitiveFileNames2 = isFileSystemCaseSensitive();
@@ -292700,7 +292316,7 @@ async function cleanup() {
     }, {
         text: formatter$1.info("Cleaning up browsers and network caches"),
         successText: formatter$1.info("Browsers and network caches cleaned up"),
-        failText: (e) => formatter$1.error("Failed to clean up browsers, network caches:", e.message),
+        failText: (e) => formatter$1.error(`Failed to clean up browsers, network caches: ${e.message}`),
     });
 }
 const cache = {};
@@ -292939,7 +292555,7 @@ class Terminal{
 
         // store current position
         this.dy = this.dy + dy;
-
+        
         // move cursor relative
         _readline.moveCursor(this.stream, dx, dy);
     }
@@ -293297,7 +292913,7 @@ const _ETA = eta;
 const _Terminal$1 = terminal;
 const _formatter = formatter;
 const _options$2 = options;
-const _EventEmitter$1 = require$$0$4;
+const _EventEmitter$1 = require$$0$3;
 
 // Progress-Bar constructor
 var genericBar = class GenericBar extends _EventEmitter$1{
@@ -293673,7 +293289,7 @@ var singleBar = class SingleBar extends _GenericBar{
 const _Terminal = terminal;
 const _BarElement = genericBar;
 const _options = options;
-const _EventEmitter = require$$0$4;
+const _EventEmitter = require$$0$3;
 
 // Progress-Bar constructor
 var multiBar = class MultiBar extends _EventEmitter{
@@ -294009,19 +293625,19 @@ class ProgressBar {
             this.manager.log("\n");
             this.statisticsBar = this.manager.create(Infinity, 0, {}, {
                 format: (options, params, payload) => {
-                    options.format = chalk$5[this.textColor]("[run.s: {runs} | t: {duration_formatted} | Σt: {sum} | min: {min} | med: {median} | max: {max}]");
+                    options.format = formatter$1[this.textColor]("[run.s: {runs} | t: {duration_formatted} | Σt: {sum} | min: {min} | med: {median} | max: {max}]");
                     return cliProgress$1.Format.Formatter(options, params, payload);
                 },
             });
             this.mainBar = this.manager.create(total, 0, {}, {
                 format: (options, params, payload) => {
-                    options.format = chalk$5[this.barColor]("{bar} {value}/{total}");
+                    options.format = formatter$1[this.barColor]("{bar} {value}/{total}");
                     return cliProgress$1.Format.Formatter(options, params, payload);
                 },
             });
             this.titleBar = this.manager.create(Infinity, 0, {}, {
                 format: (options, params, payload) => {
-                    options.format = chalk$5[this.textColor](payload.currentTestName ?? "");
+                    options.format = formatter$1[this.textColor](payload.currentTestName ?? "");
                     return cliProgress$1.Format.Formatter(options, params, payload);
                 },
             });
@@ -294066,10 +293682,10 @@ class ProgressBar {
         this.manager.log(message + "\n");
     }
     get textColor() {
-        return this.stopped ? "gray" : "white";
+        return this.stopped ? "disabled" : "info";
     }
     get barColor() {
-        return this.stopped ? "gray" : "cyan";
+        return this.stopped ? "disabled" : "cyan";
     }
 }
 
@@ -294179,7 +293795,7 @@ class Executor {
         }
         const splits = result.map((ids) => new ExecutorSplit(this.config, ids));
         await oraPromise(() => Promise.all(splits.map((split) => split.initalize())), {
-            text: chalk$5.white(`Initializing ${result.length} split.s`),
+            text: formatter$1.info(`Initializing ${result.length} split.s`),
         });
         return splits;
     }
@@ -295707,7 +295323,7 @@ function requirePrompt () {
 	if (hasRequiredPrompt) return prompt;
 	hasRequiredPrompt = 1;
 
-	const Events = require$$0$4;
+	const Events = require$$0$3;
 	const stripAnsi = requireStripAnsi();
 	const keypress = requireKeypress();
 	const timer = requireTimer();
@@ -299531,8 +299147,8 @@ function requireTypes () {
 	return types;
 }
 
-const assert$2 = require$$0$5;
-const Events = require$$0$4;
+const assert$2 = require$$0$4;
+const Events = require$$0$3;
 const utils = utils$1;
 
 /**
@@ -299846,12 +299462,12 @@ class TestSuiteRunner {
         // @ts-ignore
         const mode = await enquirer$1.select({
             name: "mode",
-            message: chalk$5.white("What are you looking for?"),
+            message: formatter$1.info("What are you looking for?"),
             choices: ["Test", "Suite"],
         });
         // @ts-ignore
         const name = await enquirer$1.autocomplete({
-            message: chalk$5.white(`Which ${mode.toLowerCase()} should I run?`),
+            message: formatter$1.info(`Which ${mode.toLowerCase()} should I run?`),
             choices: mode === this.config.RUN_TYPE.TEST ? this.metadata.testNames : this.metadata.suiteNames,
             limit: 5,
         });
@@ -304340,8 +303956,8 @@ class TestSuiteMetadata {
                 await page.waitForFunction(adapter.metadataReady);
                 return new TestSuiteMetadata(config, await page.evaluate(adapter.getMetadata));
             }, {
-                text: chalk$5.white("Fetching test suite metadata"),
-                failText: (e) => chalk$5.red("Failed to fetch test suite metadata:", e.message),
+                text: formatter$1.info("Fetching test suite metadata"),
+                failText: (e) => formatter$1.error(`Failed to fetch test suite metadata: ${e.message}`),
             });
         }
         catch (e) {
@@ -304700,8 +304316,8 @@ var EventEmitter$1 = {};
 function mitt(n){return {all:n=n||new Map,on:function(t,e){var i=n.get(t);i?i.push(e):n.set(t,[e]);},off:function(t,e){var i=n.get(t);i&&(e?i.splice(i.indexOf(e)>>>0,1):n.set(t,[]));},emit:function(t,e){var i=n.get(t);i&&i.slice().map(function(n){n(e);}),(i=n.get("*"))&&i.slice().map(function(n){n(t,e);});}}}
 
 var mitt$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	default: mitt
+    __proto__: null,
+    default: mitt
 });
 
 var require$$0 = /*@__PURE__*/getAugmentedNamespace(mitt$1);
@@ -320409,32 +320025,32 @@ let BidiBrowser = (() => {
  */
 
 var bidi = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	BidiBrowser: BidiBrowser,
-	BidiBrowserContext: BidiBrowserContext,
-	BidiConnection: BidiConnection,
-	BidiElementHandle: BidiElementHandle,
-	BidiFrame: BidiFrame,
-	BidiFrameRealm: BidiFrameRealm,
-	BidiHTTPRequest: BidiHTTPRequest,
-	BidiHTTPResponse: BidiHTTPResponse,
-	BidiJSHandle: BidiJSHandle,
-	BidiKeyboard: BidiKeyboard,
-	BidiMouse: BidiMouse,
-	BidiPage: BidiPage,
-	BidiRealm: BidiRealm,
-	BidiTouchscreen: BidiTouchscreen,
-	BidiWorkerRealm: BidiWorkerRealm,
-	connectBidiOverCdp: connectBidiOverCdp,
-	requests: requests
+    __proto__: null,
+    BidiBrowser: BidiBrowser,
+    BidiBrowserContext: BidiBrowserContext,
+    BidiConnection: BidiConnection,
+    BidiElementHandle: BidiElementHandle,
+    BidiFrame: BidiFrame,
+    BidiFrameRealm: BidiFrameRealm,
+    BidiHTTPRequest: BidiHTTPRequest,
+    BidiHTTPResponse: BidiHTTPResponse,
+    BidiJSHandle: BidiJSHandle,
+    BidiKeyboard: BidiKeyboard,
+    BidiMouse: BidiMouse,
+    BidiPage: BidiPage,
+    BidiRealm: BidiRealm,
+    BidiTouchscreen: BidiTouchscreen,
+    BidiWorkerRealm: BidiWorkerRealm,
+    connectBidiOverCdp: connectBidiOverCdp,
+    requests: requests
 });
 
 var typescriptExports = requireTypescript();
 var typescript = /*@__PURE__*/getDefaultExportFromCjs(typescriptExports);
 
 var typescript$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	default: typescript
+    __proto__: null,
+    default: typescript
 });
 
 exports.ABORT_CONTROLLER = ABORT_CONTROLLER;
