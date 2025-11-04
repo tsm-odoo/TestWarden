@@ -303856,7 +303856,7 @@ class TestSuiteConfig {
     get baseSuiteURL() {
         // TODO - specific suite parameters to adapters
         const opts = [
-            ["debug", "tests,assets"],
+            ["debug", "tests%2Cassets"],
             ["timeout", "15000"],
             ["loglevel", this.debug ? "3" : "0"],
             ["manual", "true"],
@@ -303973,7 +303973,6 @@ class HootAdapter extends TestSuiteAdapter {
     }
     FAIL_SELECTOR = ".HootTestResult:has(.bg-fail)";
     async run(page) {
-        await new Promise((res) => setTimeout(res, 500));
         await page.waitForSelector(">>> .HootButtons button[title='Run']");
         await page.click(">>> .HootButtons button[title='Run']");
     }

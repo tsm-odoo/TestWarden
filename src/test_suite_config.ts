@@ -335,7 +335,7 @@ export class TestSuiteConfig {
   get baseSuiteURL() {
     // TODO - specific suite parameters to adapters
     const opts: [string, any][] = [
-      ["debug", "tests,assets"],
+      ["debug", "tests%2Cassets"],
       ["timeout", "15000"],
       ["loglevel", this.debug ? "3" : "0"],
       ["manual", "true"],
