@@ -14,7 +14,6 @@ export class TestSuiteMetadata {
   private _suiteNames: string[];
   private _testIdByName: { [name: string]: string };
   private _suiteIdByName: { [name: string]: string };
-  private _testIds: string[];
 
   constructor(
     private config: TestSuiteConfig,

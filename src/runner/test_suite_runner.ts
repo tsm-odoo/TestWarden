@@ -19,7 +19,7 @@ export class TestSuiteRunner {
     await this.cleanupFailFolder();
     if (!this.config.hasTarget) {
       const { testId, suiteName } = await this.promptSuiteOrTestId();
-      this.config.testId = testId;
+      this.config.test = testId;
       this.config.suiteNames = suiteName ? [suiteName] : this.config.suiteNames;
     }
     this.config.check();

@@ -173,7 +173,7 @@ export class TestSuiteConfig {
   serverURL: string;
   suite?: string;
   suiteNames?: string[];
-  testId?: string;
+  test?: string;
   verbose: boolean = false;
   once: boolean = false
 
@@ -247,8 +247,8 @@ export class TestSuiteConfig {
         "Run tests in headful mode (headless disabled)."
       )
       .option(
-        "-t, --test-id <id>",
-        "Specify the ID of a single test to run."
+        "-t, --test <id>",
+        "Specify the ID or the name of a single test to run."
       )
       .option(
         "--workers <number>",
@@ -314,7 +314,7 @@ export class TestSuiteConfig {
   ) {
     this.debug = rawOptions.debug;
     this.devtools = rawOptions.devtools;
-    this.testId = rawOptions["testId"];
+    this.test = rawOptions["test"];
     this.suite = rawOptions.suite;
     this.serverURL = rawOptions["serverUrl"];
     this.headless = !rawOptions.visible;
@@ -368,6 +368,10 @@ export class TestSuiteConfig {
 
   get suiteIds() {
     return this.suiteNames.map((name: string) => this.metadata.suiteIdByName[name]).filter(Boolean);
+  }
+
+  get testId() {
+    return this.test in this.metadata.testById ? this.test : this.metadata.testIdByName[this.test];
   }
 
   /**
