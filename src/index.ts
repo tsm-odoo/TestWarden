@@ -1,19 +1,19 @@
-import { TestSuiteAdapter } from "@warden/adapters/test_suite_adapter";
-import { cleanup, launch, setupCache } from "@warden/browser";
-import { StopExecution } from "@warden/errors";
-import { formatter, logger } from "@warden/helpers/terminal";
-import { TestSuiteRunner } from "@warden/runner/test_suite_runner";
-import { TestSuiteConfig } from "@warden/test_suite_config";
-import { TestSuiteMetadata } from "@warden/test_suite_metadata";
-import { config as rxjsConfig } from "rxjs";
-import os from "os";
+
 import "@warden/adapters/hoot_adapter";
 import "@warden/adapters/qunit_adapter";
-
+import os from "os";
+import { BehaviorSubject, config as rxjsConfig } from "rxjs";
+import { createRequire } from "module";
 import { oraPromise } from "ora";
 import { Browser, Page } from "puppeteer";
-import { BehaviorSubject } from "rxjs";
-import { createRequire } from "module";
+
+import { StopExecution } from "@warden/errors";
+import { TestSuiteAdapter } from "@warden/adapters/test_suite_adapter";
+import { TestSuiteConfig } from "@warden/test_suite_config";
+import { TestSuiteMetadata } from "@warden/test_suite_metadata";
+import { TestSuiteRunner } from "@warden/runner/test_suite_runner";
+import { cleanup, launch, setupCache } from "@warden/browser";
+import { formatter, logger } from "@warden/helpers/terminal";
 
 const require = createRequire(import.meta.url);
 let nc;
@@ -35,9 +35,9 @@ async function doCleanup() {
   isCleaningUp = true;
   processExit$.next(true);
   await cleanup();
-  process.exit(0);
+  process.exit(130);
 }
-const signals = ["SIGINT", "SIGTERM", "SIGHUP", "beforeExit"];
+const signals = ["SIGINT", "SIGTERM", "SIGHUP"];
 signals.forEach((signal) => process.on(signal, doCleanup));
 process.on("unhandledRejection", (reason) => {
   logger.error("Unhandled Promise Rejection");
@@ -95,5 +95,7 @@ process.on("unhandledRejection", (reason) => {
     if (!(e instanceof StopExecution) && !isCleaningUp) {
       throw e;
     }
+  } finally {
+    await cleanup();
   }
 })();

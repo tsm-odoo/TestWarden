@@ -5,8 +5,8 @@
         "qunit": "/web/tests/legacy",
         "next": "/web/tests/next"
     },
-    "workers": 4,
-    "minWorkerLoad": 15,
+    "workers": 3,
+    "minWorkerLoad": 30,
     "cpuLimit": 8,
     "serverURL": "http://localhost:8069"
 }

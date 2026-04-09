@@ -99,7 +99,7 @@ export class HootAdapter extends TestSuiteAdapter {
           await new Promise((res) => setTimeout(res, 50));
           this.done$.next(true);
         });
-        page.exposeFunction("after", () => client.send("HeapProfiler.collectGarbage"));
+        // page.exposeFunction("after", () => client.send("HeapProfiler.collectGarbage"));
       }
     });
     return prom;
