@@ -33,6 +33,7 @@ declare interface Window {
   owl: any;
   after: any;
   afterEach: any;
+  updateNodeState: any;
   beforeEach: any;
   afterAll: any;
   getQUnitData: Function;

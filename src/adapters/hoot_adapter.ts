@@ -35,7 +35,7 @@ export class HootAdapter extends TestSuiteAdapter {
   }
 
   getTestURL(config: any, testId: string): string {
-    return `${config.baseSuiteURL}&id=${testId}&debugTest=True`.replace("manual=true", "manual=false");
+    return `${config.baseSuiteURL}&id=${testId}&debugTest=true`.replace("manual=true", "manual=false");
   }
 
   async metadataReady() {
@@ -83,23 +83,16 @@ export class HootAdapter extends TestSuiteAdapter {
     // it after each suite.
     page.once("framenavigated", async () => {
       const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
-      const client = await page.target().createCDPSession();
-      page.once("close", async () => {
-        try {
-          await client.detach();
-        } catch {}
-      });
       if (!callbacksRegistered) {
-        page.exposeFunction("beforeEach", (test: Test) => this.currentTest$.next(test));
-        page.exposeFunction("afterEach", (result: TestResult) => {
-          this.testResults$.next([...this.testResults$.value, result]);
+        page.exposeFunction("updateNodeState", async (data: any) => {
+          this.currentTest$.next(data.currentTest);
+          await new Promise((res) => setTimeout(res, 50));
+          this.testResults$.next([...this.testResults$.value, ...data.results]);
         });
         page.exposeFunction("afterAll", async () => {
-          // TODO - use rxjs instead, smth like testResults$.pipe(take(1)).subscribe(() => ...)
           await new Promise((res) => setTimeout(res, 50));
           this.done$.next(true);
         });
-        // page.exposeFunction("after", () => client.send("HeapProfiler.collectGarbage"));
       }
     });
     return prom;
@@ -114,30 +107,67 @@ export class HootAdapter extends TestSuiteAdapter {
       )
       .subscribe((results) => this.lastFail$.next(results.at(-1)));
     await page.evaluate(() => {
-      const { after, beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
+      const { beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
       const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
+      const throttleUpdateNodeState = (() => {
+        let lastCurrentTest: any = null;
+        let pendingResults: any[] = [];
+        let lastFlush = 0;
+        const THROTTLE_MS = 500;
+        const flush = () => {
+          if (lastCurrentTest || pendingResults.length) {
+            window.updateNodeState({
+              currentTest: lastCurrentTest,
+              results: pendingResults
+            });
+          }
+          lastCurrentTest = null;
+          pendingResults = [];
+          lastFlush = performance.now();
+        };
+        const throttled = (update: { currentTest?: any; result?: any }) => {
+          if (update.currentTest) {
+            lastCurrentTest = update.currentTest;
+          };
+          if (update.result) {
+            pendingResults.push(update.result);
+          };
+          const now = performance.now();
+          const timeSinceLastFlush = now - lastFlush;
+          if (timeSinceLastFlush >= THROTTLE_MS) {
+            flush();
+          }
+        };
+        throttled.flush = flush;
+        return throttled;
+      })();
       beforeEach(
         (test) => {
-          window.beforeEach({ id: test.id, name: test.fullName });
+          throttleUpdateNodeState({ currentTest: { id: test.id, name: test.fullName } });
         },
-        { global: true },
+        { global: true }
       );
-      after(() => window.after(), { global: true });
       runner.afterPostTest(
         (test) => {
-          window.afterEach({
-            id: test.id,
-            name: test.fullName,
-            pass: test.results[0].pass,
-            duration: (performance.now() - test.results[0].ts) / 1000,
+          throttleUpdateNodeState({
+            result: {
+              id: test.id,
+              name: test.fullName,
+              pass: test.results[0].pass,
+              duration: (performance.now() - test.results[0].ts) / 1000,
+            },
           });
           if (runner.config.debugTest) {
             window.afterAll();
+            throttleUpdateNodeState.flush();
           }
         },
-        { global: true },
+        { global: true }
       );
-      runner.afterAll(() => window.afterAll());
+      runner.afterAll(() => {
+        window.afterAll();
+        throttleUpdateNodeState.flush();
+      });
     });
   }
 
