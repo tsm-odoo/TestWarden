@@ -15893,7 +15893,7 @@ class HootAdapter extends TestSuiteAdapter {
         return `${config.baseSuiteURL}&${queryParams.join("&")}`;
     }
     getTestURL(config, testId) {
-        return `${config.baseSuiteURL}&id=${testId}&debugTest=True`.replace("manual=true", "manual=false");
+        return `${config.baseSuiteURL}&id=${testId}&debugTest=true`.replace("manual=true", "manual=false");
     }
     async metadataReady() {
         return Boolean(window.odoo?.loader?.modules?.get("@web/../lib/hoot/hoot"));
@@ -15937,24 +15937,16 @@ class HootAdapter extends TestSuiteAdapter {
         // it after each suite.
         page.once("framenavigated", async () => {
             const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
-            const client = await page.target().createCDPSession();
-            page.once("close", async () => {
-                try {
-                    await client.detach();
-                }
-                catch { }
-            });
             if (!callbacksRegistered) {
-                page.exposeFunction("beforeEach", (test) => this.currentTest$.next(test));
-                page.exposeFunction("afterEach", (result) => {
-                    this.testResults$.next([...this.testResults$.value, result]);
+                page.exposeFunction("updateNodeState", async (data) => {
+                    this.currentTest$.next(data.currentTest);
+                    await new Promise((res) => setTimeout(res, 50));
+                    this.testResults$.next([...this.testResults$.value, ...data.results]);
                 });
                 page.exposeFunction("afterAll", async () => {
-                    // TODO - use rxjs instead, smth like testResults$.pipe(take(1)).subscribe(() => ...)
                     await new Promise((res) => setTimeout(res, 50));
                     this.done$.next(true);
                 });
-                // page.exposeFunction("after", () => client.send("HeapProfiler.collectGarbage"));
             }
         });
         return prom;
@@ -15964,24 +15956,61 @@ class HootAdapter extends TestSuiteAdapter {
             .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(this.done$.pipe(cjs.filter(Boolean))), cjs.filter((results) => results?.length > 0 && !results.at(-1).pass))
             .subscribe((results) => this.lastFail$.next(results.at(-1)));
         await page.evaluate(() => {
-            const { after, beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
+            const { beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
             const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
+            const throttleUpdateNodeState = (() => {
+                let lastCurrentTest = null;
+                let pendingResults = [];
+                let lastFlush = 0;
+                const THROTTLE_MS = 500;
+                const flush = () => {
+                    if (lastCurrentTest || pendingResults.length) {
+                        window.updateNodeState({
+                            currentTest: lastCurrentTest,
+                            results: pendingResults
+                        });
+                    }
+                    lastCurrentTest = null;
+                    pendingResults = [];
+                    lastFlush = performance.now();
+                };
+                const throttled = (update) => {
+                    if (update.currentTest) {
+                        lastCurrentTest = update.currentTest;
+                    }
+                    if (update.result) {
+                        pendingResults.push(update.result);
+                    }
+                    const now = performance.now();
+                    const timeSinceLastFlush = now - lastFlush;
+                    if (timeSinceLastFlush >= THROTTLE_MS) {
+                        flush();
+                    }
+                };
+                throttled.flush = flush;
+                return throttled;
+            })();
             beforeEach((test) => {
-                window.beforeEach({ id: test.id, name: test.fullName });
+                throttleUpdateNodeState({ currentTest: { id: test.id, name: test.fullName } });
             }, { global: true });
-            after(() => window.after(), { global: true });
             runner.afterPostTest((test) => {
-                window.afterEach({
-                    id: test.id,
-                    name: test.fullName,
-                    pass: test.results[0].pass,
-                    duration: (performance.now() - test.results[0].ts) / 1000,
+                throttleUpdateNodeState({
+                    result: {
+                        id: test.id,
+                        name: test.fullName,
+                        pass: test.results[0].pass,
+                        duration: (performance.now() - test.results[0].ts) / 1000,
+                    },
                 });
                 if (runner.config.debugTest) {
                     window.afterAll();
+                    throttleUpdateNodeState.flush();
                 }
             }, { global: true });
-            runner.afterAll(() => window.afterAll());
+            runner.afterAll(() => {
+                window.afterAll();
+                throttleUpdateNodeState.flush();
+            });
         });
     }
     async screenshotFails(page, path) {
@@ -297014,13 +297043,14 @@ const CHROME_OPTIONS = [
     "--blink-settings=imagesEnabled=false",
     "--disable-features=PaintHolding",
     "--disable-software-rasterizer",
+    "--disable-gpu",
     "--disable-translate",
     // "--js-flags=--expose_gc",
     "--no-sandbox",
     `--window-size=1366,768`, // Same as RunBot
 ];
 let latestDebuggingPort = 9222;
-async function killPortsInRange(start = 9222, end = 9250) {
+async function killPortsInRange(start, end) {
     for (let port = start; port <= end; port++) {
         try {
             await execPromise(`fuser -k ${port}/tcp`);
@@ -297033,17 +297063,19 @@ async function killPortsInRange(start = 9222, end = 9250) {
 const browsers = [];
 const clients = [];
 let launchDeferred;
-let setupCacheDeferred;
 async function launch(options) {
     await launchDeferred;
     launchDeferred = new Deferred$3();
-    if (latestDebuggingPort === 9222) {
-        await killPortsInRange(9222, 9230);
-    }
+    await killPortsInRange(9222, 9222);
     const port = latestDebuggingPort++;
     const browser = await puppeteer.launch({
         ...options,
-        args: [...CHROME_OPTIONS, `--remote-debugging-port=${port}`],
+        args: [
+            ...CHROME_OPTIONS,
+            `--remote-debugging-port=${port}`,
+            "--remote-debugging-address=127.0.0.1",
+            "--remote-allow-origins=*",
+        ],
         defaultViewport: null,
         handleSIGHUP: false,
         handleSIGINT: false,
@@ -297054,14 +297086,13 @@ async function launch(options) {
     return browser;
 }
 async function cleanup() {
-    await Promise.allSettled([setupCacheDeferred, launchDeferred]);
+    await launchDeferred;
     await Promise.allSettled([
         ...clients.map((c) => c?.detach()?.catch(() => { })),
         ...browsers.map((b) => b?.close()?.catch(() => { })),
     ]);
-    await killPortsInRange(9222, latestDebuggingPort);
+    await killPortsInRange(9222, 9222);
 }
-const cache = {};
 function addHeader(ogHeaders, headers) {
     for (const [key, value] of headers) {
         const headerIdx = ogHeaders.findIndex((h) => h.name.toLowerCase() === key.toLowerCase());
@@ -297075,12 +297106,10 @@ function addHeader(ogHeaders, headers) {
     return ogHeaders;
 }
 /**
- * Cache responses to speed up reload time.
- * TODO: better caching, especially for document. Check if XHR caching is OK.
+ * Cache responses to speed up reload time by forcing browser memory cache.
  */
+const cache = {};
 async function setupCache(page, config, initialLoad = false) {
-    await setupCacheDeferred;
-    setupCacheDeferred = new Deferred$3();
     const client = await page.target().createCDPSession();
     clients.push(client);
     if (config.cpuThrottling && !initialLoad) {
@@ -297091,42 +297120,40 @@ async function setupCache(page, config, initialLoad = false) {
     await client.send("Emulation.setFocusEmulationEnabled", { enabled: true });
     await client.send("Fetch.enable");
     client.on("Fetch.requestPaused", async (event) => {
-        const { requestId } = event;
-        let cacheUrl = event.request.url;
-        // Cache /web/tests document ignoring query string
-        if (event.resourceType === "Document" && event.request.url.includes("/web/tests")) {
-            const [base] = event.request.url.split("?");
-            cacheUrl = base;
+        const { requestId, request, resourceType } = event;
+        let cacheUrl = request.url;
+        if (resourceType === "Document" && request.url.includes("/web/tests")) {
+            [cacheUrl] = request.url.split("?");
         }
         if (cacheUrl in cache) {
             const cached = cache[cacheUrl];
             await client.send("Fetch.fulfillRequest", {
                 requestId,
                 responseCode: cached.status,
-                responseHeaders: addHeader(cached.headers, [
-                    ["Cache-Control", "public, max-age=31536000"],
-                    ["X-Warden-Cache", "TRUE"],
-                ]),
+                responseHeaders: cached.headers,
                 body: cached.body.toString("base64"),
             });
             return;
         }
-        if (!event.responseStatusCode || !event.responseStatusText?.trim()) {
+        if (!event.responseStatusCode) {
             await client.send("Fetch.continueRequest", { requestId, interceptResponse: true });
             return;
         }
-        if (event.resourceType === "XHR" && !event.request.url.includes("all_dependencies")) {
+        if (resourceType === "XHR" && !request.url.includes("all_dependencies")) {
             try {
                 const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
-                cache[event.request.url] = {
+                cache[request.url] = {
                     status: event.responseStatusCode,
                     headers: event.responseHeaders,
                     body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
                 };
             }
-            catch (e) { }
+            catch (e) {
+                logger.error(`Failed to cache ${request.url}`);
+                logger.error(e);
+            }
         }
-        if (event.resourceType === "Document" && event.request.url.includes("/web/tests")) {
+        if (resourceType === "Document" && request.url.includes("/web/tests")) {
             try {
                 const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
                 cache[cacheUrl] = {
@@ -297135,7 +297162,10 @@ async function setupCache(page, config, initialLoad = false) {
                     body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
                 };
             }
-            catch (e) { }
+            catch (e) {
+                logger.error(`Failed to cache ${request.url}`);
+                logger.error(e);
+            }
         }
         try {
             await client.send("Fetch.continueResponse", {
@@ -297150,13 +297180,11 @@ async function setupCache(page, config, initialLoad = false) {
         }
         catch (e) {
             client.detach().catch(() => { });
-            if (!["TargetCloseError", "ProtocolError"].includes(e.name)) {
+            if (!["TargetCloseError", "ProtocolError"].includes(e.name))
                 throw e;
-            }
         }
     });
     await page.setCacheEnabled(true);
-    setupCacheDeferred.resolve();
 }
 
 // ETA calculation
@@ -298436,27 +298464,34 @@ class ProgressBar {
 class ExecutorSplit {
     config;
     testIds;
+    static id = 0;
     adapter;
-    browser;
     page;
     doneDeferred = new Deferred$3();
     failIcon;
+    id;
     constructor(config, testIds) {
         this.config = config;
         this.testIds = testIds;
         this.adapter = new this.config.adapterClass();
+        this.id = ExecutorSplit.id++;
     }
-    async initalize() {
-        this.browser = await launch({
-            headless: this.config.headless,
-            dumpio: this.config.verbose,
-            devtools: this.config.devtools,
-        });
-        this.page = (await this.browser.pages())[0];
+    async initalize(browser) {
+        const context = await browser.createBrowserContext();
+        this.page = await context.newPage();
         await setupCache(this.page, this.config);
         await this.page.setCookie(this.config.authCookie);
         await this.page.bringToFront();
         await this.adapter.accessSuite(this.page, this.adapter.getSuiteURL(this.config, this.testIds));
+        await this.setPageFriendlyName();
+    }
+    get friendlyName() {
+        return `TestWarden - Split ${this.id} (${this.testIds.length} tests)`;
+    }
+    async setPageFriendlyName() {
+        await this.page.evaluate((name) => {
+            document.head.querySelector("title").innerText = name;
+        }, this.friendlyName);
     }
     async start() {
         return this.adapter.run(this.page);
@@ -298476,6 +298511,7 @@ class ExecutorSplit {
         this.adapter.reset();
         this.doneDeferred = new Deferred$3();
         await this.adapter.reloadSuite(this.page);
+        await this.setPageFriendlyName();
     }
     async screenshotFails(path) {
         return this.adapter.screenshotFails(this.page, path);
@@ -298505,13 +298541,22 @@ class ExecutorSplit {
     get failed() {
         return Boolean(this.lastFail$.value);
     }
+    async getDevtoolURL() {
+        const endpoint = new URL(this.page.browser().wsEndpoint());
+        const hostPort = endpoint.host;
+        const client = this.page.target().createCDPSession();
+        const { targetId } = (await (await client).send('Target.getTargetInfo')).targetInfo;
+        return `http://${hostPort}/devtools/inspector.html?ws=${hostPort}/devtools/page/${targetId}`;
+    }
 }
 class Executor {
+    browser;
     config;
     metadata;
     progressBar;
     splits = [];
-    constructor(config, metadata) {
+    constructor(browser, config, metadata) {
+        this.browser = browser;
         this.config = config;
         this.metadata = metadata;
         this.progressBar = new ProgressBar();
@@ -298537,9 +298582,14 @@ class Executor {
             }
         }
         const splits = result.map((ids) => new ExecutorSplit(this.config, ids));
-        await oraPromise(() => Promise.all(splits.map((split) => split.initalize())), {
+        await oraPromise(() => Promise.all(splits.map((split) => split.initalize(this.browser))), {
             text: formatter$1.info(`Initializing ${result.length} split.s`),
         });
+        for (const split of splits) {
+            const url = await split.getDevtoolURL();
+            const testCount = split.testIds.length;
+            console.log(`    \u001B]8;;${url}\u0007🛠️ Inspect Split ${split.id} (${testCount} test.s)\u001B]8;;\u0007`);
+        }
         return splits;
     }
     async *run() {
@@ -304152,7 +304202,7 @@ class TestSuiteRunner {
         this.config = config;
         this.metadata = metadata;
     }
-    async run() {
+    async run(browser) {
         await this.cleanupFailFolder();
         if (!this.config.hasTarget) {
             const { testId, suiteName } = await this.promptSuiteOrTestId();
@@ -304166,7 +304216,7 @@ class TestSuiteRunner {
         else {
             logger.info(`${this.config.adapterClass.name} test suite started for suite.s:`, this.config.suiteIds.map((id) => this.metadata.suiteById[id].name).join(", "));
         }
-        const executor = new Executor(this.config, this.metadata);
+        const executor = new Executor(browser, this.config, this.metadata);
         for await (const { success } of executor.run()) {
             if (!success && !this.config.runForever) {
                 executor.stop();
@@ -304282,7 +304332,7 @@ process.on("unhandledRejection", (reason) => {
         config.adapterClass = AdapterClass;
         process.setMaxListeners(config.MAX_NUMBER_OF_WORKERS * 2 + 5);
         metadata = await TestSuiteMetadata.fetch(page, config);
-        await browser.close();
+        await page.close();
         config.metadata = metadata;
         config.check();
         if (nc) {
@@ -304291,7 +304341,7 @@ process.on("unhandledRejection", (reason) => {
             const totalCPUs = os$2.cpus().length;
             logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
         }
-        await new TestSuiteRunner(config, metadata).run();
+        await new TestSuiteRunner(config, metadata).run(browser);
     }
     catch (e) {
         if (!(e instanceof StopExecution) && !isCleaningUp) {
