@@ -8,6 +8,7 @@ import fs from "fs";
 import fsPromises from "fs/promises";
 import path from "path";
 import { oraPromise } from "ora";
+import { Browser } from "puppeteer";
 
 export class TestSuiteRunner {
   constructor(
@@ -15,7 +16,7 @@ export class TestSuiteRunner {
     private metadata: TestSuiteMetadata,
   ) {}
 
-  async run() {
+  async run(browser: Browser) {
     await this.cleanupFailFolder();
     if (!this.config.hasTarget) {
       const { testId, suiteName } = await this.promptSuiteOrTestId();
@@ -35,7 +36,7 @@ export class TestSuiteRunner {
         this.config.suiteIds.map((id) => this.metadata.suiteById[id].name).join(", "),
       );
     }
-    const executor = new Executor(this.config, this.metadata);
+    const executor = new Executor(browser, this.config, this.metadata);
     for await (const { success } of executor.run()) {
       if (!success && !this.config.runForever) {
         executor.stop();

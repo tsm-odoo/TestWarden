@@ -1,7 +1,7 @@
 import { TestResult, TestSuiteAdapter } from "@warden/adapters/test_suite_adapter";
 import { launch, setupCache } from "@warden/browser";
 import { Deferred } from "@warden/helpers/misc";
-import { formatter } from "@warden/helpers/terminal";
+import { formatter, logger } from "@warden/helpers/terminal";
 import { processExit$ } from "@warden/index";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 import { TestSuiteMetadata } from "@warden/test_suite_metadata";
@@ -24,30 +24,40 @@ export type ExecutorStatistics = {
 
 // TODO - setup DI for config/metadata, https://dev.to/vovaspace/dependency-injection-in-typescript-4mbf
 class ExecutorSplit {
+  static id = 0;
+
   private adapter: TestSuiteAdapter;
-  private browser: Browser;
   private page: Page;
   private doneDeferred: Deferred<boolean> = new Deferred();
   private failIcon: String;
+  id: number;
 
   constructor(
     private config: TestSuiteConfig,
-    private testIds: string[],
+    public testIds: string[],
   ) {
     this.adapter = new this.config.adapterClass();
+    this.id = ExecutorSplit.id++;
   }
 
-  async initalize() {
-    this.browser = await launch({
-      headless: this.config.headless,
-      dumpio: this.config.verbose,
-      devtools: this.config.devtools,
-    });
-    this.page = (await this.browser.pages())[0];
+  async initalize(browser: Browser) {
+    const context = await browser.createBrowserContext();
+    this.page = await context.newPage();
     await setupCache(this.page, this.config);
     await this.page.setCookie(this.config.authCookie);
     await this.page.bringToFront();
     await this.adapter.accessSuite(this.page, this.adapter.getSuiteURL(this.config, this.testIds));
+    await this.setPageFriendlyName();
+  }
+
+  get friendlyName() {
+    return `TestWarden - Split ${this.id} (${this.testIds.length} tests)`;
+  }
+
+  async setPageFriendlyName() {
+    await this.page.evaluate((name) => {
+      document.head.querySelector("title").innerText = name;
+    }, this.friendlyName);
   }
 
   async start() {
@@ -70,6 +80,7 @@ class ExecutorSplit {
     this.adapter.reset();
     this.doneDeferred = new Deferred();
     await this.adapter.reloadSuite(this.page);
+    await this.setPageFriendlyName();
   }
 
   async screenshotFails(path: string) {
@@ -106,6 +117,14 @@ class ExecutorSplit {
   get failed() {
     return Boolean(this.lastFail$.value);
   }
+
+  async getDevtoolURL() {
+    const endpoint = new URL(this.page.browser().wsEndpoint());
+    const hostPort = endpoint.host;
+    const client = this.page.target().createCDPSession();
+    const { targetId } = (await (await client).send('Target.getTargetInfo')).targetInfo;
+    return `http://${hostPort}/devtools/inspector.html?ws=${hostPort}/devtools/page/${targetId}`;
+  }
 }
 
 export class Executor {
@@ -113,6 +132,7 @@ export class Executor {
   private splits: ExecutorSplit[] = [];
 
   constructor(
+    private browser: Browser,
     private config: TestSuiteConfig,
     private metadata: TestSuiteMetadata,
   ) {
@@ -139,9 +159,13 @@ export class Executor {
       }
     }
     const splits = result.map((ids) => new ExecutorSplit(this.config, ids));
-    await oraPromise(() => Promise.all(splits.map((split) => split.initalize())), {
+    await oraPromise(() => Promise.all(splits.map((split) => split.initalize(this.browser))), {
       text: formatter.info(`Initializing ${result.length} split.s`),
     });
+    for (const split of splits) {
+      const url = await split.getDevtoolURL();
+      const testCount = split.testIds.length;
+      console.log(`    \u001B]8;;${url}\u0007🛠️ Inspect Split ${split.id} (${testCount} test.s)\u001B]8;;\u0007`);    }
     return splits;
   }
 

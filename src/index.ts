@@ -81,7 +81,7 @@ process.on("unhandledRejection", (reason) => {
     config.adapterClass = AdapterClass;
     process.setMaxListeners(config.MAX_NUMBER_OF_WORKERS * 2 + 5);
     metadata = await TestSuiteMetadata.fetch(page, config);
-    await browser.close();
+    await page.close();
     config.metadata = metadata;
     config.check();
     if (nc) {
@@ -90,7 +90,7 @@ process.on("unhandledRejection", (reason) => {
       const totalCPUs = os.cpus().length;
       logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
     }
-    await new TestSuiteRunner(config, metadata).run();
+    await new TestSuiteRunner(config, metadata).run(browser);
   } catch (e) {
     if (!(e instanceof StopExecution) && !isCleaningUp) {
       throw e;
