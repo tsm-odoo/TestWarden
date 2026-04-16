@@ -41,8 +41,12 @@ class ExecutorSplit {
   }
 
   async initalize(browser: Browser) {
-    const context = await browser.createBrowserContext();
-    this.page = await context.newPage();
+    if (this.id === 0) {
+      [this.page] = await browser.pages();
+    } else {
+      const context = await browser.createBrowserContext();
+      this.page = await context.newPage();
+    }
     await setupCache(this.page, this.config);
     await this.page.setCookie(this.config.authCookie);
     await this.page.bringToFront();
@@ -165,7 +169,7 @@ export class Executor {
     for (const split of splits) {
       const url = await split.getDevtoolURL();
       const testCount = split.testIds.length;
-      console.log(`    \u001B]8;;${url}\u0007🛠️ Inspect Split ${split.id} (${testCount} test.s)\u001B]8;;\u0007`);    }
+      console.log(`    \u001B]8;;${url}\u0007🛠️  Inspect Split ${split.id} (${testCount} test.s)\u001B]8;;\u0007`);    }
     return splits;
   }
 

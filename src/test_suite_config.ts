@@ -6,7 +6,7 @@ import { authenticate } from "@warden/helpers/network";
 
 import { Command } from "commander";
 import fs from "fs";
-import path from "path";
+import path, { parse } from "path";
 import { oraPromise } from "ora";
 
 enum RUN_TYPE {
@@ -253,13 +253,13 @@ export class TestSuiteConfig {
       .option(
         "--workers <number>",
         "Number of parallel browser instances used to run tests.",
-        parseInt,
+        (v) => parseInt(v),
         settings["workers"]
       )
       .option(
         "--min-worker-load <number>",
         "Minimum number of tests to assign to a worker. For example, with 50 tests and 4 workers, setting 25 means only 2 workers will run.",
-        parseInt,
+        (v) => parseInt(v),
         settings["minWorkerLoad"]
       )
       .option(

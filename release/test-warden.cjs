@@ -20496,8 +20496,8 @@ class TestSuiteConfig {
             .option("--debug", "Activate test suite debug mode (UI visible).")
             .option("--visible", "Run tests in headful mode (headless disabled).")
             .option("-t, --test <id>", "Specify the ID or the name of a single test to run.")
-            .option("--workers <number>", "Number of parallel browser instances used to run tests.", parseInt, settings["workers"])
-            .option("--min-worker-load <number>", "Minimum number of tests to assign to a worker. For example, with 50 tests and 4 workers, setting 25 means only 2 workers will run.", parseInt, settings["minWorkerLoad"])
+            .option("--workers <number>", "Number of parallel browser instances used to run tests.", (v) => parseInt(v), settings["workers"])
+            .option("--min-worker-load <number>", "Minimum number of tests to assign to a worker. For example, with 50 tests and 4 workers, setting 25 means only 2 workers will run.", (v) => parseInt(v), settings["minWorkerLoad"])
             .option("-m, --suite-names <names...>", "Run only specific test suites by name.")
             .option("--suite <name>", "Name of the suite to run (default: 'hoot').", "hoot")
             .option("--server-url <url>", "URL of the server to run tests against.", settings["serverURL"])
@@ -298477,8 +298477,13 @@ class ExecutorSplit {
         this.id = ExecutorSplit.id++;
     }
     async initalize(browser) {
-        const context = await browser.createBrowserContext();
-        this.page = await context.newPage();
+        if (this.id === 0) {
+            [this.page] = await browser.pages();
+        }
+        else {
+            const context = await browser.createBrowserContext();
+            this.page = await context.newPage();
+        }
         await setupCache(this.page, this.config);
         await this.page.setCookie(this.config.authCookie);
         await this.page.bringToFront();
@@ -298588,7 +298593,7 @@ class Executor {
         for (const split of splits) {
             const url = await split.getDevtoolURL();
             const testCount = split.testIds.length;
-            console.log(`    \u001B]8;;${url}\u0007🛠️ Inspect Split ${split.id} (${testCount} test.s)\u001B]8;;\u0007`);
+            console.log(`    \u001B]8;;${url}\u0007🛠️  Inspect Split ${split.id} (${testCount} test.s)\u001B]8;;\u0007`);
         }
         return splits;
     }
@@ -304311,7 +304316,7 @@ process.on("unhandledRejection", (reason) => {
             throw err;
         };
         await oraPromise(async () => {
-            browser = await launch({ headless: true, dumpio: config.verbose });
+            browser = await launch({ headless: config.headless, dumpio: config.verbose });
             [page] = await browser.pages();
             await setupCache(page, config, true);
             await page.setCookie(config.authCookie);
@@ -304332,7 +304337,6 @@ process.on("unhandledRejection", (reason) => {
         config.adapterClass = AdapterClass;
         process.setMaxListeners(config.MAX_NUMBER_OF_WORKERS * 2 + 5);
         metadata = await TestSuiteMetadata.fetch(page, config);
-        await page.close();
         config.metadata = metadata;
         config.check();
         if (nc) {

@@ -57,7 +57,7 @@ process.on("unhandledRejection", (reason) => {
     };
     await oraPromise(
       async () => {
-        browser = await launch({ headless: true, dumpio: config.verbose });
+        browser = await launch({ headless: config.headless, dumpio: config.verbose });
         [page] = await browser.pages();
         await setupCache(page, config, true);
         await page.setCookie(config.authCookie);
@@ -81,7 +81,6 @@ process.on("unhandledRejection", (reason) => {
     config.adapterClass = AdapterClass;
     process.setMaxListeners(config.MAX_NUMBER_OF_WORKERS * 2 + 5);
     metadata = await TestSuiteMetadata.fetch(page, config);
-    await page.close();
     config.metadata = metadata;
     config.check();
     if (nc) {
