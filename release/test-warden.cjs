@@ -15940,7 +15940,6 @@ class HootAdapter extends TestSuiteAdapter {
             if (!callbacksRegistered) {
                 page.exposeFunction("updateNodeState", async (data) => {
                     this.currentTest$.next(data.currentTest);
-                    await new Promise((res) => setTimeout(res, 50));
                     this.testResults$.next([...this.testResults$.value, ...data.results]);
                 });
                 page.exposeFunction("afterAll", async () => {
@@ -15956,7 +15955,6 @@ class HootAdapter extends TestSuiteAdapter {
             .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(this.done$.pipe(cjs.filter(Boolean))), cjs.filter((results) => results?.length > 0 && !results.at(-1).pass))
             .subscribe((results) => this.lastFail$.next(results.at(-1)));
         await page.evaluate(() => {
-            const { beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
             const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
             const throttleUpdateNodeState = (() => {
                 let lastCurrentTest = null;
@@ -15990,7 +15988,7 @@ class HootAdapter extends TestSuiteAdapter {
                 throttled.flush = flush;
                 return throttled;
             })();
-            beforeEach((test) => {
+            runner.beforeEach((test) => {
                 throttleUpdateNodeState({ currentTest: { id: test.id, name: test.fullName } });
             }, { global: true });
             runner.afterPostTest((test) => {
@@ -298376,7 +298374,12 @@ class ProgressBar {
     titleBar;
     mainBar;
     statisticsBar;
+    splitBars = new Map();
+    splitHeader;
+    splitFooter;
+    splitToSubscribers = new Map();
     stopped = false;
+    alreadyLogged = false;
     constructor() {
         this.manager = new cliProgress$1.MultiBar({
             hideCursor: true,
@@ -298393,7 +298396,6 @@ class ProgressBar {
     start(total) {
         this.stopped = false;
         if (!this.mainBar) {
-            this.manager.log("\n");
             this.statisticsBar = this.manager.create(Infinity, 0, {}, {
                 format: (options, params, payload) => {
                     options.format = formatter$1[this.textColor]("[run.s: {runs} | t: {duration_formatted} | Σt: {sum} | min: {min} | med: {median} | max: {max}]");
@@ -298417,6 +298419,10 @@ class ProgressBar {
             this.mainBar.start(total, 0);
             this.titleBar.start(Infinity, 0);
             this.statisticsBar.start(Infinity, 0);
+            for (const [key, value] of this.splitToSubscribers) {
+                value.unsubscribe();
+                this.setupSplitSubscription(key);
+            }
         }
     }
     update(newValue) {
@@ -298448,8 +298454,15 @@ class ProgressBar {
         this.titleBar.stop();
         this.statisticsBar.stop();
         this.manager.stop();
+        this.splitBars.forEach((bar) => bar.stop());
+        this.splitHeader.stop();
+        this.splitFooter.stop();
     }
     log(message) {
+        if (!this.alreadyLogged) {
+            this.manager.log("\n");
+            this.alreadyLogged = true;
+        }
         this.manager.log(message + "\n");
     }
     get textColor() {
@@ -298457,6 +298470,51 @@ class ProgressBar {
     }
     get barColor() {
         return this.stopped ? "disabled" : "cyan";
+    }
+    async registerSplits(splits) {
+        if (this.splitBars.size > 0) {
+            return; // Already registered.
+        }
+        this.splitHeader = this.manager.create(Infinity, 0, {}, {
+            format: () => "",
+        });
+        this.splitHeader.update(0);
+        for (const split of splits) {
+            const key = String(split.id);
+            const url = await split.getDevtoolURL();
+            const testCount = split.testIds.length;
+            const bar = this.manager.create(1, 0, {}, {
+                format: (options, params, payload) => {
+                    const text = `\u001B]8;;${payload.url}\u0007🛠️  ${payload.label}\u001B]8;;\u0007`;
+                    options.format = formatter$1[this.textColor](text);
+                    return cliProgress$1.Format.Formatter(options, params, payload);
+                },
+            });
+            bar.update(0, {
+                label: `Inspect Split ${key} (${testCount} test.s)`,
+                url,
+            });
+            this.splitBars.set(key, bar);
+            await this.setupSplitSubscription(split);
+        }
+        this.splitFooter = this.manager.create(Infinity, 0, {}, {
+            format: () => "",
+        });
+        this.splitFooter.update(0);
+    }
+    async setupSplitSubscription(split) {
+        const key = String(split.id);
+        const url = await split.getDevtoolURL();
+        const sub = split.failCount$
+            .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))))
+            .subscribe((failCount) => {
+            let label = `Inspect Split ${split.id} (${split.testIds.length} test.s)`;
+            if (failCount) {
+                label = `Inspect Split ${split.id} (${split.testIds.length} test.s | ${failCount} failed)`;
+            }
+            this.splitBars.get(key).update(0, { label, url });
+        });
+        this.splitToSubscribers.set(split, sub);
     }
 }
 
@@ -298540,6 +298598,9 @@ class ExecutorSplit {
     get results$() {
         return this.adapter.testResults$;
     }
+    get failCount$() {
+        return this.results$.pipe(cjs.map((results) => results.filter((result) => !result.pass).length));
+    }
     get isDonePromise() {
         return this.doneDeferred;
     }
@@ -298590,15 +298651,11 @@ class Executor {
         await oraPromise(() => Promise.all(splits.map((split) => split.initalize(this.browser))), {
             text: formatter$1.info(`Initializing ${result.length} split.s`),
         });
-        for (const split of splits) {
-            const url = await split.getDevtoolURL();
-            const testCount = split.testIds.length;
-            console.log(`    \u001B]8;;${url}\u0007🛠️  Inspect Split ${split.id} (${testCount} test.s)\u001B]8;;\u0007`);
-        }
         return splits;
     }
     async *run() {
         this.splits = await this.splitTests();
+        await this.progressBar.registerSplits(this.splits);
         const previousResults = [];
         for (let runs = 1; true; runs++) {
             // 1. Setup progress listeners which are taken from every split and

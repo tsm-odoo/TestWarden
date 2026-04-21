@@ -6,7 +6,7 @@
         "next": "/web/tests/next"
     },
     "workers": 3,
-    "minWorkerLoad": 30,
+    "minWorkerLoad": 15,
     "cpuLimit": 8,
     "serverURL": "http://localhost:8069"
 }

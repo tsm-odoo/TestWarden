@@ -86,7 +86,6 @@ export class HootAdapter extends TestSuiteAdapter {
       if (!callbacksRegistered) {
         page.exposeFunction("updateNodeState", async (data: any) => {
           this.currentTest$.next(data.currentTest);
-          await new Promise((res) => setTimeout(res, 50));
           this.testResults$.next([...this.testResults$.value, ...data.results]);
         });
         page.exposeFunction("afterAll", async () => {
@@ -107,7 +106,6 @@ export class HootAdapter extends TestSuiteAdapter {
       )
       .subscribe((results) => this.lastFail$.next(results.at(-1)));
     await page.evaluate(() => {
-      const { beforeEach } = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
       const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
       const throttleUpdateNodeState = (() => {
         let lastCurrentTest: any = null;
@@ -141,7 +139,7 @@ export class HootAdapter extends TestSuiteAdapter {
         throttled.flush = flush;
         return throttled;
       })();
-      beforeEach(
+      runner.beforeEach(
         (test) => {
           throttleUpdateNodeState({ currentTest: { id: test.id, name: test.fullName } });
         },

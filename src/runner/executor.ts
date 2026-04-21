@@ -23,7 +23,7 @@ export type ExecutorStatistics = {
 };
 
 // TODO - setup DI for config/metadata, https://dev.to/vovaspace/dependency-injection-in-typescript-4mbf
-class ExecutorSplit {
+export class ExecutorSplit {
   static id = 0;
 
   private adapter: TestSuiteAdapter;
@@ -114,6 +114,10 @@ class ExecutorSplit {
     return this.adapter.testResults$;
   }
 
+  get failCount$() {
+    return this.results$.pipe(map((results) => results.filter((result) => !result.pass).length));
+  }
+
   get isDonePromise() {
     return this.doneDeferred;
   }
@@ -166,15 +170,12 @@ export class Executor {
     await oraPromise(() => Promise.all(splits.map((split) => split.initalize(this.browser))), {
       text: formatter.info(`Initializing ${result.length} split.s`),
     });
-    for (const split of splits) {
-      const url = await split.getDevtoolURL();
-      const testCount = split.testIds.length;
-      console.log(`    \u001B]8;;${url}\u0007🛠️  Inspect Split ${split.id} (${testCount} test.s)\u001B]8;;\u0007`);    }
     return splits;
   }
 
   async *run() {
     this.splits = await this.splitTests();
+    await this.progressBar.registerSplits(this.splits);
     const previousResults = [];
     for (let runs = 1; true; runs++) {
       // 1. Setup progress listeners which are taken from every split and
