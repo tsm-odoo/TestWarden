@@ -1,11 +1,11 @@
 
 import { exec } from "child_process";
-import puppeteer, { Browser, CDPSession, Page, Protocol, PuppeteerLaunchOptions } from "puppeteer";
+import puppeteer, { Browser, CDPSession, LaunchOptions, Page, Protocol } from "puppeteer";
 import { promisify } from "util";
 
 import { Deferred } from "@warden/helpers/misc";
-import { TestSuiteConfig } from "@warden/test_suite_config";
 import { logger } from "@warden/helpers/terminal";
+import { TestSuiteConfig } from "@warden/test_suite_config";
 
 
 const execPromise = promisify(exec);
@@ -26,7 +26,6 @@ export const CHROME_OPTIONS = [
   "--disable-dev-shm-usage",
   "--disable-accelerated-2d-canvas",
   "--no-first-run",
-  "--no-zygote",
   "--blink-settings=imagesEnabled=false",
   "--disable-features=PaintHolding",
   "--disable-software-rasterizer",
@@ -34,6 +33,7 @@ export const CHROME_OPTIONS = [
   "--disable-translate",
   // "--js-flags=--expose_gc",
   "--no-sandbox",
+  "--no-zygote",
   `--window-size=1366,768`, // Same as RunBot
 ];
 
@@ -51,7 +51,7 @@ async function killPortsInRange(start: number, end: number) {
 const browsers: Browser[] = [];
 const clients: CDPSession[] = [];
 let launchDeferred;
-export async function launch(options: PuppeteerLaunchOptions) {
+export async function launch(options: LaunchOptions) {
   await launchDeferred;
   launchDeferred = new Deferred();
   await killPortsInRange(9222, 9222);
@@ -107,11 +107,11 @@ const cache: Record<string, {
   body: Buffer
 }> = {};
 
-export async function setupCache(page: Page, config: TestSuiteConfig, initialLoad = false) {
+export async function setupCache(page: Page, config: TestSuiteConfig) {
   const client = await page.target().createCDPSession();
   clients.push(client);
 
-  if (config.cpuThrottling && !initialLoad) {
+  if (config.cpuThrottling) {
     await client.send("Emulation.setCPUThrottlingRate", { rate: config.cpuThrottling + 1 });
   }
 

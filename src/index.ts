@@ -59,16 +59,12 @@ process.on("unhandledRejection", (reason) => {
       async () => {
         browser = await launch({ headless: config.headless, dumpio: config.verbose });
         [page] = await browser.pages();
-        await setupCache(page, config, true);
+        await setupCache(page, config);
         await page.setCookie(config.authCookie);
-        await page.goto(config.baseSuiteURL);
-        await page.waitForResponse((response) => {
-          if (response.status() === 404) {
-            const url = new URL(config.baseSuiteURL);
-            throw new StopExecution(`Suite not found: ${url.origin}${url.pathname}`);
-          }
-          return true;
-        });
+        const response = await page.goto(config.baseSuiteURL, { waitUntil: 'networkidle0' });
+        if (response.status() === 404) {
+          throw new StopExecution(`Suite not found: ${config.baseSuiteURL}`);
+        }
       },
       {
         text: formatter.info(`Launching chrome browser, suite: ${config.suite}`),
