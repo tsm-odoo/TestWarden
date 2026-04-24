@@ -45963,55 +45963,46 @@ const coerce$1 = (version, options) => {
 };
 var coerce_1 = coerce$1;
 
-var lrucache;
-var hasRequiredLrucache;
+let LRUCache$1 = class LRUCache {
+  constructor () {
+    this.max = 1000;
+    this.map = new Map();
+  }
 
-function requireLrucache () {
-	if (hasRequiredLrucache) return lrucache;
-	hasRequiredLrucache = 1;
+  get (key) {
+    const value = this.map.get(key);
+    if (value === undefined) {
+      return undefined
+    } else {
+      // Remove the key from the map and add it to the end
+      this.map.delete(key);
+      this.map.set(key, value);
+      return value
+    }
+  }
 
-	class LRUCache {
-	  constructor () {
-	    this.max = 1000;
-	    this.map = new Map();
-	  }
+  delete (key) {
+    return this.map.delete(key)
+  }
 
-	  get (key) {
-	    const value = this.map.get(key);
-	    if (value === undefined) {
-	      return undefined
-	    } else {
-	      // Remove the key from the map and add it to the end
-	      this.map.delete(key);
-	      this.map.set(key, value);
-	      return value
-	    }
-	  }
+  set (key, value) {
+    const deleted = this.delete(key);
 
-	  delete (key) {
-	    return this.map.delete(key)
-	  }
+    if (!deleted && value !== undefined) {
+      // If cache is full, delete the least recently used item
+      if (this.map.size >= this.max) {
+        const firstKey = this.map.keys().next().value;
+        this.delete(firstKey);
+      }
 
-	  set (key, value) {
-	    const deleted = this.delete(key);
+      this.map.set(key, value);
+    }
 
-	    if (!deleted && value !== undefined) {
-	      // If cache is full, delete the least recently used item
-	      if (this.map.size >= this.max) {
-	        const firstKey = this.map.keys().next().value;
-	        this.delete(firstKey);
-	      }
+    return this
+  }
+};
 
-	      this.map.set(key, value);
-	    }
-
-	    return this
-	  }
-	}
-
-	lrucache = LRUCache;
-	return lrucache;
-}
+var lrucache = LRUCache$1;
 
 var range;
 var hasRequiredRange;
@@ -46234,7 +46225,7 @@ function requireRange () {
 
 	range = Range;
 
-	const LRU = requireLrucache();
+	const LRU = lrucache;
 	const cache = new LRU();
 
 	const parseOptions = parseOptions_1;
@@ -290675,9 +290666,6 @@ class ExecutorSplit {
             link.href = dataUrl;
         }, this.failIcon);
     }
-    get lastFail$() {
-        return this.adapter.lastFail$;
-    }
     get currentTest$() {
         return this.adapter.currentTest$;
     }
@@ -290687,11 +290675,14 @@ class ExecutorSplit {
     get failCount$() {
         return this.results$.pipe(cjs.map((results) => results.filter((result) => !result.pass).length));
     }
+    get lastFail$() {
+        return this.results$.pipe(cjs.map(results => results.filter(r => !r.pass)), cjs.startWith([]), cjs.pairwise(), cjs.mergeMap(([prev, curr]) => cjs.from(curr.filter(c => !prev.some(p => p.id === c.id)))));
+    }
     get isDonePromise() {
         return this.doneDeferred;
     }
     get failed() {
-        return Boolean(this.lastFail$.value);
+        return Boolean(this.adapter.lastFail$.value);
     }
     async getDevtoolURL() {
         const endpoint = new URL(this.page.browser().wsEndpoint());

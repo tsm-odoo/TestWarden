@@ -11,7 +11,7 @@ import { uuid } from "@warden/helpers/misc";
 import fs from "fs";
 import path from "path";
 import { Browser, Page } from "puppeteer";
-import { combineLatest, filter, from, lastValueFrom, map, merge, take, takeUntil } from "rxjs";
+import { combineLatest, filter, from, lastValueFrom, map, merge, mergeMap, pairwise, startWith, take, takeUntil } from "rxjs";
 import { oraPromise } from "ora";
 
 export type ExecutorStatistics = {
@@ -102,10 +102,6 @@ export class ExecutorSplit {
     }, this.failIcon);
   }
 
-  get lastFail$() {
-    return this.adapter.lastFail$;
-  }
-
   get currentTest$() {
     return this.adapter.currentTest$;
   }
@@ -118,12 +114,24 @@ export class ExecutorSplit {
     return this.results$.pipe(map((results) => results.filter((result) => !result.pass).length));
   }
 
+  get lastFail$() {
+    return this.results$.pipe(
+      map(results => results.filter(r => !r.pass)),
+      startWith([]),
+      pairwise(),
+      mergeMap(([prev, curr]) =>
+        from(curr.filter(c => !prev.some(p => p.id === c.id)))
+      )
+    );
+  }
+
+
   get isDonePromise() {
     return this.doneDeferred;
   }
 
   get failed() {
-    return Boolean(this.lastFail$.value);
+    return Boolean(this.adapter.lastFail$.value);
   }
 
   async getDevtoolURL() {
