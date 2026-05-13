@@ -76,10 +76,6 @@ export class ProgressBar {
       this.mainBar.start(total, 0);
       this.titleBar.start(Infinity, 0);
       this.statisticsBar.start(Infinity, 0);
-      for (const [key, value] of this.splitToSubscribers) {
-        value.unsubscribe();
-        this.setupSplitSubscription(key);
-      }
     }
   }
 

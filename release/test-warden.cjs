@@ -15839,9 +15839,9 @@ class TestSuiteAdapter {
         return cjs.firstValueFrom(this.done$.pipe(cjs.first(Boolean)));
     }
     reset() {
-        this.done$ = new cjs.BehaviorSubject(false);
-        this.lastFail$ = new cjs.BehaviorSubject(null);
-        this.testResults$ = new cjs.BehaviorSubject([]);
+        this.done$.next(false);
+        this.lastFail$.next(null);
+        this.testResults$.next([]);
     }
     /**
      * Go to the test suite. After this method, the current page should be the
@@ -291000,10 +291000,6 @@ class ProgressBar {
             this.mainBar.start(total, 0);
             this.titleBar.start(Infinity, 0);
             this.statisticsBar.start(Infinity, 0);
-            for (const [key, value] of this.splitToSubscribers) {
-                value.unsubscribe();
-                this.setupSplitSubscription(key);
-            }
         }
     }
     update(newValue) {
@@ -291186,7 +291182,7 @@ class ExecutorSplit {
         return this.doneDeferred;
     }
     get failed() {
-        return Boolean(this.adapter.lastFail$.value);
+        return this.adapter.testResults$.value.some((r) => !r.pass);
     }
     async getDevtoolURL() {
         const endpoint = new URL(this.page.browser().wsEndpoint());

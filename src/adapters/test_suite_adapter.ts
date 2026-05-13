@@ -59,9 +59,9 @@ export abstract class TestSuiteAdapter {
   }
 
   reset() {
-    this.done$ = new BehaviorSubject<boolean>(false);
-    this.lastFail$ = new BehaviorSubject<TestResult>(null);
-    this.testResults$ = new BehaviorSubject<TestResult[]>([]);
+    this.done$.next(false);
+    this.lastFail$.next(null);
+    this.testResults$.next([]);
   }
 
   /**

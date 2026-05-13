@@ -131,7 +131,7 @@ export class ExecutorSplit {
   }
 
   get failed() {
-    return Boolean(this.adapter.lastFail$.value);
+    return this.adapter.testResults$.value.some((r) => !r.pass);
   }
 
   async getDevtoolURL() {
