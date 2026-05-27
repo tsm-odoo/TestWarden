@@ -15939,7 +15939,7 @@ class HootAdapter extends TestSuiteAdapter {
         const testsBySuiteId = {};
         for (const { id: testId, fullName, tags } of odoo.loader.modules
             .get("@web/../lib/hoot/hoot")
-            .__debug__.tests.values()) {
+            .__debug__().tests.values()) {
             testById[testId] = { name: fullName, tags: tags.map(({ id }) => id) };
         }
         for (const suite of odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__.suites.values()) {

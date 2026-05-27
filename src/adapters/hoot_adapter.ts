@@ -1,4 +1,4 @@
-import { Test, TestResult, TestSuiteAdapter, registerAdapter } from "@warden/adapters/test_suite_adapter";
+import { TestSuiteAdapter, registerAdapter } from "@warden/adapters/test_suite_adapter";
 import { uuid } from "@warden/helpers/misc";
 import { processExit$ } from "@warden/index";
 import { TestSuiteConfig } from "@warden/test_suite_config";
@@ -65,10 +65,10 @@ export class HootAdapter extends TestSuiteAdapter {
     const testsBySuiteId = {};
     for (const { id: testId, fullName, tags } of odoo.loader.modules
       .get("@web/../lib/hoot/hoot")
-      .__debug__.tests.values()) {
+      .__debug__().tests.values()) {
       testById[testId] = { name: fullName, tags: tags.map(({ id }) => id) };
     }
-    for (const suite of odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__.suites.values()) {
+    for (const suite of odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__().suites.values()) {
       const { id, fullName, weight } = suite;
       suiteById[id] = { name: fullName, weight };
       testsBySuiteId[id] = getAllTests(suite);
@@ -106,7 +106,7 @@ export class HootAdapter extends TestSuiteAdapter {
       )
       .subscribe((results) => this.lastFail$.next(results.at(-1)));
     await page.evaluate(() => {
-      const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
+      const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__();
       const throttleUpdateNodeState = (() => {
         let lastCurrentTest: any = null;
         let pendingResults: any[] = [];
