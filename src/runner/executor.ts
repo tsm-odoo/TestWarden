@@ -1,18 +1,17 @@
 import { TestResult, TestSuiteAdapter } from "@warden/adapters/test_suite_adapter";
-import { launch, setupCache } from "@warden/browser";
-import { Deferred } from "@warden/helpers/misc";
-import { formatter, logger } from "@warden/helpers/terminal";
+import { setupCache } from "@warden/browser";
+import { Deferred, uuid } from "@warden/helpers/misc";
+import { formatter } from "@warden/helpers/terminal";
 import { processExit$ } from "@warden/index";
+import { ProgressBar } from "@warden/runner/progress_bar";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 import { TestSuiteMetadata } from "@warden/test_suite_metadata";
-import { ProgressBar } from "@warden/runner/progress_bar";
-import { uuid } from "@warden/helpers/misc";
 
 import fs from "fs";
+import { oraPromise } from "ora";
 import path from "path";
 import { Browser, Page } from "puppeteer";
 import { combineLatest, filter, from, lastValueFrom, map, merge, mergeMap, pairwise, startWith, take, takeUntil } from "rxjs";
-import { oraPromise } from "ora";
 
 export type ExecutorStatistics = {
   runs: number;
@@ -182,6 +181,7 @@ export class Executor {
   }
 
   async *run() {
+    debugger;
     this.splits = await this.splitTests();
     await this.progressBar.registerSplits(this.splits);
     const previousResults = [];

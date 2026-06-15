@@ -80,7 +80,7 @@ export class HootAdapter extends TestSuiteAdapter {
     const prom = super.accessSuite(page, url);
     // Register the page functions as soon as possible: hoot will take a
     // snpashot of the initial window and clean every thing that was not in
-    // it after each suite.
+   // it after each suite.
     page.once("framenavigated", async () => {
       const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
       if (!callbacksRegistered) {
@@ -147,15 +147,16 @@ export class HootAdapter extends TestSuiteAdapter {
       );
       runner.afterPostTest(
         (test) => {
+          const result = test.results().at(-1);
           throttleUpdateNodeState({
             result: {
               id: test.id,
               name: test.fullName,
-              pass: test.results[0].pass,
-              duration: (performance.now() - test.results[0].ts) / 1000,
+              pass: result.pass,
+              duration: result.duration / 1000,
             },
           });
-          if (runner.config.debugTest) {
+          if (runner.config.debugTest()) {
             window.afterAll();
             throttleUpdateNodeState.flush();
           }

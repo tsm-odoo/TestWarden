@@ -3,17 +3,21 @@ import { processExit$ } from "@warden/index.js";
 import { ExecutorSplit, ExecutorStatistics } from "@warden/runner/executor";
 
 import cliProgress from "cli-progress";
-import { Subscription, filter, takeUntil } from "rxjs";
+import { filter, takeUntil } from "rxjs";
+
+const OSC = "]";
+const BEL = "";
+
+function oscLink(url: string, label: string) {
+  return `${OSC}8;;${url}${BEL}🛠️ ${label}${OSC}8;;${BEL}`;
+}
 
 export class ProgressBar {
   private manager: cliProgress.MultiBar;
   private titleBar: cliProgress.SingleBar;
   private mainBar: cliProgress.SingleBar;
   private statisticsBar: cliProgress.SingleBar;
-  private splitBars = new Map<string, cliProgress.SingleBar>();
-  private splitHeader?: cliProgress.SingleBar;
-  private splitFooter?: cliProgress.SingleBar;
-  private splitToSubscribers = new Map<ExecutorSplit, Subscription>();
+  private splitLinks: string[] = [];
   private stopped = false;
   private alreadyLogged = false;
 
@@ -24,11 +28,12 @@ export class ProgressBar {
         formatTime(t) {
           return Number.isFinite(t) && Number.isInteger(t) ? t + "s" : t.toString();
         },
-        barCompleteChar: "\u2588",
-        barIncompleteChar: "\u2591",
+        barCompleteChar: "█",
+        barIncompleteChar: "░",
         stopOnComplete: true,
         forceRedraw: true,
         barsize: 80,
+        linewrap: false,
       },
       cliProgress.Presets.shades_classic,
     );
@@ -112,9 +117,6 @@ export class ProgressBar {
     this.titleBar.stop();
     this.statisticsBar.stop();
     this.manager.stop();
-    this.splitBars.forEach((bar) => bar.stop());
-    this.splitHeader.stop();
-    this.splitFooter.stop();
   }
 
   log(message: string) {
@@ -134,66 +136,28 @@ export class ProgressBar {
   }
 
   async registerSplits(splits: ExecutorSplit[]) {
-    if (this.splitBars.size > 0) {
-      return; // Already registered.
+    if (this.splitLinks.length > 0) {
+      return;
     }
-    this.splitHeader = this.manager.create(
-      Infinity,
-      0,
-      {},
-      {
-        format: () => "",
-      },
-    );
-    this.splitHeader.update(0);
-    for (const split of splits ) {
-      const key = String(split.id);
+    // OSC 8 hyperlinks cannot go through cli-progress format functions:
+    // ansi-regex does not strip OSC sequences, so string-width miscounts
+    // invisible URL bytes as visible chars, breaking multibar cursor math.
+    // Writing directly to stdout places them above the managed bar area
+    // which cli-progress never redraws.
+    for (const split of splits) {
       const url = await split.getDevtoolURL();
-      const testCount = split.testIds.length;
-      const bar = this.manager.create(
-        1,
-        0,
-        {},
-        {
-          format: (options, params, payload) => {
-            const text = `\u001B]8;;${payload.url}\u0007🛠️  ${payload.label}\u001B]8;;\u0007`;
-            options.format = formatter[this.textColor](text);
-            return cliProgress.Format.Formatter(options, params, payload);
-          },
-        },
-      );
-      bar.update(0, {
-        label: `Inspect Split ${key} (${testCount} test.s)`,
-        url,
-      });
-      this.splitBars.set(key, bar);
-      await this.setupSplitSubscription(split);
-    }
-    this.splitFooter = this.manager.create(
-      Infinity,
-      0,
-      {},
-      {
-        format: () => "",
-      },
-    );
-    this.splitFooter.update(0);
-  }
-
-  private async setupSplitSubscription(split: ExecutorSplit) {
-    const key = String(split.id);
-    const url = await split.getDevtoolURL();
-    const sub = split.failCount$
-        .pipe(
-          takeUntil(processExit$.pipe(filter(Boolean))),
-        )
+      const index = this.splitLinks.length;
+      const baseLabel = `Inspect Split ${split.id} (${split.testIds.length} test.s)`;
+      this.splitLinks.push(oscLink(url, baseLabel));
+      process.stdout.write(this.splitLinks[index] + "\n");
+      split.failCount$
+        .pipe(takeUntil(processExit$.pipe(filter(Boolean))))
         .subscribe((failCount) => {
-          let label = `Inspect Split ${split.id} (${split.testIds.length} test.s)`;
-          if (failCount) {
-            label = `Inspect Split ${split.id} (${split.testIds.length} test.s | ${failCount} failed)`;
-          }
-          this.splitBars.get(key).update(0, { label, url });
+          const label = failCount
+            ? `Inspect Split ${split.id} (${split.testIds.length} test.s | ${failCount} failed)`
+            : baseLabel;
+          this.splitLinks[index] = oscLink(url, label);
         });
-      this.splitToSubscribers.set(split, sub);
+    }
   }
 }

@@ -15942,7 +15942,7 @@ class HootAdapter extends TestSuiteAdapter {
             .__debug__().tests.values()) {
             testById[testId] = { name: fullName, tags: tags.map(({ id }) => id) };
         }
-        for (const suite of odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__.suites.values()) {
+        for (const suite of odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__().suites.values()) {
             const { id, fullName, weight } = suite;
             suiteById[id] = { name: fullName, weight };
             testsBySuiteId[id] = getAllTests(suite);
@@ -15974,7 +15974,7 @@ class HootAdapter extends TestSuiteAdapter {
             .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(this.done$.pipe(cjs.filter(Boolean))), cjs.filter((results) => results?.length > 0 && !results.at(-1).pass))
             .subscribe((results) => this.lastFail$.next(results.at(-1)));
         await page.evaluate(() => {
-            const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__;
+            const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__();
             const throttleUpdateNodeState = (() => {
                 let lastCurrentTest = null;
                 let pendingResults = [];
@@ -16011,15 +16011,16 @@ class HootAdapter extends TestSuiteAdapter {
                 throttleUpdateNodeState({ currentTest: { id: test.id, name: test.fullName } });
             }, { global: true });
             runner.afterPostTest((test) => {
+                const result = test.results().at(-1);
                 throttleUpdateNodeState({
                     result: {
                         id: test.id,
                         name: test.fullName,
-                        pass: test.results[0].pass,
-                        duration: (performance.now() - test.results[0].ts) / 1000,
+                        pass: result.pass,
+                        duration: result.duration / 1000,
                     },
                 });
-                if (runner.config.debugTest) {
+                if (runner.config.debugTest()) {
                     window.afterAll();
                     throttleUpdateNodeState.flush();
                 }
@@ -290972,6 +290973,7 @@ class ProgressBar {
             stopOnComplete: true,
             forceRedraw: true,
             barsize: 80,
+            linewrap: false,
         }, cliProgress$1.Presets.shades_classic);
     }
     start(total) {
@@ -291062,7 +291064,11 @@ class ProgressBar {
             const testCount = split.testIds.length;
             const bar = this.manager.create(1, 0, {}, {
                 format: (options, params, payload) => {
-                    const text = `\u001B]8;;${payload.url}\u0007🛠️  ${payload.label}\u001B]8;;\u0007`;
+                    const OSC = "\u001b]";
+                    const BEL = "\u0007";
+                    const text = `${OSC}8;;${payload.url}${BEL}` +
+                        `🛠️ ${payload.label}` +
+                        `${OSC}8;;${BEL}`;
                     options.format = formatter$1[this.textColor](text);
                     return cliProgress$1.Format.Formatter(options, params, payload);
                 },
@@ -291231,6 +291237,7 @@ class Executor {
         return splits;
     }
     async *run() {
+        debugger;
         this.splits = await this.splitTests();
         await this.progressBar.registerSplits(this.splits);
         const previousResults = [];
