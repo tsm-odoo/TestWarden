@@ -290956,10 +290956,6 @@ class ProgressBar {
     titleBar;
     mainBar;
     statisticsBar;
-    splitBars = new Map();
-    splitHeader;
-    splitFooter;
-    splitToSubscribers = new Map();
     stopped = false;
     alreadyLogged = false;
     constructor() {
@@ -290968,8 +290964,8 @@ class ProgressBar {
             formatTime(t) {
                 return Number.isFinite(t) && Number.isInteger(t) ? t + "s" : t.toString();
             },
-            barCompleteChar: "\u2588",
-            barIncompleteChar: "\u2591",
+            barCompleteChar: "█",
+            barIncompleteChar: "░",
             stopOnComplete: true,
             forceRedraw: true,
             barsize: 80,
@@ -291033,9 +291029,6 @@ class ProgressBar {
         this.titleBar.stop();
         this.statisticsBar.stop();
         this.manager.stop();
-        this.splitBars.forEach((bar) => bar.stop());
-        this.splitHeader.stop();
-        this.splitFooter.stop();
     }
     log(message) {
         if (!this.alreadyLogged) {
@@ -291051,53 +291044,14 @@ class ProgressBar {
         return this.stopped ? "disabled" : "cyan";
     }
     async registerSplits(splits) {
-        if (this.splitBars.size > 0) {
-            return; // Already registered.
-        }
-        this.splitHeader = this.manager.create(Infinity, 0, {}, {
-            format: () => "",
-        });
-        this.splitHeader.update(0);
+        const OSC = "]";
+        const BEL = "";
         for (const split of splits) {
-            const key = String(split.id);
             const url = await split.getDevtoolURL();
-            const testCount = split.testIds.length;
-            const bar = this.manager.create(1, 0, {}, {
-                format: (options, params, payload) => {
-                    const OSC = "\u001b]";
-                    const BEL = "\u0007";
-                    const text = `${OSC}8;;${payload.url}${BEL}` +
-                        `🛠️ ${payload.label}` +
-                        `${OSC}8;;${BEL}`;
-                    options.format = formatter$1[this.textColor](text);
-                    return cliProgress$1.Format.Formatter(options, params, payload);
-                },
-            });
-            bar.update(0, {
-                label: `Inspect Split ${key} (${testCount} test.s)`,
-                url,
-            });
-            this.splitBars.set(key, bar);
-            await this.setupSplitSubscription(split);
+            const label = `Inspect Split ${split.id} (${split.testIds.length} test.s)`;
+            this.log(`${OSC}8;;${url}${BEL}\u{1F6E0}️ ${label}${OSC}8;;${BEL}`);
         }
-        this.splitFooter = this.manager.create(Infinity, 0, {}, {
-            format: () => "",
-        });
-        this.splitFooter.update(0);
-    }
-    async setupSplitSubscription(split) {
-        const key = String(split.id);
-        const url = await split.getDevtoolURL();
-        const sub = split.failCount$
-            .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))))
-            .subscribe((failCount) => {
-            let label = `Inspect Split ${split.id} (${split.testIds.length} test.s)`;
-            if (failCount) {
-                label = `Inspect Split ${split.id} (${split.testIds.length} test.s | ${failCount} failed)`;
-            }
-            this.splitBars.get(key).update(0, { label, url });
-        });
-        this.splitToSubscribers.set(split, sub);
+        this.manager.log("\n");
     }
 }
 
@@ -291248,7 +291202,7 @@ class Executor {
             const done$ = cjs.from(isDonePromise);
             const testResults$ = cjs.combineLatest(this.splits.map((s) => s.results$)).pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(done$), cjs.map((r) => r.flat()));
             const currentTest$ = cjs.merge(...this.splits.map((s) => s.currentTest$)).pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(done$), cjs.filter(Boolean));
-            const lastFail$ = cjs.merge(...this.splits.map((s) => s.lastFail$)).pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(done$), cjs.filter(Boolean));
+            const lastFail$ = cjs.merge(...this.splits.map((s) => s.lastFail$.pipe(cjs.map((r) => ({ ...r, splitId: s.id }))))).pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(done$), cjs.filter(Boolean));
             // 2. Start the progress bar and update the state according to the
             //    observables.
             this.progressBar.start(this.config.isSingleTest ? this.config.MAX_NUMBER_OF_WORKERS : this.metadata.testIds.length);
@@ -291260,7 +291214,8 @@ class Executor {
             lastFail$.subscribe((r) => {
                 const totalRuns = this.config.isSingleTest ? runs * this.splits.length : runs;
                 const url = new this.config.adapterClass().getTestURL(this.config, r.id);
-                const text = `${totalRuns}. [${r.id}] ${r.name} - ${Math.round(r.duration * 100) / 100}s`;
+                const splitPrefix = this.splits.length > 1 ? `[S${r.splitId}] ` : "";
+                const text = `${totalRuns}. ${splitPrefix}[${r.id}] ${r.name} - ${Math.round((r.duration ?? 0) * 100) / 100}s`;
                 this.progressBar.log(formatter$1.warn(`\u001B]8;;${url}\u0007${text}\u001B]8;;\u0007`));
                 if (!this.config.runForever && (this.config.failfast || this.config.isSingleTest)) {
                     this.splits.forEach((s) => s.stop());

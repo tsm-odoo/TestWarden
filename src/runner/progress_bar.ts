@@ -1,23 +1,13 @@
 import { formatter } from "@warden/helpers/terminal";
-import { processExit$ } from "@warden/index.js";
 import { ExecutorSplit, ExecutorStatistics } from "@warden/runner/executor";
 
 import cliProgress from "cli-progress";
-import { filter, takeUntil } from "rxjs";
-
-const OSC = "]";
-const BEL = "";
-
-function oscLink(url: string, label: string) {
-  return `${OSC}8;;${url}${BEL}🛠️ ${label}${OSC}8;;${BEL}`;
-}
 
 export class ProgressBar {
   private manager: cliProgress.MultiBar;
   private titleBar: cliProgress.SingleBar;
   private mainBar: cliProgress.SingleBar;
   private statisticsBar: cliProgress.SingleBar;
-  private splitLinks: string[] = [];
   private stopped = false;
   private alreadyLogged = false;
 
@@ -136,28 +126,13 @@ export class ProgressBar {
   }
 
   async registerSplits(splits: ExecutorSplit[]) {
-    if (this.splitLinks.length > 0) {
-      return;
-    }
-    // OSC 8 hyperlinks cannot go through cli-progress format functions:
-    // ansi-regex does not strip OSC sequences, so string-width miscounts
-    // invisible URL bytes as visible chars, breaking multibar cursor math.
-    // Writing directly to stdout places them above the managed bar area
-    // which cli-progress never redraws.
+    const OSC = "]";
+    const BEL = "";
     for (const split of splits) {
       const url = await split.getDevtoolURL();
-      const index = this.splitLinks.length;
-      const baseLabel = `Inspect Split ${split.id} (${split.testIds.length} test.s)`;
-      this.splitLinks.push(oscLink(url, baseLabel));
-      process.stdout.write(this.splitLinks[index] + "\n");
-      split.failCount$
-        .pipe(takeUntil(processExit$.pipe(filter(Boolean))))
-        .subscribe((failCount) => {
-          const label = failCount
-            ? `Inspect Split ${split.id} (${split.testIds.length} test.s | ${failCount} failed)`
-            : baseLabel;
-          this.splitLinks[index] = oscLink(url, label);
-        });
+      const label = `Inspect Split ${split.id} (${split.testIds.length} test.s)`;
+      this.log(`${OSC}8;;${url}${BEL}\u{1F6E0}️ ${label}${OSC}8;;${BEL}`);
     }
+    this.manager.log("\n");
   }
 }
