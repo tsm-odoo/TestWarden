@@ -1,5 +1,6 @@
 
 import { exec } from "child_process";
+
 import puppeteer, { Browser, CDPSession, LaunchOptions, Page, Protocol } from "puppeteer";
 import { promisify } from "util";
 
@@ -38,14 +39,14 @@ export const CHROME_OPTIONS = [
 ];
 
 let latestDebuggingPort = 9222;
-async function killPortsInRange(start: number, end: number) {
-    for (let port = start; port <= end; port++) {
-        try {
-            await execPromise(`fuser -k ${port}/tcp`);
-        } catch (err) {
-            // Ignore errors if no process is using this port
-        }
+async function findAvailablePort(start: number): Promise<number> {
+  for (let port = start; ; port++) {
+    try {
+      await execPromise(`fuser ${port}/tcp`);
+    } catch {
+      return port;
     }
+  }
 }
 
 const browsers: Browser[] = [];
@@ -54,8 +55,8 @@ let launchDeferred;
 export async function launch(options: LaunchOptions) {
   await launchDeferred;
   launchDeferred = new Deferred();
-  await killPortsInRange(9222, 9222);
-  const port = latestDebuggingPort++;
+  const port = await findAvailablePort(latestDebuggingPort);
+  latestDebuggingPort = port + 1;
   const browser = await puppeteer.launch({
     ...options,
     args: [
@@ -80,7 +81,6 @@ export async function cleanup() {
         ... clients.map((c) => c ?. detach() ?. catch(() => {}),),
         ... browsers.map((b) => b ?. close()?.catch(() => {})),
     ]);
-    await killPortsInRange(9222, 9222);
 }
 
 function addHeader(

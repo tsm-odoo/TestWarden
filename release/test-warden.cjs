@@ -289490,13 +289490,13 @@ const CHROME_OPTIONS = [
     `--window-size=1366,768`, // Same as RunBot
 ];
 let latestDebuggingPort = 9222;
-async function killPortsInRange(start, end) {
-    for (let port = start; port <= end; port++) {
+async function findAvailablePort(start) {
+    for (let port = start;; port++) {
         try {
-            await execPromise(`fuser -k ${port}/tcp`);
+            await execPromise(`fuser ${port}/tcp`);
         }
-        catch (err) {
-            // Ignore errors if no process is using this port
+        catch {
+            return port;
         }
     }
 }
@@ -289506,8 +289506,8 @@ let launchDeferred;
 async function launch(options) {
     await launchDeferred;
     launchDeferred = new Deferred$3();
-    await killPortsInRange(9222, 9222);
-    const port = latestDebuggingPort++;
+    const port = await findAvailablePort(latestDebuggingPort);
+    latestDebuggingPort = port + 1;
     const browser = await puppeteer.launch({
         ...options,
         args: [
@@ -289531,7 +289531,6 @@ async function cleanup() {
         ...clients.map((c) => c?.detach()?.catch(() => { })),
         ...browsers.map((b) => b?.close()?.catch(() => { })),
     ]);
-    await killPortsInRange(9222, 9222);
 }
 function addHeader(ogHeaders, headers) {
     for (const [key, value] of headers) {
