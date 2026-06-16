@@ -107,6 +107,12 @@ const cache: Record<string, {
   body: Buffer
 }> = {};
 
+export function clearCache() {
+  for (const key in cache) {
+    delete cache[key];
+  }
+}
+
 export async function setupCache(page: Page, config: TestSuiteConfig) {
   const client = await page.target().createCDPSession();
   clients.push(client);

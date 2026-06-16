@@ -145,6 +145,7 @@ export class ExecutorSplit {
 export class Executor {
   private progressBar: ProgressBar;
   private splits: ExecutorSplit[] = [];
+  private previousResults: TestResult[] = [];
 
   constructor(
     private browser: Browser,
@@ -153,6 +154,11 @@ export class Executor {
   ) {
     this.progressBar = new ProgressBar();
     processExit$.pipe(filter(Boolean), take(1)).subscribe(() => this.progressBar.stop());
+  }
+
+  resetForRetry() {
+    this.previousResults = [];
+    this.progressBar.reset();
   }
 
   async splitTests(): Promise<ExecutorSplit[]> {
@@ -184,7 +190,6 @@ export class Executor {
     debugger;
     this.splits = await this.splitTests();
     await this.progressBar.registerSplits(this.splits);
-    const previousResults = [];
     for (let runs = 1; true; runs++) {
       // 1. Setup progress listeners which are taken from every split and
       //    merges as one.
@@ -215,7 +220,7 @@ export class Executor {
       testResults$.subscribe((r) => {
         const totalRuns = this.config.isSingleTest ? r.length + runs * this.splits.length : runs;
         this.progressBar.update(r.length);
-        this.updateStatistics(totalRuns, r, previousResults);
+        this.updateStatistics(totalRuns, r, this.previousResults);
       });
       lastFail$.subscribe((r) => {
         const totalRuns = this.config.isSingleTest ? runs * this.splits.length : runs;
@@ -243,7 +248,7 @@ export class Executor {
       if (this.config.once) {
         return;
       }
-      previousResults.push(...(await lastValueFrom(testResults$)));
+      this.previousResults.push(...(await lastValueFrom(testResults$)));
       await Promise.all(this.splits.map((s) => s.reload()));
     }
   }

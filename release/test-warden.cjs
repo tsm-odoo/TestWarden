@@ -289548,6 +289548,11 @@ function addHeader(ogHeaders, headers) {
  * Cache responses to speed up reload time by forcing browser memory cache.
  */
 const cache = {};
+function clearCache() {
+    for (const key in cache) {
+        delete cache[key];
+    }
+}
 async function setupCache(page, config) {
     const client = await page.target().createCDPSession();
     clients.push(client);
@@ -290957,8 +290962,8 @@ class ProgressBar {
     statisticsBar;
     stopped = false;
     alreadyLogged = false;
-    constructor() {
-        this.manager = new cliProgress$1.MultiBar({
+    createManager() {
+        return new cliProgress$1.MultiBar({
             hideCursor: true,
             formatTime(t) {
                 return Number.isFinite(t) && Number.isInteger(t) ? t + "s" : t.toString();
@@ -290970,6 +290975,17 @@ class ProgressBar {
             barsize: 80,
             linewrap: false,
         }, cliProgress$1.Presets.shades_classic);
+    }
+    constructor() {
+        this.manager = this.createManager();
+    }
+    reset() {
+        this.manager = this.createManager();
+        this.mainBar = null;
+        this.titleBar = null;
+        this.statisticsBar = null;
+        this.stopped = false;
+        this.alreadyLogged = false;
     }
     start(total) {
         this.stopped = false;
@@ -291157,12 +291173,17 @@ class Executor {
     metadata;
     progressBar;
     splits = [];
+    previousResults = [];
     constructor(browser, config, metadata) {
         this.browser = browser;
         this.config = config;
         this.metadata = metadata;
         this.progressBar = new ProgressBar();
         processExit$.pipe(cjs.filter(Boolean), cjs.take(1)).subscribe(() => this.progressBar.stop());
+    }
+    resetForRetry() {
+        this.previousResults = [];
+        this.progressBar.reset();
     }
     async splitTests() {
         let result = [];
@@ -291193,7 +291214,6 @@ class Executor {
         debugger;
         this.splits = await this.splitTests();
         await this.progressBar.registerSplits(this.splits);
-        const previousResults = [];
         for (let runs = 1; true; runs++) {
             // 1. Setup progress listeners which are taken from every split and
             //    merges as one.
@@ -291208,7 +291228,7 @@ class Executor {
             testResults$.subscribe((r) => {
                 const totalRuns = this.config.isSingleTest ? r.length + runs * this.splits.length : runs;
                 this.progressBar.update(r.length);
-                this.updateStatistics(totalRuns, r, previousResults);
+                this.updateStatistics(totalRuns, r, this.previousResults);
             });
             lastFail$.subscribe((r) => {
                 const totalRuns = this.config.isSingleTest ? runs * this.splits.length : runs;
@@ -291236,7 +291256,7 @@ class Executor {
             if (this.config.once) {
                 return;
             }
-            previousResults.push(...(await cjs.lastValueFrom(testResults$)));
+            this.previousResults.push(...(await cjs.lastValueFrom(testResults$)));
             await Promise.all(this.splits.map((s) => s.reload()));
         }
     }
@@ -296821,9 +296841,12 @@ class TestSuiteRunner {
             if (!success && !this.config.runForever) {
                 executor.stop();
                 await executor.screenshotFails();
-                await enquirer$1.invisible({
-                    message: formatter$1.info("Press any key to quit..."),
-                });
+                const retry = await this.promptRetryOrQuit();
+                if (retry) {
+                    clearCache();
+                    executor.resetForRetry();
+                    continue;
+                }
                 break;
             }
         }
@@ -296848,6 +296871,13 @@ class TestSuiteRunner {
             text: formatter$1.info(`Cleaning up fail folder: ${this.config.failFolderPath}`),
             successText: formatter$1.info(`Cleaned up ${toDelete.length} old results`),
             failText: formatter$1.error("Failed to clean up fail folder"),
+        });
+    }
+    async promptRetryOrQuit() {
+        // @ts-ignore
+        return enquirer$1.confirm({
+            message: formatter$1.info("Retry?"),
+            initial: false,
         });
     }
     async promptSuiteOrTestId() {

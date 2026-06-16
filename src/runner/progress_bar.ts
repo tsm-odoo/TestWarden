@@ -5,14 +5,14 @@ import cliProgress from "cli-progress";
 
 export class ProgressBar {
   private manager: cliProgress.MultiBar;
-  private titleBar: cliProgress.SingleBar;
-  private mainBar: cliProgress.SingleBar;
-  private statisticsBar: cliProgress.SingleBar;
+  private titleBar: cliProgress.SingleBar | null;
+  private mainBar: cliProgress.SingleBar | null;
+  private statisticsBar: cliProgress.SingleBar | null;
   private stopped = false;
   private alreadyLogged = false;
 
-  constructor() {
-    this.manager = new cliProgress.MultiBar(
+  private createManager() {
+    return new cliProgress.MultiBar(
       {
         hideCursor: true,
         formatTime(t) {
@@ -27,6 +27,19 @@ export class ProgressBar {
       },
       cliProgress.Presets.shades_classic,
     );
+  }
+
+  constructor() {
+    this.manager = this.createManager();
+  }
+
+  reset() {
+    this.manager = this.createManager();
+    this.mainBar = null;
+    this.titleBar = null;
+    this.statisticsBar = null;
+    this.stopped = false;
+    this.alreadyLogged = false;
   }
 
   start(total: number) {
@@ -68,14 +81,14 @@ export class ProgressBar {
         },
       );
     } else {
-      this.mainBar.start(total, 0);
-      this.titleBar.start(Infinity, 0);
-      this.statisticsBar.start(Infinity, 0);
+      this.mainBar!.start(total, 0);
+      this.titleBar!.start(Infinity, 0);
+      this.statisticsBar!.start(Infinity, 0);
     }
   }
 
   update(newValue: number) {
-    this.mainBar.update(newValue);
+    this.mainBar!.update(newValue);
   }
 
   updateStatistics(statistics: ExecutorStatistics) {
@@ -85,11 +98,11 @@ export class ProgressBar {
       }
       statistics[key] = statistics[key].toFixed(2) + "s";
     }
-    this.statisticsBar.update(0, statistics);
+    this.statisticsBar!.update(0, statistics);
   }
 
   updateTitle(title: string) {
-    this.titleBar.update(0, { currentTestName: title });
+    this.titleBar!.update(0, { currentTestName: title });
   }
 
   refresh() {
@@ -102,10 +115,10 @@ export class ProgressBar {
     }
     this.refresh();
     this.stopped = true;
-    this.titleBar.update(Infinity, { currentTestName: null });
-    this.statisticsBar.update(Infinity);
-    this.titleBar.stop();
-    this.statisticsBar.stop();
+    this.titleBar!.update(Infinity, { currentTestName: null });
+    this.statisticsBar!.update(Infinity);
+    this.titleBar!.stop();
+    this.statisticsBar!.stop();
     this.manager.stop();
   }
 

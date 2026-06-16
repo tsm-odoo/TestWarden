@@ -2,6 +2,7 @@ import { formatter, logger } from "@warden/helpers/terminal";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 import { TestSuiteMetadata } from "@warden/test_suite_metadata";
 import { Executor } from "@warden/runner/executor";
+import { clearCache } from "@warden/browser";
 
 import enquirer from "enquirer";
 import fs from "fs";
@@ -41,9 +42,12 @@ export class TestSuiteRunner {
       if (!success && !this.config.runForever) {
         executor.stop();
         await executor.screenshotFails();
-        await (enquirer as any).invisible({
-          message: formatter.info("Press any key to quit..."),
-        });
+        const retry = await this.promptRetryOrQuit();
+        if (retry) {
+          clearCache();
+          executor.resetForRetry();
+          continue;
+        }
         break;
       }
     }
@@ -69,6 +73,14 @@ export class TestSuiteRunner {
       text: formatter.info(`Cleaning up fail folder: ${this.config.failFolderPath}`),
       successText: formatter.info(`Cleaned up ${toDelete.length} old results`),
       failText: formatter.error("Failed to clean up fail folder"),
+    });
+  }
+
+  private async promptRetryOrQuit(): Promise<boolean> {
+    // @ts-ignore
+    return enquirer.confirm({
+      message: formatter.info("Retry?"),
+      initial: false,
     });
   }
 
