@@ -1,6 +1,6 @@
 import { TestResult, TestSuiteAdapter } from "@warden/adapters/test_suite_adapter";
 import { setupCache } from "@warden/browser";
-import { Deferred, uuid } from "@warden/helpers/misc";
+import { Deferred } from "@warden/helpers/misc";
 import { formatter } from "@warden/helpers/terminal";
 import { processExit$ } from "@warden/index";
 import { ProgressBar } from "@warden/runner/progress_bar";
@@ -9,7 +9,6 @@ import { TestSuiteMetadata } from "@warden/test_suite_metadata";
 
 import fs from "fs";
 import { oraPromise } from "ora";
-import path from "path";
 import { Browser, Page } from "puppeteer";
 import { combineLatest, filter, from, lastValueFrom, map, merge, mergeMap, pairwise, startWith, take, takeUntil } from "rxjs";
 
@@ -84,10 +83,6 @@ export class ExecutorSplit {
     this.doneDeferred = new Deferred();
     await this.adapter.reloadSuite(this.page);
     await this.setPageFriendlyName();
-  }
-
-  async screenshotFails(path: string) {
-    return this.adapter.screenshotFails(this.page, path);
   }
 
   async setFailureFavicon() {
@@ -251,25 +246,6 @@ export class Executor {
       this.previousResults.push(...(await lastValueFrom(testResults$)));
       await Promise.all(this.splits.map((s) => s.reload()));
     }
-  }
-
-  async screenshotFails() {
-    const fullPath = path.join(this.config.failFolderPath, `result-${uuid()}`);
-    if (!fs.existsSync(fullPath)) {
-      fs.mkdirSync(fullPath, { recursive: true });
-    }
-    await oraPromise(
-      async () => {
-        for (const split of this.splits) {
-          await split.screenshotFails(fullPath);
-        }
-      },
-      {
-        text: formatter.info(`Saving screenshot.s to ${fullPath}`),
-        successText: formatter.info(`Screenshot.s saved to ${fullPath}`),
-        failText: formatter.error(`Failed to save screenshot.s to ${fullPath}`),
-      },
-    );
   }
 
   stop() {

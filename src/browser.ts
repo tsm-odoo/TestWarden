@@ -76,11 +76,11 @@ export async function launch(options: LaunchOptions) {
 }
 
 export async function cleanup() {
-    await launchDeferred;
-    await Promise.allSettled([
-        ... clients.map((c) => c ?. detach() ?. catch(() => {}),),
-        ... browsers.map((b) => b ?. close()?.catch(() => {})),
-    ]);
+  await launchDeferred;
+  await Promise.allSettled([
+    ...clients.map((c) => c?.detach()?.catch(() => { }),),
+    ...browsers.map((b) => b?.close()?.catch(() => { })),
+  ]);
 }
 
 function addHeader(
@@ -107,9 +107,18 @@ const cache: Record<string, {
   body: Buffer
 }> = {};
 
-export function clearCache() {
+export async function clearCache() {
   for (const key in cache) {
     delete cache[key];
+  }
+  for (const client of clients) {
+    try {
+      await client.send("Network.clearBrowserCache");
+    } catch (e) {
+      if (!["TargetCloseError", "ProtocolError"].includes((e as any).name)) {
+        console.error("Error clearing browser cache:", e);
+      }
+    }
   }
 }
 
@@ -155,9 +164,9 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
           body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
         };
       } catch (e) {
-          logger.error(`Failed to cache ${request.url}`);
-          logger.error(e);
-       }
+        logger.error(`Failed to cache ${request.url}`);
+        logger.error(e);
+      }
     }
     if (resourceType === "Document" && request.url.includes("/web/tests")) {
       try {
@@ -168,9 +177,9 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
           body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
         };
       } catch (e) {
-          logger.error(`Failed to cache ${request.url}`);
-          logger.error(e);
-       }
+        logger.error(`Failed to cache ${request.url}`);
+        logger.error(e);
+      }
     }
     try {
       await client.send("Fetch.continueResponse", {
@@ -183,7 +192,7 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         responsePhrase: event.responseStatusText,
       });
     } catch (e) {
-      client.detach().catch(() => {});
+      client.detach().catch(() => { });
       if (!["TargetCloseError", "ProtocolError"].includes(e.name)) throw e;
     }
   });

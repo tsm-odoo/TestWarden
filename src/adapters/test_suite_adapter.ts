@@ -82,7 +82,6 @@ export abstract class TestSuiteAdapter {
     return page.reload({ waitUntil: "domcontentloaded" });
   }
 
-  async screenshotFails(page: Page, path: string) {}
   async metadataReady() {
     return true;
   }

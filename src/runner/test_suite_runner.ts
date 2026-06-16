@@ -5,10 +5,6 @@ import { Executor } from "@warden/runner/executor";
 import { clearCache } from "@warden/browser";
 
 import enquirer from "enquirer";
-import fs from "fs";
-import fsPromises from "fs/promises";
-import path from "path";
-import { oraPromise } from "ora";
 import { Browser } from "puppeteer";
 
 export class TestSuiteRunner {
@@ -18,7 +14,6 @@ export class TestSuiteRunner {
   ) {}
 
   async run(browser: Browser) {
-    await this.cleanupFailFolder();
     if (!this.config.hasTarget) {
       const { testId, suiteName } = await this.promptSuiteOrTestId();
       this.config.test = testId;
@@ -41,10 +36,9 @@ export class TestSuiteRunner {
     for await (const { success } of executor.run()) {
       if (!success && !this.config.runForever) {
         executor.stop();
-        await executor.screenshotFails();
         const retry = await this.promptRetryOrQuit();
         if (retry) {
-          clearCache();
+          await clearCache();
           executor.resetForRetry();
           continue;
         }
@@ -54,33 +48,12 @@ export class TestSuiteRunner {
     executor.stop();
   }
 
-  private async cleanupFailFolder() {
-    if (!fs.existsSync(this.config.failFolderPath)) {
-      return;
-    }
-    const folders = fs
-      .readdirSync(this.config.failFolderPath)
-      .map((folder) => ({
-        folder,
-        birthtimeMs: fs.statSync(path.join(this.config.failFolderPath, folder)).birthtimeMs,
-      }))
-      .filter((f) => Date.now() - f.birthtimeMs > 24 * 60 * 60 * 1000);
-    const toDelete = folders.map((f) => path.join(this.config.failFolderPath, f.folder));
-    if (toDelete.length === 0) {
-      return;
-    }
-    return oraPromise(async () => Promise.all(toDelete.map((f) => fsPromises.rm(f, { recursive: true }))), {
-      text: formatter.info(`Cleaning up fail folder: ${this.config.failFolderPath}`),
-      successText: formatter.info(`Cleaned up ${toDelete.length} old results`),
-      failText: formatter.error("Failed to clean up fail folder"),
-    });
-  }
-
   private async promptRetryOrQuit(): Promise<boolean> {
     // @ts-ignore
     return enquirer.confirm({
       message: formatter.info("Retry?"),
       initial: false,
+      format: () => "",
     });
   }
 

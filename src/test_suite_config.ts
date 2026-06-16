@@ -163,8 +163,7 @@ export class TestSuiteConfig {
   cpuThrottling: number = 0;
   debug: boolean;
   devtools: boolean = false;
-  failFolderPath = path.join(process.cwd(), "FailedTests");
-  failfast: boolean;
+failfast: boolean;
   headless: boolean;
   metadata: TestSuiteMetadata;
   mobileEmulation: boolean;

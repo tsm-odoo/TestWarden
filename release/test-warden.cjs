@@ -9,32 +9,32 @@ var require$$0$3 = require('events');
 var require$$0$5 = require('stream');
 var require$$0$6 = require('buffer');
 var require$$0$7 = require('util');
-var require$$0$b = require('os');
-var require$$1$3 = require('module');
+var require$$0$c = require('os');
+var require$$1$4 = require('module');
 var require$$0$8 = require('node:events');
 var childProcess$1 = require('node:child_process');
 var path$3 = require('node:path');
 var fs$1 = require('node:fs');
-var fs$2 = require('fs');
-var path$4 = require('path');
+var require$$0$9 = require('fs');
+var require$$1 = require('path');
 var child_process = require('child_process');
 var promises = require('node:fs/promises');
 var http$3 = require('node:http');
 var https$3 = require('node:https');
 var node_url = require('node:url');
-var require$$0$9 = require('http');
-var require$$1 = require('https');
+var require$$0$a = require('http');
+var require$$1$1 = require('https');
 var require$$5 = require('url');
-var require$$0$a = require('net');
-var require$$1$1 = require('tty');
-var require$$1$2 = require('tls');
+var require$$0$b = require('net');
+var require$$1$2 = require('tty');
+var require$$1$3 = require('tls');
 var require$$3$1 = require('dns');
 var require$$2 = require('crypto');
 require('node:assert');
 var node_stream = require('node:stream');
-var require$$0$c = require('zlib');
-var require$$1$4 = require('fs/promises');
-var require$$0$d = require('readline');
+var require$$0$d = require('zlib');
+var require$$1$5 = require('fs/promises');
+var require$$0$e = require('readline');
 var require$$7 = require('inspector');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
@@ -15859,34 +15859,9 @@ class TestSuiteAdapter {
     async reloadSuite(page) {
         return page.reload({ waitUntil: "domcontentloaded" });
     }
-    async screenshotFails(page, path) { }
     async metadataReady() {
         return true;
     }
-}
-
-let Deferred$3 = class Deferred extends Promise {
-    #resolve;
-    #reject;
-    constructor(executor) {
-        let _resolve, _reject;
-        super((resolve, reject) => {
-            _resolve = resolve;
-            _reject = reject;
-            return executor?.(resolve, reject);
-        });
-        this.#resolve = _resolve;
-        this.#reject = _reject;
-    }
-    reject(reason) {
-        return this.#reject(reason);
-    }
-    resolve(value) {
-        return this.#resolve(value);
-    }
-};
-function uuid$1() {
-    return `${Math.random().toString(36).substring(2, 15)}`.toUpperCase();
 }
 
 class HootAdapter extends TestSuiteAdapter {
@@ -16030,22 +16005,6 @@ class HootAdapter extends TestSuiteAdapter {
                 window.afterAll();
             });
         });
-    }
-    async screenshotFails(page, path) {
-        let nextPageBtn;
-        do {
-            const fails = await page.$$(">>> .HootTestResult.bg-rose-900");
-            // TODO - improve file name
-            for (const fail of fails) {
-                await fail.screenshot({
-                    path: `${path}/fail-${uuid$1()}.jpg`,
-                    optimizeForSpeed: true,
-                    quality: 25,
-                });
-            }
-            nextPageBtn = await page.$(">>> button[title='Next page']:enabled");
-            await nextPageBtn?.click();
-        } while (nextPageBtn);
     }
     get isDonePromise() {
         return cjs.firstValueFrom(this.done$.pipe(cjs.first(Boolean)));
@@ -20443,7 +20402,6 @@ class TestSuiteConfig {
     cpuThrottling = 0;
     debug;
     devtools = false;
-    failFolderPath = path$4.join(process.cwd(), "FailedTests");
     failfast;
     headless;
     metadata;
@@ -20457,13 +20415,13 @@ class TestSuiteConfig {
     verbose = false;
     once = false;
     static async parseJSONSettings() {
-        const settingsFilePath = path$4.resolve(process.cwd(), "settings.json");
+        const settingsFilePath = require$$1.resolve(process.cwd(), "settings.json");
         let settings = {};
         try {
             await oraPromise(async () => {
-                const settingsFilePath = path$4.resolve(process.cwd(), "settings.json");
-                await fs$2.promises.access(settingsFilePath, fs$2.constants.F_OK);
-                const rawData = await fs$2.promises.readFile(settingsFilePath, "utf-8");
+                const settingsFilePath = require$$1.resolve(process.cwd(), "settings.json");
+                await require$$0$9.promises.access(settingsFilePath, require$$0$9.constants.F_OK);
+                const rawData = await require$$0$9.promises.readFile(settingsFilePath, "utf-8");
                 settings = JSON.parse(rawData);
                 return settings;
             }, {
@@ -24686,7 +24644,7 @@ let Browser$2 = class Browser extends EventEmitter$3 {
  *
  * @internal
  */
-let Deferred$2 = class Deferred {
+let Deferred$3 = class Deferred {
     static create(opts) {
         return new Deferred(opts);
     }
@@ -24805,7 +24763,7 @@ let Mutex$2 = class Mutex {
             this.#locked = true;
             return new Mutex.Guard(this, onRelease);
         }
-        const deferred = Deferred$2.create();
+        const deferred = Deferred$3.create();
         this.#acquirers.push(deferred.resolve.bind(deferred));
         await deferred.valueOrThrow();
         return new Mutex.Guard(this, onRelease);
@@ -32270,7 +32228,7 @@ class WaitTask {
     #timeout;
     #genericError = new Error('Waiting failed');
     #timeoutError;
-    #result = Deferred$2.create();
+    #result = Deferred$3.create();
     #poller;
     #signal;
     #reruns = [];
@@ -33715,7 +33673,7 @@ class CallbackRegistry {
 class Callback {
     #id;
     #error = new ProtocolError();
-    #deferred = Deferred$2.create();
+    #deferred = Deferred$3.create();
     #timer;
     #label;
     constructor(id, label, timeout) {
@@ -35065,7 +35023,7 @@ class CdpDeviceRequestPrompt extends DeviceRequestPrompt {
             }
         }
         const { timeout = this.#timeoutSettings.timeout() } = options;
-        const deferred = Deferred$2.create({
+        const deferred = Deferred$3.create({
             message: `Waiting for \`DeviceRequestPromptDevice\` failed: ${timeout}ms exceeded`,
             timeout,
         });
@@ -35127,7 +35085,7 @@ class CdpDeviceRequestPromptManager {
             enablePromise = this.#client.send('DeviceAccess.enable');
         }
         const { timeout = this.#timeoutSettings.timeout() } = options;
-        const deferred = Deferred$2.create({
+        const deferred = Deferred$3.create({
             message: `Waiting for \`DeviceRequestPrompt\` failed: ${timeout}ms exceeded`,
             timeout,
         });
@@ -36481,9 +36439,9 @@ class LifecycleWatcher {
     #subscriptions = new DisposableStack();
     #initialLoaderId;
     #terminationDeferred;
-    #sameDocumentNavigationDeferred = Deferred$2.create();
-    #lifecycleDeferred = Deferred$2.create();
-    #newDocumentNavigationDeferred = Deferred$2.create();
+    #sameDocumentNavigationDeferred = Deferred$3.create();
+    #lifecycleDeferred = Deferred$3.create();
+    #newDocumentNavigationDeferred = Deferred$3.create();
     #error = new Error('LifecycleWatcher terminated');
     #hasSameDocumentNavigation;
     #swapped;
@@ -36521,7 +36479,7 @@ class LifecycleWatcher {
         networkManagerEmitter.on(NetworkManagerEvent.Request, this.#onRequest.bind(this));
         networkManagerEmitter.on(NetworkManagerEvent.Response, this.#onResponse.bind(this));
         networkManagerEmitter.on(NetworkManagerEvent.RequestFailed, this.#onRequestFailed.bind(this));
-        this.#terminationDeferred = Deferred$2.create({
+        this.#terminationDeferred = Deferred$3.create({
             timeout: this.#timeout,
             message: `Navigation timeout of ${this.#timeout} ms exceeded`,
         });
@@ -36536,7 +36494,7 @@ class LifecycleWatcher {
         // navigation requests reported by the backend. This generally should not
         // happen by it looks like it's possible.
         this.#navigationResponseReceived?.resolve();
-        this.#navigationResponseReceived = Deferred$2.create();
+        this.#navigationResponseReceived = Deferred$3.create();
         if (request.response() !== null) {
             this.#navigationResponseReceived?.resolve();
         }
@@ -36764,12 +36722,12 @@ let CdpFrame = (() => {
             const { referer = this._frameManager.networkManager.extraHTTPHeaders()['referer'], referrerPolicy = this._frameManager.networkManager.extraHTTPHeaders()['referer-policy'], waitUntil = ['load'], timeout = this._frameManager.timeoutSettings.navigationTimeout(), } = options;
             let ensureNewDocumentNavigation = false;
             const watcher = new LifecycleWatcher(this._frameManager.networkManager, this, waitUntil, timeout);
-            let error = await Deferred$2.race([
+            let error = await Deferred$3.race([
                 navigate(this.#client, url, referer, referrerPolicy ? referrerPolicyToProtocol(referrerPolicy) : undefined, this._id),
                 watcher.terminationPromise(),
             ]);
             if (!error) {
-                error = await Deferred$2.race([
+                error = await Deferred$3.race([
                     watcher.terminationPromise(),
                     ensureNewDocumentNavigation
                         ? watcher.newDocumentNavigationPromise()
@@ -36812,7 +36770,7 @@ let CdpFrame = (() => {
         async waitForNavigation(options = {}) {
             const { waitUntil = ['load'], timeout = this._frameManager.timeoutSettings.navigationTimeout(), signal, } = options;
             const watcher = new LifecycleWatcher(this._frameManager.networkManager, this, waitUntil, timeout, signal);
-            const error = await Deferred$2.race([
+            const error = await Deferred$3.race([
                 watcher.terminationPromise(),
                 ...(options.ignoreSameDocumentNavigation
                     ? []
@@ -36823,7 +36781,7 @@ let CdpFrame = (() => {
                 if (error) {
                     throw error;
                 }
-                const result = await Deferred$2.race([watcher.terminationPromise(), watcher.navigationResponse()]);
+                const result = await Deferred$3.race([watcher.terminationPromise(), watcher.navigationResponse()]);
                 if (result instanceof Error) {
                     throw error;
                 }
@@ -36848,7 +36806,7 @@ let CdpFrame = (() => {
             // lifecycle event. @see https://crrev.com/608658
             await this.setFrameContent(html);
             const watcher = new LifecycleWatcher(this._frameManager.networkManager, this, waitUntil, timeout);
-            const error = await Deferred$2.race([
+            const error = await Deferred$3.race([
                 watcher.terminationPromise(),
                 watcher.lifecyclePromise(),
             ]);
@@ -37022,7 +36980,7 @@ class FrameTree {
         if (frame) {
             return Promise.resolve(frame);
         }
-        const deferred = Deferred$2.create();
+        const deferred = Deferred$3.create();
         const callbacks = this.#waitRequests.get(frameId) || new Set();
         callbacks.add(deferred);
         return deferred.valueOrThrow();
@@ -37343,7 +37301,7 @@ class SecurityDetails {
 class CdpHTTPResponse extends HTTPResponse {
     #request;
     #contentPromise = null;
-    #bodyLoadedDeferred = Deferred$2.create();
+    #bodyLoadedDeferred = Deferred$3.create();
     #remoteAddress;
     #status;
     #statusText;
@@ -38277,7 +38235,7 @@ class FrameManager extends EventEmitter$3 {
         for (const child of mainFrame.childFrames()) {
             this.#removeFramesRecursively(child);
         }
-        const swapped = Deferred$2.create({
+        const swapped = Deferred$3.create({
             timeout: TIME_FOR_WAITING_FOR_SWAP,
             message: 'Frame was not swapped',
         });
@@ -38360,7 +38318,7 @@ class FrameManager extends EventEmitter$3 {
     async initialize(client, frame) {
         try {
             this.#frameTreeHandled?.resolve();
-            this.#frameTreeHandled = Deferred$2.create();
+            this.#frameTreeHandled = Deferred$3.create();
             // We need to schedule all these commands while the target is paused,
             // therefore, it needs to happen synchronously. At the same time we
             // should not start processing execution context and frame events before
@@ -39657,7 +39615,7 @@ class Tracing {
      * @returns Promise which resolves to buffer with trace data.
      */
     async stop() {
-        const contentDeferred = Deferred$2.create();
+        const contentDeferred = Deferred$3.create();
         this.#client.once('Tracing.tracingComplete', async (event) => {
             try {
                 assert$3(event.stream, 'Missing "stream"');
@@ -40063,7 +40021,7 @@ class CdpPage extends Page {
     #viewport;
     #workers = new Map();
     #fileChooserDeferreds = new Set();
-    #sessionCloseDeferred = Deferred$2.create();
+    #sessionCloseDeferred = Deferred$3.create();
     #serviceWorkerBypassed = false;
     #userDragInterceptionEnabled = false;
     constructor(client, target) {
@@ -40322,7 +40280,7 @@ class CdpPage extends Page {
     async waitForFileChooser(options = {}) {
         const needsEnable = this.#fileChooserDeferreds.size === 0;
         const { timeout = this._timeoutSettings.timeout() } = options;
-        const deferred = Deferred$2.create({
+        const deferred = Deferred$3.create({
             message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
             timeout,
         });
@@ -41234,8 +41192,8 @@ let CdpTarget$2 = class CdpTarget extends Target {
     #targetManager;
     #sessionFactory;
     #childTargets = new Set();
-    _initializedDeferred = Deferred$2.create();
-    _isClosedDeferred = Deferred$2.create();
+    _initializedDeferred = Deferred$3.create();
+    _isClosedDeferred = Deferred$3.create();
     _targetId;
     _asPagePromise;
     /** @internal */
@@ -42306,7 +42264,7 @@ class TargetManager extends EventEmitter$3 {
     #targetFactory;
     #attachedToTargetListenersBySession = new WeakMap();
     #detachedFromTargetListenersBySession = new WeakMap();
-    #initializeDeferred = Deferred$2.create();
+    #initializeDeferred = Deferred$3.create();
     #waitForInitiallyDiscoveredTargets = true;
     #discoveryFilter = [{}];
     // IDs of tab targets detected while running the initial Target.setAutoAttach
@@ -48754,8 +48712,8 @@ var __importStar$2 = (commonjsGlobal && commonjsGlobal.__importStar) || function
 };
 Object.defineProperty(helpers$2, "__esModule", { value: true });
 helpers$2.req = helpers$2.json = helpers$2.toBuffer = void 0;
-const http$2 = __importStar$2(require$$0$9);
-const https$2 = __importStar$2(require$$1);
+const http$2 = __importStar$2(require$$0$a);
+const https$2 = __importStar$2(require$$1$1);
 async function toBuffer$3(stream) {
     let length = 0;
     const chunks = [];
@@ -48823,9 +48781,9 @@ helpers$2.req = req;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.Agent = void 0;
-	const net = __importStar(require$$0$a);
-	const http = __importStar(require$$0$9);
-	const https_1 = require$$1;
+	const net = __importStar(require$$0$b);
+	const http = __importStar(require$$0$a);
+	const https_1 = require$$1$1;
 	__exportStar(helpers$2, exports);
 	const INTERNAL = Symbol('AgentBaseInternalState');
 	class Agent extends http.Agent {
@@ -49755,8 +49713,8 @@ var hasRequiredSupportsColor$2;
 function requireSupportsColor$2 () {
 	if (hasRequiredSupportsColor$2) return supportsColor_1$2;
 	hasRequiredSupportsColor$2 = 1;
-	const os = require$$0$b;
-	const tty = require$$1$1;
+	const os = require$$0$c;
+	const tty = require$$1$2;
 	const hasFlag = requireHasFlag$2();
 
 	const {env} = process;
@@ -49902,7 +49860,7 @@ function requireNode$1 () {
 	if (hasRequiredNode$1) return node$1.exports;
 	hasRequiredNode$1 = 1;
 	(function (module, exports) {
-		const tty = require$$1$1;
+		const tty = require$$1$2;
 		const util = require$$0$7;
 
 		/**
@@ -50328,8 +50286,8 @@ function requireDist$8 () {
 	};
 	Object.defineProperty(dist$9, "__esModule", { value: true });
 	dist$9.HttpProxyAgent = void 0;
-	const net = __importStar(require$$0$a);
-	const tls = __importStar(require$$1$2);
+	const net = __importStar(require$$0$b);
+	const tls = __importStar(require$$1$3);
 	const debug_1 = __importDefault(srcExports);
 	const events_1 = require$$0$3;
 	const agent_base_1 = dist$a;
@@ -50595,8 +50553,8 @@ function requireDist$7 () {
 	};
 	Object.defineProperty(dist$8, "__esModule", { value: true });
 	dist$8.HttpsProxyAgent = void 0;
-	const net = __importStar(require$$0$a);
-	const tls = __importStar(require$$1$2);
+	const net = __importStar(require$$0$b);
+	const tls = __importStar(require$$1$3);
 	const assert_1 = __importDefault(require$$0$4);
 	const debug_1 = __importDefault(srcExports);
 	const agent_base_1 = dist$a;
@@ -54415,7 +54373,7 @@ function requireHelpers () {
 	const constants_1 = requireConstants$2();
 	const stream = require$$0$5;
 	const ip_address_1 = requireIpAddress();
-	const net = require$$0$a;
+	const net = require$$0$b;
 	/**
 	 * Validates the provided SocksClientOptions
 	 * @param options { SocksClientOptions }
@@ -54648,7 +54606,7 @@ function requireSocksclient () {
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.SocksClientError = exports.SocksClient = void 0;
 		const events_1 = require$$0$3;
-		const net = require$$0$a;
+		const net = require$$0$b;
 		const smart_buffer_1 = requireSmartbuffer();
 		const constants_1 = requireConstants$2();
 		const helpers_1 = requireHelpers();
@@ -55496,8 +55454,8 @@ function requireDist$6 () {
 	const agent_base_1 = dist$a;
 	const debug_1 = __importDefault(srcExports);
 	const dns = __importStar(require$$3$1);
-	const net = __importStar(require$$0$a);
-	const tls = __importStar(require$$1$2);
+	const net = __importStar(require$$0$b);
+	const tls = __importStar(require$$1$3);
 	const url_1 = require$$5;
 	const debug = (0, debug_1.default)('socks-proxy-agent');
 	const setServernameFromNonIpHost = (options) => {
@@ -55879,7 +55837,7 @@ function requireFile () {
 	Object.defineProperty(file, "__esModule", { value: true });
 	file.file = void 0;
 	const debug_1 = __importDefault(srcExports);
-	const fs_1 = fs$2;
+	const fs_1 = require$$0$9;
 	const notfound_1 = __importDefault(requireNotfound());
 	const notmodified_1 = __importDefault(requireNotmodified());
 	const url_1 = require$$5;
@@ -56022,7 +55980,7 @@ function requireFtpContext () {
 	hasRequiredFtpContext = 1;
 	Object.defineProperty(FtpContext, "__esModule", { value: true });
 	FtpContext.FTPContext = FtpContext.FTPError = void 0;
-	const net_1 = require$$0$a;
+	const net_1 = require$$0$b;
 	const parseControlResponse_1 = requireParseControlResponse();
 	/**
 	 * Describes an FTP server error response including the FTP response code.
@@ -56409,7 +56367,7 @@ function requireNetUtils () {
 	netUtils.describeAddress = describeAddress;
 	netUtils.upgradeSocket = upgradeSocket;
 	netUtils.ipIsPrivateV4Address = ipIsPrivateV4Address;
-	const tls_1 = require$$1$2;
+	const tls_1 = require$$1$3;
 	/**
 	 * Returns a string describing the encryption on a given socket instance.
 	 */
@@ -57219,7 +57177,7 @@ function requireTransfer () {
 	transfer.downloadTo = downloadTo;
 	const netUtils_1 = requireNetUtils();
 	const stream_1 = require$$0$5;
-	const tls_1 = require$$1$2;
+	const tls_1 = require$$1$3;
 	const parseControlResponse_1 = requireParseControlResponse();
 	/**
 	 * Prepare a data socket using passive mode over IPv6.
@@ -57535,9 +57493,9 @@ function requireClient () {
 	hasRequiredClient = 1;
 	Object.defineProperty(Client, "__esModule", { value: true });
 	Client.Client = void 0;
-	const fs_1 = fs$2;
-	const path_1 = path$4;
-	const tls_1 = require$$1$2;
+	const fs_1 = require$$0$9;
+	const path_1 = require$$1;
+	const tls_1 = require$$1$3;
 	const util_1 = require$$0$7;
 	const FtpContext_1 = requireFtpContext();
 	const netUtils_1 = requireNetUtils();
@@ -58380,7 +58338,7 @@ function requireFtp () {
 	ftp.ftp = void 0;
 	const basic_ftp_1 = requireDist$5();
 	const stream_1 = require$$0$5;
-	const path_1 = path$4;
+	const path_1 = require$$1;
 	const debug_1 = __importDefault(srcExports);
 	const notfound_1 = __importDefault(requireNotfound());
 	const notmodified_1 = __importDefault(requireNotmodified());
@@ -58478,7 +58436,7 @@ function requireHttpError () {
 	if (hasRequiredHttpError) return httpError;
 	hasRequiredHttpError = 1;
 	Object.defineProperty(httpError, "__esModule", { value: true });
-	const http_1 = require$$0$9;
+	const http_1 = require$$0$a;
 	/**
 	 * Error subclass to use when an HTTP application error has occurred.
 	 */
@@ -58505,8 +58463,8 @@ function requireHttp () {
 		};
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.http = void 0;
-		const http_1 = __importDefault(require$$0$9);
-		const https_1 = __importDefault(require$$1);
+		const http_1 = __importDefault(require$$0$a);
+		const https_1 = __importDefault(require$$1$1);
 		const events_1 = require$$0$3;
 		const debug_1 = __importDefault(srcExports);
 		const http_error_1 = __importDefault(requireHttpError());
@@ -58703,7 +58661,7 @@ function requireHttps () {
 	};
 	Object.defineProperty(https$1, "__esModule", { value: true });
 	https$1.https = void 0;
-	const https_1 = __importDefault(require$$1);
+	const https_1 = __importDefault(require$$1$1);
 	const http_1 = requireHttp();
 	/**
 	 * Returns a Readable stream from an "https:" URI.
@@ -78690,7 +78648,7 @@ function requireIp () {
 		};
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.ip = void 0;
-		const os_1 = __importDefault(require$$0$b);
+		const os_1 = __importDefault(require$$0$c);
 		exports.ip = {
 		    address() {
 		        const interfaces = os_1.default.networkInterfaces();
@@ -78748,7 +78706,7 @@ function requireMyIpAddress () {
 	};
 	Object.defineProperty(myIpAddress, "__esModule", { value: true });
 	const ip_1 = requireIp();
-	const net_1 = __importDefault(require$$0$a);
+	const net_1 = __importDefault(require$$0$b);
 	/**
 	 * Returns the IP address of the host that the Navigator is running on, as
 	 * a string in the dot-separated integer format.
@@ -81453,7 +81411,7 @@ function requireEmscriptenModule_WASM_RELEASE_SYNC () {
 		        a.ready = new Promise(function (b, c) { m = b; n = c; });
 		        var p = Object.assign({}, a), t = "./this.program", u = "object" == typeof window, v = "function" == typeof importScripts, w = "object" == typeof process && "object" == typeof process.versions && "string" == typeof process.versions.node, x = "", y, z, A;
 		        if (w) {
-		            var fs = fs$2, B = path$4;
+		            var fs = require$$0$9, B = require$$1;
 		            x = v ? B.dirname(x) + "/" : __dirname + "/";
 		            y = (b, c) => { var d = C(b); if (d)
 		                return c ? d : d.toString(); b = b.startsWith("file://") ? new URL(b) : B.normalize(b); return fs.readFileSync(b, c ? void 0 : "utf8"); };
@@ -82282,8 +82240,8 @@ function requireDist () {
 	};
 	Object.defineProperty(dist$6, "__esModule", { value: true });
 	dist$6.PacProxyAgent = void 0;
-	const net = __importStar(require$$0$a);
-	const tls = __importStar(require$$1$2);
+	const net = __importStar(require$$0$b);
+	const tls = __importStar(require$$1$3);
 	const crypto = __importStar(require$$2);
 	const events_1 = require$$0$3;
 	const debug_1 = __importDefault(srcExports);
@@ -82522,8 +82480,8 @@ function requireDist () {
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.ProxyAgent = exports.proxies = void 0;
-	const http = __importStar(require$$0$9);
-	const https = __importStar(require$$1);
+	const http = __importStar(require$$0$a);
+	const https = __importStar(require$$1$1);
 	const url_1 = require$$5;
 	const lru_cache_1 = __importDefault(lruCache);
 	const agent_base_1 = dist$a;
@@ -84884,7 +84842,7 @@ let Limiter$1 = class Limiter {
 
 var limiter = Limiter$1;
 
-const zlib = require$$0$c;
+const zlib = require$$0$d;
 
 const bufferUtil = bufferUtilExports;
 const Limiter = limiter;
@@ -87365,10 +87323,10 @@ var extension = { format: format$1, parse: parse$1 };
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "^Duplex|Readable$", "caughtErrors": "none" }] */
 
 const EventEmitter$2 = require$$0$3;
-const https = require$$1;
-const http = require$$0$9;
-const net = require$$0$a;
-const tls = require$$1$2;
+const https = require$$1$1;
+const http = require$$0$a;
+const net = require$$0$b;
+const tls = require$$1$3;
 const { randomBytes, createHash: createHash$1 } = require$$2;
 const { Duplex: Duplex$2, Readable } = require$$0$5;
 const { URL: URL$1 } = require$$5;
@@ -90248,9 +90206,9 @@ var hasRequiredResolveFrom;
 function requireResolveFrom () {
 	if (hasRequiredResolveFrom) return resolveFrom.exports;
 	hasRequiredResolveFrom = 1;
-	const path = path$4;
-	const Module = require$$1$3;
-	const fs = fs$2;
+	const path = require$$1;
+	const Module = require$$1$4;
+	const fs = require$$0$9;
 
 	const resolveFrom$1 = (fromDir, moduleId, silent) => {
 		if (typeof fromDir !== 'string') {
@@ -90370,7 +90328,7 @@ var hasRequiredImportFresh;
 function requireImportFresh () {
 	if (hasRequiredImportFresh) return importFresh;
 	hasRequiredImportFresh = 1;
-	const path = path$4;
+	const path = require$$1;
 	const resolveFrom = requireResolveFrom();
 	const parentModule = requireParentModule();
 
@@ -92454,7 +92412,7 @@ var hasRequiredSupportsColor$1;
 function requireSupportsColor$1 () {
 	if (hasRequiredSupportsColor$1) return supportsColor_1$1;
 	hasRequiredSupportsColor$1 = 1;
-	const os = require$$0$b;
+	const os = require$$0$c;
 	const hasFlag = requireHasFlag$1();
 
 	const env = process.env;
@@ -94524,7 +94482,7 @@ var hasRequiredSupportsColor;
 function requireSupportsColor () {
 	if (hasRequiredSupportsColor) return supportsColor_1;
 	hasRequiredSupportsColor = 1;
-	const os = require$$0$b;
+	const os = require$$0$c;
 	const hasFlag = requireHasFlag();
 
 	const env = process.env;
@@ -99440,7 +99398,7 @@ function requireSourceMapSupport () {
 	hasRequiredSourceMapSupport = 1;
 	(function (module, exports) {
 		var SourceMapConsumer = requireSourceMap().SourceMapConsumer;
-		var path = path$4;
+		var path = require$$1;
 
 		var fs;
 		try {
@@ -106183,9 +106141,9 @@ ${lanes.join("\n")}
 		        const byteOrderMarkIndicator = "\uFEFF";
 		        function getNodeSystem() {
 		          const nativePattern = /^native |^\([^)]+\)$|^(internal[\\/]|[a-zA-Z0-9_\s]+(\.js)?$)/;
-		          const _fs =   fs$2;
-		          const _path =   path$4;
-		          const _os =   require$$0$b;
+		          const _fs =   require$$0$9;
+		          const _path =   require$$1;
+		          const _os =   require$$0$c;
 		          let _crypto;
 		          try {
 		            _crypto =   require("crypto");
@@ -288204,9 +288162,9 @@ ${e.message}`;
 	};
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.loadTs = exports.loadTsSync = exports.loadYaml = exports.loadJson = exports.loadJs = exports.loadJsSync = void 0;
-	const fs_1 = fs$2;
-	const promises_1 = require$$1$4;
-	const path_1 = __importDefault(path$4);
+	const fs_1 = require$$0$9;
+	const promises_1 = require$$1$5;
+	const path_1 = __importDefault(require$$1);
 	const url_1 = require$$5;
 	let importFresh;
 	const loadJsSync = function loadJsSync(filepath) {
@@ -288457,8 +288415,8 @@ var ExplorerBase$1 = {};
 
 var envPaths$1 = {exports: {}};
 
-const path = path$4;
-const os = require$$0$b;
+const path = require$$1;
+const os = require$$0$c;
 
 const homedir = os.homedir();
 const tmpdir = os.tmpdir();
@@ -288560,7 +288518,7 @@ var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (
 };
 Object.defineProperty(util, "__esModule", { value: true });
 util.isDirectorySync = util.isDirectory = util.removeUndefinedValuesFromObject = util.getPropertyByPath = util.emplace = void 0;
-const fs_1$1 = __importStar(fs$2);
+const fs_1$1 = __importStar(require$$0$9);
 /**
  * @internal
  */
@@ -288639,8 +288597,8 @@ var __importDefault$3 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 Object.defineProperty(ExplorerBase$1, "__esModule", { value: true });
 ExplorerBase$1.getExtensionDescription = ExplorerBase$1.ExplorerBase = void 0;
 const env_paths_1 = __importDefault$3(envPathsExports);
-const os_1 = __importDefault$3(require$$0$b);
-const path_1$2 = __importDefault$3(path$4);
+const os_1 = __importDefault$3(require$$0$c);
+const path_1$2 = __importDefault$3(require$$1);
 const util_js_1$2 = util;
 /**
  * @internal
@@ -288807,8 +288765,8 @@ var __importDefault$2 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(Explorer$1, "__esModule", { value: true });
 Explorer$1.Explorer = void 0;
-const promises_1 = __importDefault$2(require$$1$4);
-const path_1$1 = __importDefault$2(path$4);
+const promises_1 = __importDefault$2(require$$1$5);
+const path_1$1 = __importDefault$2(require$$1);
 const defaults_1$1 = defaults;
 const ExplorerBase_js_1$1 = ExplorerBase$1;
 const merge_1$1 = merge;
@@ -288978,8 +288936,8 @@ var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 };
 Object.defineProperty(ExplorerSync$1, "__esModule", { value: true });
 ExplorerSync$1.ExplorerSync = void 0;
-const fs_1 = __importDefault$1(fs$2);
-const path_1 = __importDefault$1(path$4);
+const fs_1 = __importDefault$1(require$$0$9);
+const path_1 = __importDefault$1(require$$1);
 const defaults_1 = defaults;
 const ExplorerBase_js_1 = ExplorerBase$1;
 const merge_1 = merge;
@@ -289461,6 +289419,27 @@ launch: launch$1,
  */
 trimCache, } = puppeteer;
 
+let Deferred$2 = class Deferred extends Promise {
+    #resolve;
+    #reject;
+    constructor(executor) {
+        let _resolve, _reject;
+        super((resolve, reject) => {
+            _resolve = resolve;
+            _reject = reject;
+            return executor?.(resolve, reject);
+        });
+        this.#resolve = _resolve;
+        this.#reject = _reject;
+    }
+    reject(reason) {
+        return this.#reject(reason);
+    }
+    resolve(value) {
+        return this.#resolve(value);
+    }
+};
+
 const execPromise = require$$0$7.promisify(child_process.exec);
 const CHROME_OPTIONS = [
     "--no-default-browser-check",
@@ -289505,7 +289484,7 @@ const clients = [];
 let launchDeferred;
 async function launch(options) {
     await launchDeferred;
-    launchDeferred = new Deferred$3();
+    launchDeferred = new Deferred$2();
     const port = await findAvailablePort(latestDebuggingPort);
     latestDebuggingPort = port + 1;
     const browser = await puppeteer.launch({
@@ -289548,9 +289527,19 @@ function addHeader(ogHeaders, headers) {
  * Cache responses to speed up reload time by forcing browser memory cache.
  */
 const cache = {};
-function clearCache() {
+async function clearCache() {
     for (const key in cache) {
         delete cache[key];
+    }
+    for (const client of clients) {
+        try {
+            await client.send("Network.clearBrowserCache");
+        }
+        catch (e) {
+            if (!["TargetCloseError", "ProtocolError"].includes(e.name)) {
+                console.error("Error clearing browser cache:", e);
+            }
+        }
     }
 }
 async function setupCache(page, config) {
@@ -289704,7 +289693,7 @@ class ETA{
 
 var eta = ETA;
 
-const _readline = require$$0$d;
+const _readline = require$$0$e;
 
 // low-level terminal interactions
 class Terminal{
@@ -291077,7 +291066,7 @@ class ExecutorSplit {
     static id = 0;
     adapter;
     page;
-    doneDeferred = new Deferred$3();
+    doneDeferred = new Deferred$2();
     failIcon;
     id;
     constructor(config, testIds) {
@@ -291124,16 +291113,13 @@ class ExecutorSplit {
     }
     async reload() {
         this.adapter.reset();
-        this.doneDeferred = new Deferred$3();
+        this.doneDeferred = new Deferred$2();
         await this.adapter.reloadSuite(this.page);
         await this.setPageFriendlyName();
     }
-    async screenshotFails(path) {
-        return this.adapter.screenshotFails(this.page, path);
-    }
     async setFailureFavicon() {
         if (!this.failIcon) {
-            this.failIcon = (await fs$2.promises.readFile('src/resources/angry.png')).toString("base64");
+            this.failIcon = (await require$$0$9.promises.readFile('src/resources/angry.png')).toString("base64");
         }
         await this.page.evaluate((base64Icon) => {
             const dataUrl = `data:image/png;base64,${base64Icon}`;
@@ -291259,21 +291245,6 @@ class Executor {
             this.previousResults.push(...(await cjs.lastValueFrom(testResults$)));
             await Promise.all(this.splits.map((s) => s.reload()));
         }
-    }
-    async screenshotFails() {
-        const fullPath = path$4.join(this.config.failFolderPath, `result-${uuid$1()}`);
-        if (!fs$2.existsSync(fullPath)) {
-            fs$2.mkdirSync(fullPath, { recursive: true });
-        }
-        await oraPromise(async () => {
-            for (const split of this.splits) {
-                await split.screenshotFails(fullPath);
-            }
-        }, {
-            text: formatter$1.info(`Saving screenshot.s to ${fullPath}`),
-            successText: formatter$1.info(`Screenshot.s saved to ${fullPath}`),
-            failText: formatter$1.error(`Failed to save screenshot.s to ${fullPath}`),
-        });
     }
     stop() {
         this.progressBar.stop();
@@ -291980,7 +291951,7 @@ function requireKeypress () {
 	if (hasRequiredKeypress) return keypress_1;
 	hasRequiredKeypress = 1;
 
-	const readline = require$$0$d;
+	const readline = require$$0$e;
 	const combos = requireCombos();
 	const Queue = requireQueue();
 
@@ -296823,7 +296794,6 @@ class TestSuiteRunner {
         this.metadata = metadata;
     }
     async run(browser) {
-        await this.cleanupFailFolder();
         if (!this.config.hasTarget) {
             const { testId, suiteName } = await this.promptSuiteOrTestId();
             this.config.test = testId;
@@ -296840,10 +296810,9 @@ class TestSuiteRunner {
         for await (const { success } of executor.run()) {
             if (!success && !this.config.runForever) {
                 executor.stop();
-                await executor.screenshotFails();
                 const retry = await this.promptRetryOrQuit();
                 if (retry) {
-                    clearCache();
+                    await clearCache();
                     executor.resetForRetry();
                     continue;
                 }
@@ -296852,32 +296821,12 @@ class TestSuiteRunner {
         }
         executor.stop();
     }
-    async cleanupFailFolder() {
-        if (!fs$2.existsSync(this.config.failFolderPath)) {
-            return;
-        }
-        const folders = fs$2
-            .readdirSync(this.config.failFolderPath)
-            .map((folder) => ({
-            folder,
-            birthtimeMs: fs$2.statSync(path$4.join(this.config.failFolderPath, folder)).birthtimeMs,
-        }))
-            .filter((f) => Date.now() - f.birthtimeMs > 24 * 60 * 60 * 1000);
-        const toDelete = folders.map((f) => path$4.join(this.config.failFolderPath, f.folder));
-        if (toDelete.length === 0) {
-            return;
-        }
-        return oraPromise(async () => Promise.all(toDelete.map((f) => require$$1$4.rm(f, { recursive: true }))), {
-            text: formatter$1.info(`Cleaning up fail folder: ${this.config.failFolderPath}`),
-            successText: formatter$1.info(`Cleaned up ${toDelete.length} old results`),
-            failText: formatter$1.error("Failed to clean up fail folder"),
-        });
-    }
     async promptRetryOrQuit() {
         // @ts-ignore
         return enquirer$1.confirm({
             message: formatter$1.info("Retry?"),
             initial: false,
+            format: () => "",
         });
     }
     async promptSuiteOrTestId() {
@@ -296901,7 +296850,7 @@ class TestSuiteRunner {
     }
 }
 
-const require$1 = require$$1$3.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === 'SCRIPT' && _documentCurrentScript.src || new URL('test-warden.cjs', document.baseURI).href)));
+const require$1 = require$$1$4.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === 'SCRIPT' && _documentCurrentScript.src || new URL('test-warden.cjs', document.baseURI).href)));
 let nc;
 try {
     const mod = require$1("nodeaffinity");
@@ -296963,7 +296912,7 @@ process.on("unhandledRejection", (reason) => {
         if (nc) {
             let mask = (1 << config.cpuLimit) - 1;
             nc.setAffinity(mask);
-            const totalCPUs = require$$0$b.cpus().length;
+            const totalCPUs = require$$0$c.cpus().length;
             logger.info(`CPU usage restricted to ${config.cpuLimit} core.s out of ${totalCPUs}`);
         }
         await new TestSuiteRunner(config, metadata).run(browser);
@@ -310753,7 +310702,7 @@ class BidiCdpSession extends CDPSession {
     static sessions = new Map();
     #detached = false;
     #connection;
-    #sessionId = Deferred$2.create();
+    #sessionId = Deferred$3.create();
     frame;
     constructor(frame, sessionId) {
         super();
@@ -311190,7 +311139,7 @@ class BidiDeviceRequestPromptManager {
         }
     }
     async waitForDevicePrompt(timeout, signal) {
-        const deferred = Deferred$2.create({
+        const deferred = Deferred$3.create({
             message: `Waiting for \`DeviceRequestPrompt\` failed: ${timeout}ms exceeded`,
             timeout,
         });
@@ -316256,7 +316205,7 @@ let BidiPage = (() => {
         }
         async waitForFileChooser(options = {}) {
             const { timeout = this._timeoutSettings.timeout() } = options;
-            const deferred = Deferred$2.create({
+            const deferred = Deferred$3.create({
                 message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
                 timeout,
             });

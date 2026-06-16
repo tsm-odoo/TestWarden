@@ -1,5 +1,4 @@
 import { TestSuiteAdapter, registerAdapter } from "@warden/adapters/test_suite_adapter";
-import { uuid } from "@warden/helpers/misc";
 import { processExit$ } from "@warden/index";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 
@@ -168,23 +167,6 @@ export class HootAdapter extends TestSuiteAdapter {
         window.afterAll();
       });
     });
-  }
-
-  async screenshotFails(page: Page, path: string) {
-    let nextPageBtn;
-    do {
-      const fails = await page.$$(">>> .HootTestResult.bg-rose-900");
-      // TODO - improve file name
-      for (const fail of fails) {
-        await fail.screenshot({
-          path: `${path}/fail-${uuid()}.jpg`,
-          optimizeForSpeed: true,
-          quality: 25,
-        });
-      }
-      nextPageBtn = await page.$(">>> button[title='Next page']:enabled");
-      await nextPageBtn?.click();
-    } while (nextPageBtn);
   }
 
   get isDonePromise() {
