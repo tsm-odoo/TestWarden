@@ -36,6 +36,15 @@ export const CHROME_OPTIONS = [
   "--no-sandbox",
   "--no-zygote",
   `--window-size=1366,768`, // Same as RunBot
+  // Reduce background work and extra processes
+  "--mute-audio",
+  "--disable-sync",
+  "--disable-domain-reliability",
+  "--disable-component-extensions-with-background-pages",
+  "--disable-features=MediaRouter,AudioServiceOutOfProcess,DestroyProfileOnBrowserClose",
+  // Site isolation spawns a renderer process per origin; tests run on one
+  // origin and splits are isolated via browser contexts, so this saves memory.
+  "--disable-features=IsolateOrigins,site-per-process",
 ];
 
 let latestDebuggingPort = 9222;

@@ -289467,6 +289467,15 @@ const CHROME_OPTIONS = [
     "--no-sandbox",
     "--no-zygote",
     `--window-size=1366,768`, // Same as RunBot
+    // Reduce background work and extra processes
+    "--mute-audio",
+    "--disable-sync",
+    "--disable-domain-reliability",
+    "--disable-component-extensions-with-background-pages",
+    "--disable-features=MediaRouter,AudioServiceOutOfProcess,DestroyProfileOnBrowserClose",
+    // Site isolation spawns a renderer process per origin; tests run on one
+    // origin and splits are isolated via browser contexts, so this saves memory.
+    "--disable-features=IsolateOrigins,site-per-process",
 ];
 let latestDebuggingPort = 9222;
 async function findAvailablePort(start) {
@@ -291133,11 +291142,14 @@ class ExecutorSplit {
     get results$() {
         return this.adapter.testResults$;
     }
-    get failCount$() {
-        return this.results$.pipe(cjs.map((results) => results.filter((result) => !result.pass).length));
-    }
     get lastFail$() {
-        return this.results$.pipe(cjs.map(results => results.filter(r => !r.pass)), cjs.startWith([]), cjs.pairwise(), cjs.mergeMap(([prev, curr]) => cjs.from(curr.filter(c => !prev.some(p => p.id === c.id)))));
+        const seenIds = new Set();
+        return this.results$.pipe(cjs.mergeMap((results) => {
+            const newFails = results.filter((r) => !r.pass && !seenIds.has(r.id));
+            for (const r of newFails)
+                seenIds.add(r.id);
+            return cjs.from(newFails);
+        }));
     }
     get isDonePromise() {
         return this.doneDeferred;
@@ -291159,7 +291171,9 @@ class Executor {
     metadata;
     progressBar;
     splits = [];
-    previousResults = [];
+    previousStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+    currentRunStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+    lastProcessedCount = 0;
     constructor(browser, config, metadata) {
         this.browser = browser;
         this.config = config;
@@ -291168,7 +291182,9 @@ class Executor {
         processExit$.pipe(cjs.filter(Boolean), cjs.take(1)).subscribe(() => this.progressBar.stop());
     }
     resetForRetry() {
-        this.previousResults = [];
+        this.previousStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+        this.currentRunStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+        this.lastProcessedCount = 0;
         this.progressBar.reset();
     }
     async splitTests() {
@@ -291197,10 +291213,11 @@ class Executor {
         return splits;
     }
     async *run() {
-        debugger;
         this.splits = await this.splitTests();
         await this.progressBar.registerSplits(this.splits);
         for (let runs = 1; true; runs++) {
+            this.currentRunStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+            this.lastProcessedCount = 0;
             // 1. Setup progress listeners which are taken from every split and
             //    merges as one.
             const isDonePromise = Promise.all(this.splits.map((s) => s.isDonePromise));
@@ -291214,7 +291231,7 @@ class Executor {
             testResults$.subscribe((r) => {
                 const totalRuns = this.config.isSingleTest ? r.length + runs * this.splits.length : runs;
                 this.progressBar.update(r.length);
-                this.updateStatistics(totalRuns, r, this.previousResults);
+                this.updateStatistics(totalRuns, r);
             });
             lastFail$.subscribe((r) => {
                 const totalRuns = this.config.isSingleTest ? runs * this.splits.length : runs;
@@ -291235,37 +291252,46 @@ class Executor {
             await isDonePromise;
             const success = this.splits.every((s) => !s.failed);
             if (!this.config.runForever) {
-                await Promise.all([this.splits.filter((s) => s.failed).map((s) => s.setFailureFavicon())]);
+                await Promise.all(this.splits.filter((s) => s.failed).map((s) => s.setFailureFavicon()));
             }
             // 4. Let the runner process the result.
             yield { success };
             if (this.config.once) {
                 return;
             }
-            this.previousResults.push(...(await cjs.lastValueFrom(testResults$)));
+            this.previousStats.min = Math.min(this.previousStats.min, this.currentRunStats.min);
+            this.previousStats.max = Math.max(this.previousStats.max, this.currentRunStats.max);
+            this.previousStats.sum += this.currentRunStats.sum;
+            this.previousStats.count += this.currentRunStats.count;
             await Promise.all(this.splits.map((s) => s.reload()));
         }
     }
     stop() {
         this.progressBar.stop();
     }
-    updateStatistics(runs, currentResults, previousResults) {
-        const allResults = [...currentResults, ...previousResults];
-        let min, max, sum_all = 0;
-        for (const { duration } of allResults) {
-            if (!min || min > duration) {
-                min = duration;
-            }
-            if (!max || max < duration) {
-                max = duration;
-            }
-            sum_all += duration;
+    updateStatistics(runs, currentResults) {
+        const newResults = currentResults.slice(this.lastProcessedCount);
+        this.lastProcessedCount = currentResults.length;
+        for (const { duration } of newResults) {
+            const d = duration ?? 0;
+            if (d < this.currentRunStats.min)
+                this.currentRunStats.min = d;
+            if (d > this.currentRunStats.max)
+                this.currentRunStats.max = d;
+            this.currentRunStats.sum += d;
+            this.currentRunStats.count++;
         }
-        let median = sum_all / allResults.length;
-        min ||= 0;
-        max ||= 0;
-        const sum_current = currentResults.reduce((acc, { duration }) => acc + duration, 0);
-        this.progressBar.updateStatistics({ min, max, median, runs, sum: sum_current });
+        const totalMin = Math.min(this.previousStats.min, this.currentRunStats.min);
+        const totalMax = Math.max(this.previousStats.max, this.currentRunStats.max);
+        const totalSum = this.previousStats.sum + this.currentRunStats.sum;
+        const totalCount = this.previousStats.count + this.currentRunStats.count;
+        this.progressBar.updateStatistics({
+            min: isFinite(totalMin) ? totalMin : 0,
+            max: isFinite(totalMax) ? totalMax : 0,
+            median: totalCount > 0 ? totalSum / totalCount : 0,
+            runs,
+            sum: this.currentRunStats.sum,
+        });
     }
 }
 

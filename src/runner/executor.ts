@@ -10,7 +10,7 @@ import { TestSuiteMetadata } from "@warden/test_suite_metadata";
 import fs from "fs";
 import { oraPromise } from "ora";
 import { Browser, Page } from "puppeteer";
-import { combineLatest, filter, from, lastValueFrom, map, merge, mergeMap, pairwise, startWith, take, takeUntil } from "rxjs";
+import { combineLatest, filter, from, map, merge, mergeMap, take, takeUntil } from "rxjs";
 
 export type ExecutorStatistics = {
   runs: number;
@@ -104,18 +104,14 @@ export class ExecutorSplit {
     return this.adapter.testResults$;
   }
 
-  get failCount$() {
-    return this.results$.pipe(map((results) => results.filter((result) => !result.pass).length));
-  }
-
   get lastFail$() {
+    const seenIds = new Set<string>();
     return this.results$.pipe(
-      map(results => results.filter(r => !r.pass)),
-      startWith([]),
-      pairwise(),
-      mergeMap(([prev, curr]) =>
-        from(curr.filter(c => !prev.some(p => p.id === c.id)))
-      )
+      mergeMap((results) => {
+        const newFails = results.filter((r) => !r.pass && !seenIds.has(r.id));
+        for (const r of newFails) seenIds.add(r.id);
+        return from(newFails);
+      }),
     );
   }
 
@@ -137,10 +133,14 @@ export class ExecutorSplit {
   }
 }
 
+type AggregateStats = { min: number; max: number; sum: number; count: number };
+
 export class Executor {
   private progressBar: ProgressBar;
   private splits: ExecutorSplit[] = [];
-  private previousResults: TestResult[] = [];
+  private previousStats: AggregateStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+  private currentRunStats: AggregateStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+  private lastProcessedCount = 0;
 
   constructor(
     private browser: Browser,
@@ -152,7 +152,9 @@ export class Executor {
   }
 
   resetForRetry() {
-    this.previousResults = [];
+    this.previousStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+    this.currentRunStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+    this.lastProcessedCount = 0;
     this.progressBar.reset();
   }
 
@@ -182,10 +184,11 @@ export class Executor {
   }
 
   async *run() {
-    debugger;
     this.splits = await this.splitTests();
     await this.progressBar.registerSplits(this.splits);
     for (let runs = 1; true; runs++) {
+      this.currentRunStats = { min: Infinity, max: -Infinity, sum: 0, count: 0 };
+      this.lastProcessedCount = 0;
       // 1. Setup progress listeners which are taken from every split and
       //    merges as one.
       const isDonePromise = Promise.all(this.splits.map((s) => s.isDonePromise));
@@ -215,7 +218,7 @@ export class Executor {
       testResults$.subscribe((r) => {
         const totalRuns = this.config.isSingleTest ? r.length + runs * this.splits.length : runs;
         this.progressBar.update(r.length);
-        this.updateStatistics(totalRuns, r, this.previousResults);
+        this.updateStatistics(totalRuns, r);
       });
       lastFail$.subscribe((r) => {
         const totalRuns = this.config.isSingleTest ? runs * this.splits.length : runs;
@@ -236,14 +239,17 @@ export class Executor {
       await isDonePromise;
       const success = this.splits.every((s) => !s.failed);
       if (!this.config.runForever) {
-        await Promise.all([this.splits.filter((s) => s.failed).map((s) => s.setFailureFavicon())]);
+        await Promise.all(this.splits.filter((s) => s.failed).map((s) => s.setFailureFavicon()));
       }
       // 4. Let the runner process the result.
       yield { success };
       if (this.config.once) {
         return;
       }
-      this.previousResults.push(...(await lastValueFrom(testResults$)));
+      this.previousStats.min = Math.min(this.previousStats.min, this.currentRunStats.min);
+      this.previousStats.max = Math.max(this.previousStats.max, this.currentRunStats.max);
+      this.previousStats.sum += this.currentRunStats.sum;
+      this.previousStats.count += this.currentRunStats.count;
       await Promise.all(this.splits.map((s) => s.reload()));
     }
   }
@@ -252,24 +258,26 @@ export class Executor {
     this.progressBar.stop();
   }
 
-  updateStatistics(runs: number, currentResults: TestResult[], previousResults: TestResult[]) {
-    const allResults = [...currentResults, ...previousResults];
-    let min: number,
-      max: number,
-      sum_all: number = 0;
-    for (const { duration } of allResults) {
-      if (!min || min > duration) {
-        min = duration;
-      }
-      if (!max || max < duration) {
-        max = duration;
-      }
-      sum_all += duration;
+  updateStatistics(runs: number, currentResults: TestResult[]) {
+    const newResults = currentResults.slice(this.lastProcessedCount);
+    this.lastProcessedCount = currentResults.length;
+    for (const { duration } of newResults) {
+      const d = duration ?? 0;
+      if (d < this.currentRunStats.min) this.currentRunStats.min = d;
+      if (d > this.currentRunStats.max) this.currentRunStats.max = d;
+      this.currentRunStats.sum += d;
+      this.currentRunStats.count++;
     }
-    let median = sum_all / allResults.length;
-    min ||= 0;
-    max ||= 0;
-    const sum_current = currentResults.reduce((acc, { duration }) => acc + duration, 0);
-    this.progressBar.updateStatistics({ min, max, median, runs, sum: sum_current });
+    const totalMin = Math.min(this.previousStats.min, this.currentRunStats.min);
+    const totalMax = Math.max(this.previousStats.max, this.currentRunStats.max);
+    const totalSum = this.previousStats.sum + this.currentRunStats.sum;
+    const totalCount = this.previousStats.count + this.currentRunStats.count;
+    this.progressBar.updateStatistics({
+      min: isFinite(totalMin) ? totalMin : 0,
+      max: isFinite(totalMax) ? totalMax : 0,
+      median: totalCount > 0 ? totalSum / totalCount : 0,
+      runs,
+      sum: this.currentRunStats.sum,
+    });
   }
 }
