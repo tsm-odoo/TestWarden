@@ -116,17 +116,15 @@ const cache: Record<string, {
   body: Buffer
 }> = {};
 
+const RETRY_CLEAR_SUFFIXES = [
+  "/web.assets_unit_tests_setup.js",
+  "/web.assets_unit_tests.js",
+];
+
 export async function clearCache() {
   for (const key in cache) {
-    delete cache[key];
-  }
-  for (const client of clients) {
-    try {
-      await client.send("Network.clearBrowserCache");
-    } catch (e) {
-      if (!["TargetCloseError", "ProtocolError"].includes((e as any).name)) {
-        console.error("Error clearing browser cache:", e);
-      }
+    if (RETRY_CLEAR_SUFFIXES.some((suffix) => key.endsWith(suffix))) {
+      delete cache[key];
     }
   }
 }
@@ -190,12 +188,13 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         logger.error(e);
       }
     }
+    const isUncacheable = RETRY_CLEAR_SUFFIXES.some((suffix) => request.url.endsWith(suffix));
     try {
       await client.send("Fetch.continueResponse", {
         requestId,
         responseCode: event.responseStatusCode,
         responseHeaders: addHeader(event.responseHeaders, [
-          ["Cache-Control", "public, max-age=31536000"],
+          ["Cache-Control", isUncacheable ? "no-store" : "public, max-age=31536000"],
           ["X-Warden-Cache", "TRUE"],
         ]),
         responsePhrase: event.responseStatusText,
