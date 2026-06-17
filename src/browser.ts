@@ -60,10 +60,10 @@ async function findAvailablePort(start: number): Promise<number> {
 
 const browsers: Browser[] = [];
 const clients: CDPSession[] = [];
-let launchDeferred;
+let launchDeferred: Deferred<void> | undefined;
 export async function launch(options: LaunchOptions) {
   await launchDeferred;
-  launchDeferred = new Deferred();
+  launchDeferred = new Deferred<void>();
   const port = await findAvailablePort(latestDebuggingPort);
   latestDebuggingPort = port + 1;
   const browser = await puppeteer.launch({
@@ -167,10 +167,10 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
         cache[request.url] = {
           status: event.responseStatusCode,
-          headers: event.responseHeaders,
+          headers: event.responseHeaders ?? [],
           body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
         };
-      } catch (e) {
+      } catch (e: unknown) {
         logger.error(`Failed to cache ${request.url}`);
         logger.error(e);
       }
@@ -180,10 +180,10 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
         const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
         cache[cacheUrl] = {
           status: event.responseStatusCode,
-          headers: event.responseHeaders,
+          headers: event.responseHeaders ?? [],
           body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
         };
-      } catch (e) {
+      } catch (e: unknown) {
         logger.error(`Failed to cache ${request.url}`);
         logger.error(e);
       }
@@ -193,15 +193,15 @@ export async function setupCache(page: Page, config: TestSuiteConfig) {
       await client.send("Fetch.continueResponse", {
         requestId,
         responseCode: event.responseStatusCode,
-        responseHeaders: addHeader(event.responseHeaders, [
+        responseHeaders: addHeader(event.responseHeaders ?? [], [
           ["Cache-Control", isUncacheable ? "no-store" : "public, max-age=31536000"],
           ["X-Warden-Cache", "TRUE"],
         ]),
         responsePhrase: event.responseStatusText,
       });
-    } catch (e) {
+    } catch (e: unknown) {
       client.detach().catch(() => { });
-      if (!["TargetCloseError", "ProtocolError"].includes(e.name)) throw e;
+      if (!(e instanceof Error) || !["TargetCloseError", "ProtocolError"].includes(e.name)) throw e;
     }
   });
 

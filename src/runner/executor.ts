@@ -25,9 +25,9 @@ export class ExecutorSplit {
   static id = 0;
 
   private adapter: TestSuiteAdapter;
-  private page: Page;
+  private page!: Page;
   private doneDeferred: Deferred<boolean> = new Deferred();
-  private failIcon: String;
+  private failIcon?: string;
   id: number;
 
   constructor(
@@ -45,9 +45,11 @@ export class ExecutorSplit {
       const context = await browser.createBrowserContext();
       this.page = await context.newPage();
     }
-    await setupCache(this.page, this.config);
-    await this.page.setCookie(this.config.authCookie);
-    await this.page.bringToFront();
+    await Promise.all([
+      setupCache(this.page, this.config),
+      this.page.setCookie(this.config.authCookie),
+      this.page.bringToFront(),
+    ]);
     await this.adapter.accessSuite(this.page, this.adapter.getSuiteURL(this.config, this.testIds));
     await this.setPageFriendlyName();
   }
@@ -58,7 +60,8 @@ export class ExecutorSplit {
 
   async setPageFriendlyName() {
     await this.page.evaluate((name) => {
-      document.head.querySelector("title").innerText = name;
+      const title = document.head.querySelector("title");
+      if (title) title.innerText = name;
     }, this.friendlyName);
   }
 
@@ -225,7 +228,7 @@ export class Executor {
         const url = new this.config.adapterClass().getTestURL(this.config, r.id);
         const splitPrefix = this.splits.length > 1 ? `[S${r.splitId}] ` : "";
         const text = `${totalRuns}. ${splitPrefix}[${r.id}] ${r.name} - ${Math.round((r.duration ?? 0) * 100) / 100}s`;
-        this.progressBar.log(formatter.warn(`\u001B]8;;${url}\u0007${text}\u001B]8;;\u0007`));
+        this.progressBar.log(formatter.warn(`]8;;${url}${text}]8;;`));
         if (!this.config.runForever && (this.config.failfast || this.config.isSingleTest)) {
           this.splits.forEach((s) => s.stop());
         }
@@ -234,8 +237,7 @@ export class Executor {
         currentTest$.subscribe((t) => this.progressBar.updateTitle(t.name));
       }
       // 3. Run the test suite and wait for completion.
-      await Promise.all(this.splits.map((s) => s.setup()));
-      await Promise.all(this.splits.map((s) => s.start()));
+      await Promise.all(this.splits.map(async (s) => { await s.setup(); await s.start(); }));
       await isDonePromise;
       const success = this.splits.every((s) => !s.failed);
       if (!this.config.runForever) {

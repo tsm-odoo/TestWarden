@@ -7,9 +7,9 @@ import { Page } from "puppeteer";
 import { BehaviorSubject, first, firstValueFrom } from "rxjs";
 
 export type IMetadata = {
-  testById: { [id: string]: { name: string; tags: string[] } }; // TODO - deduce this from testBySuiteId
-  suiteById: { [id: string]: { name: string; weight: number } };
-  testsBySuiteId: { [id: string]: { id: string; name: string; tags: string[] } };
+  testById: { [id: string]: { name: string; tags?: string[] } };
+  suiteById: { [id: string]: { name: string; weight: number | null } };
+  testsBySuiteId: { [id: string]: Array<{ id: string; name: string; tags?: string[] }> };
 };
 
 const adapters: (typeof TestSuiteAdapter)[] = [];
@@ -43,11 +43,11 @@ export abstract class TestSuiteAdapter {
   abstract run(page: Page): Promise<void>;
   abstract abort(page: Page): Promise<void>;
   abstract getSuiteURL(config: TestSuiteConfig, testIds: string[]): string;
-  abstract getTestURL(config, testId: string): string;
+  abstract getTestURL(config: TestSuiteConfig, testId: string): string;
 
-  currentTest$ = new BehaviorSubject<Omit<Test, "pass">>(null);
+  currentTest$ = new BehaviorSubject<Omit<Test, "pass"> | null>(null);
   done$ = new BehaviorSubject<boolean>(false);
-  lastFail$ = new BehaviorSubject<TestResult>(null);
+  lastFail$ = new BehaviorSubject<TestResult | null>(null);
   testResults$ = new BehaviorSubject<TestResult[]>([]);
 
   get success() {
@@ -64,20 +64,10 @@ export abstract class TestSuiteAdapter {
     this.testResults$.next([]);
   }
 
-  /**
-   * Go to the test suite. After this method, the current page should be the
-   * one of the suite and the suite should not be started. This will allow to
-   * register required listeners.
-   */
   async accessSuite(page: Page, url: string) {
     return page.goto(url, { waitUntil: "networkidle0" });
   }
 
-  /**
-   * Reload the current test suite. After this method, the current page should
-   * be the one of the suite and the suite should not be started. This will
-   * allow to register required listeners.
-   */
   async reloadSuite(page: Page) {
     return page.reload({ waitUntil: "domcontentloaded" });
   }

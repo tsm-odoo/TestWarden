@@ -33,9 +33,10 @@ export class TestSuiteConfig {
       {
         id: "NOT_IMPLEMENTED_YET",
         execute: (config: TestSuiteConfig) => {
-          const notYetlImplemFeatures = TestSuiteConfig.NOT_YET_IMPLEMENTED.filter((feature) => config[feature]);
+          const configRecord = config as Record<string, unknown>;
+          const notYetlImplemFeatures = TestSuiteConfig.NOT_YET_IMPLEMENTED.filter((feature) => configRecord[feature]);
           if (notYetlImplemFeatures.length > 0) {
-            notYetlImplemFeatures.forEach((feature) => (config[feature] = false));
+            notYetlImplemFeatures.forEach((feature) => (configRecord[feature] = false));
             return {
               ok: false,
               message: `Not yet implemented features will be ignored: ${notYetlImplemFeatures.join(", ")}.`,
@@ -66,7 +67,7 @@ export class TestSuiteConfig {
               message: `Test with id ${config.testId} does not exist.`,
             };
           }
-          const missingSuiteNames = config.suiteNames.filter((name) => !(name in config.metadata.suiteIdByName)) ?? [];
+          const missingSuiteNames = config.suiteNames.filter((name) => !(name in config.metadata.suiteIdByName));
           if (missingSuiteNames.length > 0) {
             config.suiteNames = config.suiteNames.filter((name) => !missingSuiteNames.includes(name));
             return {
@@ -126,7 +127,7 @@ export class TestSuiteConfig {
         execute: (config: TestSuiteConfig) => {
           const tags = new Set(
             Object.values(config.metadata.testById)
-              .map(({ tags }) => tags)
+              .map(({ tags }) => tags ?? [])
               .flat(),
           );
           if (tags.has("debug") || tags.has("only")) {
@@ -153,25 +154,26 @@ export class TestSuiteConfig {
         },
       },
     ];
+  [key: string]: unknown;
   private failedChecks = new Set();
   MAX_NUMBER_OF_WORKERS: number;
   MIN_TEST_PER_WORKER: number;
   RUN_TYPE = RUN_TYPE;
-  adapterClass: new () => TestSuiteAdapter;
+  adapterClass!: new () => TestSuiteAdapter;
   authCookie: AuthCookie;
   cpuLimit: number = 0;
   cpuThrottling: number = 0;
-  debug: boolean;
+  debug: boolean = false;
   devtools: boolean = false;
-failfast: boolean;
-  headless: boolean;
-  metadata: TestSuiteMetadata;
-  mobileEmulation: boolean;
-  onlyLastStats: boolean;
-  runForever: boolean;
-  serverURL: string;
-  suite?: string;
-  suiteNames?: string[];
+  failfast: boolean = false;
+  headless: boolean = true;
+  metadata!: TestSuiteMetadata;
+  mobileEmulation: boolean = false;
+  onlyLastStats: boolean = false;
+  runForever: boolean = false;
+  serverURL: string = 'http://localhost:8069';
+  suite: string = 'hoot';
+  suiteNames: string[] = [];
   test?: string;
   verbose: boolean = false;
   once: boolean = false
@@ -190,7 +192,7 @@ failfast: boolean;
         },
         {
           text: formatter.info(`Loading settings from ${settingsFilePath}`),
-          failText: (err: any) => {
+          failText: (err: Error & { code?: string }) => {
             return err.code === "ENOENT"
               ? formatter.info("No settings found, defaults will be used")
               : formatter.error(`Failed to load settings from "${settingsFilePath}"\n\t${err.message}`);
@@ -299,41 +301,41 @@ failfast: boolean;
       .option("--cpu-throttling <number>", "CPU throttling factor (0-100)", parseInt, 0)
     program.parse(process.argv);
 
-    const rawOptions = program.opts();
+    const rawOptions = program.opts() as TestSuiteConfigOptions;
     if ("suite" in rawOptions) {
-      rawOptions["suite"] = settings.suites[rawOptions["suite"] as string] ?? rawOptions["suite"];
+      rawOptions.suite = settings.suites[rawOptions.suite ?? 'hoot'] ?? rawOptions.suite;
     }
-    const authCookie = await authenticate(rawOptions["serverUrl"], "admin", "admin");
-    return new TestSuiteConfig(rawOptions as any, authCookie);
+    const authCookie = await authenticate(rawOptions.serverUrl ?? 'http://localhost:8069', "admin", "admin");
+    return new TestSuiteConfig(rawOptions, authCookie);
   }
 
   constructor(
     public rawOptions: TestSuiteConfigOptions,
     authCookie: AuthCookie,
   ) {
-    this.debug = rawOptions.debug;
-    this.devtools = rawOptions.devtools;
-    this.test = rawOptions["test"];
-    this.suite = rawOptions.suite;
-    this.serverURL = rawOptions["serverUrl"];
+    this.debug = rawOptions.debug ?? false;
+    this.devtools = rawOptions.devtools ?? false;
+    this.test = rawOptions.test;
+    this.suite = rawOptions.suite ?? 'hoot';
+    this.serverURL = rawOptions.serverUrl ?? 'http://localhost:8069';
     this.headless = !rawOptions.visible;
-    this.failfast = rawOptions["failFast"];
-    this.onlyLastStats = rawOptions["onlyLastStats"];
-    this.mobileEmulation = rawOptions.mobile ?? false;
+    this.failfast = rawOptions.failFast;
+    this.onlyLastStats = false;
+    this.mobileEmulation = rawOptions.mobile;
     this.authCookie = authCookie;
-    this.MAX_NUMBER_OF_WORKERS = rawOptions["workers"];
-    this.MIN_TEST_PER_WORKER = rawOptions["minWorkerLoad"];
-    this.runForever = rawOptions["runForever"];
-    this.suiteNames = rawOptions["suiteNames"] ?? [];
-    this.verbose = rawOptions.verbose;
+    this.MAX_NUMBER_OF_WORKERS = rawOptions.workers ?? 4;
+    this.MIN_TEST_PER_WORKER = rawOptions.minWorkerLoad ?? 15;
+    this.runForever = rawOptions.runForever;
+    this.suiteNames = rawOptions.suiteNames ?? [];
+    this.verbose = rawOptions.verbose ?? false;
     this.once = rawOptions.once;
-    this.cpuLimit = rawOptions["cpuLimit"] ?? 0;
-    this.cpuThrottling = rawOptions["cpuThrottling"] ?? 0;
+    this.cpuLimit = rawOptions.cpuLimit ?? 0;
+    this.cpuThrottling = rawOptions.cpuThrottling;
   }
 
   get baseSuiteURL() {
     // TODO - specific suite parameters to adapters
-    const opts: [string, any][] = [
+    const opts: [string, string | number | boolean][] = [
       ["debug", "tests%2Cassets"],
       ["timeout", "15000"],
       ["loglevel", this.debug ? "3" : "0"],
@@ -370,6 +372,7 @@ failfast: boolean;
   }
 
   get testId() {
+    if (!this.test) return undefined;
     return this.test in this.metadata.testById ? this.test : this.metadata.testIdByName[this.test];
   }
 

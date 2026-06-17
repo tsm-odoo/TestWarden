@@ -1,9 +1,10 @@
-import { Test, TestResult, TestSuiteAdapter, registerAdapter } from "@warden/adapters/test_suite_adapter";
+import { IMetadata, Test, TestResult, TestSuiteAdapter, registerAdapter } from "@warden/adapters/test_suite_adapter";
 import { processExit$ } from "@warden/index";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 
 import { Page } from "puppeteer";
 import { filter, first, firstValueFrom, takeUntil } from "rxjs";
+
 
 export class QUnitAdapter extends TestSuiteAdapter {
   static name = "QUnit";
@@ -20,18 +21,24 @@ export class QUnitAdapter extends TestSuiteAdapter {
     return `${config.baseSuiteURL}&${queryParams.join("&")}`;
   }
 
-  getTestURL(config: any, testId: string): string {
+  getTestURL(config: TestSuiteConfig, testId: string): string {
     return `${config.baseSuiteURL}&testId=${testId}&debugTest=True`;
   }
 
   async getMetadata() {
-    const result = {
+    type QUnitSuiteEntry = { name: string; weight: number | null };
+    type QUnitTestEntry = { id: string; name: string };
+    const result: {
+      testById: Record<string, QUnitTestEntry>;
+      suiteById: Record<string, QUnitSuiteEntry>;
+      testsBySuiteId: Record<string, QUnitTestEntry[]>;
+    } = {
       testById: {},
       suiteById: {},
       testsBySuiteId: {},
     };
-    function getAllTests(suite) {
-      const tests = [];
+    function getAllTests(suite: QUnitModule): QUnitTestEntry[] {
+      const tests: QUnitTestEntry[] = [];
       result.suiteById[suite.moduleId] = { name: suite.name, weight: null };
       for (const test of suite.tests) {
         if (!test.skip) {
@@ -46,7 +53,7 @@ export class QUnitAdapter extends TestSuiteAdapter {
     }
     for (const suite of window.QUnit.config.modules) {
       const allTests = getAllTests(suite);
-      const uniqueTests = {};
+      const uniqueTests: Record<string, QUnitTestEntry> = {};
       allTests.forEach((t) => (uniqueTests[t.id] = t));
       result.testsBySuiteId[suite.moduleId] ??= [];
       result.testsBySuiteId[suite.moduleId] = [
@@ -113,9 +120,9 @@ export class QUnitAdapter extends TestSuiteAdapter {
       .pipe(
         takeUntil(processExit$.pipe(filter(Boolean))),
         takeUntil(this.done$.pipe(filter(Boolean))),
-        filter((results) => results?.length > 0 && !results.at(-1).pass),
+        filter((results) => results.length > 0 && results.at(-1)?.pass === false),
       )
-      .subscribe((results) => this.lastFail$.next(results.at(-1)));
+      .subscribe((results) => this.lastFail$.next(results.at(-1) ?? null));
     const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
     if (!callbacksRegistered) {
       await page.exposeFunction("beforeEach", (test: Test) => this.currentTest$.next(test));
@@ -133,7 +140,7 @@ export class QUnitAdapter extends TestSuiteAdapter {
       testStart((test) => {
         window.beforeEach({ id: test.testId, name: test.name });
       });
-      testDone((test) => {
+      testDone((test: QUnitTestCallback) => {
         window.afterEach({
           id: test.testId,
           name: test.name,

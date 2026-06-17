@@ -10,10 +10,10 @@ export class TestSuiteMetadata {
   testById: IMetadata["testById"];
   suiteById: IMetadata["suiteById"];
   testsBySuiteId: IMetadata["testsBySuiteId"];
-  private _testNames: string[];
-  private _suiteNames: string[];
-  private _testIdByName: { [name: string]: string };
-  private _suiteIdByName: { [name: string]: string };
+  private _testNames!: string[];
+  private _suiteNames!: string[];
+  private _testIdByName!: { [name: string]: string };
+  private _suiteIdByName!: { [name: string]: string };
 
   constructor(
     private config: TestSuiteConfig,
@@ -37,7 +37,7 @@ export class TestSuiteMetadata {
   get testIdByName() {
     this._testIdByName ??= Object.entries(this.testById).reduce(
       (acc, [key, value]) => ((acc[value.name] = key), acc),
-      {},
+      {} as Record<string, string>,
     );
     return this._testIdByName;
   }
@@ -45,7 +45,7 @@ export class TestSuiteMetadata {
   get suiteIdByName() {
     this._suiteIdByName ??= Object.entries(this.suiteById).reduce(
       (acc, [key, value]) => ((acc[value.name] = key), acc),
-      {},
+      {} as Record<string, string>,
     );
     return this._suiteIdByName;
   }

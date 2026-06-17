@@ -1,9 +1,10 @@
-import { TestSuiteAdapter, registerAdapter } from "@warden/adapters/test_suite_adapter";
+import { IMetadata, TestSuiteAdapter, registerAdapter } from "@warden/adapters/test_suite_adapter";
 import { processExit$ } from "@warden/index";
 import { TestSuiteConfig } from "@warden/test_suite_config";
 
 import { Page } from "puppeteer";
 import { filter, first, firstValueFrom, takeUntil } from "rxjs";
+
 
 export class HootAdapter extends TestSuiteAdapter {
   static name = "Hoot";
@@ -33,7 +34,7 @@ export class HootAdapter extends TestSuiteAdapter {
     return `${config.baseSuiteURL}&${queryParams.join("&")}`;
   }
 
-  getTestURL(config: any, testId: string): string {
+  getTestURL(config: TestSuiteConfig, testId: string): string {
     return `${config.baseSuiteURL}&id=${testId}&debugTest=true`.replace("manual=true", "manual=false");
   }
 
@@ -42,9 +43,9 @@ export class HootAdapter extends TestSuiteAdapter {
   }
 
   async getMetadata() {
-    function getAllTests(suite) {
-      const allTests = [];
-      for (const job of suite.jobs) {
+    function getAllTests(suite: HootJob): { id: string; name: string; tags: string[] }[] {
+      const allTests: { id: string; name: string; tags: string[] }[] = [];
+      for (const job of suite.jobs ?? []) {
         if (job.constructor.name !== "Suite") {
           allTests.push({
             id: job.id,
@@ -58,16 +59,14 @@ export class HootAdapter extends TestSuiteAdapter {
       return [...new Set(allTests)];
     }
 
-    const { odoo } = window;
-    const testById = {};
-    const suiteById = {};
-    const testsBySuiteId = {};
-    for (const { id: testId, fullName, tags } of odoo.loader.modules
-      .get("@web/../lib/hoot/hoot")
-      .__debug__().tests.values()) {
+    const hoot = window.odoo.loader.modules.get("@web/../lib/hoot/hoot")!;
+    const testById: Record<string, { name: string; tags: string[] }> = {};
+    const suiteById: Record<string, { name: string; weight: number }> = {};
+    const testsBySuiteId: Record<string, { id: string; name: string; tags: string[] }[]> = {};
+    for (const { id: testId, fullName, tags } of hoot.__debug__().tests.values()) {
       testById[testId] = { name: fullName, tags: tags.map(({ id }) => id) };
     }
-    for (const suite of odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__().suites.values()) {
+    for (const suite of hoot.__debug__().suites.values()) {
       const { id, fullName, weight } = suite;
       suiteById[id] = { name: fullName, weight };
       testsBySuiteId[id] = getAllTests(suite);
@@ -79,12 +78,12 @@ export class HootAdapter extends TestSuiteAdapter {
     const prom = super.accessSuite(page, url);
     // Register the page functions as soon as possible: hoot will take a
     // snpashot of the initial window and clean every thing that was not in
-   // it after each suite.
+    // it after each suite.
     page.once("framenavigated", async () => {
       const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
       if (!callbacksRegistered) {
-        page.exposeFunction("updateNodeState", async (data: any) => {
-          this.currentTest$.next(data.currentTest);
+        page.exposeFunction("updateNodeState", async (data: { currentTest?: { id: string; name: string }; results: Array<{ id: string; name: string; pass: boolean; duration: number }> }) => {
+          this.currentTest$.next(data.currentTest ?? null);
           this.testResults$.next([...this.testResults$.value, ...data.results]);
         });
         page.exposeFunction("afterAll", async () => {
@@ -101,14 +100,14 @@ export class HootAdapter extends TestSuiteAdapter {
       .pipe(
         takeUntil(processExit$.pipe(filter(Boolean))),
         takeUntil(this.done$.pipe(filter(Boolean))),
-        filter((results) => results?.length > 0 && !results.at(-1).pass),
+        filter((results) => results.length > 0 && results.at(-1)?.pass === false),
       )
-      .subscribe((results) => this.lastFail$.next(results.at(-1)));
+      .subscribe((results) => this.lastFail$.next(results.at(-1) ?? null));
     await page.evaluate(() => {
-      const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__();
+      const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot")!.__debug__();
       const throttleUpdateNodeState = (() => {
-        let lastCurrentTest: any = null;
-        let pendingResults: any[] = [];
+        let lastCurrentTest: { id: string; name: string } | null = null;
+        let pendingResults: Array<{ id: string; name: string; pass: boolean; duration: number }> = [];
         let lastFlush = 0;
         const THROTTLE_MS = 500;
         const flush = () => {
@@ -122,7 +121,7 @@ export class HootAdapter extends TestSuiteAdapter {
           pendingResults = [];
           lastFlush = performance.now();
         };
-        const throttled = (update: { currentTest?: any; result?: any }) => {
+        const throttled = (update: { currentTest?: { id: string; name: string }; result?: { id: string; name: string; pass: boolean; duration: number } }) => {
           if (update.currentTest) {
             lastCurrentTest = update.currentTest;
           };
@@ -139,20 +138,20 @@ export class HootAdapter extends TestSuiteAdapter {
         return throttled;
       })();
       runner.beforeEach(
-        (test) => {
+        (test: HootTestContext) => {
           throttleUpdateNodeState({ currentTest: { id: test.id, name: test.fullName } });
         },
         { global: true }
       );
       runner.afterPostTest(
-        (test) => {
+        (test: HootTestContext) => {
           const result = test.results().at(-1);
           throttleUpdateNodeState({
             result: {
               id: test.id,
               name: test.fullName,
-              pass: result.pass,
-              duration: result.duration / 1000,
+              pass: result!.pass,
+              duration: result!.duration / 1000,
             },
           });
           if (runner.config.debugTest()) {

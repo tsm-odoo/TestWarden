@@ -48,7 +48,7 @@ process.on("unhandledRejection", (reason) => {
 (async function start() {
   try {
     const config = await TestSuiteConfig.parseCLIOptions();
-    let browser: Browser, page: Page, metadata: TestSuiteMetadata;
+    let browser!: Browser, page!: Page, metadata!: TestSuiteMetadata;
     rxjsConfig.onUnhandledError = (err) => {
       if (err instanceof StopExecution || isCleaningUp) {
         return;
@@ -62,7 +62,7 @@ process.on("unhandledRejection", (reason) => {
         await setupCache(page, config);
         await page.setCookie(config.authCookie);
         const response = await page.goto(config.baseSuiteURL, { waitUntil: 'networkidle0' });
-        if (response.status() === 404) {
+        if (response?.status() === 404) {
           throw new StopExecution(`Suite not found: ${config.baseSuiteURL}`);
         }
       },

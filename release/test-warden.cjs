@@ -15843,19 +15843,9 @@ class TestSuiteAdapter {
         this.lastFail$.next(null);
         this.testResults$.next([]);
     }
-    /**
-     * Go to the test suite. After this method, the current page should be the
-     * one of the suite and the suite should not be started. This will allow to
-     * register required listeners.
-     */
     async accessSuite(page, url) {
         return page.goto(url, { waitUntil: "networkidle0" });
     }
-    /**
-     * Reload the current test suite. After this method, the current page should
-     * be the one of the suite and the suite should not be started. This will
-     * allow to register required listeners.
-     */
     async reloadSuite(page) {
         return page.reload({ waitUntil: "domcontentloaded" });
     }
@@ -15895,7 +15885,7 @@ class HootAdapter extends TestSuiteAdapter {
     async getMetadata() {
         function getAllTests(suite) {
             const allTests = [];
-            for (const job of suite.jobs) {
+            for (const job of suite.jobs ?? []) {
                 if (job.constructor.name !== "Suite") {
                     allTests.push({
                         id: job.id,
@@ -15908,16 +15898,14 @@ class HootAdapter extends TestSuiteAdapter {
             }
             return [...new Set(allTests)];
         }
-        const { odoo } = window;
+        const hoot = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
         const testById = {};
         const suiteById = {};
         const testsBySuiteId = {};
-        for (const { id: testId, fullName, tags } of odoo.loader.modules
-            .get("@web/../lib/hoot/hoot")
-            .__debug__().tests.values()) {
+        for (const { id: testId, fullName, tags } of hoot.__debug__().tests.values()) {
             testById[testId] = { name: fullName, tags: tags.map(({ id }) => id) };
         }
-        for (const suite of odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__().suites.values()) {
+        for (const suite of hoot.__debug__().suites.values()) {
             const { id, fullName, weight } = suite;
             suiteById[id] = { name: fullName, weight };
             testsBySuiteId[id] = getAllTests(suite);
@@ -15933,7 +15921,7 @@ class HootAdapter extends TestSuiteAdapter {
             const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
             if (!callbacksRegistered) {
                 page.exposeFunction("updateNodeState", async (data) => {
-                    this.currentTest$.next(data.currentTest);
+                    this.currentTest$.next(data.currentTest ?? null);
                     this.testResults$.next([...this.testResults$.value, ...data.results]);
                 });
                 page.exposeFunction("afterAll", async () => {
@@ -15946,8 +15934,8 @@ class HootAdapter extends TestSuiteAdapter {
     }
     async setupProgressListener(page) {
         this.testResults$
-            .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(this.done$.pipe(cjs.filter(Boolean))), cjs.filter((results) => results?.length > 0 && !results.at(-1).pass))
-            .subscribe((results) => this.lastFail$.next(results.at(-1)));
+            .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(this.done$.pipe(cjs.filter(Boolean))), cjs.filter((results) => results.length > 0 && results.at(-1)?.pass === false))
+            .subscribe((results) => this.lastFail$.next(results.at(-1) ?? null));
         await page.evaluate(() => {
             const runner = window.odoo.loader.modules.get("@web/../lib/hoot/hoot").__debug__();
             const throttleUpdateNodeState = (() => {
@@ -16101,8 +16089,8 @@ class QUnitAdapter extends TestSuiteAdapter {
         // 1. a way to listen to callback (beforeEach etc)
         // 2. a formatter for the test/results
         this.testResults$
-            .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(this.done$.pipe(cjs.filter(Boolean))), cjs.filter((results) => results?.length > 0 && !results.at(-1).pass))
-            .subscribe((results) => this.lastFail$.next(results.at(-1)));
+            .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(this.done$.pipe(cjs.filter(Boolean))), cjs.filter((results) => results.length > 0 && results.at(-1)?.pass === false))
+            .subscribe((results) => this.lastFail$.next(results.at(-1) ?? null));
         const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
         if (!callbacksRegistered) {
             await page.exposeFunction("beforeEach", (test) => this.currentTest$.next(test));
@@ -20273,9 +20261,10 @@ class TestSuiteConfig {
         {
             id: "NOT_IMPLEMENTED_YET",
             execute: (config) => {
-                const notYetlImplemFeatures = TestSuiteConfig.NOT_YET_IMPLEMENTED.filter((feature) => config[feature]);
+                const configRecord = config;
+                const notYetlImplemFeatures = TestSuiteConfig.NOT_YET_IMPLEMENTED.filter((feature) => configRecord[feature]);
                 if (notYetlImplemFeatures.length > 0) {
-                    notYetlImplemFeatures.forEach((feature) => (config[feature] = false));
+                    notYetlImplemFeatures.forEach((feature) => (configRecord[feature] = false));
                     return {
                         ok: false,
                         message: `Not yet implemented features will be ignored: ${notYetlImplemFeatures.join(", ")}.`,
@@ -20306,7 +20295,7 @@ class TestSuiteConfig {
                         message: `Test with id ${config.testId} does not exist.`,
                     };
                 }
-                const missingSuiteNames = config.suiteNames.filter((name) => !(name in config.metadata.suiteIdByName)) ?? [];
+                const missingSuiteNames = config.suiteNames.filter((name) => !(name in config.metadata.suiteIdByName));
                 if (missingSuiteNames.length > 0) {
                     config.suiteNames = config.suiteNames.filter((name) => !missingSuiteNames.includes(name));
                     return {
@@ -20366,7 +20355,7 @@ class TestSuiteConfig {
             id: "NO_DEBUG_NO_ONLY_TAG",
             execute: (config) => {
                 const tags = new Set(Object.values(config.metadata.testById)
-                    .map(({ tags }) => tags)
+                    .map(({ tags }) => tags ?? [])
                     .flat());
                 if (tags.has("debug") || tags.has("only")) {
                     return {
@@ -20400,17 +20389,17 @@ class TestSuiteConfig {
     authCookie;
     cpuLimit = 0;
     cpuThrottling = 0;
-    debug;
+    debug = false;
     devtools = false;
-    failfast;
-    headless;
+    failfast = false;
+    headless = true;
     metadata;
-    mobileEmulation;
-    onlyLastStats;
-    runForever;
-    serverURL;
-    suite;
-    suiteNames;
+    mobileEmulation = false;
+    onlyLastStats = false;
+    runForever = false;
+    serverURL = 'http://localhost:8069';
+    suite = 'hoot';
+    suiteNames = [];
     test;
     verbose = false;
     once = false;
@@ -20474,31 +20463,31 @@ class TestSuiteConfig {
         program.parse(process.argv);
         const rawOptions = program.opts();
         if ("suite" in rawOptions) {
-            rawOptions["suite"] = settings.suites[rawOptions["suite"]] ?? rawOptions["suite"];
+            rawOptions.suite = settings.suites[rawOptions.suite ?? 'hoot'] ?? rawOptions.suite;
         }
-        const authCookie = await authenticate(rawOptions["serverUrl"], "admin", "admin");
+        const authCookie = await authenticate(rawOptions.serverUrl ?? 'http://localhost:8069', "admin", "admin");
         return new TestSuiteConfig(rawOptions, authCookie);
     }
     constructor(rawOptions, authCookie) {
         this.rawOptions = rawOptions;
-        this.debug = rawOptions.debug;
-        this.devtools = rawOptions.devtools;
-        this.test = rawOptions["test"];
-        this.suite = rawOptions.suite;
-        this.serverURL = rawOptions["serverUrl"];
+        this.debug = rawOptions.debug ?? false;
+        this.devtools = rawOptions.devtools ?? false;
+        this.test = rawOptions.test;
+        this.suite = rawOptions.suite ?? 'hoot';
+        this.serverURL = rawOptions.serverUrl ?? 'http://localhost:8069';
         this.headless = !rawOptions.visible;
-        this.failfast = rawOptions["failFast"];
-        this.onlyLastStats = rawOptions["onlyLastStats"];
-        this.mobileEmulation = rawOptions.mobile ?? false;
+        this.failfast = rawOptions.failFast;
+        this.onlyLastStats = false;
+        this.mobileEmulation = rawOptions.mobile;
         this.authCookie = authCookie;
-        this.MAX_NUMBER_OF_WORKERS = rawOptions["workers"];
-        this.MIN_TEST_PER_WORKER = rawOptions["minWorkerLoad"];
-        this.runForever = rawOptions["runForever"];
-        this.suiteNames = rawOptions["suiteNames"] ?? [];
-        this.verbose = rawOptions.verbose;
+        this.MAX_NUMBER_OF_WORKERS = rawOptions.workers ?? 4;
+        this.MIN_TEST_PER_WORKER = rawOptions.minWorkerLoad ?? 15;
+        this.runForever = rawOptions.runForever;
+        this.suiteNames = rawOptions.suiteNames ?? [];
+        this.verbose = rawOptions.verbose ?? false;
         this.once = rawOptions.once;
-        this.cpuLimit = rawOptions["cpuLimit"] ?? 0;
-        this.cpuThrottling = rawOptions["cpuThrottling"] ?? 0;
+        this.cpuLimit = rawOptions.cpuLimit ?? 0;
+        this.cpuThrottling = rawOptions.cpuThrottling;
     }
     get baseSuiteURL() {
         // TODO - specific suite parameters to adapters
@@ -20534,6 +20523,8 @@ class TestSuiteConfig {
         return this.suiteNames.map((name) => this.metadata.suiteIdByName[name]).filter(Boolean);
     }
     get testId() {
+        if (!this.test)
+            return undefined;
         return this.test in this.metadata.testById ? this.test : this.metadata.testIdByName[this.test];
     }
     /**
@@ -289423,7 +289414,8 @@ let Deferred$2 = class Deferred extends Promise {
     #resolve;
     #reject;
     constructor(executor) {
-        let _resolve, _reject;
+        let _resolve;
+        let _reject;
         super((resolve, reject) => {
             _resolve = resolve;
             _reject = reject;
@@ -289536,18 +289528,14 @@ function addHeader(ogHeaders, headers) {
  * Cache responses to speed up reload time by forcing browser memory cache.
  */
 const cache = {};
+const RETRY_CLEAR_SUFFIXES = [
+    "/web.assets_unit_tests_setup.js",
+    "/web.assets_unit_tests.js",
+];
 async function clearCache() {
     for (const key in cache) {
-        delete cache[key];
-    }
-    for (const client of clients) {
-        try {
-            await client.send("Network.clearBrowserCache");
-        }
-        catch (e) {
-            if (!["TargetCloseError", "ProtocolError"].includes(e.name)) {
-                console.error("Error clearing browser cache:", e);
-            }
+        if (RETRY_CLEAR_SUFFIXES.some((suffix) => key.endsWith(suffix))) {
+            delete cache[key];
         }
     }
 }
@@ -289586,7 +289574,7 @@ async function setupCache(page, config) {
                 const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
                 cache[request.url] = {
                     status: event.responseStatusCode,
-                    headers: event.responseHeaders,
+                    headers: event.responseHeaders ?? [],
                     body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
                 };
             }
@@ -289600,7 +289588,7 @@ async function setupCache(page, config) {
                 const { body, base64Encoded } = await client.send("Fetch.getResponseBody", { requestId });
                 cache[cacheUrl] = {
                     status: event.responseStatusCode,
-                    headers: event.responseHeaders,
+                    headers: event.responseHeaders ?? [],
                     body: Buffer.from(body, base64Encoded ? "base64" : "utf8"),
                 };
             }
@@ -289609,12 +289597,13 @@ async function setupCache(page, config) {
                 logger.error(e);
             }
         }
+        const isUncacheable = RETRY_CLEAR_SUFFIXES.some((suffix) => request.url.endsWith(suffix));
         try {
             await client.send("Fetch.continueResponse", {
                 requestId,
                 responseCode: event.responseStatusCode,
-                responseHeaders: addHeader(event.responseHeaders, [
-                    ["Cache-Control", "public, max-age=31536000"],
+                responseHeaders: addHeader(event.responseHeaders ?? [], [
+                    ["Cache-Control", isUncacheable ? "no-store" : "public, max-age=31536000"],
                     ["X-Warden-Cache", "TRUE"],
                 ]),
                 responsePhrase: event.responseStatusText,
@@ -289622,7 +289611,7 @@ async function setupCache(page, config) {
         }
         catch (e) {
             client.detach().catch(() => { });
-            if (!["TargetCloseError", "ProtocolError"].includes(e.name))
+            if (!(e instanceof Error) || !["TargetCloseError", "ProtocolError"].includes(e.name))
                 throw e;
         }
     });
@@ -290955,9 +290944,9 @@ var cliProgress$1 = /*@__PURE__*/getDefaultExportFromCjs(cliProgress);
 
 class ProgressBar {
     manager;
-    titleBar;
-    mainBar;
-    statisticsBar;
+    titleBar = null;
+    mainBar = null;
+    statisticsBar = null;
     stopped = false;
     alreadyLogged = false;
     createManager() {
@@ -291017,13 +291006,13 @@ class ProgressBar {
         this.mainBar.update(newValue);
     }
     updateStatistics(statistics) {
-        for (const key in statistics) {
-            if (key === "runs") {
+        const display = { runs: statistics.runs };
+        for (const key of Object.keys(statistics)) {
+            if (key === "runs")
                 continue;
-            }
-            statistics[key] = statistics[key].toFixed(2) + "s";
+            display[key] = statistics[key].toFixed(2) + "s";
         }
-        this.statisticsBar.update(0, statistics);
+        this.statisticsBar.update(0, display);
     }
     updateTitle(title) {
         this.titleBar.update(0, { currentTestName: title });
@@ -291057,12 +291046,10 @@ class ProgressBar {
         return this.stopped ? "disabled" : "cyan";
     }
     async registerSplits(splits) {
-        const OSC = "]";
-        const BEL = "";
-        for (const split of splits) {
-            const url = await split.getDevtoolURL();
-            const label = `Inspect Split ${split.id} (${split.testIds.length} test.s)`;
-            this.log(`${OSC}8;;${url}${BEL}\u{1F6E0}️ ${label}${OSC}8;;${BEL}`);
+        const urls = await Promise.all(splits.map((s) => s.getDevtoolURL()));
+        for (const [i, split] of splits.entries()) {
+            const label = `\u{1F6E0}\uFE0F Inspect Split ${split.id} (${split.testIds.length} test.s)`;
+            this.log(formatter$1.info(`\u001B]8;;${urls[i]}\u0007${label}\u001B]8;;\u0007`));
         }
         this.manager.log("\n");
     }
@@ -291092,9 +291079,11 @@ class ExecutorSplit {
             const context = await browser.createBrowserContext();
             this.page = await context.newPage();
         }
-        await setupCache(this.page, this.config);
-        await this.page.setCookie(this.config.authCookie);
-        await this.page.bringToFront();
+        await Promise.all([
+            setupCache(this.page, this.config),
+            this.page.setCookie(this.config.authCookie),
+            this.page.bringToFront(),
+        ]);
         await this.adapter.accessSuite(this.page, this.adapter.getSuiteURL(this.config, this.testIds));
         await this.setPageFriendlyName();
     }
@@ -291103,7 +291092,9 @@ class ExecutorSplit {
     }
     async setPageFriendlyName() {
         await this.page.evaluate((name) => {
-            document.head.querySelector("title").innerText = name;
+            const title = document.head.querySelector("title");
+            if (title)
+                title.innerText = name;
         }, this.friendlyName);
     }
     async start() {
@@ -291238,7 +291229,7 @@ class Executor {
                 const url = new this.config.adapterClass().getTestURL(this.config, r.id);
                 const splitPrefix = this.splits.length > 1 ? `[S${r.splitId}] ` : "";
                 const text = `${totalRuns}. ${splitPrefix}[${r.id}] ${r.name} - ${Math.round((r.duration ?? 0) * 100) / 100}s`;
-                this.progressBar.log(formatter$1.warn(`\u001B]8;;${url}\u0007${text}\u001B]8;;\u0007`));
+                this.progressBar.log(formatter$1.warn(`]8;;${url}${text}]8;;`));
                 if (!this.config.runForever && (this.config.failfast || this.config.isSingleTest)) {
                     this.splits.forEach((s) => s.stop());
                 }
@@ -291247,8 +291238,7 @@ class Executor {
                 currentTest$.subscribe((t) => this.progressBar.updateTitle(t.name));
             }
             // 3. Run the test suite and wait for completion.
-            await Promise.all(this.splits.map((s) => s.setup()));
-            await Promise.all(this.splits.map((s) => s.start()));
+            await Promise.all(this.splits.map(async (s) => { await s.setup(); await s.start(); }));
             await isDonePromise;
             const success = this.splits.every((s) => !s.failed);
             if (!this.config.runForever) {
@@ -296921,7 +296911,7 @@ process.on("unhandledRejection", (reason) => {
             await setupCache(page, config);
             await page.setCookie(config.authCookie);
             const response = await page.goto(config.baseSuiteURL, { waitUntil: 'networkidle0' });
-            if (response.status() === 404) {
+            if (response?.status() === 404) {
                 throw new StopExecution(`Suite not found: ${config.baseSuiteURL}`);
             }
         }, {

@@ -5,9 +5,9 @@ import cliProgress from "cli-progress";
 
 export class ProgressBar {
   private manager: cliProgress.MultiBar;
-  private titleBar: cliProgress.SingleBar | null;
-  private mainBar: cliProgress.SingleBar | null;
-  private statisticsBar: cliProgress.SingleBar | null;
+  private titleBar: cliProgress.SingleBar | null = null;
+  private mainBar: cliProgress.SingleBar | null = null;
+  private statisticsBar: cliProgress.SingleBar | null = null;
   private stopped = false;
   private alreadyLogged = false;
 
@@ -92,13 +92,12 @@ export class ProgressBar {
   }
 
   updateStatistics(statistics: ExecutorStatistics) {
-    for (const key in statistics) {
-      if (key === "runs") {
-        continue;
-      }
-      statistics[key] = statistics[key].toFixed(2) + "s";
+    const display: Record<string, string | number> = { runs: statistics.runs };
+    for (const key of (Object.keys(statistics) as (keyof ExecutorStatistics)[])) {
+      if (key === "runs") continue;
+      display[key] = statistics[key].toFixed(2) + "s";
     }
-    this.statisticsBar!.update(0, statistics);
+    this.statisticsBar!.update(0, display);
   }
 
   updateTitle(title: string) {
@@ -139,12 +138,10 @@ export class ProgressBar {
   }
 
   async registerSplits(splits: ExecutorSplit[]) {
-    const OSC = "]";
-    const BEL = "";
-    for (const split of splits) {
-      const url = await split.getDevtoolURL();
-      const label = `Inspect Split ${split.id} (${split.testIds.length} test.s)`;
-      this.log(`${OSC}8;;${url}${BEL}\u{1F6E0}️ ${label}${OSC}8;;${BEL}`);
+    const urls = await Promise.all(splits.map((s) => s.getDevtoolURL()));
+    for (const [i, split] of splits.entries()) {
+      const label = `\u{1F6E0}\uFE0F Inspect Split ${split.id} (${split.testIds.length} test.s)`;
+      this.log(formatter.info(`\u001B]8;;${urls[i]}\u0007${label}\u001B]8;;\u0007`));
     }
     this.manager.log("\n");
   }
