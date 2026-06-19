@@ -1,6 +1,5 @@
 
 import "@warden/adapters/hoot_adapter";
-import "@warden/adapters/qunit_adapter";
 import os from "os";
 import { BehaviorSubject, config as rxjsConfig } from "rxjs";
 import { createRequire } from "module";

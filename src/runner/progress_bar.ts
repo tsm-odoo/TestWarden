@@ -140,7 +140,7 @@ export class ProgressBar {
   async registerSplits(splits: ExecutorSplit[]) {
     const urls = await Promise.all(splits.map((s) => s.getDevtoolURL()));
     for (const [i, split] of splits.entries()) {
-      const label = `\u{1F6E0}\uFE0F Inspect Split ${split.id} (${split.testIds.length} test.s)`;
+      const label = `\u{1F6E0}\uFE0F  Inspect Split ${split.id} (${split.testIds.length} test.s)`;
       this.log(formatter.info(`\u001B]8;;${urls[i]}\u0007${label}\u001B]8;;\u0007`));
     }
     this.manager.log("\n");

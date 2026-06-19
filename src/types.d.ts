@@ -24,27 +24,6 @@ declare type AuthCookie = {
   path: string;
 };
 
-declare type QUnitTest = { testId: string; name: string; skip: boolean };
-declare type QUnitTestCallback = {
-  testId: string;
-  name: string;
-  failed: number;
-  runtime: number;
-};
-declare type QUnitModule = {
-  moduleId: string;
-  name: string;
-  tests: QUnitTest[];
-  childModules: QUnitModule[];
-};
-declare interface QUnitInstance {
-  start(): void;
-  config: { modules: QUnitModule[] };
-  testStart(callback: (test: { testId: string; name: string }) => void): void;
-  testDone(callback: (test: QUnitTestCallback) => void): void;
-  done(callback: () => void): void;
-}
-
 
 declare type HootTag = { id: string };
 declare type HootJob = {
@@ -83,9 +62,7 @@ declare type WardenCurrentTest = { id: string; name: string };
 
 
 declare interface Window {
-  QUnit: QUnitInstance;
-  originalQUnitStart: () => void;
-  odoo: { loader: OdooLoader };
+odoo: { loader: OdooLoader };
   beforeEach: (test: WardenCurrentTest) => void;
   afterEach: (result: WardenTestResult) => void;
   afterAll: () => void | Promise<void>;
