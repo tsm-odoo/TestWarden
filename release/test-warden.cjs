@@ -16000,131 +16000,6 @@ class HootAdapter extends TestSuiteAdapter {
 }
 registerAdapter(HootAdapter);
 
-class QUnitAdapter extends TestSuiteAdapter {
-    static name = "QUnit";
-    static check(page) {
-        return page.evaluate(() => Boolean(window.QUnit));
-    }
-    getSuiteURL(config, testIds) {
-        const queryParams = testIds.map((id) => `testId=${id}`);
-        if (config.failfast) {
-            queryParams.push("failfast=true");
-        }
-        return `${config.baseSuiteURL}&${queryParams.join("&")}`;
-    }
-    getTestURL(config, testId) {
-        return `${config.baseSuiteURL}&testId=${testId}&debugTest=True`;
-    }
-    async getMetadata() {
-        const result = {
-            testById: {},
-            suiteById: {},
-            testsBySuiteId: {},
-        };
-        function getAllTests(suite) {
-            const tests = [];
-            result.suiteById[suite.moduleId] = { name: suite.name, weight: null };
-            for (const test of suite.tests) {
-                if (!test.skip) {
-                    result.testById[test.testId] = { id: test.testId, name: test.name };
-                    tests.push({ id: test.testId, name: test.name });
-                }
-            }
-            for (const childModule of suite.childModules) {
-                tests.push(...getAllTests(childModule));
-            }
-            return tests;
-        }
-        for (const suite of window.QUnit.config.modules) {
-            const allTests = getAllTests(suite);
-            const uniqueTests = {};
-            allTests.forEach((t) => (uniqueTests[t.id] = t));
-            result.testsBySuiteId[suite.moduleId] ??= [];
-            result.testsBySuiteId[suite.moduleId] = [
-                ...new Set(result.testsBySuiteId[suite.moduleId].concat(Object.values(uniqueTests))),
-            ];
-            if (result.testsBySuiteId[suite.moduleId].length > 0) {
-                result.suiteById[suite.moduleId].weight = result.testsBySuiteId[suite.moduleId].length;
-            }
-            else {
-                delete result.suiteById[suite.moduleId];
-                delete result.testsBySuiteId[suite.moduleId];
-            }
-        }
-        return result;
-    }
-    async run(page) {
-        page.evaluate(() => window.originalQUnitStart());
-    }
-    async abort(page) {
-        await page.waitForSelector("#qunit-abort-tests-button");
-        await page.click("#qunit-abort-tests-button");
-    }
-    async accessSuite(page, url) {
-        const prom = super.accessSuite(page, url);
-        page.once("framenavigated", () => {
-            page.evaluate(() => {
-                window.addEventListener("DOMContentLoaded", () => {
-                    window.originalQUnitStart = window.QUnit.start;
-                    window.QUnit.start = () => { };
-                }, { capture: true, once: true });
-            });
-        });
-        return prom;
-    }
-    async reloadSuite(page) {
-        const prom = super.reloadSuite(page);
-        page.once("framenavigated", () => {
-            page.evaluate(() => {
-                window.addEventListener("DOMContentLoaded", () => {
-                    window.originalQUnitStart = window.QUnit.start;
-                    window.QUnit.start = () => { };
-                }, { capture: true, once: true });
-            });
-        });
-        return prom;
-    }
-    async setupProgressListener(page) {
-        // this could be part of the abstract class => the child just provide
-        // 1. a way to listen to callback (beforeEach etc)
-        // 2. a formatter for the test/results
-        this.testResults$
-            .pipe(cjs.takeUntil(processExit$.pipe(cjs.filter(Boolean))), cjs.takeUntil(this.done$.pipe(cjs.filter(Boolean))), cjs.filter((results) => results.length > 0 && results.at(-1)?.pass === false))
-            .subscribe((results) => this.lastFail$.next(results.at(-1) ?? null));
-        const callbacksRegistered = await page.evaluate(() => "beforeEach" in window);
-        if (!callbacksRegistered) {
-            await page.exposeFunction("beforeEach", (test) => this.currentTest$.next(test));
-            await page.exposeFunction("afterEach", (result) => {
-                this.testResults$.next([...this.testResults$.value, result]);
-            });
-            await page.exposeFunction("afterAll", async () => {
-                // TODO - use rxjs instead, smth like testResults$.pipe(take(1)).subscribe(() => ...)
-                await new Promise((res) => setTimeout(res, 50));
-                this.done$.next(true);
-            });
-        }
-        await page.evaluate(() => {
-            const { testStart, testDone, done } = window.QUnit;
-            testStart((test) => {
-                window.beforeEach({ id: test.testId, name: test.name });
-            });
-            testDone((test) => {
-                window.afterEach({
-                    id: test.testId,
-                    name: test.name,
-                    pass: test.failed === 0,
-                    duration: test.runtime / 1000,
-                });
-            });
-            done(() => window.afterAll());
-        });
-    }
-    get isDonePromise() {
-        return cjs.firstValueFrom(this.done$.pipe(cjs.first(Boolean)));
-    }
-}
-registerAdapter(QUnitAdapter);
-
 function buildRPCPayload(params) {
     return {
         jsonrpc: "2.0",
@@ -289450,7 +289325,7 @@ const CHROME_OPTIONS = [
     "--disable-dev-shm-usage",
     "--disable-accelerated-2d-canvas",
     "--no-first-run",
-    "--blink-settings=imagesEnabled=false",
+    // "--blink-settings=imagesEnabled=false",
     "--disable-features=PaintHolding",
     "--disable-software-rasterizer",
     "--disable-gpu",
@@ -291048,7 +290923,7 @@ class ProgressBar {
     async registerSplits(splits) {
         const urls = await Promise.all(splits.map((s) => s.getDevtoolURL()));
         for (const [i, split] of splits.entries()) {
-            const label = `\u{1F6E0}\uFE0F Inspect Split ${split.id} (${split.testIds.length} test.s)`;
+            const label = `\u{1F6E0}\uFE0F  Inspect Split ${split.id} (${split.testIds.length} test.s)`;
             this.log(formatter$1.info(`\u001B]8;;${urls[i]}\u0007${label}\u001B]8;;\u0007`));
         }
         this.manager.log("\n");

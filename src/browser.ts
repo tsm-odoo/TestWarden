@@ -27,7 +27,7 @@ export const CHROME_OPTIONS = [
   "--disable-dev-shm-usage",
   "--disable-accelerated-2d-canvas",
   "--no-first-run",
-  "--blink-settings=imagesEnabled=false",
+  // "--blink-settings=imagesEnabled=false",
   "--disable-features=PaintHolding",
   "--disable-software-rasterizer",
   "--disable-gpu",
