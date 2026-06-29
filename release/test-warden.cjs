@@ -296781,7 +296781,7 @@ process.on("unhandledRejection", (reason) => {
             throw err;
         };
         await oraPromise(async () => {
-            browser = await launch({ headless: config.headless, dumpio: config.verbose });
+            browser = await launch({ headless: config.headless ? "shell" : false, dumpio: config.verbose });
             [page] = await browser.pages();
             await setupCache(page, config);
             await page.setCookie(config.authCookie);
