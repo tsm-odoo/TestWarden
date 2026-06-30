@@ -9,6 +9,7 @@
     "_make-bundle": "rollup --config",
     "build": "rimraf build/* && rimraf release/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && rollup --config",
     "start": "node release/test-warden.cjs",
+    "run": "node release/warden-run.cjs",
     "dev": "rimraf build/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node --enable-source-maps build/index.js",
     "devDebug": "rimraf build/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node --max-old-space-size=4096 --inspect-brk=9250 --enable-source-maps build/index.js",
     "startDebug": "node --max-old-space-size=4096 --inspect-brk=9250 --enable-source-maps build/index.js"
