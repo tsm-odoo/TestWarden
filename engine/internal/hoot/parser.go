@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/go-rod/rod/lib/proto"
 )
 
 var (
@@ -80,4 +82,25 @@ func ParseDone(text string) (DoneResult, bool) {
 		passed, _ = strconv.Atoi(passedMatches[1])
 	}
 	return DoneResult{Failed: count, Passed: passed}, true
+}
+
+// Joins a console call's arguments into a single string, skipping the CSS
+// arguments that accompany Hoot's styled "%c[HOOT]%c msg" logs.
+func ArgsToText(args []*proto.RuntimeRemoteObject) string {
+	parts := make([]string, 0, len(args))
+	for _, arg := range args {
+		var str string
+		if arg.Type == proto.RuntimeRemoteObjectTypeString {
+			str = arg.Value.Str()
+		} else if arg.Description != "" {
+			str = arg.Description
+		} else {
+			continue
+		}
+		if strings.HasPrefix(str, "color:") || strings.HasPrefix(str, "background:") || strings.HasPrefix(str, "font-") {
+			continue
+		}
+		parts = append(parts, strings.ReplaceAll(str, "%c", ""))
+	}
+	return strings.Join(parts, " ")
 }

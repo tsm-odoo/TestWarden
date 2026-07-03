@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/go-rod/rod"
@@ -130,7 +129,7 @@ func execPage(
 	// EachEvent returns a wait function that must be called (in a goroutine) to start reading events.
 	go page.EachEvent(
 		func(consoleEvent *proto.RuntimeConsoleAPICalled) bool {
-			text := argsToText(consoleEvent.Args)
+			text := hoot.ArgsToText(consoleEvent.Args)
 			matched := false
 			if name, ok := hoot.ParseRunning(text); ok {
 				log.TestStarted(name)
@@ -257,26 +256,6 @@ func pollDebugToolbar(ctx context.Context, page *rod.Page, done chan<- hoot.Done
 			}
 		}
 	}
-}
-
-func argsToText(args []*proto.RuntimeRemoteObject) string {
-	parts := make([]string, 0, len(args))
-	for _, arg := range args {
-		var str string
-		if arg.Type == proto.RuntimeRemoteObjectTypeString {
-			str = arg.Value.Str()
-		} else if arg.Description != "" {
-			str = arg.Description
-		} else {
-			continue
-		}
-		// Hoot uses console.log('%c[HOOT]%c msg', 'color:...', '') -- skip CSS args.
-		if strings.HasPrefix(str, "color:") || strings.HasPrefix(str, "background:") || strings.HasPrefix(str, "font-") {
-			continue
-		}
-		parts = append(parts, strings.ReplaceAll(str, "%c", ""))
-	}
-	return strings.Join(parts, " ")
 }
 
 func testIDByName(name string, testIDs []string, meta *hoot.Metadata) string {

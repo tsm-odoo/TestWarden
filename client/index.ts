@@ -9,7 +9,14 @@ import { UiAction, osc8 } from "@warden/ui_state";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ENGINE_DIR = path.resolve(__dirname, "../engine");
-const WARDEN_BIN = path.join(ENGINE_DIR, "test-warden-engine");
+
+const ARCH_MAP: Record<string, string> = { x64: "amd64", arm64: "arm64" };
+const arch = ARCH_MAP[process.arch];
+if (!arch || (process.platform !== "linux" && process.platform !== "darwin")) {
+    process.stderr.write(`Unsupported platform: ${process.platform}/${process.arch}\n`);
+    process.exit(2);
+}
+const WARDEN_BIN = path.join(ENGINE_DIR, "dist", `engine-${process.platform}-${arch}`);
 
 let settings: Record<string, any> = {};
 try {

@@ -82,16 +82,26 @@ func Fetch(browser *rod.Browser, metaURL string, cookie *auth.Cookie) (*Metadata
 	if err := (proto.RuntimeEnable{}.Call(page)); err != nil {
 		return nil, fmt.Errorf("enable runtime: %w", err)
 	}
-	// Capture the first unhandled exception; a non-nil pointer means abort.
+	// Capture the first unhandled exception or console.error; a non-nil pointer means abort.
 	var globalErr atomic.Pointer[string]
-	page.EachEvent(func(runtimeException *proto.RuntimeExceptionThrown) bool {
-		msg := runtimeException.ExceptionDetails.Text
-		if runtimeException.ExceptionDetails.Exception != nil && runtimeException.ExceptionDetails.Exception.Description != "" {
-			msg = runtimeException.ExceptionDetails.Exception.Description
-		}
-		globalErr.CompareAndSwap(nil, &msg)
-		return false
-	})
+	go page.EachEvent(
+		func(consoleEvent *proto.RuntimeConsoleAPICalled) bool {
+			if consoleEvent.Type != proto.RuntimeConsoleAPICalledTypeError {
+				return false
+			}
+			msg := ArgsToText(consoleEvent.Args)
+			globalErr.CompareAndSwap(nil, &msg)
+			return false
+		},
+		func(runtimeException *proto.RuntimeExceptionThrown) bool {
+			msg := runtimeException.ExceptionDetails.Text
+			if runtimeException.ExceptionDetails.Exception != nil && runtimeException.ExceptionDetails.Exception.Description != "" {
+				msg = runtimeException.ExceptionDetails.Exception.Description
+			}
+			globalErr.CompareAndSwap(nil, &msg)
+			return false
+		},
+	)()
 
 	if err := page.Navigate(metaURL); err != nil {
 		return nil, fmt.Errorf("navigate: %w", err)

@@ -48380,7 +48380,13 @@ function mountUi(actionEmitter, answerEmitter) {
 
 const __dirname$1 = path$1.dirname(fileURLToPath(import.meta.url));
 const ENGINE_DIR = path$1.resolve(__dirname$1, "../engine");
-const WARDEN_BIN = path$1.join(ENGINE_DIR, "test-warden-engine");
+const ARCH_MAP = { x64: "amd64", arm64: "arm64" };
+const arch = ARCH_MAP[process.arch];
+if (!arch || (process.platform !== "linux" && process.platform !== "darwin")) {
+    process.stderr.write(`Unsupported platform: ${process.platform}/${process.arch}\n`);
+    process.exit(2);
+}
+const WARDEN_BIN = path$1.join(ENGINE_DIR, "dist", `engine-${process.platform}-${arch}`);
 let settings = {};
 try {
     settings = JSON.parse(fs$2.readFileSync(path$1.join(ENGINE_DIR, "settings.json"), "utf8"));
