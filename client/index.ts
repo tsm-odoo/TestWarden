@@ -25,7 +25,7 @@ try {
 
 program
     .option("--server-url <url>", "Odoo server URL", settings.serverURL ?? "http://localhost:8069")
-    .option("--suite <name>", "Test suite type (hoot, livechat, …)", "hoot")
+    .option("--suite <path-or-name>", "Test suite path or name (hoot, livechat, …)", "hoot")
     .option("-m, --suite-names <names...>", "Suite name(s) to run")
     .option("-t, --test <id>", "Single test name or ID")
     .option(
@@ -66,7 +66,7 @@ const opts = program.opts<{
 const wardenArgs: string[] = [
     "--server",
     opts.serverUrl,
-    "--suite",
+    opts.suite.startsWith("/") ? "--suite-path" : "--suite",
     opts.suite,
     "--workers",
     String(opts.workers),

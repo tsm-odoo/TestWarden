@@ -48204,7 +48204,9 @@ const initialUiState = {
     testTotal: 0,
     testValue: 0,
     runNumber: 0,
+    multiMode: false,
     elapsedSeconds: 0,
+    totalElapsedSeconds: 0,
     hasFailed: false,
     currentTestTitle: "",
     running: false,
@@ -48234,6 +48236,7 @@ function reduce(state, action) {
                 testTotal: action.total,
                 testValue: 0,
                 runNumber: action.run,
+                multiMode: action.multi,
                 elapsedSeconds: 0,
                 running: true,
                 failures: [],
@@ -48259,7 +48262,9 @@ function reduce(state, action) {
         case "run_done": {
             return {
                 ...state,
-                testValue: state.testTotal,
+                // In multi mode testValue is the cumulative repetition count, not
+                // progress toward testTotal, so it must survive a failure as-is.
+                testValue: state.multiMode ? state.testValue : state.testTotal,
                 running: action.willRerun,
                 elapsedSeconds: action.willRerun ? 0 : state.elapsedSeconds,
             };
@@ -48268,7 +48273,13 @@ function reduce(state, action) {
             return { ...state, awaitingQuitPrompt: true };
         }
         case "tick_elapsed": {
-            return state.running ? { ...state, elapsedSeconds: state.elapsedSeconds + 1 } : state;
+            return state.running
+                ? {
+                    ...state,
+                    elapsedSeconds: state.elapsedSeconds + 1,
+                    totalElapsedSeconds: state.totalElapsedSeconds + 1,
+                }
+                : state;
         }
         case "test_fail":
             return {
@@ -48295,6 +48306,21 @@ function renderBar(value, total) {
     const filled = Math.round(ratio * BAR_WIDTH);
     return "█".repeat(filled) + "░".repeat(BAR_WIDTH - filled);
 }
+function pad2(value) {
+    return String(value).padStart(2, "0");
+}
+function formatDuration(totalSeconds) {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    if (hours > 0) {
+        return `${hours}h${pad2(minutes)}m${pad2(seconds)}s`;
+    }
+    if (minutes > 0) {
+        return `${minutes}m${pad2(seconds)}s`;
+    }
+    return `${seconds}s`;
+}
 function useSpinnerFrame(active) {
     const [frame, setFrame] = reactExports.useState(0);
     reactExports.useEffect(() => {
@@ -48306,10 +48332,21 @@ function useSpinnerFrame(active) {
     }, [active]);
     return SPINNER_FRAMES[frame];
 }
+// Matches the log package's dynMarker (\x1e) wrapping a per-run value (a name, path, or
+// count) so it can be rendered highlighted instead of blending into the static text
+// around it.
+const DYN_MARKER = "\x1e";
+function highlight(text) {
+    const parts = text.split(DYN_MARKER);
+    if (parts.length === 1) {
+        return text;
+    }
+    return parts.map((part, i) => i % 2 === 1 ? (jsxRuntimeExports.jsx(Text, { color: "cyan", children: part }, i)) : (part));
+}
 function LogLineView({ line }) {
     switch (line.kind) {
         case "step":
-            return (jsxRuntimeExports.jsxs(Text, { children: [jsxRuntimeExports.jsx(Text, { color: "green", children: "\u2714 " }), jsxRuntimeExports.jsx(Text, { children: line.text })] }));
+            return (jsxRuntimeExports.jsxs(Text, { children: [jsxRuntimeExports.jsx(Text, { color: "green", children: "\u2714 " }), jsxRuntimeExports.jsx(Text, { children: highlight(line.text) })] }));
         case "warn":
             return jsxRuntimeExports.jsx(Text, { color: "yellow", children: line.text });
         case "error":
@@ -48317,7 +48354,7 @@ function LogLineView({ line }) {
         case "blank":
             return jsxRuntimeExports.jsx(Text, { children: " " });
         default:
-            return jsxRuntimeExports.jsx(Text, { children: line.text });
+            return jsxRuntimeExports.jsx(Text, { children: highlight(line.text) });
     }
 }
 function indent(text) {
@@ -48343,7 +48380,8 @@ function FailuresPanel({ failures }) {
 function StatusBar({ state }) {
     const title = state.currentTestTitle;
     const spinnerFrame = useSpinnerFrame(state.currentStep !== null);
-    return (jsxRuntimeExports.jsxs(Box, { flexDirection: "column", children: [state.currentStep ? (jsxRuntimeExports.jsxs(Text, { children: [spinnerFrame, " ", state.currentStep] })) : null, jsxRuntimeExports.jsxs(Box, { marginTop: state.hasFailed ? 1 : 0, flexDirection: "column", children: [jsxRuntimeExports.jsxs(Text, { color: state.running ? "cyan" : "gray", dimColor: !state.running, children: [renderBar(state.testValue, state.testTotal), " ", state.testValue, "/", state.testTotal, " [Run #", state.runNumber, " | ", state.elapsedSeconds, "s]"] }), title ? (jsxRuntimeExports.jsx(Text, { color: state.running ? "white" : undefined, dimColor: !state.running, children: title })) : null] })] }));
+    const testValue = String(state.testValue).padStart(3, " ");
+    return (jsxRuntimeExports.jsxs(Box, { flexDirection: "column", children: [state.currentStep ? (jsxRuntimeExports.jsxs(Text, { children: [spinnerFrame, " ", state.currentStep] })) : null, jsxRuntimeExports.jsxs(Box, { marginTop: state.hasFailed ? 1 : 0, flexDirection: "column", children: [jsxRuntimeExports.jsx(Text, { color: state.running ? "cyan" : "gray", dimColor: !state.running, children: state.multiMode ? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: ["[Run #", state.testValue, " | \u29D7 ", formatDuration(state.elapsedSeconds), "]"] })) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [renderBar(state.testValue, state.testTotal), " ", testValue, "/", state.testTotal, " [Run #", state.runNumber, " | \u29D7", " ", formatDuration(state.elapsedSeconds), " | \u03A3\u29D7", " ", formatDuration(state.totalElapsedSeconds), "]"] })) }), title ? (jsxRuntimeExports.jsx(Text, { color: state.running ? "white" : undefined, dimColor: !state.running, children: title })) : null] })] }));
 }
 function QuitPrompt({ onQuit }) {
     useInput(() => {
@@ -48372,7 +48410,9 @@ function App({ actionEmitter, answerEmitter, }) {
                 } })) : null] }));
 }
 function mountUi(actionEmitter, answerEmitter) {
-    const instance = render(jsxRuntimeExports.jsx(App, { actionEmitter: actionEmitter, answerEmitter: answerEmitter }));
+    const instance = render(jsxRuntimeExports.jsx(App, { actionEmitter: actionEmitter, answerEmitter: answerEmitter }), {
+        exitOnCtrlC: false,
+    });
     return {
         stop: () => instance.unmount(),
     };
@@ -48394,7 +48434,7 @@ try {
 catch { }
 program
     .option("--server-url <url>", "Odoo server URL", settings.serverURL ?? "http://localhost:8069")
-    .option("--suite <name>", "Test suite type (hoot, livechat, …)", "hoot")
+    .option("--suite <path-or-name>", "Test suite path or name (hoot, livechat, …)", "hoot")
     .option("-m, --suite-names <names...>", "Suite name(s) to run")
     .option("-t, --test <id>", "Single test name or ID")
     .option("--workers <number>", "Parallel browser contexts", (value) => parseInt(value), settings.workers ?? 4)
@@ -48413,7 +48453,7 @@ const opts = program.opts();
 const wardenArgs = [
     "--server",
     opts.serverUrl,
-    "--suite",
+    opts.suite.startsWith("/") ? "--suite-path" : "--suite",
     opts.suite,
     "--workers",
     String(opts.workers),

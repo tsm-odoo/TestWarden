@@ -2,12 +2,13 @@ package runner
 
 import (
 	"fmt"
+	"strings"
 
 	"test-warden/internal/hoot"
 )
 
-// FilterIDs resolves the set of test IDs to run from metadata, applying
-// suite/test filters and the desktop/skip tag rules.
+// Resolves the set of test IDs to run from metadata, applying suite/test filters and the
+// desktop/skip tag rules.
 func FilterIDs(meta *hoot.Metadata, suiteNames []string, testID string) ([]string, error) {
 	if testID != "" {
 		ref := hoot.ParseTestRef(testID)
@@ -17,12 +18,23 @@ func FilterIDs(meta *hoot.Metadata, suiteNames []string, testID string) ([]strin
 			}
 			return nil, fmt.Errorf("test not found: %s", ref)
 		}
+		needle := strings.ToLower(ref.String())
+		var matchID string
+		var matchNames []string
 		for id, test := range meta.TestByID {
-			if test.Name == ref.String() {
-				return []string{id}, nil
+			if strings.Contains(strings.ToLower(test.Name), needle) {
+				matchID = id
+				matchNames = append(matchNames, test.Name)
 			}
 		}
-		return nil, fmt.Errorf("test not found: %s", ref)
+		switch len(matchNames) {
+		case 0:
+			return nil, fmt.Errorf("test not found: %s", ref)
+		case 1:
+			return []string{matchID}, nil
+		default:
+			return nil, fmt.Errorf("ambiguous test name %q matches multiple tests: %s", ref, strings.Join(matchNames, ", "))
+		}
 	}
 	if len(suiteNames) > 0 {
 		nameToID := make(map[string]string, len(meta.SuiteByID))

@@ -43,6 +43,7 @@ type workerConfig struct {
 	browserWsURL  string
 	debugTest     bool // add &debugTest=true to worker URL (single test, visible mode)
 	cpuThrottling int  // CPU throttling factor (0-100), applied via CDP
+	multiCount    int  // when > 0, repeat testIDs this many times in-page via Hoot's multi config instead of reloading
 }
 
 // Creates and configures a new browser page for a worker. Caller must close the page when done.
@@ -140,25 +141,27 @@ func execPage(
 				matched = true
 			}
 			if name, stack, ok := hoot.ParseFailure(text); ok {
-				id := testIDByName(name, testIDs, cfg.meta)
-				out <- event{
-					kind:   kindFailure,
-					id:     id,
-					name:   name,
-					stack:  stack,
-					url:    hoot.DebugURL(cfg.serverURL, cfg.suitePath, id),
-					worker: workerID,
-				}
 				matched = true
+				if !hoot.IsAbortedFailure(stack) {
+					id := testIDByName(name, testIDs, cfg.meta)
+					out <- event{
+						kind:   kindFailure,
+						id:     id,
+						name:   name,
+						stack:  stack,
+						url:    hoot.DebugURL(cfg.serverURL, cfg.suitePath, id),
+						worker: workerID,
+					}
+				}
 			}
 			if result, ok := hoot.ParseDone(text); ok {
 				done <- result
 				return true
 			}
-			// A console.error that Hoot's own parsers don't recognize means its runner
-			// caught (and logged) an error it can't recover from on its own -- treat it
-			// the same as an uncaught exception rather than waiting forever for a
-			// "done" that will never come.
+			// A console.error that Hoot's parser don't recognize means its runner caught
+			// (and logged) an error it can't recover from on its own -- treat it the same
+			// as an uncaught exception rather than waiting forever for a "done" that will
+			// never come.
 			if !matched && consoleEvent.Type == proto.RuntimeConsoleAPICalledTypeError {
 				reportPageErr(text)
 			}
@@ -173,9 +176,17 @@ func execPage(
 			return false
 		},
 	)()
-	workerURL := hoot.WorkerURL(cfg.serverURL, cfg.suitePath, testIDs, cfg.failFast, cfg.debugTest)
+	// Force bail when multi is active: without it Hoot would keep grinding through the
+	// remaining repetitions after the first failure instead of reporting done right away.
+	bail := cfg.failFast || cfg.multiCount > 0
+	workerURL := hoot.WorkerURL(cfg.serverURL, cfg.suitePath, testIDs, bail, cfg.debugTest)
 	if err := page.Navigate(workerURL); err != nil {
 		return fmt.Errorf("navigate: %w", err)
+	}
+	if cfg.multiCount > 0 {
+		if err := configureMulti(ctx, page, testIDs, cfg.multiCount); err != nil {
+			return fmt.Errorf("configure multi: %w", err)
+		}
 	}
 	if cfg.debugTest {
 		// In debug mode Hoot doesn't report the outcome in the console.Poll for it instead.
@@ -194,6 +205,65 @@ func execPage(
 		return fmt.Errorf("cancelled")
 	}
 	return nil
+}
+
+// Polls until Hoot has registered testIDs, then sets their `multi` config so the runner
+// repeats each of them count times within this page load instead of once. `hoot.__debug__`
+// is the live Runner instance, exposed as a function on some Hoot versions and a getter on
+// others; its `tests` map holds the actual Test job objects, so setting `.config.multi` here
+// is equivalent to a `test.multi(count)` call made before the test was registered.
+func configureMulti(ctx context.Context, page *rod.Page, testIDs []string, count int) error {
+	deadline := time.Now().Add(60 * time.Second)
+	for {
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("cancelled")
+		default:
+		}
+		res, err := page.Eval(`(ids, count) => {
+			const hoot = window.odoo?.loader?.modules?.get("@web/../lib/hoot/hoot");
+			if (!hoot) return false;
+			let runner;
+			try {
+				runner = hoot.__debug__();
+			} catch (e) {
+				runner = hoot.__debug__;
+			}
+			if (!runner) return false;
+			for (const id of ids) {
+				if (!runner.tests.get(id)) return false;
+			}
+			for (const id of ids) {
+				runner.tests.get(id).config.multi = count;
+			}
+			return true;
+		}`, testIDs, count)
+		if err == nil && res.Value.Bool() {
+			return nil
+		}
+		if time.Now().After(deadline) {
+			return fmt.Errorf("timeout waiting for hoot to register tests for multi config")
+		}
+		time.Sleep(25 * time.Millisecond)
+	}
+}
+
+// Best-effort request for Hoot to stop this page's run right away, the same way bail would.
+// Used to abort sibling workers as soon as any worker's test fails: bail only stops the
+// runner on the page where the failure actually happened, so without this the others would
+// keep grinding through their own remaining multi repetitions unaware anything failed.
+func stopHootRunner(page *rod.Page) {
+	_, _ = page.Eval(`() => {
+		const hoot = window.odoo?.loader?.modules?.get("@web/../lib/hoot/hoot");
+		if (!hoot) return;
+		let runner;
+		try {
+			runner = hoot.__debug__();
+		} catch (e) {
+			runner = hoot.__debug__;
+		}
+		runner?.stop();
+	}`)
 }
 
 // Polls for Hoot's run button and clicks it as soon as it's present and enabled. Hoot

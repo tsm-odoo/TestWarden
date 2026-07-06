@@ -16,6 +16,8 @@ import (
 	"context"
 
 	"github.com/go-rod/rod/lib/launcher"
+
+	"test-warden/internal/log"
 )
 
 func shellBinPath() (string, error) {
@@ -151,11 +153,11 @@ func Launch(ctx context.Context, chromePath string, visible bool) (wsURL string,
 			}
 		}
 		if _, statErr := os.Stat(bin); os.IsNotExist(statErr) {
-			fmt.Fprintf(os.Stderr, "Downloading chrome-headless-shell.\n")
+			done := log.Step("download_chrome_shell")
 			if dlErr := downloadShell(bin); dlErr != nil {
 				return "", nil, fmt.Errorf("download chrome-headless-shell: %w", dlErr)
 			}
-			fmt.Fprintf(os.Stderr, "Downloading chrome-headless-shell. [DONE]\n")
+			done()
 		}
 	} else {
 		bin = chromePath

@@ -23,6 +23,23 @@ function renderBar(value: number, total: number): string {
     return "█".repeat(filled) + "░".repeat(BAR_WIDTH - filled);
 }
 
+function pad2(value: number): string {
+    return String(value).padStart(2, "0");
+}
+
+function formatDuration(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    if (hours > 0) {
+        return `${hours}h${pad2(minutes)}m${pad2(seconds)}s`;
+    }
+    if (minutes > 0) {
+        return `${minutes}m${pad2(seconds)}s`;
+    }
+    return `${seconds}s`;
+}
+
 function useSpinnerFrame(active: boolean): string {
     const [frame, setFrame] = useState(0);
     useEffect(() => {
@@ -38,13 +55,34 @@ function useSpinnerFrame(active: boolean): string {
     return SPINNER_FRAMES[frame];
 }
 
+// Matches the log package's dynMarker (\x1e) wrapping a per-run value (a name, path, or
+// count) so it can be rendered highlighted instead of blending into the static text
+// around it.
+const DYN_MARKER = "\x1e";
+
+function highlight(text: string) {
+    const parts = text.split(DYN_MARKER);
+    if (parts.length === 1) {
+        return text;
+    }
+    return parts.map((part, i) =>
+        i % 2 === 1 ? (
+            <Text key={i} color="cyan">
+                {part}
+            </Text>
+        ) : (
+            part
+        ),
+    );
+}
+
 function LogLineView({ line }: { line: LogLine }) {
     switch (line.kind) {
         case "step":
             return (
                 <Text>
                     <Text color="green">✔ </Text>
-                    <Text>{line.text}</Text>
+                    <Text>{highlight(line.text)}</Text>
                 </Text>
             );
         case "warn":
@@ -54,7 +92,7 @@ function LogLineView({ line }: { line: LogLine }) {
         case "blank":
             return <Text> </Text>;
         default:
-            return <Text>{line.text}</Text>;
+            return <Text>{highlight(line.text)}</Text>;
     }
 }
 
@@ -102,6 +140,8 @@ function FailuresPanel({ failures }: { failures: TestFailure[] }) {
 function StatusBar({ state }: { state: UiState }) {
     const title = state.currentTestTitle;
     const spinnerFrame = useSpinnerFrame(state.currentStep !== null);
+
+    const testValue = String(state.testValue).padStart(3, " ");
     return (
         <Box flexDirection="column">
             {state.currentStep ? (
@@ -111,8 +151,18 @@ function StatusBar({ state }: { state: UiState }) {
             ) : null}
             <Box marginTop={state.hasFailed ? 1 : 0} flexDirection="column">
                 <Text color={state.running ? "cyan" : "gray"} dimColor={!state.running}>
-                    {renderBar(state.testValue, state.testTotal)} {state.testValue}/
-                    {state.testTotal} [Run #{state.runNumber} | {state.elapsedSeconds}s]
+                    {state.multiMode ? (
+                        <>
+                            [Run #{state.testValue} | ⧗ {formatDuration(state.elapsedSeconds)}]
+                        </>
+                    ) : (
+                        <>
+                            {renderBar(state.testValue, state.testTotal)} {testValue}/
+                            {state.testTotal} [Run #{state.runNumber} | ⧗{" "}
+                            {formatDuration(state.elapsedSeconds)} | Σ⧗{" "}
+                            {formatDuration(state.totalElapsedSeconds)}]
+                        </>
+                    )}
                 </Text>
                 {title ? (
                     <Text color={state.running ? "white" : undefined} dimColor={!state.running}>
@@ -176,7 +226,9 @@ function App({
 }
 
 export function mountUi(actionEmitter: EventEmitter, answerEmitter: EventEmitter) {
-    const instance = render(<App actionEmitter={actionEmitter} answerEmitter={answerEmitter} />);
+    const instance = render(<App actionEmitter={actionEmitter} answerEmitter={answerEmitter} />, {
+        exitOnCtrlC: false,
+    });
     return {
         stop: () => instance.unmount(),
     };

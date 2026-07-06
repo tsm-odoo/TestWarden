@@ -2,9 +2,7 @@
 
 `test-warden-engine` is the Go binary that launches Chrome, drives Hoot tests in parallel
 browser workers, and reports results as JSON lines on stdout. Run it from this directory
-(it reads `settings.json` from the cwd). Stderr only carries plain-text human messages
-(`--help`, chrome-headless-shell download progress, the pause-before-exit prompt) — never
-JSON.
+(it reads `settings.json` from the cwd).
 
 ## Flags
 
@@ -15,7 +13,7 @@ JSON.
 | `--suite-path` | _(empty)_ | Skip the map and give the URL path directly (e.g. `/web/tests`); wins over `--suite` when set |
 | `--suite-names` | _(all)_ | Comma-separated suite names to filter (e.g. `web,mail`) |
 | `--test` | _(all)_ | Run a single test by full name or 8-char hex ID |
-| `--workers` | `4` | Number of parallel browser contexts |
+| `--workers` | `4` | Number of parallel browser contexts. With `--test`, every worker runs the same test independently (more attempts per run for flake hunting); the `minLoad`-based worker capping only applies to suites |
 | `--fail-fast` | `false` | Stop on the first failure (`bail=1`) |
 | `--run-until-fail` | `false` | Re-run tests (reloading pages) until a failure is found |
 | `--visible` | `false` | Launch a visible browser with devtools and a full-screen window |
@@ -39,9 +37,6 @@ JSON.
 }
 ```
 
-Missing or unparseable file is fine — everything falls back to defaults, and flags always
-win over the file. `minLoad` defaults to `15`.
-
 Set `worktreeContainer` to enable the test-metadata cache: warden looks up the current DB
 name, finds a directory under `worktreeContainer` named exactly that (the lookup itself is
 cached at `.cache/repo_index.json`), fingerprints its `*.test.js` files, and reuses cached
@@ -49,7 +44,7 @@ metadata (`.cache/<db>.meta.json`) when the fingerprint matches. Without it, met
 fetched from the browser on every run.
 
 Chrome binaries (auto-downloaded if `chrome` is unset) are cached at
-`~/.cache/warden/chrome-headless-shell/` — separate from the `.cache/` above.
+`~/.cache/warden/chrome-headless-shell/`.
 
 ## Exit codes
 
@@ -84,16 +79,6 @@ Every line on stdout is one JSON object, tagged by `type`. Parse line by line.
 | `meta_cache_hit` | `fingerprint` | Metadata cache matched; browser fetch skipped |
 | `no_repositories_configured` | via `diagnostic`, `warn` | No `worktreeContainer` set, so no metadata cache |
 
-## Sequences
-
-**Startup:** `chrome_launch` → `db_fetch` → `auth` → metadata (either `meta_fetch` alone, or
-`meta_fingerprint` + cache hit/miss) → test filtering → `log` line with the test count →
-`workers_launch`.
-
-**Per run** (repeats if `--run-until-fail`): `run_start`, then per worker `worker_start` →
-`worker_run` → interleaved `test_started`/`test_fail`/`suite_done` → `worker_done`, then a
-closing `run_done`.
-
 Example:
 
 ```
@@ -117,16 +102,3 @@ Example:
 {"type":"worker_done","worker":0,"passed":309,"failed":0}
 {"type":"run_done","run":1,"passed":1234,"failed":0,"total":1234,"willRerun":false}
 ```
-
-## Detecting a hung process
-
-Only `meta_fetch` has an enforced timeout (60s — the process exits 2 past it). Otherwise,
-if no new line appears on stdout for **120 seconds**, treat the process as hung and send
-SIGTERM (warden exits 130).
-
-## Interpreting results
-
-- `run_done.failed == 0` → the run passed; `willRerun` tells you if another run follows.
-- Each `test_fail` gives you `test`, `id`, `url` (open it to reproduce with `debugTest=true`),
-  and `stack`.
-- Any `diagnostic` with `level: "error"` is fatal — the process will exit 2.

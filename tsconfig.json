@@ -10,18 +10,32 @@
         "isolatedModules": true,
         "esModuleInterop": true,
         "outDir": "build",
-        "lib": ["esnext"],
-        "types": ["node"],
+        "lib": [
+            "esnext"
+        ],
+        "types": [
+            "node"
+        ],
         "jsx": "react-jsx",
         "jsxImportSource": "react",
         "baseUrl": "./",
         "paths": {
-            "@warden/*": ["client/*"]
+            "@warden/*": [
+                "client/*"
+            ]
         }
     },
     "tsc-alias": {
         "resolveFullPaths": true
     },
-    "exclude": ["node_modules"],
-    "include": ["/client/**/*.ts", "**/client/**/*.ts", "**/client/**/*.tsx", "**/__tests__/**/*.ts", "/client/**/*.d.ts"]
+    "exclude": [
+        "node_modules"
+    ],
+    "include": [
+        "/client/**/*.ts",
+        "**/client/**/*.ts",
+        "**/client/**/*.tsx",
+        "**/__tests__/**/*.ts",
+        "/client/**/*.d.ts"
+    ]
 }

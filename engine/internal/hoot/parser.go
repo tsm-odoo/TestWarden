@@ -22,6 +22,11 @@ type DoneResult struct {
 	Failed int
 }
 
+// Hoot's own wording (see expect.js) when a test was cut short by runner.stop() rather than
+// actually failing on its own -- e.g. a sibling worker stopping this page early. Not a real
+// failure: the message says as much ("results may not be relevant").
+const abortedMarker = "test was aborted, results may not be relevant"
+
 // ParseFailure extracts a test name and stack trace from a [HOOT] failure console line.
 func ParseFailure(text string) (name, stack string, ok bool) {
 	matches := reFailure.FindStringSubmatch(text)
@@ -31,6 +36,12 @@ func ParseFailure(text string) (name, stack string, ok bool) {
 	name = matches[1]
 	stack = strings.TrimSpace(reColor.ReplaceAllString(matches[2], ""))
 	return name, stack, true
+}
+
+// IsAbortedFailure reports whether a ParseFailure stack is just noise from the test being cut
+// short (e.g. a sibling worker's stopHootRunner call) rather than an actual assertion failure.
+func IsAbortedFailure(stack string) bool {
+	return strings.Contains(stack, abortedMarker)
 }
 
 // ParseRunning extracts the test name from a [HOOT] Running test "..." console line.

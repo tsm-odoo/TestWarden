@@ -7,15 +7,16 @@ import (
 	"time"
 )
 
-// Human-readable labels for timed steps, shared between the start/done pair and
-// diagnostics that reference the same step.
+// Readable labels for timed steps, shared between the start/done pair and diagnostics
+// that reference the same step.
 var stepLabels = map[string]string{
-	"chrome_launch":    "Launching Chrome",
-	"db_fetch":         "Fetching database",
-	"auth":             "Authenticating",
-	"meta_fetch":       "Loading test metadata",
-	"meta_fingerprint": "Checking test metadata cache",
-	"workers_launch":   "Launching workers",
+	"chrome_launch":         "Launching Chrome",
+	"db_fetch":              "Fetching database",
+	"download_chrome_shell": "Downloading chrome headless shell",
+	"auth":                  "Authenticating",
+	"meta_fetch":            "Loading test metadata",
+	"meta_fingerprint":      "Checking test metadata cache",
+	"workers_launch":        "Launching workers",
 }
 
 func label(event string) string {
@@ -68,8 +69,8 @@ func StepLabel(key, lbl string) func() {
 	}
 }
 
-func RunStart(run, total int) {
-	emit(map[string]any{"type": "run_start", "run": run, "total": total})
+func RunStart(run, total int, multi bool) {
+	emit(map[string]any{"type": "run_start", "run": run, "total": total, "multi": multi})
 }
 
 func TestStarted(test string) {
@@ -93,6 +94,18 @@ func RunWaitPrompt() {
 
 func LogLine(kind, text string) {
 	emit(map[string]any{"type": "log", "kind": kind, "text": text})
+}
+
+// Delimits a dynamic value embedded in a LogLine/StepLabel message, so the client can
+// render just that span in a highlight color. A control character is used instead of
+// visible punctuation so it can't collide with real message content (e.g. literal quotes
+// from %q).
+const dynMarker = "\x1e"
+
+// Wraps a value that varies per run (a name, path, or count) so the client can render
+// it highlighted instead of blending into the surrounding static text.
+func Dyn(value string) string {
+	return dynMarker + value + dynMarker
 }
 
 func TestFail(worker int, id, test, url, stack string) {

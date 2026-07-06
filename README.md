@@ -21,17 +21,16 @@ go build -o test-warden-engine .
 ## Running
 
 ```bash
-node release/test-warden.mjs --server-url http://localhost:8069 -m @mail
+node release/test-warden.cjs --server-url http://localhost:8069 --suite hoot
 ```
 
-Run `node release/test-warden.mjs --help` at any time for the full, current list of flags,
+Run `node release/test-warden.cjs --help` at any time for the full, current list of flags,
 this doc only covers the ones you'll reach for daily:
 
 | Flag | What it does |
 |---|---|
-| `--suite <name>` | Which suite to run (resolved via `settings.json`) |
-| `-m, --suite-names <names...>` | Only run these suites |
-| `-t, --test <id>` | Run a single test, by full name or its 8-char ID |
+| `--suite <path-or-name>` | Which suite to run — a name resolved via `settings.json`, or a literal path (e.g. `/web/tests`) |
+| `-t, --test <id>` | Run a single test, by name (partial name accepted) or ID|
 | `--workers <n>` | Parallel browser contexts (default 4) |
 | `--fail-fast` | Stop at the first failure instead of finishing the run |
 | `--once` | Run once and exit instead of looping until a failure |

@@ -86,8 +86,7 @@ func main() {
 
 	cfg.SuiteNames = suiteNames
 
-	if cfg.Debug {
-		cfg.PauseBeforeExit = true
+	if cfg.Visible {
 		cfg.Workers = 1
 	}
 

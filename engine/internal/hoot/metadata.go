@@ -46,8 +46,17 @@ const getMetadataJSFunc = `() => {
 		}
 		return out;
 	}
+	// __debug__ is a function on some Hoot versions and a getter on others; try calling it
+	// first and fall back to plain property access if it isn't callable.
+	function getHootDebug(hoot) {
+		try {
+			return hoot.__debug__();
+		} catch (e) {
+			return hoot.__debug__;
+		}
+	}
 	const hoot = window.odoo.loader.modules.get("@web/../lib/hoot/hoot");
-	const { tests, suites } = hoot.__debug__();
+	const { tests, suites } = getHootDebug(hoot);
 	const testById = {}, suiteById = {}, testsBySuiteId = {};
 	for (const { id, fullName, tags } of tests.values()) {
 		testById[id] = { name: fullName, tags: tags.map(t => t.id) };
@@ -115,7 +124,14 @@ func Fetch(browser *rod.Browser, metaURL string, cookie *auth.Cookie) (*Metadata
 		}
 		res, err := page.Eval(`() => {
 			const h = window.odoo?.loader?.modules?.get("@web/../lib/hoot/hoot");
-			return h ? h.__debug__().tests.size : 0;
+			if (!h) return 0;
+			let debug;
+			try {
+				debug = h.__debug__();
+			} catch (e) {
+				debug = h.__debug__;
+			}
+			return debug.tests.size;
 		}`)
 		if err == nil && res.Value.Num() > 0 {
 			break
@@ -130,7 +146,7 @@ func Fetch(browser *rod.Browser, metaURL string, cookie *auth.Cookie) (*Metadata
 	}
 	res, err := page.Eval(getMetadataJSFunc)
 	if err != nil {
-		return nil, fmt.Errorf("could not fetch metadata (is the server reachable and logged in?)")
+		return nil, fmt.Errorf("could not fetch metadata: %w", err)
 	}
 	raw, err := json.Marshal(res.Value)
 	if err != nil {

@@ -31,7 +31,9 @@ export interface UiState {
     testTotal: number;
     testValue: number;
     runNumber: number;
+    multiMode: boolean;
     elapsedSeconds: number;
+    totalElapsedSeconds: number;
     currentTestTitle: string;
     running: boolean;
     awaitingQuitPrompt: boolean;
@@ -43,7 +45,7 @@ export type UiAction =
     | { type: "step_start"; label: string }
     | { type: "step_done"; label: string; ms: number }
     | { type: "log"; kind: LogLine["kind"]; text: string }
-    | { type: "run_start"; run: number; total: number }
+    | { type: "run_start"; run: number; total: number; multi: boolean }
     | { type: "worker_devtools"; worker: number; url: string }
     | { type: "test_started"; test: string }
     | { type: "run_done"; passed: number; failed: number; total: number; willRerun: boolean }
@@ -57,7 +59,9 @@ export const initialUiState: UiState = {
     testTotal: 0,
     testValue: 0,
     runNumber: 0,
+    multiMode: false,
     elapsedSeconds: 0,
+    totalElapsedSeconds: 0,
     hasFailed: false,
     currentTestTitle: "",
     running: false,
@@ -90,6 +94,7 @@ export function reduce(state: UiState, action: UiAction): UiState {
                 testTotal: action.total,
                 testValue: 0,
                 runNumber: action.run,
+                multiMode: action.multi,
                 elapsedSeconds: 0,
                 running: true,
                 failures: [],
@@ -115,7 +120,9 @@ export function reduce(state: UiState, action: UiAction): UiState {
         case "run_done": {
             return {
                 ...state,
-                testValue: state.testTotal,
+                // In multi mode testValue is the cumulative repetition count, not
+                // progress toward testTotal, so it must survive a failure as-is.
+                testValue: state.multiMode ? state.testValue : state.testTotal,
                 running: action.willRerun,
                 elapsedSeconds: action.willRerun ? 0 : state.elapsedSeconds,
             };
@@ -124,7 +131,13 @@ export function reduce(state: UiState, action: UiAction): UiState {
             return { ...state, awaitingQuitPrompt: true };
         }
         case "tick_elapsed": {
-            return state.running ? { ...state, elapsedSeconds: state.elapsedSeconds + 1 } : state;
+            return state.running
+                ? {
+                      ...state,
+                      elapsedSeconds: state.elapsedSeconds + 1,
+                      totalElapsedSeconds: state.totalElapsedSeconds + 1,
+                  }
+                : state;
         }
         case "test_fail":
             return {
