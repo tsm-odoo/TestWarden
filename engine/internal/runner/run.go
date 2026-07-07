@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"hash/fnv"
 	"net/url"
 	"os"
 	"strings"
@@ -297,26 +298,38 @@ func loadMeta(rodBrowser *rod.Browser, cfg Config, dbName string, cookie *auth.C
 	addonsPath := []string{worktreeDir}
 
 	done := log.Step("meta_fingerprint")
-	var fingerprint, modulesFingerprint string
-	var fingerprintErr, modulesFingerprintErr error
+	var testDirs []hoot.TestDir
+	var testDirsErr error
+	var installedModules []string
+	var modulesErr error
 	var wg sync.WaitGroup
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		fingerprint, fingerprintErr = hoot.FingerprintDirs(addonsPath)
+		testDirs, testDirsErr = hoot.FindTestDirs(addonsPath)
 	}()
 	go func() {
 		defer wg.Done()
-		modulesFingerprint, modulesFingerprintErr = auth.InstalledModulesFingerprint(cfg.ServerURL, cookie)
+		installedModules, modulesErr = auth.ListInstalledModules(cfg.ServerURL, cookie)
 	}()
 	wg.Wait()
+	if testDirsErr != nil {
+		return nil, fmt.Errorf("find test dirs: %w", testDirsErr)
+	}
+	if modulesErr != nil {
+		log.Warn("meta_modules_fingerprint_fail", "err", modulesErr)
+		installedModules = nil // scan every addon rather than silently under-scanning
+	}
+	fingerprint, fingerprintErr := hoot.FingerprintTestDirs(testDirs, installedModules)
 	if fingerprintErr != nil {
 		return nil, fmt.Errorf("fingerprint addons: %w", fingerprintErr)
 	}
-	if modulesFingerprintErr == nil {
-		fingerprint += "-" + modulesFingerprint
-	} else {
-		log.Warn("meta_modules_fingerprint_fail", "err", modulesFingerprintErr)
+	if modulesErr == nil {
+		h := fnv.New32a()
+		for _, name := range installedModules {
+			h.Write([]byte(name))
+		}
+		fingerprint += fmt.Sprintf("-%08x", h.Sum32())
 	}
 	done()
 

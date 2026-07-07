@@ -14,7 +14,7 @@ func MetaURL(serverURL, suitePath string) string {
 // stop on the first failure. debugTest=true adds &debugTest=true to pause the runner for
 // interactive debugging.
 func WorkerURL(serverURL, suitePath string, testIDs []string, bail, debugTest bool) string {
-	base := fmt.Sprintf("%s%s?timeout=15000&loglevel=2&showdetail=failed&manual=true", serverURL, suitePath)
+	base := fmt.Sprintf("%s%s?timeout=15000&loglevel=3&showdetail=failed&manual=true", serverURL, suitePath)
 	if bail {
 		base += "&bail=1"
 	}

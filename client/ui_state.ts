@@ -15,6 +15,8 @@ export interface WorkerDevtools {
     worker: number;
     url: string;
     failCount: number;
+    started: boolean;
+    errored: boolean;
 }
 
 export interface TestFailure {
@@ -48,6 +50,8 @@ export type UiAction =
     | { type: "log"; kind: LogLine["kind"]; text: string }
     | { type: "run_start"; run: number; total: number; multi: boolean }
     | { type: "worker_devtools"; worker: number; url: string }
+    | { type: "worker_run"; worker: number }
+    | { type: "worker_error"; worker: number }
     | { type: "test_started"; test: string }
     | { type: "run_done"; passed: number; failed: number; total: number; willRerun: boolean }
     | { type: "run_wait_prompt" }
@@ -107,8 +111,30 @@ export function reduce(state: UiState, action: UiAction): UiState {
                 ...state,
                 devtools: [
                     ...state.devtools,
-                    { worker: action.worker, url: action.url, failCount: 0 },
+                    {
+                        worker: action.worker,
+                        url: action.url,
+                        failCount: 0,
+                        started: false,
+                        errored: false,
+                    },
                 ],
+            };
+        }
+        case "worker_run": {
+            return {
+                ...state,
+                devtools: state.devtools.map((d) =>
+                    d.worker === action.worker ? { ...d, started: true } : d,
+                ),
+            };
+        }
+        case "worker_error": {
+            return {
+                ...state,
+                devtools: state.devtools.map((d) =>
+                    d.worker === action.worker ? { ...d, errored: true } : d,
+                ),
             };
         }
         case "test_started": {

@@ -184,7 +184,7 @@ func execPage(
 		return fmt.Errorf("navigate: %w", err)
 	}
 	if cfg.multiCount > 0 {
-		if err := configureMulti(ctx, page, testIDs, cfg.multiCount); err != nil {
+		if err := configureMulti(ctx, page, testIDs, cfg.multiCount, pageErr); err != nil {
 			return fmt.Errorf("configure multi: %w", err)
 		}
 	}
@@ -212,14 +212,9 @@ func execPage(
 // is the live Runner instance, exposed as a function on some Hoot versions and a getter on
 // others; its `tests` map holds the actual Test job objects, so setting `.config.multi` here
 // is equivalent to a `test.multi(count)` call made before the test was registered.
-func configureMulti(ctx context.Context, page *rod.Page, testIDs []string, count int) error {
+func configureMulti(ctx context.Context, page *rod.Page, testIDs []string, count int, pageErr <-chan string) error {
 	deadline := time.Now().Add(60 * time.Second)
 	for {
-		select {
-		case <-ctx.Done():
-			return fmt.Errorf("cancelled")
-		default:
-		}
 		res, err := page.Eval(`(ids, count) => {
 			const hoot = window.odoo?.loader?.modules?.get("@web/../lib/hoot/hoot");
 			if (!hoot) return false;
@@ -244,7 +239,16 @@ func configureMulti(ctx context.Context, page *rod.Page, testIDs []string, count
 		if time.Now().After(deadline) {
 			return fmt.Errorf("timeout waiting for hoot to register tests for multi config")
 		}
-		time.Sleep(25 * time.Millisecond)
+		// Checked here (rather than failing fast the instant pageErr fires) so a page error
+		// that arrives just as the tests finish registering doesn't pre-empt success -- one
+		// more Eval above always gets a chance first.
+		select {
+		case <-ctx.Done():
+			return fmt.Errorf("cancelled")
+		case msg := <-pageErr:
+			return fmt.Errorf("uncaught page error: %s", msg)
+		case <-time.After(25 * time.Millisecond):
+		}
 	}
 }
 
@@ -279,6 +283,7 @@ func clickPlayButton(ctx context.Context, page *rod.Page) error {
 		case <-ticker.C:
 			clicked, err := page.Eval(`() => {
 				const btn = document.querySelector("hoot-container")?.shadowRoot?.querySelector("button:has(.fa-play):enabled");
+				console.warn(Boolean(btn))
 				if (!btn) return false;
 				btn.click();
 				return true;

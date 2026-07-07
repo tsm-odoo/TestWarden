@@ -35,6 +35,7 @@ this doc only covers the most usefull ones.
 | `--fail-fast` | Stop at the first failure instead of finishing the run |
 | `--once` | Run once and exit instead of looping until a failure |
 | `--visible` | Show the browser window with devtools open |
+| `--cpu-throttling` | Throttle the cpu, making it easier to reproduce runbot scenario (high load) (2/4 is a good starting point) |
 | `--debug` | Show the UI for interactive debugging (implies `-t`, one worker, visible) |
 
 ## `settings.json`
@@ -50,7 +51,7 @@ Read from `engine/settings.json` at startup; every field is optional.
     "livechat": "/im_livechat/static/tests/embed/livechat_test_suite.html"
   },
   "chrome": "/path/to/chrome-headless-shell",
-  "worktreeContainer": "/path/to/worktree/container",
+  "worktreeContainer": "/path/to/worktree/container"
 }
 ```
 

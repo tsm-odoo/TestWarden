@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"hash/fnv"
 	"io"
 	"net/http"
 	"sort"
@@ -99,10 +98,11 @@ func Authenticate(serverURL, dbName, login, password string) (*Cookie, error) {
 	return nil, fmt.Errorf("authenticate: session_id not found (HTTP %d)", resp.StatusCode)
 }
 
-// Returns a short hash of the currently installed modules (name + write_date), so the
-// caller can detect when a module gets installed/upgraded/ removed even though no test
-// file on disk changed.
-func InstalledModulesFingerprint(serverURL string, cookie *Cookie) (string, error) {
+// Returns the sorted list of currently installed module names. Used both to detect a
+// module install/uninstall for the metadata cache fingerprint, and to restrict the addon
+// directories that get scanned for test files to ones that are actually installed (and so
+// can actually show up in Hoot's metadata).
+func ListInstalledModules(serverURL string, cookie *Cookie) ([]string, error) {
 	body, _ := json.Marshal(map[string]any{
 		"jsonrpc": "2.0",
 		"method":  "call",
@@ -111,20 +111,20 @@ func InstalledModulesFingerprint(serverURL string, cookie *Cookie) (string, erro
 			"method": "search_read",
 			"args": []any{
 				[]any{[]any{"state", "=", "installed"}},
-				[]string{"name", "write_date"},
+				[]string{"name"},
 			},
 			"kwargs": map[string]any{},
 		},
 	})
 	req, err := http.NewRequest("POST", serverURL+"/web/dataset/call_kw", bytes.NewReader(body))
 	if err != nil {
-		return "", fmt.Errorf("installed modules: %w", err)
+		return nil, fmt.Errorf("installed modules: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.AddCookie(&http.Cookie{Name: cookie.Name, Value: cookie.Value})
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("installed modules: %w", err)
+		return nil, fmt.Errorf("installed modules: %w", err)
 	}
 	defer resp.Body.Close()
 	var rpcResp struct {
@@ -132,23 +132,21 @@ func InstalledModulesFingerprint(serverURL string, cookie *Cookie) (string, erro
 			Message string `json:"message"`
 		} `json:"error"`
 		Result []struct {
-			Name      string `json:"name"`
-			WriteDate string `json:"write_date"`
+			Name string `json:"name"`
 		} `json:"result"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
-		return "", fmt.Errorf("installed modules: decode: %w", err)
+		return nil, fmt.Errorf("installed modules: decode: %w", err)
 	}
 	if rpcResp.Error != nil {
-		return "", fmt.Errorf("installed modules: %s", rpcResp.Error.Message)
+		return nil, fmt.Errorf("installed modules: %s", rpcResp.Error.Message)
 	}
-	sort.Slice(rpcResp.Result, func(i, j int) bool { return rpcResp.Result[i].Name < rpcResp.Result[j].Name })
-	h := fnv.New32a()
-	for _, module := range rpcResp.Result {
-		h.Write([]byte(module.Name))
-		h.Write([]byte(module.WriteDate))
+	names := make([]string, len(rpcResp.Result))
+	for i, module := range rpcResp.Result {
+		names[i] = module.Name
 	}
-	return fmt.Sprintf("%08x", h.Sum32()), nil
+	sort.Strings(names)
+	return names, nil
 }
 
 func hostOnly(serverURL string) string {

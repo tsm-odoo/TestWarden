@@ -48248,8 +48248,26 @@ function reduce(state, action) {
                 ...state,
                 devtools: [
                     ...state.devtools,
-                    { worker: action.worker, url: action.url, failCount: 0 },
+                    {
+                        worker: action.worker,
+                        url: action.url,
+                        failCount: 0,
+                        started: false,
+                        errored: false,
+                    },
                 ],
+            };
+        }
+        case "worker_run": {
+            return {
+                ...state,
+                devtools: state.devtools.map((d) => d.worker === action.worker ? { ...d, started: true } : d),
+            };
+        }
+        case "worker_error": {
+            return {
+                ...state,
+                devtools: state.devtools.map((d) => d.worker === action.worker ? { ...d, errored: true } : d),
             };
         }
         case "test_started": {
@@ -48371,13 +48389,18 @@ function indent(text) {
         .map((line) => `    ${line}`)
         .join("\n");
 }
+function WorkerRow({ d }) {
+    const spinnerFrame = useSpinnerFrame(!d.started && !d.errored);
+    const icon = d.errored ? (jsxRuntimeExports.jsx(Text, { color: "red", children: "\u2716" })) : d.started ? (jsxRuntimeExports.jsx(Text, { color: "green", children: "\u2714" })) : (spinnerFrame);
+    return (jsxRuntimeExports.jsxs(Text, { children: [icon, " Worker ", d.worker, " ", osc8(d.url, "devtools"), d.failCount > 0 ? ` [${d.failCount} Failed]` : ""] }));
+}
 function DevtoolsPanel({ devtools }) {
     if (!devtools.length) {
         return null;
     }
     return (jsxRuntimeExports.jsx(Box, { flexDirection: "column", marginY: 1, children: [...devtools]
             .sort((left, right) => left.worker - right.worker)
-            .map((d) => (jsxRuntimeExports.jsxs(Text, { children: ["Worker ", d.worker, " ", osc8(d.url, "devtools"), d.failCount > 0 ? ` [${d.failCount} Failed]` : ""] }, d.worker))) }));
+            .map((d) => (jsxRuntimeExports.jsx(WorkerRow, { d: d }, d.worker))) }));
 }
 function FailuresPanel({ failures }) {
     if (!failures.length) {
@@ -48553,6 +48576,8 @@ async function runOnce() {
                         }
                         continue;
                     case "worker_run":
+                        dispatch({ type: "worker_run", worker: msg.worker });
+                        continue;
                     case "suite_done":
                     case "worker_done":
                     case "meta_cache_hit":
@@ -48576,6 +48601,9 @@ async function runOnce() {
                             kind: msg.level,
                             text: `${prefix} ${msg.label}: ${msg.message ?? ""}`,
                         });
+                        if (msg.worker !== undefined) {
+                            dispatch({ type: "worker_error", worker: msg.worker });
+                        }
                         continue;
                     }
                 }

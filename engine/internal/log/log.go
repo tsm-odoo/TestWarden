@@ -133,10 +133,14 @@ func diagnostic(level, event string, args []any) {
 	} else if v, ok := fields["hint"]; ok {
 		message = fmt.Sprint(v)
 	}
-	emit(map[string]any{
+	out := map[string]any{
 		"type":    "diagnostic",
 		"level":   level,
 		"label":   label(event),
 		"message": message,
-	})
+	}
+	if v, ok := fields["worker"]; ok {
+		out["worker"] = v
+	}
+	emit(out)
 }

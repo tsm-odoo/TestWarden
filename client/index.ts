@@ -174,6 +174,9 @@ async function runOnce(): Promise<RunResult> {
                         continue;
 
                     case "worker_run":
+                        dispatch({ type: "worker_run", worker: msg.worker });
+                        continue;
+
                     case "suite_done":
                     case "worker_done":
                     case "meta_cache_hit":
@@ -199,6 +202,9 @@ async function runOnce(): Promise<RunResult> {
                             kind: msg.level,
                             text: `${prefix} ${msg.label}: ${msg.message ?? ""}`,
                         });
+                        if (msg.worker !== undefined) {
+                            dispatch({ type: "worker_error", worker: msg.worker });
+                        }
                         continue;
                     }
                 }

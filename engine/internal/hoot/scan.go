@@ -1,13 +1,101 @@
 package hoot
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"hash/fnv"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 )
+
+var testToken = []byte("test")
+
+// test(...) itself, plus the variants that are still a test declaration (just marked
+// only/skip/todo), each mapped to how many bytes to skip past "test" to reach the name arg.
+var testSuffixes = []([]byte){
+	[]byte("("),
+	[]byte(".only("),
+	[]byte(".skip("),
+	[]byte(".todo("),
+}
+
+func isWordByte(b byte) bool {
+	return b == '_' || (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || (b >= '0' && b <= '9')
+}
+
+func isSpaceByte(b byte) bool {
+	return b == ' ' || b == '\t' || b == '\n' || b == '\r'
+}
+
+// Extracts the name of every test(...)/test.only(...)/test.skip(...)/test.todo(...)
+// declaration in content via a plain byte scan. Naive but enough to tell "a test was
+// added/removed/renamed".
+func extractTestNames(content []byte) []string {
+	var names []string
+	pos := 0
+	for {
+		// checking against the "test" sentinel
+		idx := bytes.Index(content[pos:], testToken)
+		if idx < 0 {
+			break
+		}
+		start := pos + idx
+		afterTest := start + len(testToken)
+		pos = afterTest // default advance if this occurrence doesn't pan out
+		// excluding foo.test( / sometest / testSomething
+		if start > 0 && (isWordByte(content[start-1]) || content[start-1] == '.') {
+			continue
+		}
+		if afterTest < len(content) && isWordByte(content[afterTest]) {
+			continue
+		}
+		// matching one of test(/.only(/.skip(/.todo(
+		next := -1
+		for _, suffix := range testSuffixes {
+			if bytes.HasPrefix(content[afterTest:], suffix) {
+				next = afterTest + len(suffix)
+				break
+			}
+		}
+		if next < 0 {
+			continue // e.g. test.tags(, test.timeout(, or a bare "test" identifier
+		}
+		pos = next
+		// skipping whitespace before the name arg
+		i := next
+		for i < len(content) && isSpaceByte(content[i]) {
+			i++
+		}
+		if i >= len(content) {
+			break
+		}
+		// looking for quotes
+		quote := content[i]
+		if quote != '"' && quote != '\'' && quote != '`' {
+			continue
+		}
+		i++
+		nameStart := i
+		// scanning to the matching closing quote, skipping \-escaped chars
+		for i < len(content) && content[i] != quote {
+			if content[i] == '\\' && i+1 < len(content) {
+				i += 2
+				continue
+			}
+			i++
+		}
+		if i >= len(content) {
+			break
+		}
+		names = append(names, string(content[nameStart:i]))
+	}
+	sort.Strings(names)
+	return names
+}
 
 // Holds hoot metadata alongside a fingerprint of the *.test.js files that were present
 // when it was fetched. If the fingerprint matches on the next run, the fetch is skipped.
@@ -74,39 +162,76 @@ func SaveMetaCache(cacheDir, dbName, fingerprint string, meta *Metadata) error {
 	return os.WriteFile(filepath.Join(cacheDir, sanitizeFilename(dbName)+".meta.json"), data, 0644)
 }
 
-// Walks roots for *.test.js files and returns a hex string that changes whenever any file
-// is added, removed, or modified.
-func FingerprintDirs(roots []string) (string, error) {
-	var hashVal int32
+// TestDir pairs a discovered {addon}/static/tests directory with its addon's name, so
+// FingerprintTestDirs can filter by installed modules without re-walking the filesystem.
+type TestDir struct {
+	Addon string
+	Path  string
+}
+
+// Finds every {addon}/static/tests directory under roots. A pure filesystem walk with no
+// network dependency, so callers can run it concurrently with an installed-modules RPC and
+// filter the result afterward via FingerprintTestDirs, rather than serializing the two.
+func FindTestDirs(roots []string) ([]TestDir, error) {
+	var result []TestDir
 	for _, root := range roots {
-		dirs, err := findTestsDirs(root)
-		if err != nil {
-			return "", fmt.Errorf("fingerprint %s: %w", root, err)
-		}
-		for _, testDir := range dirs {
-			if err := filepath.WalkDir(testDir, func(path string, dirEntry os.DirEntry, err error) error {
-				if err != nil || dirEntry.IsDir() || !strings.HasSuffix(path, ".test.js") {
-					return err
-				}
-				info, err := dirEntry.Info()
-				if err != nil {
-					return nil
-				}
-				for _, pathByte := range []byte(path) {
-					hashVal = (hashVal << 5) - hashVal + int32(pathByte)
-				}
-				mtime := info.ModTime().UnixNano()
-				for i := 0; i < 8; i++ {
-					hashVal = (hashVal << 5) - hashVal + int32(mtime&0xff)
-					mtime >>= 8
-				}
+		err := filepath.WalkDir(root, func(path string, dirEntry os.DirEntry, err error) error {
+			if err != nil || !dirEntry.IsDir() {
 				return nil
-			}); err != nil {
-				return "", err
 			}
+			switch dirEntry.Name() {
+			case "node_modules", ".git", "__pycache__", ".venv", "venv", "dist", "build",
+				"models", "views", "controllers", "security", "data", "report",
+				"wizard", "i18n", "migrations", "populate", "demo":
+				return filepath.SkipDir
+			}
+			if dirEntry.Name() == "tests" && filepath.Base(filepath.Dir(path)) == "static" {
+				addon := filepath.Base(filepath.Dir(filepath.Dir(path)))
+				result = append(result, TestDir{Addon: addon, Path: path})
+				return filepath.SkipDir
+			}
+			return nil
+		})
+		if err != nil {
+			return nil, fmt.Errorf("find test dirs %s: %w", root, err)
 		}
 	}
-	return fmt.Sprintf("%08x", uint32(hashVal)), nil
+	return result, nil
+}
+
+// Hashes the *.test.js test declarations under dirs into a fingerprint that changes
+// whenever a test is added, removed, or renamed.
+func FingerprintTestDirs(dirs []TestDir, installedModules []string) (string, error) {
+	var installedSet map[string]bool
+	if installedModules != nil {
+		installedSet = make(map[string]bool, len(installedModules))
+		for _, name := range installedModules {
+			installedSet[name] = true
+		}
+	}
+	hasher := fnv.New64a()
+	for _, dir := range dirs {
+		if installedSet != nil && !installedSet[dir.Addon] {
+			continue
+		}
+		if err := filepath.WalkDir(dir.Path, func(path string, dirEntry os.DirEntry, err error) error {
+			if err != nil || dirEntry.IsDir() || !strings.HasSuffix(path, ".test.js") {
+				return err
+			}
+			content, readErr := os.ReadFile(path)
+			if readErr != nil {
+				return nil
+			}
+			hasher.Write([]byte(path))
+			for _, name := range extractTestNames(content) {
+				hasher.Write([]byte(name))
+			}
+			return nil
+		}); err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("%016x", hasher.Sum64()), nil
 }
 
 // Searches container for a directory named dbName, at any depth, and returns its path.
@@ -176,31 +301,6 @@ func saveRepoIndex(cacheDir string, index map[string]string) error {
 		return err
 	}
 	return os.WriteFile(repoIndexPath(cacheDir), data, 0644)
-}
-
-// Returns all {addon}/static/tests directories under root.
-func findTestsDirs(root string) ([]string, error) {
-	var result []string
-	err := filepath.WalkDir(root, func(path string, dirEntry os.DirEntry, err error) error {
-		if err != nil || !dirEntry.IsDir() {
-			return nil
-		}
-		name := dirEntry.Name()
-		switch name {
-		case "node_modules", ".git", "__pycache__", ".venv", "venv", "dist", "build",
-			"models", "views", "controllers", "security", "data", "report",
-			"wizard", "i18n", "migrations", "populate", "demo":
-			return filepath.SkipDir
-		}
-		if filepath.Base(filepath.Dir(path)) == "static" {
-			if name == "tests" {
-				result = append(result, path)
-			}
-			return filepath.SkipDir
-		}
-		return nil
-	})
-	return result, err
 }
 
 func sanitizeFilename(name string) string {

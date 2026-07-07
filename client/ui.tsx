@@ -103,6 +103,23 @@ function indent(text: string): string {
         .join("\n");
 }
 
+function WorkerRow({ d }: { d: WorkerDevtools }) {
+    const spinnerFrame = useSpinnerFrame(!d.started && !d.errored);
+    const icon = d.errored ? (
+        <Text color="red">✖</Text>
+    ) : d.started ? (
+        <Text color="green">✔</Text>
+    ) : (
+        spinnerFrame
+    );
+    return (
+        <Text>
+            {icon} Worker {d.worker} {osc8(d.url, "devtools")}
+            {d.failCount > 0 ? ` [${d.failCount} Failed]` : ""}
+        </Text>
+    );
+}
+
 function DevtoolsPanel({ devtools }: { devtools: WorkerDevtools[] }) {
     if (!devtools.length) {
         return null;
@@ -112,10 +129,7 @@ function DevtoolsPanel({ devtools }: { devtools: WorkerDevtools[] }) {
             {[...devtools]
                 .sort((left, right) => left.worker - right.worker)
                 .map((d) => (
-                    <Text key={d.worker}>
-                        Worker {d.worker} {osc8(d.url, "devtools")}
-                        {d.failCount > 0 ? ` [${d.failCount} Failed]` : ""}
-                    </Text>
+                    <WorkerRow key={d.worker} d={d} />
                 ))}
         </Box>
     );
