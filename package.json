@@ -1,13 +1,13 @@
 {
   "name": "test-warden",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Helper for Odoo JS tests",
   "main": "build/index.js",
   "scripts": {
     "_clear": "rimraf build/*",
     "_tsc": "tsc",
     "_make-bundle": "rollup --config",
-    "build": "rimraf build/* && rimraf release/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && rollup --config",
+    "build": "rimraf build/* && rimraf release/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && rollup --config && cp client/test-warden.cjs release/test-warden.cjs",
     "start": "node release/test-warden.cjs",
     "dev": "rimraf build/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node --enable-source-maps build/index.js",
     "devDebug": "rimraf build/* && tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node --max-old-space-size=4096 --inspect-brk=9250 --enable-source-maps build/index.js",
@@ -17,12 +17,9 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "cli-progress": "^3.12.0",
     "commander": "^13.1.0",
-    "enquirer": "^2.4.1",
-    "ora": "^7.0.1",
-    "puppeteer": "^24.43.1",
-    "rxjs": "^7.8.1"
+    "ink": "^6.8.0",
+    "react": "^19.2.7"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.8",
@@ -31,9 +28,9 @@
     "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^11.1.6",
     "@rollup/plugin-url": "^8.0.2",
-    "@types/cli-progress": "^3.11.5",
     "@types/node": "^20.10.5",
-    "@types/puppeteer": "^7.0.4",
+    "@types/react": "^19.2.17",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.1",
