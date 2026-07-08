@@ -32,7 +32,8 @@ browser workers, and reports results as JSON lines on stdout. Run it from this d
   },
   "minLoad":  15,
   "chrome":   "/path/to/chrome-headless-shell",
-  "worktreeContainer": "/path/to/worktrees"
+  "worktreeContainer": "/path/to/worktrees",
+  "memoryLimit": "2G"
 }
 ```
 
@@ -44,6 +45,11 @@ fetched from the browser on every run.
 
 Chrome binaries (auto-downloaded if `chrome` is unset) are cached at
 `~/.cache/warden/chrome-headless-shell/`.
+
+Set `memoryLimit` (Linux only, e.g. `"2G"`, `"512M"`) to cap the combined RAM usage of the
+engine and every Chrome instance it spawns. The engine is piped to `systemd-run --user
+--scope` with that value as `MemoryHigh`: a soft limit, so Linux reclaims caches and
+throttles the group under pressure instead of OOM-killing it.
 
 ## Exit codes
 

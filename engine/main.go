@@ -3,13 +3,17 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"os/signal"
+	"runtime"
 	"strings"
 	"syscall"
 
+	"test-warden/internal/log"
 	"test-warden/internal/runner"
 )
 
@@ -26,12 +30,13 @@ func (slice *stringSlice) Set(value string) error {
 	return nil
 }
 
-// settings mirrors the relevant fields of settings.json.
+// Mirrors the relevant fields of settings.json.
 type settings struct {
 	WorktreeContainer string            `json:"worktreeContainer"`
 	Suites            map[string]string `json:"suites"`
 	Chrome            string            `json:"chrome"`
 	MinLoad           int               `json:"minLoad"`
+	MemoryLimit       string            `json:"memoryLimit"`
 }
 
 func loadSettings(path string) (settings, error) {
@@ -46,7 +51,68 @@ func loadSettings(path string) (settings, error) {
 	return loaded, nil
 }
 
+// Marks a process as already running inside the systemd-run scope created
+// by reexecInCgroupScope, so it doesn't try to pivot again.
+const inSystemdScopeEnv = "IN_SYSTEMD_SCOPE"
+
+// On Linux, re-executes the current binary under `systemd-run --user --scope` with a soft
+// MemoryHigh cap so the engine and every Chrome instance it spawns share a bounded memory
+// budget.
+func reexecInCgroupScope(limit string) {
+	if runtime.GOOS != "linux" || limit == "" {
+		return
+	}
+	if os.Getenv(inSystemdScopeEnv) == "true" {
+		log.LogLine("info", fmt.Sprintf("ℹ RAM limited by cgroup to %s", log.Dyn(limit)))
+		return
+	}
+	systemdRun, err := exec.LookPath("systemd-run")
+	if err != nil {
+		return
+	}
+	self, err := os.Executable()
+	if err != nil {
+		return
+	}
+	args := append([]string{
+		"--user", "--scope", "--quiet",
+		"--unit=" + fmt.Sprintf("WardenEngine-%d", os.Getpid()),
+		"-p", "MemoryHigh=" + limit,
+		"--", self,
+	}, os.Args[1:]...)
+	cmd := exec.Command(systemdRun, args...)
+	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
+	cmd.Env = append(os.Environ(), inSystemdScopeEnv+"=true")
+
+	if err := cmd.Start(); err != nil {
+		return
+	}
+	// Relay termination signals to the scoped child.
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		for sig := range sigChan {
+			cmd.Process.Signal(sig)
+		}
+	}()
+	waitErr := cmd.Wait()
+	signal.Stop(sigChan)
+	close(sigChan)
+	var exitErr *exec.ExitError
+	switch {
+	case waitErr == nil:
+		os.Exit(0)
+	case errors.As(waitErr, &exitErr):
+		os.Exit(exitErr.ExitCode())
+	default:
+		os.Exit(1)
+	}
+}
+
 func main() {
+	appSettings, _ := loadSettings("settings.json")
+	reexecInCgroupScope(appSettings.MemoryLimit)
+
 	cfg := runner.Config{}
 	var suiteNames stringSlice
 	var suite string
@@ -92,7 +158,6 @@ func main() {
 		cfg.Workers = 1
 	}
 
-	appSettings, _ := loadSettings("settings.json")
 	cfg.WorktreeContainer = appSettings.WorktreeContainer
 	if cfg.SuitePath == "" {
 		if path, ok := appSettings.Suites[suite]; ok {
@@ -112,8 +177,8 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	// Force-exit if Run doesn't return promptly after cancellation.
-	// Chrome is a child process so the OS reaps it when we die.
+	// Force-exit if Run doesn't return promptly after cancellation. Chrome is a child
+	// process so the OS reaps it when we die.
 	go func() {
 		<-ctx.Done()
 		os.Exit(130)
