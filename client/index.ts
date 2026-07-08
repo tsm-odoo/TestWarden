@@ -195,6 +195,21 @@ async function runOnce(): Promise<RunResult> {
                         continue;
                     }
 
+                    case "debug": {
+                        const { type: _type, event, ms, ...fields } = msg;
+                        let text: string;
+                        if (ms !== undefined) {
+                            text = `${event} (done in ${ms}ms)`;
+                        } else {
+                            const rest = Object.entries(fields)
+                                .map(([key, value]) => `${key}=${JSON.stringify(value)}`)
+                                .join(" ");
+                            text = rest ? `${event} ${rest}` : event;
+                        }
+                        dispatch({ type: "log", kind: "debug", text });
+                        continue;
+                    }
+
                     case "diagnostic": {
                         const prefix = msg.level === "error" ? "✖" : "▲";
                         dispatch({

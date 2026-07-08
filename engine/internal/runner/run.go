@@ -200,13 +200,10 @@ func Run(ctx context.Context, cfg Config) int {
 		}
 	}
 
-	// With bail active, every worker already stops itself on its own first failure; a
-	// worker running a different page (e.g. a sibling repeating the same test via multi)
-	// has no way to know about it otherwise, so it would keep going until it separately
-	// fails or its own batch runs out. stopAll asks every page's runner to stop as soon as
-	// any one of them reports a failure.
+	// With bail active, every worker already stops on its first failure. A worker running
+	// a different page has no way to know about it otherwise: stopAll asks every page's
+	// runner to stop as soon as any one of them reports a failure.
 	bail := cfg.FailFast || wcfg.multiCount > 0
-
 	// Run loop: navigate (or reload) each page and collect results.
 	for runNum := 1; ; runNum += runIncrement {
 		log.RunStart(runNum, totalRuns, wcfg.multiCount > 0)
@@ -218,7 +215,9 @@ func Run(ctx context.Context, cfg Config) int {
 			runWg.Add(1)
 			go func(id int, ids []string, page *rod.Page) {
 				defer runWg.Done()
-				if err := execPage(ctx, page, id, ids, wcfg, out); err != nil {
+				err := execPage(ctx, page, id, ids, wcfg, out)
+				done()
+				if err != nil {
 					out <- event{kind: kindError, worker: id, stack: err.Error()}
 				}
 			}(i, chunk, pages[i])

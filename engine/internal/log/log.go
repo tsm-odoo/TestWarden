@@ -120,6 +120,23 @@ func Info(event string, args ...any) {
 	emit(fields)
 }
 
+// Like Step: emits a debug line immediately and returns a done func that emits a second one
+// once elapsed time is known.
+func Debug(event string, args ...any) func() {
+	fields := kv(args)
+	fields["type"] = "debug"
+	fields["event"] = event
+	emit(fields)
+	start := time.Now()
+	return func() {
+		emit(map[string]any{
+			"type":  "debug",
+			"event": event,
+			"ms":    time.Since(start).Milliseconds(),
+		})
+	}
+}
+
 func Warn(event string, args ...any)  { diagnostic("warn", event, args) }
 func Error(event string, args ...any) { diagnostic("error", event, args) }
 

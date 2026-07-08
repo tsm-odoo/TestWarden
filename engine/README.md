@@ -13,14 +13,12 @@ browser workers, and reports results as JSON lines on stdout. Run it from this d
 | `--suite-path` | _(empty)_ | Skip the map and give the URL path directly (e.g. `/web/tests`); wins over `--suite` when set |
 | `--suite-names` | _(all)_ | Comma-separated suite names to filter (e.g. `web,mail`) |
 | `--test` | _(all)_ | Run a single test by full name or 8-char hex ID |
-| `--workers` | `4` | Number of parallel browser contexts. With `--test`, every worker runs the same test independently (more attempts per run for flake hunting); the `minLoad`-based worker capping only applies to suites |
+| `--workers` | `4` | Number of parallel browser contexts. With `--test`, every worker runs the same test independently while with `--suite-names` every test of the suite is split accross workers. The `minLoad` based worker capping only applies to suites |
 | `--fail-fast` | `false` | Stop on the first failure (`bail=1`) |
-| `--run-until-fail` | `false` | Re-run tests (reloading pages) until a failure is found |
+| `--run-until-fail` | `false` | Run tests (reloading pages) until a failure is found |
 | `--visible` | `false` | Launch a visible browser with devtools and a full-screen window |
 | `--pause-before-exit` | `false` | Keep the browser open after a failure; press any key to quit |
-| `--debug` | `false` | Pause for interactive debugging on a single test; implies `--pause-before-exit` and `--workers 1`, and requires filters to resolve to exactly one test |
-
-`--test` wins over `--suite-names` if both are set. Omit both to run everything.
+| `--debug` | `false` | Pause for debugging on a single test. implies `--pause-before-exit` and `--workers 1`|
 
 ## settings.json
 

@@ -89,6 +89,12 @@ function LogLineView({ line }: { line: LogLine }) {
             return <Text color="yellow">{line.text}</Text>;
         case "error":
             return <Text color="red">{line.text}</Text>;
+        case "debug":
+            return (
+                <Text color="magenta" dimColor>
+                    {line.text}
+                </Text>
+            );
         case "blank":
             return <Text> </Text>;
         default:

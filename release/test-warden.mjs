@@ -48358,7 +48358,7 @@ function useSpinnerFrame(active) {
     }, [active]);
     return SPINNER_FRAMES[frame];
 }
-// Matches the log package's dynMarker (\x1e) wrapping a per-run value (a name, path, or
+// Matches the log package's dynMarker (\x1e) wrapping a dynamic value (a name, path, or
 // count) so it can be rendered highlighted instead of blending into the static text
 // around it.
 const DYN_MARKER = "\x1e";
@@ -48377,6 +48377,8 @@ function LogLineView({ line }) {
             return jsxRuntimeExports.jsx(Text, { color: "yellow", children: line.text });
         case "error":
             return jsxRuntimeExports.jsx(Text, { color: "red", children: line.text });
+        case "debug":
+            return (jsxRuntimeExports.jsx(Text, { color: "magenta", dimColor: true, children: line.text }));
         case "blank":
             return jsxRuntimeExports.jsx(Text, { children: " " });
         default:
@@ -48408,11 +48410,17 @@ function FailuresPanel({ failures }) {
     }
     return (jsxRuntimeExports.jsx(Box, { flexDirection: "column", marginBottom: 1, children: failures.map((failure) => (jsxRuntimeExports.jsxs(Box, { flexDirection: "column", children: [jsxRuntimeExports.jsxs(Text, { color: "yellow", children: [failure.text, failure.count > 1 ? ` (x${failure.count})` : ""] }), failure.stack ? jsxRuntimeExports.jsx(Text, { dimColor: true, children: indent(failure.stack) }) : null] }, failure.id))) }));
 }
+function StatsPanel({ state }) {
+    const runCount = state.multiMode ? state.testValue : state.runNumber;
+    const avgSeconds = runCount > 0 ? Math.round(state.totalElapsedSeconds / runCount) : 0;
+    const dynColor = state.running ? "cyan" : undefined;
+    return (jsxRuntimeExports.jsxs(Text, { dimColor: !state.running, children: ["[Run #", jsxRuntimeExports.jsx(Text, { color: dynColor, children: runCount }), " | now", " ", jsxRuntimeExports.jsx(Text, { color: dynColor, children: formatDuration(state.elapsedSeconds) }), " | avg", " ", jsxRuntimeExports.jsx(Text, { color: dynColor, children: formatDuration(avgSeconds) }), " | total", " ", jsxRuntimeExports.jsx(Text, { color: dynColor, children: formatDuration(state.totalElapsedSeconds) }), "]"] }));
+}
 function StatusBar({ state }) {
     const title = state.currentTestTitle;
     const spinnerFrame = useSpinnerFrame(state.currentStep !== null);
     const testValue = String(state.testValue).padStart(3, " ");
-    return (jsxRuntimeExports.jsxs(Box, { flexDirection: "column", children: [state.currentStep ? (jsxRuntimeExports.jsxs(Text, { children: [spinnerFrame, " ", state.currentStep] })) : null, jsxRuntimeExports.jsxs(Box, { marginTop: state.hasFailed ? 1 : 0, flexDirection: "column", children: [jsxRuntimeExports.jsx(Text, { color: state.running ? "cyan" : "gray", dimColor: !state.running, children: state.multiMode ? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: ["[Run #", state.testValue, " | \u29D7 ", formatDuration(state.elapsedSeconds), "]"] })) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [renderBar(state.testValue, state.testTotal), " ", testValue, "/", state.testTotal, " [Run #", state.runNumber, " | \u29D7", " ", formatDuration(state.elapsedSeconds), " | \u03A3\u29D7", " ", formatDuration(state.totalElapsedSeconds), "]"] })) }), title ? (jsxRuntimeExports.jsx(Text, { color: state.running ? "white" : undefined, dimColor: !state.running, children: title })) : null] })] }));
+    return (jsxRuntimeExports.jsxs(Box, { flexDirection: "column", children: [state.currentStep ? (jsxRuntimeExports.jsxs(Text, { children: [spinnerFrame, " ", state.currentStep] })) : null, jsxRuntimeExports.jsxs(Box, { marginTop: state.hasFailed ? 1 : 0, flexDirection: "column", children: [jsxRuntimeExports.jsx(StatsPanel, { state: state }), !state.multiMode ? (jsxRuntimeExports.jsxs(Text, { color: state.running ? "cyan" : "gray", dimColor: !state.running, children: [renderBar(state.testValue, state.testTotal), " ", testValue, "/", state.testTotal] })) : null, title ? (jsxRuntimeExports.jsx(Text, { color: state.running ? "white" : undefined, dimColor: !state.running, children: title })) : null] })] }));
 }
 function QuitPrompt({ onQuit }) {
     useInput(() => {
@@ -48592,6 +48600,21 @@ async function runOnce() {
                             text,
                             stack: msg.stack,
                         });
+                        continue;
+                    }
+                    case "debug": {
+                        const { type: _type, event, ms, ...fields } = msg;
+                        let text;
+                        if (ms !== undefined) {
+                            text = `${event} (done in ${ms}ms)`;
+                        }
+                        else {
+                            const rest = Object.entries(fields)
+                                .map(([key, value]) => `${key}=${JSON.stringify(value)}`)
+                                .join(" ");
+                            text = rest ? `${event} ${rest}` : event;
+                        }
+                        dispatch({ type: "log", kind: "debug", text });
                         continue;
                     }
                     case "diagnostic": {

@@ -7,7 +7,7 @@ export function osc8(url: string, label: string): string {
 
 export interface LogLine {
     id: string;
-    kind: "info" | "warn" | "error" | "step" | "blank";
+    kind: "info" | "warn" | "error" | "step" | "blank" | "debug";
     text: string;
 }
 
