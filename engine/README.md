@@ -16,6 +16,7 @@ browser workers, and reports results as JSON lines on stdout. Run it from this d
 | `--workers` | `4` | Number of parallel browser contexts. With `--test`, every worker runs the same test independently while with `--suite-names` every test of the suite is split accross workers. The `minLoad` based worker capping only applies to suites |
 | `--fail-fast` | `false` | Stop on the first failure (`bail=1`) |
 | `--run-until-fail` | `false` | Run tests (reloading pages) until a failure is found |
+| `--flaky-check` | `0` | Repeat a single test N times total (split across `--workers`, rounded up) without stopping on failure, then report a pass/fail ratio (requires `--test`; incompatible with `--run-until-fail`, `--fail-fast`, `--debug`) |
 | `--visible` | `false` | Launch a visible browser with devtools and a full-screen window |
 | `--pause-before-exit` | `false` | Keep the browser open after a failure; press any key to quit |
 | `--debug` | `false` | Pause for debugging on a single test. implies `--pause-before-exit` and `--workers 1`|

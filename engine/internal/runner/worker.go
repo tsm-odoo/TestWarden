@@ -44,6 +44,7 @@ type workerConfig struct {
 	debugTest     bool // add &debugTest=true to worker URL (single test, visible mode)
 	cpuThrottling int  // CPU throttling factor (0-100), applied via CDP
 	multiCount    int  // when > 0, repeat testIDs this many times in-page via Hoot's multi config instead of reloading
+	multiBail     bool // when multiCount > 0, whether Hoot should stop at the first failed repetition instead of running them all
 }
 
 // Creates and configures a new browser page for a worker. Caller must close the page when done.
@@ -176,9 +177,10 @@ func execPage(
 			return false
 		},
 	)()
-	// Force bail when multi is active: without it Hoot would keep grinding through the
-	// remaining repetitions after the first failure instead of reporting done right away.
-	bail := cfg.failFast || cfg.multiCount > 0
+	// Bail stops Hoot at the first failed repetition. Forced on for --run-until-fail's multi
+	// batch (no point grinding through 200k more reps once one has failed) but left off for
+	// --flaky-check, which needs every repetition to run so the final ratio covers all of them.
+	bail := cfg.failFast || cfg.multiBail
 	workerURL := hoot.WorkerURL(cfg.serverURL, cfg.suitePath, testIDs, bail, cfg.debugTest)
 	if err := page.Navigate(workerURL); err != nil {
 		return fmt.Errorf("navigate: %w", err)
@@ -196,15 +198,26 @@ func execPage(
 		return err
 	}
 	log.Info("worker_run", "worker", workerID)
-	select {
-	case result := <-done:
-		out <- event{kind: kindDone, passed: result.Passed, failed: result.Failed, worker: workerID}
-	case msg := <-pageErr:
-		return fmt.Errorf("uncaught page error: %s", msg)
-	case <-ctx.Done():
-		return fmt.Errorf("cancelled")
+	for {
+		select {
+		case result := <-done:
+			out <- event{kind: kindDone, passed: result.Passed, failed: result.Failed, worker: workerID}
+			return nil
+		case msg := <-pageErr:
+			// In --flaky-check mode (multi with no bail) a page error most often means a
+			// single repetition crashed, not the whole run: Hoot recovers and keeps going
+			// through the remaining repetitions on its own, so abandoning the rest of this
+			// worker's batch here would cut the flaky ratio short. Log it and keep waiting
+			// for the batch's real "done" instead.
+			if cfg.multiCount > 0 && !cfg.multiBail {
+				log.Error("worker_page_error", "worker", workerID, "err", msg)
+				continue
+			}
+			return fmt.Errorf("uncaught page error: %s", msg)
+		case <-ctx.Done():
+			return fmt.Errorf("cancelled")
+		}
 	}
-	return nil
 }
 
 // Polls until Hoot has registered testIDs, then sets their `multi` config so the runner

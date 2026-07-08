@@ -92,6 +92,13 @@ func RunWaitPrompt() {
 	emit(map[string]any{"type": "run_wait_prompt"})
 }
 
+// Reports the aggregate pass/fail ratio across every --flaky-check repetition of a single
+// test. Kept out of LogLine/the scrolling log so the client can pin it right above the
+// quit prompt instead of burying it among earlier setup messages.
+func FlakyResult(passed, failed, total int) {
+	emit(map[string]any{"type": "flaky_result", "passed": passed, "failed": failed, "total": total})
+}
+
 func LogLine(kind, text string) {
 	emit(map[string]any{"type": "log", "kind": kind, "text": text})
 }

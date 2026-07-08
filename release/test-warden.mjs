@@ -48212,6 +48212,7 @@ const initialUiState = {
     running: false,
     awaitingQuitPrompt: false,
     devtools: [],
+    flakyResult: null,
 };
 let nextLogId = 0;
 function pushLog(state, kind, text) {
@@ -48240,6 +48241,7 @@ function reduce(state, action) {
                 elapsedSeconds: 0,
                 running: true,
                 failures: [],
+                flakyResult: null,
                 devtools: state.devtools.map((d) => ({ ...d, failCount: 0 })),
             };
         }
@@ -48285,6 +48287,12 @@ function reduce(state, action) {
                 testValue: state.multiMode ? state.testValue : state.testTotal,
                 running: action.willRerun,
                 elapsedSeconds: action.willRerun ? 0 : state.elapsedSeconds,
+            };
+        }
+        case "flaky_result": {
+            return {
+                ...state,
+                flakyResult: { passed: action.passed, failed: action.failed, total: action.total },
             };
         }
         case "run_wait_prompt": {
@@ -48422,6 +48430,10 @@ function StatusBar({ state }) {
     const testValue = String(state.testValue).padStart(3, " ");
     return (jsxRuntimeExports.jsxs(Box, { flexDirection: "column", children: [state.currentStep ? (jsxRuntimeExports.jsxs(Text, { children: [spinnerFrame, " ", state.currentStep] })) : null, jsxRuntimeExports.jsxs(Box, { marginTop: state.hasFailed ? 1 : 0, flexDirection: "column", children: [jsxRuntimeExports.jsx(StatsPanel, { state: state }), !state.multiMode ? (jsxRuntimeExports.jsxs(Text, { color: state.running ? "cyan" : "gray", dimColor: !state.running, children: [renderBar(state.testValue, state.testTotal), " ", testValue, "/", state.testTotal] })) : null, title ? (jsxRuntimeExports.jsx(Text, { color: state.running ? "white" : undefined, dimColor: !state.running, children: title })) : null] })] }));
 }
+function FlakyResultView({ result }) {
+    const rate = result.total > 0 ? Math.round((result.failed / result.total) * 100) : 0;
+    return (jsxRuntimeExports.jsx(Box, { marginTop: 1, children: jsxRuntimeExports.jsxs(Text, { children: ["Flaky check: ", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.passed }), "/", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.total }), " passed (", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.failed }), " ", "failed, ", jsxRuntimeExports.jsxs(Text, { color: "cyan", children: [rate, "%"] }), " failure rate)"] }) }));
+}
 function QuitPrompt({ onQuit }) {
     useInput(() => {
         onQuit();
@@ -48444,7 +48456,7 @@ function App({ actionEmitter, answerEmitter, }) {
         const interval = setInterval(() => dispatch({ type: "tick_elapsed" }), 1000);
         return () => clearInterval(interval);
     }, [state.running]);
-    return (jsxRuntimeExports.jsxs(Box, { flexDirection: "column", children: [jsxRuntimeExports.jsx(Static, { items: state.log, children: (line) => jsxRuntimeExports.jsx(LogLineView, { line: line }, line.id) }), jsxRuntimeExports.jsx(DevtoolsPanel, { devtools: state.devtools }), jsxRuntimeExports.jsx(FailuresPanel, { failures: state.failures }), jsxRuntimeExports.jsx(Box, { children: jsxRuntimeExports.jsx(StatusBar, { state: state }) }), state.awaitingQuitPrompt ? (jsxRuntimeExports.jsx(QuitPrompt, { onQuit: () => {
+    return (jsxRuntimeExports.jsxs(Box, { flexDirection: "column", children: [jsxRuntimeExports.jsx(Static, { items: state.log, children: (line) => jsxRuntimeExports.jsx(LogLineView, { line: line }, line.id) }), jsxRuntimeExports.jsx(DevtoolsPanel, { devtools: state.devtools }), jsxRuntimeExports.jsx(FailuresPanel, { failures: state.failures }), jsxRuntimeExports.jsx(Box, { children: jsxRuntimeExports.jsx(StatusBar, { state: state }) }), state.flakyResult ? jsxRuntimeExports.jsx(FlakyResultView, { result: state.flakyResult }) : null, state.awaitingQuitPrompt ? (jsxRuntimeExports.jsx(QuitPrompt, { onQuit: () => {
                     answerEmitter.emit("answer");
                 } })) : null] }));
 }
@@ -48479,6 +48491,7 @@ program
     .option("--workers <number>", "Parallel browser contexts", (value) => parseInt(value), settings.workers ?? 4)
     .option("--fail-fast", "Stop on the first failure", false)
     .option("--once", "Run once and exit (default: re-run until a failure is found)", false)
+    .option("--flaky-check <number>", "Repeat a single test N times total (split across --workers) without stopping on failure, then report a pass/fail ratio (requires -t)", (value) => parseInt(value))
     .option("--visible", "Run in visible browser with devtools and full-screen window", false)
     .option("--debug", "Pause for interactive debugging on a single test (implies -t, workers=1)", false)
     .option("--cpu-throttling <number>", "CPU throttling factor (0-100)", parseInt, 0)
@@ -48507,7 +48520,10 @@ if (opts.test) {
 if (opts.failFast) {
     wardenArgs.push("--fail-fast");
 }
-if (!opts.once) {
+if (opts.flakyCheck) {
+    wardenArgs.push("--flaky-check", String(opts.flakyCheck));
+}
+else if (!opts.once) {
     wardenArgs.push("--run-until-fail");
 }
 if (opts.visible) {
@@ -48561,6 +48577,9 @@ async function runOnce() {
                         continue;
                     case "run_done":
                         runDone = { passed: msg.passed, failed: msg.failed, total: msg.total };
+                        dispatch(msg);
+                        continue;
+                    case "flaky_result":
                         dispatch(msg);
                         continue;
                     case "run_wait_prompt":

@@ -203,6 +203,19 @@ function StatusBar({ state }: { state: UiState }) {
     );
 }
 
+function FlakyResultView({ result }: { result: { passed: number; failed: number; total: number } }) {
+    const rate = result.total > 0 ? Math.round((result.failed / result.total) * 100) : 0;
+    return (
+        <Box marginTop={1}>
+            <Text>
+                Flaky check: <Text color="cyan">{result.passed}</Text>/
+                <Text color="cyan">{result.total}</Text> passed (<Text color="cyan">{result.failed}</Text>{" "}
+                failed, <Text color="cyan">{rate}%</Text> failure rate)
+            </Text>
+        </Box>
+    );
+}
+
 function QuitPrompt({ onQuit }: { onQuit: () => void }) {
     useInput(() => {
         onQuit();
@@ -243,6 +256,7 @@ function App({
             <Box>
                 <StatusBar state={state} />
             </Box>
+            {state.flakyResult ? <FlakyResultView result={state.flakyResult} /> : null}
             {state.awaitingQuitPrompt ? (
                 <QuitPrompt
                     onQuit={() => {

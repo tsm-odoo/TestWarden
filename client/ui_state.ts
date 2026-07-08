@@ -26,6 +26,12 @@ export interface TestFailure {
     count: number;
 }
 
+export interface FlakyResult {
+    passed: number;
+    failed: number;
+    total: number;
+}
+
 export interface UiState {
     currentStep: string | null;
     hasFailed: boolean;
@@ -41,6 +47,7 @@ export interface UiState {
     running: boolean;
     awaitingQuitPrompt: boolean;
     devtools: WorkerDevtools[];
+    flakyResult: FlakyResult | null;
 }
 
 export type UiAction =
@@ -54,6 +61,7 @@ export type UiAction =
     | { type: "worker_error"; worker: number }
     | { type: "test_started"; test: string }
     | { type: "run_done"; passed: number; failed: number; total: number; willRerun: boolean }
+    | { type: "flaky_result"; passed: number; failed: number; total: number }
     | { type: "run_wait_prompt" }
     | { type: "tick_elapsed" };
 
@@ -72,6 +80,7 @@ export const initialUiState: UiState = {
     running: false,
     awaitingQuitPrompt: false,
     devtools: [],
+    flakyResult: null,
 };
 
 let nextLogId = 0;
@@ -103,6 +112,7 @@ export function reduce(state: UiState, action: UiAction): UiState {
                 elapsedSeconds: 0,
                 running: true,
                 failures: [],
+                flakyResult: null,
                 devtools: state.devtools.map((d) => ({ ...d, failCount: 0 })),
             };
         }
@@ -152,6 +162,12 @@ export function reduce(state: UiState, action: UiAction): UiState {
                 testValue: state.multiMode ? state.testValue : state.testTotal,
                 running: action.willRerun,
                 elapsedSeconds: action.willRerun ? 0 : state.elapsedSeconds,
+            };
+        }
+        case "flaky_result": {
+            return {
+                ...state,
+                flakyResult: { passed: action.passed, failed: action.failed, total: action.total },
             };
         }
         case "run_wait_prompt": {

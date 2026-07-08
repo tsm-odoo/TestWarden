@@ -34,6 +34,7 @@ this doc only covers the most usefull ones.
 | `--workers <n>` | Parallel browser contexts (default 4) |
 | `--fail-fast` | Stop at the first failure instead of finishing the run |
 | `--once` | Run once and exit instead of looping until a failure |
+| `--flaky-check <n>` | Repeat a single test (`-t`) N times total (split across `--workers`) without stopping on failure, then report how often it passed vs failed |
 | `--visible` | Show the browser window with devtools open |
 | `--cpu-throttling` | Throttle the cpu, making it easier to reproduce runbot scenario (high load) (2/4 is a good starting point) |
 | `--debug` | Show the UI for interactive debugging (implies `-t`, one worker, visible) |

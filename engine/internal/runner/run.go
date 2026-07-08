@@ -31,6 +31,7 @@ type Config struct {
 	WorktreeContainer string
 	FailFast          bool
 	RunUntilFail      bool
+	FlakyRuns         int
 	Visible           bool
 	PauseBeforeExit   bool
 	Debug             bool
@@ -69,14 +70,39 @@ func Run(ctx context.Context, cfg Config) int {
 	}
 	done()
 
+	if cfg.FlakyRuns > 0 {
+		if cfg.TestID == "" {
+			log.Error("tests_resolve", "err", "--flaky-check requires a single test (use --test to select it)")
+			return 2
+		}
+		if cfg.RunUntilFail || cfg.FailFast || cfg.Debug {
+			log.Error("tests_resolve", "err", "--flaky-check cannot be combined with --run-until-fail, --fail-fast, or --debug")
+			return 2
+		}
+	}
+
 	meta, err := loadMeta(rodBrowser, cfg, dbName, cookie)
 	if err != nil {
 		log.Error("meta_fetch", "err", err)
 		return 2
 	}
+	// Single tests are not bound to `MinLoad` as it would much likely result in a single
+	// worker, which would be much slower.
+	singleTestWorkers := max(cfg.Workers, 1)
+	// multiBail controls whether Hoot stops early on the first failed repetition: true for
+	// --run-until-fail (hunting for a failure, so stop as soon as one turns up) and false for
+	// --flaky-check (every repetition must run so the final ratio reflects all of them).
 	multiCount := 0
-	if cfg.TestID != "" && cfg.RunUntilFail && !cfg.Debug {
+	multiBail := false
+	switch {
+	case cfg.TestID != "" && cfg.RunUntilFail && !cfg.Debug:
 		multiCount = multiRunBatch
+		multiBail = true
+	case cfg.FlakyRuns > 0:
+		// Every worker runs its own multiCount repetitions of the same test, so split the
+		// requested total across workers: --flaky-check N means N repetitions overall, not N per
+		// worker (rounded up, so the actual total can be slightly above N).
+		multiCount = (cfg.FlakyRuns + singleTestWorkers - 1) / singleTestWorkers
 	}
 	wcfg := workerConfig{
 		serverURL:     cfg.ServerURL,
@@ -88,6 +114,7 @@ func Run(ctx context.Context, cfg Config) int {
 		debugTest:     cfg.Debug || (cfg.Visible && cfg.TestID != ""),
 		cpuThrottling: cfg.CPUThrottling,
 		multiCount:    multiCount,
+		multiBail:     multiBail,
 	}
 	testIDs, err := FilterIDs(meta, cfg.SuiteNames, cfg.TestID)
 	if err != nil {
@@ -115,10 +142,7 @@ func Run(ctx context.Context, cfg Config) int {
 	}
 	var chunks [][]string
 	if cfg.TestID != "" {
-		// Single tests is not bound to `MinLoad` as it would much likely result in a
-		// single worker, which would be much slower.
-		workers := max(cfg.Workers, 1)
-		chunks = make([][]string, workers)
+		chunks = make([][]string, singleTestWorkers)
 		for i := range chunks {
 			chunks[i] = testIDs
 		}
@@ -203,7 +227,7 @@ func Run(ctx context.Context, cfg Config) int {
 	// With bail active, every worker already stops on its first failure. A worker running
 	// a different page has no way to know about it otherwise: stopAll asks every page's
 	// runner to stop as soon as any one of them reports a failure.
-	bail := cfg.FailFast || wcfg.multiCount > 0
+	bail := cfg.FailFast || wcfg.multiBail
 	// Run loop: navigate (or reload) each page and collect results.
 	for runNum := 1; ; runNum += runIncrement {
 		log.RunStart(runNum, totalRuns, wcfg.multiCount > 0)
@@ -216,7 +240,6 @@ func Run(ctx context.Context, cfg Config) int {
 			go func(id int, ids []string, page *rod.Page) {
 				defer runWg.Done()
 				err := execPage(ctx, page, id, ids, wcfg, out)
-				done()
 				if err != nil {
 					out <- event{kind: kindError, worker: id, stack: err.Error()}
 				}
@@ -241,7 +264,10 @@ func Run(ctx context.Context, cfg Config) int {
 				})
 			}
 		}
-		code := drain(out, runNum, cfg.RunUntilFail, onFailure)
+		code, passed, failed := drain(out, runNum, cfg.RunUntilFail, cfg.FlakyRuns > 0, onFailure)
+		if cfg.FlakyRuns > 0 {
+			logFlakyResult(passed, failed)
+		}
 		if code != 0 {
 			if cfg.PauseBeforeExit {
 				fmt.Fprintf(os.Stderr, "\nBrowser paused after failure. Open devtools URLs from the log above.\nPress any key to quit.\n")
@@ -380,32 +406,42 @@ func isLocalServer(serverURL string) bool {
 	}
 }
 
-func drain(out <-chan event, runNum int, runUntilFail bool, onFailure func()) int {
-	totalPassed, totalFailed := 0, 0
-
+func drain(out <-chan event, runNum int, runUntilFail, flakyMode bool, onFailure func()) (code, passed, failed int) {
 	for workerEvent := range out {
 		switch workerEvent.kind {
 		case kindFailure:
-			log.TestFail(workerEvent.worker, workerEvent.id, workerEvent.name, workerEvent.url, workerEvent.stack)
+			// In --flaky-check mode a test can fail dozens of times across repetitions; the
+			// stack trace is the same noise repeated, so only the title is worth showing.
+			stack := workerEvent.stack
+			if flakyMode {
+				stack = ""
+			}
+			log.TestFail(workerEvent.worker, workerEvent.id, workerEvent.name, workerEvent.url, stack)
 			onFailure()
 
 		case kindDone:
 			log.Info("worker_done", "worker", workerEvent.worker, "passed", workerEvent.passed, "failed", workerEvent.failed)
-			totalPassed += workerEvent.passed
-			totalFailed += workerEvent.failed
+			passed += workerEvent.passed
+			failed += workerEvent.failed
 			if workerEvent.failed > 0 {
 				onFailure()
 			}
 
 		case kindError:
 			log.Error("worker_error", "worker", workerEvent.worker, "err", workerEvent.stack)
-			totalFailed++
+			failed++
 		}
 	}
 
-	log.RunDone(runNum, totalPassed, totalFailed, totalPassed+totalFailed, runUntilFail && totalFailed == 0)
-	if totalFailed > 0 {
-		return 1
+	log.RunDone(runNum, passed, failed, passed+failed, runUntilFail && failed == 0)
+	if failed > 0 {
+		code = 1
 	}
-	return 0
+	return code, passed, failed
+}
+
+// Reports the aggregate pass/fail ratio across every --flaky-check repetition of a single test, once
+// the whole batch has finished.
+func logFlakyResult(passed, failed int) {
+	log.FlakyResult(passed, failed, passed+failed)
 }

@@ -36,6 +36,11 @@ program
     )
     .option("--fail-fast", "Stop on the first failure", false)
     .option("--once", "Run once and exit (default: re-run until a failure is found)", false)
+    .option(
+        "--flaky-check <number>",
+        "Repeat a single test N times total (split across --workers) without stopping on failure, then report a pass/fail ratio (requires -t)",
+        (value) => parseInt(value),
+    )
     .option("--visible", "Run in visible browser with devtools and full-screen window", false)
     .option(
         "--debug",
@@ -58,6 +63,7 @@ const opts = program.opts<{
     workers: number;
     failFast: boolean;
     once: boolean;
+    flakyCheck?: number;
     visible: boolean;
     debug: boolean;
     cpuThrottling: number;
@@ -81,7 +87,9 @@ if (opts.test) {
 if (opts.failFast) {
     wardenArgs.push("--fail-fast");
 }
-if (!opts.once) {
+if (opts.flakyCheck) {
+    wardenArgs.push("--flaky-check", String(opts.flakyCheck));
+} else if (!opts.once) {
     wardenArgs.push("--run-until-fail");
 }
 if (opts.visible) {
@@ -148,6 +156,10 @@ async function runOnce(): Promise<RunResult> {
 
                     case "run_done":
                         runDone = { passed: msg.passed, failed: msg.failed, total: msg.total };
+                        dispatch(msg as UiAction);
+                        continue;
+
+                    case "flaky_result":
                         dispatch(msg as UiAction);
                         continue;
 
