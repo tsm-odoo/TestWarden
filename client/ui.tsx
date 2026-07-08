@@ -55,7 +55,7 @@ function useSpinnerFrame(active: boolean): string {
     return SPINNER_FRAMES[frame];
 }
 
-// Matches the log package's dynMarker (\x1e) wrapping a per-run value (a name, path, or
+// Matches the log package's dynMarker (\x1e) wrapping a dynamic value (a name, path, or
 // count) so it can be rendered highlighted instead of blending into the static text
 // around it.
 const DYN_MARKER = "\x1e";
@@ -154,6 +154,20 @@ function FailuresPanel({ failures }: { failures: TestFailure[] }) {
     );
 }
 
+function StatsPanel({ state }: { state: UiState }) {
+    const runCount = state.multiMode ? state.testValue : state.runNumber;
+    const avgSeconds = runCount > 0 ? Math.round(state.totalElapsedSeconds / runCount) : 0;
+    const dynColor = state.running ? "cyan" : undefined;
+    return (
+        <Text dimColor={!state.running}>
+            [Run #<Text color={dynColor}>{runCount}</Text> | now{" "}
+            <Text color={dynColor}>{formatDuration(state.elapsedSeconds)}</Text> | avg{" "}
+            <Text color={dynColor}>{formatDuration(avgSeconds)}</Text> | total{" "}
+            <Text color={dynColor}>{formatDuration(state.totalElapsedSeconds)}</Text>]
+        </Text>
+    );
+}
+
 function StatusBar({ state }: { state: UiState }) {
     const title = state.currentTestTitle;
     const spinnerFrame = useSpinnerFrame(state.currentStep !== null);
@@ -167,20 +181,12 @@ function StatusBar({ state }: { state: UiState }) {
                 </Text>
             ) : null}
             <Box marginTop={state.hasFailed ? 1 : 0} flexDirection="column">
-                <Text color={state.running ? "cyan" : "gray"} dimColor={!state.running}>
-                    {state.multiMode ? (
-                        <>
-                            [Run #{state.testValue} | ⧗ {formatDuration(state.elapsedSeconds)}]
-                        </>
-                    ) : (
-                        <>
-                            {renderBar(state.testValue, state.testTotal)} {testValue}/
-                            {state.testTotal} [Run #{state.runNumber} | ⧗{" "}
-                            {formatDuration(state.elapsedSeconds)} | Σ⧗{" "}
-                            {formatDuration(state.totalElapsedSeconds)}]
-                        </>
-                    )}
-                </Text>
+                <StatsPanel state={state} />
+                {!state.multiMode ? (
+                    <Text color={state.running ? "cyan" : "gray"} dimColor={!state.running}>
+                        {renderBar(state.testValue, state.testTotal)} {testValue}/{state.testTotal}
+                    </Text>
+                ) : null}
                 {title ? (
                     <Text color={state.running ? "white" : undefined} dimColor={!state.running}>
                         {title}

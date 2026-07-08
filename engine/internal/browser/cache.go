@@ -15,7 +15,7 @@ import (
 // Matches the model_names form field in get_definitions' multipart POST body.
 var reModelNames = regexp.MustCompile(`name="model_names"\r?\n\r?\n(.*?)\r?\n--`)
 
-// callKwBody covers the subset of a /web/dataset/call_kw JSON-RPC body warden reads.
+// Subset of a /web/dataset/call_kw JSON-RPC body warden reads.
 type callKwBody struct {
 	Params struct {
 		Kwargs struct {
@@ -42,18 +42,18 @@ type responseCache struct {
 	pending map[string]chan struct{}
 }
 
-func (c *responseCache) get(key string) (cachedEntry, bool) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	entry, ok := c.entries[key]
+func (cache *responseCache) get(key string) (cachedEntry, bool) {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	entry, ok := cache.entries[key]
 	return entry, ok
 }
 
-func (c *responseCache) setIfAbsent(key string, entry cachedEntry) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if _, exists := c.entries[key]; !exists {
-		c.entries[key] = entry
+func (cache *responseCache) setIfAbsent(key string, entry cachedEntry) {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	if _, exists := cache.entries[key]; !exists {
+		cache.entries[key] = entry
 	}
 }
 
@@ -66,36 +66,36 @@ const pendingWaitTimeout = 5 * time.Second
 // Returns (entry, true) on a cache hit -- either immediately, or after waiting for
 // an in-flight request for the same key to finish or time out. On a miss with nobody in
 // flight, the caller becomes responsible for fetching the response and calling complete();
-func (c *responseCache) claim(key string) (cachedEntry, bool) {
-	c.mu.Lock()
-	if entry, ok := c.entries[key]; ok {
-		c.mu.Unlock()
+func (cache *responseCache) claim(key string) (cachedEntry, bool) {
+	cache.mu.Lock()
+	if entry, ok := cache.entries[key]; ok {
+		cache.mu.Unlock()
 		return entry, true
 	}
-	if wait, exists := c.pending[key]; exists {
-		c.mu.Unlock()
+	if wait, exists := cache.pending[key]; exists {
+		cache.mu.Unlock()
 		<-wait
-		c.mu.Lock()
-		entry, ok := c.entries[key]
-		c.mu.Unlock()
+		cache.mu.Lock()
+		entry, ok := cache.entries[key]
+		cache.mu.Unlock()
 		return entry, ok
 	}
-	c.pending[key] = make(chan struct{})
-	c.mu.Unlock()
-	time.AfterFunc(pendingWaitTimeout, func() { c.complete(key, cachedEntry{}, false) })
+	cache.pending[key] = make(chan struct{})
+	cache.mu.Unlock()
+	time.AfterFunc(pendingWaitTimeout, func() { cache.complete(key, cachedEntry{}, false) })
 	return cachedEntry{}, false
 }
 
 // Stores entry (only if ok, e.g. a 2xx status) and releases anyone waiting on
 // key (idempotent).
-func (c *responseCache) complete(key string, entry cachedEntry, ok bool) {
-	c.mu.Lock()
+func (cache *responseCache) complete(key string, entry cachedEntry, ok bool) {
+	cache.mu.Lock()
 	if ok {
-		c.entries[key] = entry
+		cache.entries[key] = entry
 	}
-	wait := c.pending[key]
-	delete(c.pending, key)
-	c.mu.Unlock()
+	wait := cache.pending[key]
+	delete(cache.pending, key)
+	cache.mu.Unlock()
 	if wait != nil {
 		close(wait)
 	}
@@ -117,17 +117,15 @@ func SetupPageCache(page *rod.Page, serverURL string) error {
 
 // Returns the key under which the response should be stored/looked up (or "" if
 // uncacheable), and whether it's worth having other in-flight requests for the same key
-// wait on this one rather than just racing to store/reuse the result
-// opportunistically once available. The test Document is keyed by path only;
-// get_definitions and all_dependencies are keyed by their POST payload since the URL
-// itself never changes across different bodies but hoot still needs the actual result.
+// wait on this one rather than just racing to store/reuse the result opportunistically
+// once available. The test Document is keyed by path only; get_definitions and
+// all_dependencies are keyed by their POST payload since the URL itself never changes
+// across different bodies but hoot still needs the actual result.
 //
-// Script and Stylesheet GETs (where the multi-MB test bundles live) are coalesced: workers
-// beyond #0 run in their own incognito context, so Chrome's own HTTP cache isn't shared
-// between them, and every worker would otherwise refetch the same large bundles in
-// parallel. Coalescing isn't extended to other GET-able types (Font, Image, ...) because
-// CDP gives no way to tell in advance which requests might get cancelled/superseded by the
-// browser (e.g. a preloaded font) rather than completing normally.
+// Script and Stylesheet GETs (where the multi-MB test bundles live) are coalesced:
+// workers beyond #0 run in their own incognito context, so Chrome's own HTTP cache isn't
+// shared between them, and every worker would otherwise refetch the same large bundles in
+// parallel.
 func cacheKey(e *proto.FetchRequestPaused) (key string, coalesce bool) {
 	if e.ResourceType == proto.NetworkResourceTypeDocument {
 		if !strings.Contains(e.Request.URL, "/web/tests") {

@@ -283,7 +283,6 @@ func clickPlayButton(ctx context.Context, page *rod.Page) error {
 		case <-ticker.C:
 			clicked, err := page.Eval(`() => {
 				const btn = document.querySelector("hoot-container")?.shadowRoot?.querySelector("button:has(.fa-play):enabled");
-				console.warn(Boolean(btn))
 				if (!btn) return false;
 				btn.click();
 				return true;
