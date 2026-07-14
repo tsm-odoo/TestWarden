@@ -63,7 +63,8 @@ export type UiAction =
     | { type: "run_done"; passed: number; failed: number; total: number; willRerun: boolean }
     | { type: "flaky_result"; passed: number; failed: number; total: number }
     | { type: "run_wait_prompt" }
-    | { type: "tick_elapsed" };
+    | { type: "tick_elapsed" }
+    | { type: "interrupted" };
 
 export const initialUiState: UiState = {
     currentStep: null,
@@ -172,6 +173,12 @@ export function reduce(state: UiState, action: UiAction): UiState {
         }
         case "run_wait_prompt": {
             return { ...state, awaitingQuitPrompt: true };
+        }
+        case "interrupted": {
+            // The engine force-exits on SIGINT/SIGTERM without emitting run_done, so the UI
+            // must gray itself out on the signal instead of waiting for a done event that
+            // will never arrive.
+            return { ...state, running: false, currentStep: null, awaitingQuitPrompt: false };
         }
         case "tick_elapsed": {
             return state.running

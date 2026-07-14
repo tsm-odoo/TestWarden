@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/proto"
@@ -26,7 +25,6 @@ type callKwBody struct {
 
 var globalCache = &responseCache{
 	entries: make(map[string]cachedEntry),
-	pending: make(map[string]chan struct{}),
 }
 
 type cachedEntry struct {
@@ -39,7 +37,6 @@ type cachedEntry struct {
 type responseCache struct {
 	mu      sync.Mutex
 	entries map[string]cachedEntry
-	pending map[string]chan struct{}
 }
 
 func (cache *responseCache) get(key string) (cachedEntry, bool) {
@@ -54,50 +51,6 @@ func (cache *responseCache) setIfAbsent(key string, entry cachedEntry) {
 	defer cache.mu.Unlock()
 	if _, exists := cache.entries[key]; !exists {
 		cache.entries[key] = entry
-	}
-}
-
-// How long a coalesced key can stay claimed but incomplete.
-// Owned by the cache (scheduled the instant a key becomes pending), not by each follower
-// -- this guarantees the pending slot releases within this window even if the leader's
-// underlying CDP request never reaches a response stage.
-const pendingWaitTimeout = 5 * time.Second
-
-// Returns (entry, true) on a cache hit -- either immediately, or after waiting for
-// an in-flight request for the same key to finish or time out. On a miss with nobody in
-// flight, the caller becomes responsible for fetching the response and calling complete();
-func (cache *responseCache) claim(key string) (cachedEntry, bool) {
-	cache.mu.Lock()
-	if entry, ok := cache.entries[key]; ok {
-		cache.mu.Unlock()
-		return entry, true
-	}
-	if wait, exists := cache.pending[key]; exists {
-		cache.mu.Unlock()
-		<-wait
-		cache.mu.Lock()
-		entry, ok := cache.entries[key]
-		cache.mu.Unlock()
-		return entry, ok
-	}
-	cache.pending[key] = make(chan struct{})
-	cache.mu.Unlock()
-	time.AfterFunc(pendingWaitTimeout, func() { cache.complete(key, cachedEntry{}, false) })
-	return cachedEntry{}, false
-}
-
-// Stores entry (only if ok, e.g. a 2xx status) and releases anyone waiting on
-// key (idempotent).
-func (cache *responseCache) complete(key string, entry cachedEntry, ok bool) {
-	cache.mu.Lock()
-	if ok {
-		cache.entries[key] = entry
-	}
-	wait := cache.pending[key]
-	delete(cache.pending, key)
-	cache.mu.Unlock()
-	if wait != nil {
-		close(wait)
 	}
 }
 
@@ -116,61 +69,52 @@ func SetupPageCache(page *rod.Page, serverURL string) error {
 }
 
 // Returns the key under which the response should be stored/looked up (or "" if
-// uncacheable), and whether it's worth having other in-flight requests for the same key
-// wait on this one rather than just racing to store/reuse the result opportunistically
-// once available. The test Document is keyed by path only; get_definitions and
+// uncacheable). The test Document is keyed by path only; get_definitions and
 // all_dependencies are keyed by their POST payload since the URL itself never changes
 // across different bodies but hoot still needs the actual result.
 //
-// Script and Stylesheet GETs (where the multi-MB test bundles live) are coalesced:
-// workers beyond #0 run in their own incognito context, so Chrome's own HTTP cache isn't
-// shared between them, and every worker would otherwise refetch the same large bundles in
-// parallel.
-func cacheKey(e *proto.FetchRequestPaused) (key string, coalesce bool) {
+// Script and Stylesheet GETs are cached too: workers beyond the first run in their own
+// incognito context, so Chrome's own HTTP cache isn't shared between them, and every
+// worker would otherwise refetch the same large bundles itself. The initial metadata
+// fetch (loadMeta) warms this cache for every worker before any of them navigate, so by
+// the time workers run concurrently these are all cache hits.
+func cacheKey(e *proto.FetchRequestPaused) (key string) {
 	if e.ResourceType == proto.NetworkResourceTypeDocument {
 		if !strings.Contains(e.Request.URL, "/web/tests") {
-			return "", false
+			return ""
 		}
 		if queryStart := strings.Index(e.Request.URL, "?"); queryStart != -1 {
-			return e.Request.URL[:queryStart], false
+			return e.Request.URL[:queryStart]
 		}
-		return e.Request.URL, false
+		return e.Request.URL
 	}
 	if e.Request.Method == "GET" {
-		coalesce := e.ResourceType == proto.NetworkResourceTypeScript || e.ResourceType == proto.NetworkResourceTypeStylesheet
-		return e.Request.URL, coalesce
+		return e.Request.URL
 	}
 	if e.Request.Method != "POST" {
-		return "", false
+		return ""
 	}
 	if strings.HasSuffix(e.Request.URL, "/web/model/get_definitions") {
 		if matches := reModelNames.FindStringSubmatch(e.Request.PostData); matches != nil {
-			return e.Request.URL + "#" + matches[1], false
+			return e.Request.URL + "#" + matches[1]
 		}
 	}
 	if strings.HasSuffix(e.Request.URL, "/all_dependencies") {
 		var body callKwBody
 		if json.Unmarshal([]byte(e.Request.PostData), &body) == nil && len(body.Params.Kwargs.ModuleNames) > 0 {
-			return e.Request.URL + "#" + strings.Join(body.Params.Kwargs.ModuleNames, ","), false
+			return e.Request.URL + "#" + strings.Join(body.Params.Kwargs.ModuleNames, ",")
 		}
 	}
-	return "", false
+	return ""
 }
 
 func handleFetchPaused(page *rod.Page, e *proto.FetchRequestPaused) {
-	key, coalesce := cacheKey(e)
+	key := cacheKey(e)
 
 	// Request stage: no response yet, serve from cache if possible.
 	if e.ResponseStatusCode == nil {
 		if key != "" {
-			var entry cachedEntry
-			var hit bool
-			if coalesce {
-				entry, hit = globalCache.claim(key)
-			} else {
-				entry, hit = globalCache.get(key)
-			}
-			if hit {
+			if entry, hit := globalCache.get(key); hit {
 				_ = proto.FetchFulfillRequest{
 					RequestID:       e.RequestID,
 					ResponseCode:    entry.status,
@@ -190,30 +134,20 @@ func handleFetchPaused(page *rod.Page, e *proto.FetchRequestPaused) {
 	// Response stage: explicitly cache the requests matched above, then continue with
 	// patched Cache-Control headers so the browser caches everything else itself.
 	status := *e.ResponseStatusCode
-	if key != "" {
-		ok := false
-		var entry cachedEntry
-		if status >= 200 && status < 300 {
-			if result, err := (proto.FetchGetResponseBody{RequestID: e.RequestID}).Call(page); err == nil {
-				var bodyBytes []byte
-				if result.Base64Encoded {
-					bodyBytes, _ = base64.StdEncoding.DecodeString(result.Body)
-				} else {
-					bodyBytes = []byte(result.Body)
-				}
-				entry = cachedEntry{
-					status:     status,
-					statusText: e.ResponseStatusText,
-					headers:    e.ResponseHeaders,
-					body:       bodyBytes,
-				}
-				ok = true
+	if key != "" && status >= 200 && status < 300 {
+		if result, err := (proto.FetchGetResponseBody{RequestID: e.RequestID}).Call(page); err == nil {
+			var bodyBytes []byte
+			if result.Base64Encoded {
+				bodyBytes, _ = base64.StdEncoding.DecodeString(result.Body)
+			} else {
+				bodyBytes = []byte(result.Body)
 			}
-		}
-		if coalesce {
-			globalCache.complete(key, entry, ok)
-		} else if ok {
-			globalCache.setIfAbsent(key, entry)
+			globalCache.setIfAbsent(key, cachedEntry{
+				status:     status,
+				statusText: e.ResponseStatusText,
+				headers:    e.ResponseHeaders,
+				body:       bodyBytes,
+			})
 		}
 	}
 	proto.FetchContinueResponse{

@@ -9,6 +9,7 @@ import (
 	"github.com/go-rod/rod/lib/proto"
 
 	"test-warden/internal/auth"
+	"test-warden/internal/browser"
 )
 
 type TestMeta struct {
@@ -69,9 +70,12 @@ const getMetadataJSFunc = `() => {
 }`
 
 // Fetch opens a page, sets the auth cookie, navigates to metaURL, waits for Hoot to
-// initialise, evaluates and returns the test metadata then close the page.
-func Fetch(browser *rod.Browser, metaURL string, cookie *auth.Cookie) (*Metadata, error) {
-	page, err := browser.Page(proto.TargetCreateTarget{URL: "about:blank"})
+// initialise, evaluates and returns the test metadata then close the page. This is also
+// the run's one and only warm-up pass: caching the page's requests here means every worker
+// that later navigates to the same suite finds the big test bundle (and get_definitions /
+// all_dependencies calls) already cached, instead of racing each other to fetch it.
+func Fetch(rodBrowser *rod.Browser, metaURL, serverURL string, cookie *auth.Cookie) (*Metadata, error) {
+	page, err := rodBrowser.Page(proto.TargetCreateTarget{URL: "about:blank"})
 	if err != nil {
 		return nil, fmt.Errorf("create page: %w", err)
 	}
@@ -85,6 +89,9 @@ func Fetch(browser *rod.Browser, metaURL string, cookie *auth.Cookie) (*Metadata
 		}},
 	}.Call(page)); err != nil {
 		return nil, fmt.Errorf("set cookie: %w", err)
+	}
+	if err := browser.SetupPageCache(page, serverURL); err != nil {
+		return nil, fmt.Errorf("setup cache: %w", err)
 	}
 	// Enable Runtime to receive exception events before navigating.
 	if err := (proto.RuntimeEnable{}.Call(page)); err != nil {

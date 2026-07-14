@@ -7,14 +7,14 @@ import (
 
 // Returns a URL that loads Hoot without starting tests.
 func MetaURL(serverURL, suitePath string) string {
-	return fmt.Sprintf("%s%s?timeout=15000&loglevel=0&manual=true", serverURL, suitePath)
+	return fmt.Sprintf("%s%s?debug=assets&timeout=15000&loglevel=0&manual=true", serverURL, suitePath)
 }
 
 // Returns a URL for a worker to run a specific set of tests. bail=true adds &bail=1 to
 // stop on the first failure. debugTest=true adds &debugTest=true to pause the runner for
 // interactive debugging.
 func WorkerURL(serverURL, suitePath string, testIDs []string, bail, debugTest bool) string {
-	base := fmt.Sprintf("%s%s?timeout=15000&loglevel=3&showdetail=failed&manual=true", serverURL, suitePath)
+	base := fmt.Sprintf("%s%s?debug=assets&timeout=15000&loglevel=3&showdetail=failed&manual=true", serverURL, suitePath)
 	if bail {
 		base += "&bail=1"
 	}

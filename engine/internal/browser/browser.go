@@ -174,7 +174,7 @@ func Launch(ctx context.Context, chromePath string, visible bool) (wsURL string,
 	}
 	chromeLaunch = chromeLaunch.Set("no-sandbox").
 		Set("no-zygote").
-		// Set("js-flags", "--expose-gc"). Not needed since cgroup can already limit RAM usage?
+		Set("js-flags", "--expose-gc").
 		Set("no-first-run").
 		Set("no-default-browser-check").
 		Set("disable-dev-shm-usage").

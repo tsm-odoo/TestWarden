@@ -37,6 +37,7 @@ type settings struct {
 	Chrome            string            `json:"chrome"`
 	MinLoad           int               `json:"minLoad"`
 	MemoryLimit       string            `json:"memoryLimit"`
+	Workers           int               `json:"workers"`
 }
 
 func loadSettings(path string) (settings, error) {
@@ -122,7 +123,11 @@ func main() {
 	flag.StringVar(&suite, "suite", "hoot", "Suite type (hoot, qunit, livechat…); resolved via settings.json suites map")
 	flag.Var(&suiteNames, "suite-names", "Suite names to run, comma-separated")
 	flag.StringVar(&cfg.TestID, "test", "", "Run a single test by ID or name")
-	flag.IntVar(&cfg.Workers, "workers", 4, "Number of parallel browser contexts")
+	defaultWorkers := 4
+	if appSettings.Workers > 0 {
+		defaultWorkers = appSettings.Workers
+	}
+	flag.IntVar(&cfg.Workers, "workers", defaultWorkers, "Number of parallel browser contexts")
 	flag.IntVar(&cfg.CPUThrottling, "cpu-throttling", 0, "CPU throttling factor (0-100)")
 	flag.BoolVar(&cfg.FailFast, "fail-fast", false, "Stop on first failure (bail=1)")
 	flag.BoolVar(&cfg.RunUntilFail, "run-until-fail", false, "Re-run tests until a failure is found")
@@ -154,7 +159,7 @@ func main() {
 
 	cfg.SuiteNames = suiteNames
 
-	if cfg.Visible {
+	if cfg.Visible || !cfg.RunUntilFail {
 		cfg.Workers = 1
 	}
 

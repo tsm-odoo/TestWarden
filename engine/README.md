@@ -13,7 +13,7 @@ browser workers, and reports results as JSON lines on stdout. Run it from this d
 | `--suite-path` | _(empty)_ | Skip the map and give the URL path directly (e.g. `/web/tests`); wins over `--suite` when set |
 | `--suite-names` | _(all)_ | Comma-separated suite names to filter (e.g. `web,mail`) |
 | `--test` | _(all)_ | Run a single test by full name or 8-char hex ID |
-| `--workers` | `4` | Number of parallel browser contexts. With `--test`, every worker runs the same test independently while with `--suite-names` every test of the suite is split accross workers. The `minLoad` based worker capping only applies to suites |
+| `--workers` | `4` (or `workers` in `settings.json`) | Number of parallel browser contexts. With `--test`, every worker runs the same test independently while with `--suite-names` every test of the suite is split accross workers. The `minLoad` based worker capping only applies to suites |
 | `--fail-fast` | `false` | Stop on the first failure (`bail=1`) |
 | `--run-until-fail` | `false` | Run tests (reloading pages) until a failure is found |
 | `--flaky-check` | `0` | Repeat a single test N times total (split across `--workers`, rounded up) without stopping on failure, then report a pass/fail ratio (requires `--test`; incompatible with `--run-until-fail`, `--fail-fast`, `--debug`) |
@@ -33,7 +33,8 @@ browser workers, and reports results as JSON lines on stdout. Run it from this d
   "minLoad":  15,
   "chrome":   "/path/to/chrome-headless-shell",
   "worktreeContainer": "/path/to/worktrees",
-  "memoryLimit": "2G"
+  "memoryLimit": "2G",
+  "workers": 4
 }
 ```
 

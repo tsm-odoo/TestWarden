@@ -70,6 +70,12 @@ func Run(ctx context.Context, cfg Config) int {
 	}
 	done()
 
+	// Kicked off as early as possible (well before we know whether the disk metadata cache
+	// will even hit) so its navigation warms the shared response cache in the background,
+	// in parallel with the fingerprinting below, rather than delaying workers_launch.
+	metaURL := hoot.MetaURL(cfg.ServerURL, cfg.SuitePath)
+	warmCh := startCacheWarm(rodBrowser, metaURL, cfg.ServerURL, cookie)
+
 	if cfg.FlakyRuns > 0 {
 		if cfg.TestID == "" {
 			log.Error("tests_resolve", "err", "--flaky-check requires a single test (use --test to select it)")
@@ -81,7 +87,7 @@ func Run(ctx context.Context, cfg Config) int {
 		}
 	}
 
-	meta, err := loadMeta(rodBrowser, cfg, dbName, cookie)
+	meta, err := loadMeta(cfg, dbName, cookie, warmCh)
 	if err != nil {
 		log.Error("meta_fetch", "err", err)
 		return 2
@@ -179,15 +185,11 @@ func Run(ctx context.Context, cfg Config) int {
 		setupWg.Add(1)
 		go func(id int, ids []string) {
 			defer setupWg.Done()
-			b := rodBrowser
-			if id > 0 {
-				var err error
-				b, err = rodBrowser.Incognito()
-				if err != nil {
-					log.Error("worker_error", "worker", id, "err", err.Error())
-					navReady <- struct{}{}
-					return
-				}
+			b, err := rodBrowser.Incognito()
+			if err != nil {
+				log.Error("worker_error", "worker", id, "err", err.Error())
+				navReady <- struct{}{}
+				return
 			}
 			page, err := setupPage(ctx, b, id, ids, wcfg)
 			if err != nil {
@@ -296,18 +298,45 @@ func waitForQuit(ctx context.Context) {
 	}
 }
 
-func loadMeta(rodBrowser *rod.Browser, cfg Config, dbName string, cookie *auth.Cookie) (*hoot.Metadata, error) {
-	metaURL := hoot.MetaURL(cfg.ServerURL, cfg.SuitePath)
+// Result of the background hoot.Fetch kicked off by startCacheWarm.
+type metaFetchResult struct {
+	meta *hoot.Metadata
+	err  error
+}
 
+// Starts the suite's one and only page fetch as soon as we have a cookie, so its
+// navigation warms the shared response cache in the background while we're still
+// fingerprinting addons / checking the disk metadata cache. The same fetch doubles as the
+// metadata source on a disk-cache miss -- callers just wait on the channel for either need.
+func startCacheWarm(rodBrowser *rod.Browser, metaURL, serverURL string, cookie *auth.Cookie) <-chan metaFetchResult {
+	resultCh := make(chan metaFetchResult, 1)
+	go func() {
+		meta, err := hoot.Fetch(rodBrowser, metaURL, serverURL, cookie)
+		resultCh <- metaFetchResult{meta: meta, err: err}
+	}()
+	return resultCh
+}
+
+// Waits for the cache-warming fetch to finish, under a labeled step -- by the time a
+// caller needs this, warming is the one thing left to block on, and the wait is
+// near-instant if it already finished in the background.
+func waitCacheWarm(warmCh <-chan metaFetchResult, stepKey string) (*hoot.Metadata, error) {
+	done := log.Step(stepKey)
+	result := <-warmCh
+	done()
+	return result.meta, result.err
+}
+
+func loadMeta(cfg Config, dbName string, cookie *auth.Cookie, warmCh <-chan metaFetchResult) (*hoot.Metadata, error) {
 	if cfg.WorktreeContainer == "" {
 		log.Warn("no_repositories_configured", "hint",
 			`add "worktreeContainer" to engine/settings.json to cache test metadata between runs and speed up startup, e.g.: `+
 				`{"worktreeContainer": "/path/to/worktrees"}`)
-		return fetchMetaUncached(rodBrowser, metaURL, cookie)
+		return waitCacheWarm(warmCh, "meta_fetch")
 	}
 
 	if !isLocalServer(cfg.ServerURL) {
-		return fetchMetaUncached(rodBrowser, metaURL, cookie)
+		return waitCacheWarm(warmCh, "meta_fetch")
 	}
 
 	cacheDir := ".cache"
@@ -349,13 +378,14 @@ func loadMeta(rodBrowser *rod.Browser, cfg Config, dbName string, cookie *auth.C
 	if fingerprintErr != nil {
 		return nil, fmt.Errorf("fingerprint addons: %w", fingerprintErr)
 	}
+	h := fnv.New32a()
+	h.Write([]byte(cfg.SuitePath))
 	if modulesErr == nil {
-		h := fnv.New32a()
 		for _, name := range installedModules {
 			h.Write([]byte(name))
 		}
-		fingerprint += fmt.Sprintf("-%08x", h.Sum32())
 	}
+	fingerprint += fmt.Sprintf("-%08x", h.Sum32())
 	done()
 
 	hoot.PruneStaleCaches(cacheDir, 24*time.Hour)
@@ -367,29 +397,24 @@ func loadMeta(rodBrowser *rod.Browser, cfg Config, dbName string, cookie *auth.C
 	if cached != nil && cached.Fingerprint == fingerprint {
 		log.Info("meta_cache_hit", "fingerprint", fingerprint)
 		hoot.TouchMetaCache(cacheDir, dbName)
+		// The disk cache only saves us re-computing the metadata; the browser still has to
+		// warm the response cache with the suite's bundle before workers navigate, or they'd
+		// all race each other to fetch it themselves. Non-fatal: worst case, workers fall
+		// back to fetching the bundle individually.
+		if _, warmErr := waitCacheWarm(warmCh, "cache_warm"); warmErr != nil {
+			log.Warn("cache_warm_fail", "err", warmErr)
+		}
 		return cached.Meta, nil
 	}
 
-	done = log.Step("meta_fetch")
-	meta, err := hoot.Fetch(rodBrowser, metaURL, cookie)
+	meta, err := waitCacheWarm(warmCh, "meta_fetch")
 	if err != nil {
 		return nil, err
 	}
-	done()
 
 	if saveErr := hoot.SaveMetaCache(cacheDir, dbName, fingerprint, meta); saveErr != nil {
 		log.Warn("meta_cache_write_fail", "err", saveErr)
 	}
-	return meta, nil
-}
-
-func fetchMetaUncached(rodBrowser *rod.Browser, metaURL string, cookie *auth.Cookie) (*hoot.Metadata, error) {
-	done := log.Step("meta_fetch")
-	meta, err := hoot.Fetch(rodBrowser, metaURL, cookie)
-	if err != nil {
-		return nil, err
-	}
-	done()
 	return meta, nil
 }
 

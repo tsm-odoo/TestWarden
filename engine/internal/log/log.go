@@ -16,6 +16,7 @@ var stepLabels = map[string]string{
 	"auth":                  "Authenticating",
 	"meta_fetch":            "Loading test metadata",
 	"meta_fingerprint":      "Checking test metadata cache",
+	"cache_warm":            "Warming response cache",
 	"workers_launch":        "Launching workers",
 }
 

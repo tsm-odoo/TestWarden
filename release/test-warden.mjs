@@ -48298,6 +48298,12 @@ function reduce(state, action) {
         case "run_wait_prompt": {
             return { ...state, awaitingQuitPrompt: true };
         }
+        case "interrupted": {
+            // The engine force-exits on SIGINT/SIGTERM without emitting run_done, so the UI
+            // must gray itself out on the signal instead of waiting for a done event that
+            // will never arrive.
+            return { ...state, running: false, currentStep: null, awaitingQuitPrompt: false };
+        }
         case "tick_elapsed": {
             return state.running
                 ? {
@@ -48541,13 +48547,18 @@ async function runOnce() {
             cwd: ENGINE_DIR,
             stdio: ["pipe", "pipe", "ignore"],
         });
-        const onSignal = () => proc.kill("SIGINT");
-        process.once("SIGINT", onSignal);
-        process.once("SIGTERM", onSignal);
         const actionEmitter = new EventEmitter$2();
         const answerEmitter = new EventEmitter$2();
         const ui = mountUi(actionEmitter, answerEmitter);
         const dispatch = (action) => actionEmitter.emit("action", action);
+        // The engine force-exits on a signal without emitting run_done, so grey out the UI
+        // here instead of waiting on a done event that will never come.
+        const onSignal = () => {
+            dispatch({ type: "interrupted" });
+            proc.kill("SIGINT");
+        };
+        process.once("SIGINT", onSignal);
+        process.once("SIGTERM", onSignal);
         let runDone = null;
         let buf = "";
         proc.stdout.on("data", (chunk) => {

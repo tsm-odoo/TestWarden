@@ -115,14 +115,19 @@ async function runOnce(): Promise<RunResult> {
             stdio: ["pipe", "pipe", "ignore"],
         });
 
-        const onSignal = () => proc.kill("SIGINT");
-        process.once("SIGINT", onSignal);
-        process.once("SIGTERM", onSignal);
-
         const actionEmitter = new EventEmitter();
         const answerEmitter = new EventEmitter();
         const ui = mountUi(actionEmitter, answerEmitter);
         const dispatch = (action: UiAction) => actionEmitter.emit("action", action);
+
+        // The engine force-exits on a signal without emitting run_done, so grey out the UI
+        // here instead of waiting on a done event that will never come.
+        const onSignal = () => {
+            dispatch({ type: "interrupted" });
+            proc.kill("SIGINT");
+        };
+        process.once("SIGINT", onSignal);
+        process.once("SIGTERM", onSignal);
 
         let runDone: RunResult | null = null;
         let buf = "";
