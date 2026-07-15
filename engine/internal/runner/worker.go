@@ -295,7 +295,7 @@ func clickPlayButton(ctx context.Context, page *rod.Page) error {
 			return fmt.Errorf("cancelled")
 		case <-ticker.C:
 			clicked, err := page.Eval(`() => {
-				const btn = document.querySelector("hoot-container")?.shadowRoot?.querySelector("button:has(.fa-play):enabled");
+				const btn = document.querySelector("hoot-container")?.shadowRoot?.querySelector("button[title='Run']:enabled");
 				if (!btn) return false;
 				btn.click();
 				return true;
