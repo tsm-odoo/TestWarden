@@ -159,7 +159,7 @@ func main() {
 
 	cfg.SuiteNames = suiteNames
 
-	if cfg.Visible || !cfg.RunUntilFail {
+	if cfg.Visible || (!cfg.RunUntilFail && cfg.TestID != "") {
 		cfg.Workers = 1
 	}
 
