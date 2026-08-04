@@ -154,20 +154,16 @@ async function runOnce(): Promise<RunResult> {
                     case "log":
                         dispatch(msg as UiAction);
                         continue;
-
                     case "step_done":
                         dispatch(msg as UiAction);
                         continue;
-
                     case "run_done":
                         runDone = { passed: msg.passed, failed: msg.failed, total: msg.total };
                         dispatch(msg as UiAction);
                         continue;
-
                     case "flaky_result":
                         dispatch(msg as UiAction);
                         continue;
-
                     case "run_wait_prompt":
                         if (!process.stdin.isTTY) {
                             proc.stdin!.write("\n");
@@ -179,7 +175,6 @@ async function runOnce(): Promise<RunResult> {
                             proc.stdin!.write("\n");
                         });
                         continue;
-
                     case "worker_start":
                         if (msg.devtools) {
                             dispatch({
@@ -189,16 +184,13 @@ async function runOnce(): Promise<RunResult> {
                             });
                         }
                         continue;
-
                     case "worker_run":
                         dispatch({ type: "worker_run", worker: msg.worker });
                         continue;
-
                     case "suite_done":
                     case "worker_done":
                     case "meta_cache_hit":
                         continue;
-
                     case "test_fail": {
                         const id = msg.id ? `[${msg.id}] ` : "";
                         const label = id + msg.test;
@@ -211,7 +203,6 @@ async function runOnce(): Promise<RunResult> {
                         });
                         continue;
                     }
-
                     case "debug": {
                         const { type: _type, event, ms, ...fields } = msg;
                         let text: string;
@@ -226,7 +217,6 @@ async function runOnce(): Promise<RunResult> {
                         dispatch({ type: "log", kind: "debug", text });
                         continue;
                     }
-
                     case "diagnostic": {
                         const prefix = msg.level === "error" ? "✖" : "▲";
                         dispatch({

@@ -203,8 +203,20 @@ function StatusBar({ state }: { state: UiState }) {
     );
 }
 
+// Keep enough significant digits that a run with failures never reports 0%.
+function formatFailureRate(failed: number, total: number): string {
+    if (total <= 0 || failed <= 0) return "0";
+    const rate = (failed / total) * 100;
+    if (rate >= 10) return String(Math.round(rate));
+    const digits = Math.min(6, Math.max(1, 1 - Math.floor(Math.log10(rate))));
+    return rate
+        .toFixed(digits)
+        .replace(/(\.\d*?)0+$/, "$1")
+        .replace(/\.$/, "");
+}
+
 function FlakyResultView({ result }: { result: { passed: number; failed: number; total: number } }) {
-    const rate = result.total > 0 ? Math.round((result.failed / result.total) * 100) : 0;
+    const rate = formatFailureRate(result.failed, result.total);
     return (
         <Box marginTop={1}>
             <Text>

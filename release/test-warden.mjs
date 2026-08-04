@@ -48436,8 +48436,21 @@ function StatusBar({ state }) {
     const testValue = String(state.testValue).padStart(3, " ");
     return (jsxRuntimeExports.jsxs(Box, { flexDirection: "column", children: [state.currentStep ? (jsxRuntimeExports.jsxs(Text, { children: [spinnerFrame, " ", state.currentStep] })) : null, jsxRuntimeExports.jsxs(Box, { marginTop: state.hasFailed ? 1 : 0, flexDirection: "column", children: [jsxRuntimeExports.jsx(StatsPanel, { state: state }), !state.multiMode ? (jsxRuntimeExports.jsxs(Text, { color: state.running ? "cyan" : "gray", dimColor: !state.running, children: [renderBar(state.testValue, state.testTotal), " ", testValue, "/", state.testTotal] })) : null, title ? (jsxRuntimeExports.jsx(Text, { color: state.running ? "white" : undefined, dimColor: !state.running, children: title })) : null] })] }));
 }
+// Keep enough significant digits that a run with failures never reports 0%.
+function formatFailureRate(failed, total) {
+    if (total <= 0 || failed <= 0)
+        return "0";
+    const rate = (failed / total) * 100;
+    if (rate >= 10)
+        return String(Math.round(rate));
+    const digits = Math.min(6, Math.max(1, 1 - Math.floor(Math.log10(rate))));
+    return rate
+        .toFixed(digits)
+        .replace(/(\.\d*?)0+$/, "$1")
+        .replace(/\.$/, "");
+}
 function FlakyResultView({ result }) {
-    const rate = result.total > 0 ? Math.round((result.failed / result.total) * 100) : 0;
+    const rate = formatFailureRate(result.failed, result.total);
     return (jsxRuntimeExports.jsx(Box, { marginTop: 1, children: jsxRuntimeExports.jsxs(Text, { children: ["Flaky check: ", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.passed }), "/", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.total }), " passed (", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.failed }), " ", "failed, ", jsxRuntimeExports.jsxs(Text, { color: "cyan", children: [rate, "%"] }), " failure rate)"] }) }));
 }
 function QuitPrompt({ onQuit }) {
