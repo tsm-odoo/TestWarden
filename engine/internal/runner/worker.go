@@ -24,14 +24,15 @@ const (
 )
 
 type event struct {
-	kind   eventKind
-	id     string
-	name   string
-	stack  string // console trace (failure) or error message (error)
-	url    string
-	passed int
-	failed int
-	worker int
+	kind    eventKind
+	id      string
+	name    string
+	stack   string // console trace (failure) or error message (error)
+	url     string
+	passed  int
+	failed  int
+	worker  int
+	warning bool // failure synthesized from a console.warn, so absent from Hoot's own tally
 }
 
 type workerConfig struct {
@@ -163,12 +164,13 @@ func execPage(
 			if !matched && consoleEvent.Type == proto.RuntimeConsoleAPICalledTypeWarning && currentTestName != "" {
 				id := testIDByName(currentTestName, testIDs, cfg.meta)
 				out <- event{
-					kind:   kindFailure,
-					id:     id,
-					name:   currentTestName,
-					stack:  fmt.Sprintf("Warning during test: %s", text),
-					url:    hoot.DebugURL(cfg.serverURL, cfg.suitePath, id),
-					worker: workerID,
+					kind:    kindFailure,
+					id:      id,
+					name:    currentTestName,
+					stack:   fmt.Sprintf("Warning during test: %s", text),
+					url:     hoot.DebugURL(cfg.serverURL, cfg.suitePath, id),
+					worker:  workerID,
+					warning: true,
 				}
 				matched = true
 			}

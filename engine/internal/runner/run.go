@@ -442,6 +442,9 @@ func drain(out <-chan event, runNum int, runUntilFail, flakyMode bool, onFailure
 				stack = ""
 			}
 			log.TestFail(workerEvent.worker, workerEvent.id, workerEvent.name, workerEvent.url, stack)
+			if workerEvent.warning {
+				failed++
+			}
 			onFailure()
 
 		case kindDone:
