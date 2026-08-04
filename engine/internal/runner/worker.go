@@ -128,16 +128,20 @@ func execPage(
 		default:
 		}
 	}
-	// EachEvent returns a wait function that must be called (in a goroutine) to start reading events.
+
+	// Track which test is currently executing so console.warn events can be attributed to it.
+	var currentTestName string
 	go page.EachEvent(
 		func(consoleEvent *proto.RuntimeConsoleAPICalled) bool {
 			text := hoot.ArgsToText(consoleEvent.Args)
 			matched := false
 			if name, ok := hoot.ParseRunning(text); ok {
+				currentTestName = name
 				log.TestStarted(name)
 				matched = true
 			}
 			if suiteDone, ok := hoot.ParseSuiteDone(text); ok {
+				currentTestName = ""
 				log.Info("suite_done", "worker", workerID, "suite", suiteDone.Suite, "passed", suiteDone.Passed, "failed", suiteDone.Failed, "ms", suiteDone.Ms)
 				matched = true
 			}
@@ -155,12 +159,26 @@ func execPage(
 					}
 				}
 			}
+			// Treat console.warn during an active test as a test failure.
+			if !matched && consoleEvent.Type == proto.RuntimeConsoleAPICalledTypeWarning && currentTestName != "" {
+				id := testIDByName(currentTestName, testIDs, cfg.meta)
+				out <- event{
+					kind:   kindFailure,
+					id:     id,
+					name:   currentTestName,
+					stack:  fmt.Sprintf("Warning during test: %s", text),
+					url:    hoot.DebugURL(cfg.serverURL, cfg.suitePath, id),
+					worker: workerID,
+				}
+				matched = true
+			}
 			if result, ok := hoot.ParseDone(text); ok {
+				currentTestName = ""
 				done <- result
 				return true
 			}
 			// A console.error that Hoot's parser don't recognize means its runner caught
-			// (and logged) an error it can't recover from on its own -- treat it the same
+			// (and logged) an error it can't recover from on its own. Treat it the same
 			// as an uncaught exception rather than waiting forever for a "done" that will
 			// never come.
 			if !matched && consoleEvent.Type == proto.RuntimeConsoleAPICalledTypeError {
