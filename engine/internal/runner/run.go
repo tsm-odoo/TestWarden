@@ -266,7 +266,7 @@ func Run(ctx context.Context, cfg Config) int {
 				})
 			}
 		}
-		code, passed, failed := drain(out, runNum, cfg.RunUntilFail, cfg.FlakyRuns > 0, onFailure)
+		code, passed, failed := drain(out, runNum, cfg.RunUntilFail, onFailure)
 		if cfg.FlakyRuns > 0 {
 			logFlakyResult(passed, failed)
 		}
@@ -431,17 +431,11 @@ func isLocalServer(serverURL string) bool {
 	}
 }
 
-func drain(out <-chan event, runNum int, runUntilFail, flakyMode bool, onFailure func()) (code, passed, failed int) {
+func drain(out <-chan event, runNum int, runUntilFail bool, onFailure func()) (code, passed, failed int) {
 	for workerEvent := range out {
 		switch workerEvent.kind {
 		case kindFailure:
-			// In --flaky-check mode a test can fail dozens of times across repetitions; the
-			// stack trace is the same noise repeated, so only the title is worth showing.
-			stack := workerEvent.stack
-			if flakyMode {
-				stack = ""
-			}
-			log.TestFail(workerEvent.worker, workerEvent.id, workerEvent.name, workerEvent.url, stack)
+			log.TestFail(workerEvent.worker, workerEvent.id, workerEvent.name, workerEvent.url, workerEvent.stack)
 			if workerEvent.warning {
 				failed++
 			}
