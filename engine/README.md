@@ -56,9 +56,10 @@ throttles the group under pressure instead of OOM-killing it.
 
 | Code | Meaning |
 |---|---|
-| `0` | All tests passed (or nothing matched the filters) |
+| `0` | All tests passed |
 | `1` | One or more tests failed |
 | `2` | Fatal startup error: Chrome launch, DB lookup, auth, metadata fetch, bad suite/test filter, `--debug` not resolving to one test, or worker setup failure |
+| `3` | No tests matched the filters |
 | `130` | Interrupted (SIGINT/SIGTERM) |
 
 ---

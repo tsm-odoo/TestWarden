@@ -128,8 +128,8 @@ func Run(ctx context.Context, cfg Config) int {
 		return 2
 	}
 	if len(testIDs) == 0 {
-		log.Warn("run_skip")
-		return 0
+		log.Error("tests_resolve", "err", "no tests matched")
+		return 3
 	}
 	if cfg.Debug && len(testIDs) != 1 {
 		log.Error("tests_resolve", "err", "--debug requires exactly one test (use --test to select a single test, not --suite-names)")

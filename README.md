@@ -67,6 +67,7 @@ metadata whenever they haven't changed for a much faster startup.
 | `0` | All tests passed |
 | `1` | One or more tests failed |
 | `2` | Fatal startup error (Chrome, auth, server unreachable, ...) |
+| `3` | No tests matched the filters |
 | `130` | Interrupted (Ctrl+C) |
 
 ## Building automation on top of warden
