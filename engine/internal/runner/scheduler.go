@@ -8,8 +8,8 @@ import (
 )
 
 // Resolves the set of test IDs to run from metadata, applying suite/test filters and the
-// desktop/skip tag rules.
-func FilterIDs(meta *hoot.Metadata, suiteNames []string, testID string) ([]string, error) {
+// preset/skip tag rules.
+func FilterIDs(meta *hoot.Metadata, suiteNames []string, testID string, mobile bool) ([]string, error) {
 	if testID != "" {
 		ref := hoot.ParseTestRef(testID)
 		if !ref.IsName() {
@@ -49,7 +49,7 @@ func FilterIDs(meta *hoot.Metadata, suiteNames []string, testID string) ([]strin
 				return nil, fmt.Errorf("unknown suite: %q", name)
 			}
 			for _, test := range meta.TestsBySuiteID[suiteID] {
-				if !seen[test.ID] && isRunnable(test.Tags) {
+				if !seen[test.ID] && isRunnable(test.Tags, mobile) {
 					seen[test.ID] = true
 					ids = append(ids, test.ID)
 				}
@@ -59,17 +59,20 @@ func FilterIDs(meta *hoot.Metadata, suiteNames []string, testID string) ([]strin
 	}
 	var ids []string
 	for testID, test := range meta.TestByID {
-		if isRunnable(test.Tags) {
+		if isRunnable(test.Tags, mobile) {
 			ids = append(ids, testID)
 		}
 	}
 	return ids, nil
 }
 
-func isRunnable(tags []string) bool {
+func isRunnable(tags []string, mobile bool) bool {
+	otherPreset := "mobile"
+	if mobile {
+		otherPreset = "desktop"
+	}
 	for _, tag := range tags {
-		switch tag {
-		case "skip", "mobile":
+		if tag == "skip" || tag == otherPreset {
 			return false
 		}
 	}

@@ -43,8 +43,9 @@ const multiRunBatch = 200_000
 
 // Top-level entry point. Returns an exit code (0, 1, or 2).
 func Run(ctx context.Context, cfg Config) int {
+	mobile := hoot.IsMobilePreset(cfg.SuitePath)
 	done := log.Step("chrome_launch")
-	wsURL, killChrome, err := browser.Launch(ctx, cfg.ChromePath, cfg.Visible)
+	wsURL, killChrome, err := browser.Launch(ctx, cfg.ChromePath, cfg.Visible, mobile)
 	if err != nil {
 		log.Error("chrome_launch", "err", err)
 		return 2
@@ -121,8 +122,9 @@ func Run(ctx context.Context, cfg Config) int {
 		cpuThrottling: cfg.CPUThrottling,
 		multiCount:    multiCount,
 		multiBail:     multiBail,
+		mobile:        mobile,
 	}
-	testIDs, err := FilterIDs(meta, cfg.SuiteNames, cfg.TestID)
+	testIDs, err := FilterIDs(meta, cfg.SuiteNames, cfg.TestID, mobile)
 	if err != nil {
 		log.Error("tests_resolve", "err", err)
 		return 2

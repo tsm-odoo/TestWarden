@@ -10,7 +10,7 @@ browser workers, and reports results as JSON lines on stdout. Run it from this d
 |---|---|---|
 | `--server` | `http://localhost:8069` | Odoo server URL |
 | `--suite` | `hoot` | Key looked up in `settings.json`'s `suites` map to get a URL path; unknown keys silently fall back to `/web/tests` |
-| `--suite-path` | _(empty)_ | Skip the map and give the URL path directly (e.g. `/web/tests`); wins over `--suite` when set |
+| `--suite-path` | _(empty)_ | Skip the map and give the URL path directly (e.g. `/web/tests`); wins over `--suite` when set. With `preset=mobile` in its query, Chrome runs at 375x667 with touch events, and the `mobile` tests run instead of the `desktop` ones, like Odoo's `MobileWebSuite` |
 | `--suite-names` | _(all)_ | Comma-separated suite names to filter (e.g. `web,mail`) |
 | `--test` | _(all)_ | Run a single test by full name or 8-char hex ID |
 | `--workers` | `4` (or `workers` in `settings.json`) | Number of parallel browser contexts. With `--test`, every worker runs the same test independently while with `--suite-names` every test of the suite is split accross workers. The `minLoad` based worker capping only applies to suites |
