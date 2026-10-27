@@ -48392,7 +48392,9 @@ function LogLineView({ line }) {
         case "error":
             return jsxRuntimeExports.jsx(Text, { color: "red", children: line.text });
         case "debug":
-            return (jsxRuntimeExports.jsx(Text, { color: "magenta", dimColor: true, children: line.text }));
+            return (jsxRuntimeExports.jsxs(Text, { color: "magenta", dimColor: true, children: ["\uD83D\uDC1B ", line.text] }));
+        case "console":
+            return jsxRuntimeExports.jsx(Text, { color: "blue", children: line.text });
         case "blank":
             return jsxRuntimeExports.jsx(Text, { children: " " });
         default:
@@ -48514,8 +48516,10 @@ program
     .option("--visible", "Run in visible browser with devtools and full-screen window", false)
     .option("--debug", "Pause for interactive debugging on a single test (implies -t, workers=1)", false)
     .option("--cpu-throttling <number>", "CPU throttling factor (0-100)", parseInt, 0)
+    .option("--console", "Print the browser console lines Hoot doesn't emit itself", false)
+    .option("--worker-timeout <seconds>", "Fail a worker whose page shows no test progress for this long (0 disables)", (value) => parseInt(value))
+    .option("--verbose", "Print the command issued to the engine", false)
     // Legacy flags, check if it should be removed later. Probably keep cpu limit & load parameters.
-    .option("--verbose", "ignored", false)
     .option("--devtools", "ignored", false)
     .option("--cpu-limit <number>", "ignored", parseInt, 0)
     .option("--min-worker-load <number>", "ignored", parseInt, 0)
@@ -48554,16 +48558,31 @@ if (opts.debug) {
 if (opts.cpuThrottling) {
     wardenArgs.push("--cpu-throttling", String(opts.cpuThrottling));
 }
+if (opts.console) {
+    wardenArgs.push("--console");
+}
+if (opts.workerTimeout !== undefined) {
+    wardenArgs.push("--worker-timeout", String(opts.workerTimeout));
+}
+// Resolves with the engine's own exit code, so a run that dies before any test ran (server
+// unreachable, unknown suite, no test matched, ...) doesn't read as green.
 async function runOnce() {
     return new Promise((resolve, reject) => {
-        const proc = spawn(WARDEN_BIN, wardenArgs, {
-            cwd: ENGINE_DIR,
-            stdio: ["pipe", "pipe", "ignore"],
-        });
         const actionEmitter = new EventEmitter$2();
         const answerEmitter = new EventEmitter$2();
         const ui = mountUi(actionEmitter, answerEmitter);
         const dispatch = (action) => actionEmitter.emit("action", action);
+        if (opts.verbose) {
+            dispatch({
+                type: "log",
+                kind: "debug",
+                text: `${WARDEN_BIN} ${wardenArgs.join(" ")}`,
+            });
+        }
+        const proc = spawn(WARDEN_BIN, wardenArgs, {
+            cwd: ENGINE_DIR,
+            stdio: ["pipe", "pipe", "ignore"],
+        });
         // The engine force-exits on a signal without emitting run_done, so grey out the UI
         // here instead of waiting on a done event that will never come.
         const onSignal = () => {
@@ -48572,7 +48591,6 @@ async function runOnce() {
         };
         process.once("SIGINT", onSignal);
         process.once("SIGTERM", onSignal);
-        let runDone = null;
         let buf = "";
         proc.stdout.on("data", (chunk) => {
             buf += chunk.toString();
@@ -48600,7 +48618,6 @@ async function runOnce() {
                         dispatch(msg);
                         continue;
                     case "run_done":
-                        runDone = { passed: msg.passed, failed: msg.failed, total: msg.total };
                         dispatch(msg);
                         continue;
                     case "flaky_result":
@@ -48631,7 +48648,6 @@ async function runOnce() {
                         continue;
                     case "suite_done":
                     case "worker_done":
-                    case "meta_cache_hit":
                         continue;
                     case "test_fail": {
                         const id = msg.id ? `[${msg.id}] ` : "";
@@ -48642,6 +48658,15 @@ async function runOnce() {
                             worker: msg.worker,
                             text,
                             stack: msg.stack,
+                        });
+                        continue;
+                    }
+                    case "console": {
+                        const test = msg.test ? `[${msg.test}] ` : "";
+                        dispatch({
+                            type: "log",
+                            kind: "console",
+                            text: `console.${msg.level} ${test}${msg.text}`,
                         });
                         continue;
                     }
@@ -48680,17 +48705,16 @@ async function runOnce() {
             process.off("SIGTERM", onSignal);
             reject(new Error(`Failed to spawn warden: ${err.message}`));
         });
-        proc.on("close", () => {
+        proc.on("close", (code, signal) => {
             process.off("SIGINT", onSignal);
             process.off("SIGTERM", onSignal);
             ui.stop();
-            resolve(runDone ?? { passed: 0, failed: 0, total: 0 });
+            resolve(code ?? (signal ? 130 : 2));
         });
     });
 }
 async function main() {
-    const result = await runOnce();
-    process.exit(result.failed > 0 ? 1 : 0);
+    process.exit(await runOnce());
 }
 main().catch((err) => {
     process.stderr.write(`${err.message}\n`);

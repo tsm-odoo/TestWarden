@@ -45,9 +45,11 @@ const external = [
 
 const config = {
     input: "build/index.js",
+    // Bundled into build/ first; the build script only swaps it into release/ once
+    // everything succeeded, so a failed build leaves the previous client usable.
     output: [
         {
-            dir: "release",
+            dir: "build/release",
             format: "es",
             entryFileNames: "test-warden.mjs",
             chunkFileNames: "[name]-[hash].mjs",

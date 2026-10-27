@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sort"
 	"strings"
 )
 
@@ -96,57 +95,6 @@ func Authenticate(serverURL, dbName, login, password string) (*Cookie, error) {
 	}
 
 	return nil, fmt.Errorf("authenticate: session_id not found (HTTP %d)", resp.StatusCode)
-}
-
-// Returns the sorted list of currently installed module names. Used both to detect a
-// module install/uninstall for the metadata cache fingerprint, and to restrict the addon
-// directories that get scanned for test files to ones that are actually installed (and so
-// can actually show up in Hoot's metadata).
-func ListInstalledModules(serverURL string, cookie *Cookie) ([]string, error) {
-	body, _ := json.Marshal(map[string]any{
-		"jsonrpc": "2.0",
-		"method":  "call",
-		"params": map[string]any{
-			"model":  "ir.module.module",
-			"method": "search_read",
-			"args": []any{
-				[]any{[]any{"state", "=", "installed"}},
-				[]string{"name"},
-			},
-			"kwargs": map[string]any{},
-		},
-	})
-	req, err := http.NewRequest("POST", serverURL+"/web/dataset/call_kw", bytes.NewReader(body))
-	if err != nil {
-		return nil, fmt.Errorf("installed modules: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.AddCookie(&http.Cookie{Name: cookie.Name, Value: cookie.Value})
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("installed modules: %w", err)
-	}
-	defer resp.Body.Close()
-	var rpcResp struct {
-		Error *struct {
-			Message string `json:"message"`
-		} `json:"error"`
-		Result []struct {
-			Name string `json:"name"`
-		} `json:"result"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
-		return nil, fmt.Errorf("installed modules: decode: %w", err)
-	}
-	if rpcResp.Error != nil {
-		return nil, fmt.Errorf("installed modules: %s", rpcResp.Error.Message)
-	}
-	names := make([]string, len(rpcResp.Result))
-	for i, module := range rpcResp.Result {
-		names[i] = module.Name
-	}
-	sort.Strings(names)
-	return names, nil
 }
 
 func hostOnly(serverURL string) string {

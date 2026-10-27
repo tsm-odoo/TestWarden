@@ -15,8 +15,6 @@ var stepLabels = map[string]string{
 	"download_chrome_shell": "Downloading chrome headless shell",
 	"auth":                  "Authenticating",
 	"meta_fetch":            "Loading test metadata",
-	"meta_fingerprint":      "Checking test metadata cache",
-	"cache_warm":            "Warming response cache",
 	"workers_launch":        "Launching workers",
 }
 
@@ -118,6 +116,12 @@ func Dyn(value string) string {
 
 func TestFail(worker int, id, test, url, stack string) {
 	emit(map[string]any{"type": "test_fail", "worker": worker, "id": id, "test": test, "url": url, "stack": stack})
+}
+
+// Forwards a browser console line Hoot didn't emit itself (--console). test is the test
+// running on that worker when the line was logged, empty outside of a test.
+func Console(worker int, test, level, text string) {
+	emit(map[string]any{"type": "console", "worker": worker, "test": test, "level": level, "text": text})
 }
 
 // Raw telemetry that isn't shaped like a UI action; the client either ignores it or

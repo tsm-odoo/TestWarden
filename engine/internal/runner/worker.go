@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/go-rod/rod"
@@ -42,11 +44,13 @@ type workerConfig struct {
 	meta          *hoot.Metadata
 	failFast      bool
 	browserWsURL  string
-	debugTest     bool // add &debugTest=true to worker URL (single test, visible mode)
-	cpuThrottling int  // CPU throttling factor (0-100), applied via CDP
-	multiCount    int  // when > 0, repeat testIDs this many times in-page via Hoot's multi config instead of reloading
-	multiBail     bool // when multiCount > 0, whether Hoot should stop at the first failed repetition instead of running them all
-	mobile        bool // Hoot's mobile preset: 375x667 viewport, like Odoo's MobileWebSuite
+	debugTest     bool          // add &debugTest=true to worker URL (single test, visible mode)
+	cpuThrottling int           // CPU throttling factor (0-100), applied via CDP
+	multiCount    int           // when > 0, repeat testIDs this many times in-page via Hoot's multi config instead of reloading
+	multiBail     bool          // when multiCount > 0, whether Hoot should stop at the first failed repetition instead of running them all
+	mobile        bool          // Hoot's mobile preset: 375x667 viewport, like Odoo's MobileWebSuite
+	console       bool          // forward console lines Hoot doesn't emit itself (log.Console)
+	workerTimeout time.Duration // fail the worker after this long without test progress; 0 disables
 }
 
 // Creates and configures a new browser page for a worker. Caller must close the page when done.
@@ -54,7 +58,6 @@ func setupPage(
 	ctx context.Context,
 	browser *rod.Browser,
 	workerID int,
-	testIDs []string,
 	cfg workerConfig,
 ) (*rod.Page, error) {
 	page, err := browser.Page(proto.TargetCreateTarget{URL: "about:blank"})
@@ -138,19 +141,40 @@ func execPage(
 		}
 	}
 
+	// Last time the page reported test progress (a test starting or a suite ending), and the
+	// test running at that point, read by the stall watchdog below.
+	var lastProgress atomic.Int64
+	var lastTest atomic.Value
+	lastTest.Store("")
+	markProgress := func() { lastProgress.Store(time.Now().UnixNano()) }
+
+	// The listener is bound to this call: once execPage returns, it must not keep sending on
+	// out, which the caller closes after every worker has returned.
+	listenCtx, stopListening := context.WithCancel(ctx)
+	listenerDone := make(chan struct{})
+	defer func() {
+		stopListening()
+		<-listenerDone
+	}()
+
 	// Track which test is currently executing so console.warn events can be attributed to it.
 	var currentTestName string
-	go page.EachEvent(
+	// Nesting of console groups at the current point of the page's console (see --console).
+	groupDepth := 0
+	wait := page.Context(listenCtx).EachEvent(
 		func(consoleEvent *proto.RuntimeConsoleAPICalled) bool {
 			text := hoot.ArgsToText(consoleEvent.Args)
 			matched := false
 			if name, ok := hoot.ParseRunning(text); ok {
 				currentTestName = name
+				lastTest.Store(name)
+				markProgress()
 				log.TestStarted(name)
 				matched = true
 			}
 			if suiteDone, ok := hoot.ParseSuiteDone(text); ok {
 				currentTestName = ""
+				markProgress()
 				log.Info("suite_done", "worker", workerID, "suite", suiteDone.Suite, "passed", suiteDone.Passed, "failed", suiteDone.Failed, "ms", suiteDone.Ms)
 				matched = true
 			}
@@ -187,6 +211,9 @@ func execPage(
 				done <- result
 				return true
 			}
+			if cfg.console && !matched {
+				forwardConsole(consoleEvent, text, &groupDepth, workerID, currentTestName)
+			}
 			// A console.error that Hoot's parser don't recognize means its runner caught
 			// (and logged) an error it can't recover from on its own. Treat it the same
 			// as an uncaught exception rather than waiting forever for a "done" that will
@@ -204,7 +231,11 @@ func execPage(
 			reportPageErr(msg)
 			return false
 		},
-	)()
+	)
+	go func() {
+		wait()
+		close(listenerDone)
+	}()
 	// Bail stops Hoot at the first failed repetition. Forced on for --run-until-fail's multi
 	// batch (no point grinding through 200k more reps once one has failed) but left off for
 	// --flaky-check, which needs every repetition to run so the final ratio covers all of them.
@@ -226,8 +257,33 @@ func execPage(
 		return err
 	}
 	log.Info("worker_run", "worker", workerID)
+
+	// Watchdog for a page that stops making progress without throwing (e.g. a frozen
+	// renderer): Hoot's own per-test timeout can't fire then, so nothing else would end the
+	// run. Not armed in debug mode, where the test is paused on purpose.
+	var stallCheck <-chan time.Time
+	if cfg.workerTimeout > 0 && !cfg.debugTest {
+		markProgress()
+		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
+		stallCheck = ticker.C
+	}
 	for {
 		select {
+		case <-stallCheck:
+			idle := time.Since(time.Unix(0, lastProgress.Load()))
+			if idle < cfg.workerTimeout {
+				continue
+			}
+			// Closed at the browser level: Page.close goes through the renderer, which may be
+			// the very thing that is stuck.
+			_, _ = proto.TargetCloseTarget{TargetID: page.TargetID}.Call(page.Browser())
+			at := "before the first test started"
+			if name := lastTest.Load().(string); name != "" {
+				at = fmt.Sprintf("last test started: %q", name)
+			}
+			return fmt.Errorf("worker stalled: no test progress for %s (%s), page closed",
+				idle.Round(time.Second), at)
 		case result := <-done:
 			out <- event{kind: kindDone, passed: result.Passed, failed: result.Failed, worker: workerID}
 			return nil
@@ -244,6 +300,30 @@ func execPage(
 			return fmt.Errorf("uncaught page error: %s", msg)
 		case <-ctx.Done():
 			return fmt.Errorf("cancelled")
+		}
+	}
+}
+
+// Forwards a console line Hoot didn't emit itself, as a test would with a plain console.log.
+// Workers run Hoot at its debug log level, which floods the console with its own
+// instrumentation (request traces, dispatched events, grouped mock server logs): anything
+// inside a console group, not logged through log/info/debug/warn, or styled with Hoot's
+// "%c[PREFIX]%c" header is part of it. Errors are left out as they already end the run as
+// page errors.
+func forwardConsole(consoleEvent *proto.RuntimeConsoleAPICalled, text string, groupDepth *int, workerID int, testName string) {
+	kind := consoleEvent.Type
+	switch kind {
+	case proto.RuntimeConsoleAPICalledTypeStartGroup, proto.RuntimeConsoleAPICalledTypeStartGroupCollapsed:
+		*groupDepth++
+	case proto.RuntimeConsoleAPICalledTypeEndGroup:
+		*groupDepth = max(*groupDepth-1, 0)
+	case proto.RuntimeConsoleAPICalledTypeLog, proto.RuntimeConsoleAPICalledTypeInfo,
+		proto.RuntimeConsoleAPICalledTypeDebug, proto.RuntimeConsoleAPICalledTypeWarning:
+		args := consoleEvent.Args
+		hootStyled := len(args) > 0 && args[0].Type == proto.RuntimeRemoteObjectTypeString &&
+			strings.HasPrefix(args[0].Value.Str(), "%c[")
+		if *groupDepth == 0 && !hootStyled {
+			log.Console(workerID, testName, string(kind), text)
 		}
 	}
 }

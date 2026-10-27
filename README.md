@@ -29,15 +29,17 @@ this doc only covers the most usefull ones.
 
 | Flag | What it does |
 |---|---|
-| `--suite <path-or-name>` | Which suite to run: a name resolved via `settings.json`, or a literal path (e.g. `/web/tests`) |
+| `--suite <path-or-name>` | Which suite to run: a name (`hoot` and `livechat` are built in, more via `settings.json`). Use `--suite-path` for a literal URL path. An unknown name fails instead of running everything |
 | `-t, --test <id>` | Run a single test, by name (partial name accepted) or ID|
-| `--workers <n>` | Parallel browser contexts (default 4) |
+| `--workers <n>` | Parallel browser contexts (default 4). Tests tagged `focus required` still run alone, on one worker after the others |
 | `--fail-fast` | Stop at the first failure instead of finishing the run |
 | `--once` | Run once and exit instead of looping until a failure |
 | `--flaky-check <n>` | Repeat a single test (`-t`) N times total (split across `--workers`) without stopping on failure, then report how often it passed vs failed |
 | `--visible` | Show the browser window with devtools open |
 | `--cpu-throttling` | Throttle the cpu, making it easier to reproduce runbot scenario (high load) (2/4 is a good starting point) |
 | `--debug` | Show the UI for interactive debugging (implies `-t`, one worker, visible) |
+| `--console` | Print the browser's `console.log/info/debug/warn` lines, prefixed with the test that logged them |
+| `--worker-timeout <s>` | Fail a worker that shows no test progress for this many seconds (default 60, `0` disables) |
 
 ## `settings.json`
 
@@ -49,23 +51,21 @@ Read from `engine/settings.json` at startup; every field is optional.
   "workers": 4,
   "suites": {
     "hoot": "/web/tests",
-    "livechat": "/im_livechat/static/tests/embed/livechat_test_suite.html"
+    "livechat": "/web/tests/livechat"
   },
-  "chrome": "/path/to/chrome-headless-shell",
-  "worktreeContainer": "/path/to/worktree/container"
+  "chrome": "/path/to/chrome-headless-shell"
 }
 ```
 
-**Set `worktreeContainer`.** Without it, test metadata are re fetched from the browser on
-every single run. With it, warden fingerprints addons' `*.test.js` files and reuses cached
-metadata whenever they haven't changed for a much faster startup.
+Test metadata are read from the live suite page on every run, so new tests are picked up
+as soon as the server serves them.
 
 ## Exit codes
 
 | Code | Meaning |
 |---|---|
 | `0` | All tests passed |
-| `1` | One or more tests failed |
+| `1` | One or more tests failed, or a worker crashed or stalled |
 | `2` | Fatal startup error (Chrome, auth, server unreachable, ...) |
 | `3` | No tests matched the filters |
 | `130` | Interrupted (Ctrl+C) |

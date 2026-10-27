@@ -2,6 +2,7 @@ package runner
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"test-warden/internal/hoot"
@@ -77,6 +78,26 @@ func isRunnable(tags []string, mobile bool) bool {
 		}
 	}
 	return true
+}
+
+// Hoot tag for tests that need the page to hold the real focus (tags set on a describe
+// block are inherited by its tests).
+const focusRequiredTag = "focus required"
+
+func requiresFocus(meta *hoot.Metadata, testID string) bool {
+	return slices.Contains(meta.TestByID[testID].Tags, focusRequiredTag)
+}
+
+// Splits ids into the tests tagged focusRequiredTag and the rest, keeping their order.
+func partitionFocusRequired(meta *hoot.Metadata, ids []string) (focusIDs, otherIDs []string) {
+	for _, id := range ids {
+		if requiresFocus(meta, id) {
+			focusIDs = append(focusIDs, id)
+		} else {
+			otherIDs = append(otherIDs, id)
+		}
+	}
+	return focusIDs, otherIDs
 }
 
 // Splits ids into at most workers slices, each with at least minLoad items.

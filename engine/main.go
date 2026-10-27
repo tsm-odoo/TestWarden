@@ -10,8 +10,10 @@ import (
 	"os/exec"
 	"os/signal"
 	"runtime"
+	"sort"
 	"strings"
 	"syscall"
+	"time"
 
 	"test-warden/internal/log"
 	"test-warden/internal/runner"
@@ -32,12 +34,18 @@ func (slice *stringSlice) Set(value string) error {
 
 // Mirrors the relevant fields of settings.json.
 type settings struct {
-	WorktreeContainer string            `json:"worktreeContainer"`
-	Suites            map[string]string `json:"suites"`
-	Chrome            string            `json:"chrome"`
-	MinLoad           int               `json:"minLoad"`
-	MemoryLimit       string            `json:"memoryLimit"`
-	Workers           int               `json:"workers"`
+	Suites      map[string]string `json:"suites"`
+	Chrome      string            `json:"chrome"`
+	MinLoad     int               `json:"minLoad"`
+	MemoryLimit string            `json:"memoryLimit"`
+	Workers     int               `json:"workers"`
+}
+
+// Suites resolvable by name without any settings.json entry. Entries from the settings
+// suites map are added on top and win on conflict.
+var defaultSuites = map[string]string{
+	"hoot":     "/web/tests",
+	"livechat": "/web/tests/livechat",
 }
 
 func loadSettings(path string) (settings, error) {
@@ -120,7 +128,7 @@ func main() {
 
 	flag.StringVar(&cfg.ServerURL, "server", "http://localhost:8069", "Odoo server URL")
 	flag.StringVar(&cfg.SuitePath, "suite-path", "", "URL path of the test suite (overrides --suite lookup)")
-	flag.StringVar(&suite, "suite", "hoot", "Suite type (hoot, qunit, livechat…); resolved via settings.json suites map")
+	flag.StringVar(&suite, "suite", "hoot", "Suite name (hoot, livechat…); resolved via the built-in suites and settings.json suites map")
 	flag.Var(&suiteNames, "suite-names", "Suite names to run, comma-separated")
 	flag.StringVar(&cfg.TestID, "test", "", "Run a single test by ID or name")
 	defaultWorkers := 4
@@ -135,6 +143,9 @@ func main() {
 	flag.BoolVar(&cfg.Visible, "visible", false, "Run in visible browser with devtools and full-screen window")
 	flag.BoolVar(&cfg.PauseBeforeExit, "pause-before-exit", false, "Keep browser open after failure; press any key to quit")
 	flag.BoolVar(&cfg.Debug, "debug", false, "Pause for interactive debugging on a single test (implies --pause-before-exit --workers 1)")
+	flag.BoolVar(&cfg.Console, "console", false, "Forward the browser console lines Hoot doesn't emit itself, attributed to the running test")
+	var workerTimeout int
+	flag.IntVar(&workerTimeout, "worker-timeout", 60, "Fail a worker whose page shows no test progress for this many seconds (0 disables; ignored with --debug)")
 
 	hidden := map[string]bool{"rod": true}
 	flag.Usage = func() {
@@ -149,7 +160,7 @@ func main() {
 		})
 		fmt.Fprintf(os.Stderr, "\nExamples:\n")
 		fmt.Fprintf(os.Stderr, "  warden --workers 4\n")
-		fmt.Fprintf(os.Stderr, "  warden --suite qunit --suite-names web,mail --workers 2\n")
+		fmt.Fprintf(os.Stderr, "  warden --suite livechat --workers 2\n")
 		fmt.Fprintf(os.Stderr, "  warden --test \"Form view renders correctly\"\n")
 		fmt.Fprintf(os.Stderr, "  warden --fail-fast --workers 2\n")
 		fmt.Fprintf(os.Stderr, "  warden --test \"Form view renders correctly\" --debug\n")
@@ -158,18 +169,33 @@ func main() {
 	flag.Parse()
 
 	cfg.SuiteNames = suiteNames
+	cfg.WorkerTimeout = time.Duration(workerTimeout) * time.Second
 
 	if cfg.Visible || (!cfg.RunUntilFail && cfg.TestID != "" && cfg.FlakyRuns == 0) {
 		cfg.Workers = 1
 	}
 
-	cfg.WorktreeContainer = appSettings.WorktreeContainer
 	if cfg.SuitePath == "" {
-		if path, ok := appSettings.Suites[suite]; ok {
-			cfg.SuitePath = path
-		} else {
-			cfg.SuitePath = "/web/tests"
+		suites := make(map[string]string, len(defaultSuites)+len(appSettings.Suites))
+		for name, path := range defaultSuites {
+			suites[name] = path
 		}
+		for name, path := range appSettings.Suites {
+			suites[name] = path
+		}
+		path, ok := suites[suite]
+		if !ok {
+			names := make([]string, 0, len(suites))
+			for name := range suites {
+				names = append(names, name)
+			}
+			sort.Strings(names)
+			log.Error("suite_resolve", "err", fmt.Sprintf(
+				"unknown suite %q (known: %s); add it to the suites map in settings.json or pass --suite-path",
+				suite, strings.Join(names, ", ")))
+			os.Exit(2)
+		}
+		cfg.SuitePath = path
 	}
 	if appSettings.Chrome != "" {
 		cfg.ChromePath = appSettings.Chrome

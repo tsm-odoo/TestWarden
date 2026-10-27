@@ -92,9 +92,11 @@ function LogLineView({ line }: { line: LogLine }) {
         case "debug":
             return (
                 <Text color="magenta" dimColor>
-                    {line.text}
+                    🐛 {line.text}
                 </Text>
             );
+        case "console":
+            return <Text color="blue">{line.text}</Text>;
         case "blank":
             return <Text> </Text>;
         default:
