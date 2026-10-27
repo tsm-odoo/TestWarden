@@ -141,7 +141,7 @@ func freePort(start int) (int, error) {
 	return 0, fmt.Errorf("no free port found in range %d-%d", start, start+99)
 }
 
-func Launch(ctx context.Context, chromePath string, visible bool) (wsURL string, kill func(), err error) {
+func Launch(ctx context.Context, chromePath string, visible, touch bool) (wsURL string, kill func(), err error) {
 	var bin string
 
 	if !visible {
@@ -204,6 +204,9 @@ func Launch(ctx context.Context, chromePath string, visible bool) (wsURL string,
 			Set("disable-software-rasterizer").
 			Set("disable-accelerated-2d-canvas").
 			Set("window-size", "1366,768")
+	}
+	if touch {
+		chromeLaunch = chromeLaunch.Set("touch-events")
 	}
 
 	url, err := chromeLaunch.Context(ctx).Launch()

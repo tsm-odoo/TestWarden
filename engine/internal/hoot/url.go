@@ -2,8 +2,14 @@ package hoot
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 )
+
+func IsMobilePreset(suitePath string) bool {
+	parsed, err := url.Parse(suitePath)
+	return err == nil && parsed.Query().Get("preset") == "mobile"
+}
 
 // Returns a URL that loads Hoot without starting tests.
 func MetaURL(serverURL, suitePath string) string {

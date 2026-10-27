@@ -46,6 +46,7 @@ type workerConfig struct {
 	cpuThrottling int  // CPU throttling factor (0-100), applied via CDP
 	multiCount    int  // when > 0, repeat testIDs this many times in-page via Hoot's multi config instead of reloading
 	multiBail     bool // when multiCount > 0, whether Hoot should stop at the first failed repetition instead of running them all
+	mobile        bool // Hoot's mobile preset: 375x667 viewport, like Odoo's MobileWebSuite
 }
 
 // Creates and configures a new browser page for a worker. Caller must close the page when done.
@@ -92,6 +93,13 @@ func setupPage(
 	if err := (proto.EmulationSetFocusEmulationEnabled{Enabled: true}.Call(page)); err != nil {
 		page.Close()
 		return nil, fmt.Errorf("enable focus emulation: %w", err)
+	}
+	if cfg.mobile {
+		viewport := proto.EmulationSetDeviceMetricsOverride{Width: 375, Height: 667, DeviceScaleFactor: 1}
+		if err := viewport.Call(page); err != nil {
+			page.Close()
+			return nil, fmt.Errorf("set mobile viewport: %w", err)
+		}
 	}
 
 	if cfg.cpuThrottling > 0 {
