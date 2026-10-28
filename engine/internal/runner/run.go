@@ -385,6 +385,13 @@ func drain(out <-chan event, onFailure func()) (passed, failed int) {
 				onFailure()
 			}
 
+		case kindPartial:
+			passed += workerEvent.passed
+			failed += workerEvent.failed
+			if len(workerEvent.notRun) > 0 {
+				log.TestsNotRun(workerEvent.worker, workerEvent.notRun)
+			}
+
 		case kindError:
 			log.Error("worker_error", "worker", workerEvent.worker, "err", workerEvent.stack)
 			failed++

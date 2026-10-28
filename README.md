@@ -38,8 +38,8 @@ this doc only covers the most usefull ones.
 | `--visible` | Show the browser window with devtools open |
 | `--cpu-throttling` | Throttle the cpu, making it easier to reproduce runbot scenario (high load) (2/4 is a good starting point) |
 | `--debug` | Show the UI for interactive debugging (implies `-t`, one worker, visible) |
-| `--console` | Print the browser's `console.log/info/debug/warn` lines, prefixed with the test that logged them |
-| `--worker-timeout <s>` | Fail a worker that shows no test progress for this many seconds (default 60, `0` disables) |
+| `--console` | Print the browser's `console.log/info/debug/warn` lines, prefixed with the test that logged them; objects are shown as `{a: 1, b: "x"}` |
+| `--worker-timeout <s>` | Fail a worker that shows no test progress for this many seconds (default 60, `0` disables). Its already finished tests stay counted, and the ones it never reached are listed as not run |
 
 ## `settings.json`
 

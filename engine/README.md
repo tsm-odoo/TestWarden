@@ -20,7 +20,7 @@ browser workers, and reports results as JSON lines on stdout. Run it from this d
 | `--visible` | `false` | Launch a visible browser with devtools and a full-screen window |
 | `--pause-before-exit` | `false` | Keep the browser open after a failure; press any key to quit |
 | `--debug` | `false` | Pause for debugging on a single test. implies `--pause-before-exit` and `--workers 1`|
-| `--console` | `false` | Emit `console` events for the browser console lines Hoot doesn't emit itself (top-level `console.log/info/debug/warn` calls), attributed to the running test |
+| `--console` | `false` | Emit `console` events for the browser console lines Hoot doesn't emit itself (top-level `console.log/info/debug/warn` calls), attributed to the running test. Objects and arrays are rendered from their preview (`{a: 1, b: "x"}`, cut with `…` when large) |
 | `--worker-timeout` | `60` | Seconds a worker may go without test progress (a test starting or a suite ending) before its page is closed and the worker fails the run. `0` disables; never armed with `--debug` |
 
 ## settings.json
@@ -54,7 +54,7 @@ throttles the group under pressure instead of OOM-killing it.
 | Code | Meaning |
 |---|---|
 | `0` | All tests passed |
-| `1` | One or more tests failed, or a worker crashed or stalled (`--worker-timeout`) |
+| `1` | One or more tests failed, or a worker crashed or stalled (`--worker-timeout`). The tests a dead worker had already finished still count in `run_done`; the ones it never reached are listed in `tests_not_run` and are not counted |
 | `2` | Fatal startup error: unknown `--suite`, Chrome launch, DB lookup, auth, metadata fetch, bad suite/test filter, `--debug` not resolving to one test, or worker setup failure |
 | `3` | No tests matched the filters |
 | `130` | Interrupted (SIGINT/SIGTERM) |
@@ -77,6 +77,7 @@ Every line on stdout is one JSON object, tagged by `type`. Parse line by line.
 | `worker_run` | `worker` | Worker clicked Run |
 | `worker_done` | `worker, passed, failed` | Worker finished the run |
 | `worker_error` | via `diagnostic`, `label, message` | Worker/browser crashed or stalled mid-run |
+| `tests_not_run` | `worker, count, ids` | A worker died (stalled, page error) before reaching these tests of its share; sent right before its `worker_error`. They are not in `run_done`'s `passed`/`failed`/`total`. Not sent with `--flaky-check`/`--run-until-fail` |
 | `console` | `worker, test, level, text` | Browser console line (`--console` only); `test` is empty outside of a test |
 | `run_done` | `run, passed, failed, total, willRerun` | End of run — always the last line of a run |
 | `run_wait_prompt` | _(none)_ | About to block on stdin (`--pause-before-exit` after a failure) |

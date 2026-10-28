@@ -219,6 +219,16 @@ async function runOnce(): Promise<number> {
                         });
                         continue;
                     }
+                    case "tests_not_run": {
+                        const shown = (msg.ids as string[]).slice(0, 10).join(" ");
+                        const more = msg.count > 10 ? ` (+${msg.count - 10} more)` : "";
+                        dispatch({
+                            type: "log",
+                            kind: "warn",
+                            text: `▲ worker ${msg.worker}: ${msg.count} tests did not run: ${shown}${more}`,
+                        });
+                        continue;
+                    }
                     case "console": {
                         const test = msg.test ? `[${msg.test}] ` : "";
                         dispatch({

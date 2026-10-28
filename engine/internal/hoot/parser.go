@@ -98,14 +98,29 @@ func ParseDone(text string) (DoneResult, bool) {
 // Joins a console call's arguments into a single string, skipping the CSS
 // arguments that accompany Hoot's styled "%c[HOOT]%c msg" logs.
 func ArgsToText(args []*proto.RuntimeRemoteObject) string {
+	return joinArgs(args, func(arg *proto.RuntimeRemoteObject) string { return arg.Description })
+}
+
+// Like ArgsToText, but objects and arrays are rendered from their preview ({a: 1, b: "x"})
+// instead of their bare class name ("Object"). Meant for output read by humans only: Hoot's
+// own lines are matched against ArgsToText.
+func ArgsToPreviewText(args []*proto.RuntimeRemoteObject) string {
+	return joinArgs(args, func(arg *proto.RuntimeRemoteObject) string {
+		if arg.Type == proto.RuntimeRemoteObjectTypeObject && arg.Preview != nil &&
+			arg.Subtype != proto.RuntimeRemoteObjectSubtypeError && arg.Subtype != proto.RuntimeRemoteObjectSubtypeNode {
+			return previewText(arg.Preview)
+		}
+		return arg.Description
+	})
+}
+
+func joinArgs(args []*proto.RuntimeRemoteObject, describe func(*proto.RuntimeRemoteObject) string) string {
 	parts := make([]string, 0, len(args))
 	for _, arg := range args {
 		var str string
 		if arg.Type == proto.RuntimeRemoteObjectTypeString {
 			str = arg.Value.Str()
-		} else if arg.Description != "" {
-			str = arg.Description
-		} else {
+		} else if str = describe(arg); str == "" {
 			continue
 		}
 		if strings.HasPrefix(str, "color:") || strings.HasPrefix(str, "background:") || strings.HasPrefix(str, "font-") {
@@ -114,4 +129,54 @@ func ArgsToText(args []*proto.RuntimeRemoteObject) string {
 		parts = append(parts, strings.ReplaceAll(str, "%c", ""))
 	}
 	return strings.Join(parts, " ")
+}
+
+// Renders the preview CDP attaches to an object: only its first few properties, and nested
+// objects one level deep, so the output ends in an ellipsis when the object is larger.
+func previewText(preview *proto.RuntimeObjectPreview) string {
+	if preview == nil {
+		return ""
+	}
+	// Map and set entries are previews of their own, primitives included.
+	if preview.Type == proto.RuntimeObjectPreviewTypeString {
+		return strconv.Quote(preview.Description)
+	}
+	if preview.Type != proto.RuntimeObjectPreviewTypeObject {
+		return preview.Description
+	}
+	items := make([]string, 0, len(preview.Properties)+len(preview.Entries)+1)
+	isArray := preview.Subtype == proto.RuntimeObjectPreviewSubtypeArray
+	for _, prop := range preview.Properties {
+		value := prop.Value
+		if prop.Type == proto.RuntimePropertyPreviewTypeString {
+			value = strconv.Quote(value)
+		} else if prop.ValuePreview != nil {
+			value = previewText(prop.ValuePreview)
+		}
+		if isArray {
+			items = append(items, value)
+		} else {
+			items = append(items, prop.Name+": "+value)
+		}
+	}
+	for _, entry := range preview.Entries {
+		value := previewText(entry.Value)
+		if entry.Key != nil {
+			value = previewText(entry.Key) + " => " + value
+		}
+		items = append(items, value)
+	}
+	if preview.Overflow {
+		items = append(items, "…")
+	}
+	body := strings.Join(items, ", ")
+	switch {
+	case isArray:
+		return "[" + body + "]"
+	case preview.Subtype == proto.RuntimeObjectPreviewSubtypeMap, preview.Subtype == proto.RuntimeObjectPreviewSubtypeSet:
+		return preview.Description + " {" + body + "}"
+	case preview.Description != "" && preview.Description != "Object":
+		return preview.Description + " {" + body + "}"
+	}
+	return "{" + body + "}"
 }
