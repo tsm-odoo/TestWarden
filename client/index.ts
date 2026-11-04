@@ -1,3 +1,8 @@
+/**
+ * CLI entry point: parses the options, spawns the Go engine and feeds its JSON line output to
+ * the terminal UI.
+ */
+
 import { spawn } from "child_process";
 import { EventEmitter } from "events";
 import path from "path";
@@ -167,17 +172,11 @@ async function runOnce(): Promise<number> {
                 }
                 switch (msg.type) {
                     case "step_start":
+                    case "step_done":
                     case "run_start":
                     case "test_started":
                     case "log":
-                        dispatch(msg as UiAction);
-                        continue;
-                    case "step_done":
-                        dispatch(msg as UiAction);
-                        continue;
                     case "run_done":
-                        dispatch(msg as UiAction);
-                        continue;
                     case "flaky_result":
                         dispatch(msg as UiAction);
                         continue;

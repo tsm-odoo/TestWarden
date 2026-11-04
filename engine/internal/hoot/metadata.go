@@ -1,3 +1,5 @@
+// Test metadata: loads Hoot in a throwaway page and reads every registered test and suite.
+
 package hoot
 
 import (

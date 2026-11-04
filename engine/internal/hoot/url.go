@@ -1,3 +1,5 @@
+// URL builders for the Hoot test pages (metadata, worker and debug URLs).
+
 package hoot
 
 import (

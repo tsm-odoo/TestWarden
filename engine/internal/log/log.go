@@ -1,3 +1,5 @@
+// Engine output protocol: one JSON object per line on stdout, consumed by the client UI.
+
 package log
 
 import (

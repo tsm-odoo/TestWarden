@@ -1,3 +1,8 @@
+/**
+ * Terminal UI (ink): log, worker devtools links, failures, progress bar and quit prompt,
+ * rendered from the state held by ui_state.
+ */
+
 import { EventEmitter } from "events";
 import { render, Box, Static, Text, useInput } from "ink";
 import { useEffect, useReducer, useState } from "react";

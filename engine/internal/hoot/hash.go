@@ -1,16 +1,15 @@
+// Test references: a test is given either by its hex hash ID or by its full name.
+
 package hoot
 
-// TestRef identifies a single test by either its 8-char hex hash ID (as
-// computed and reported by hoot itself in the metadata) or its full "/"
-// joined name. Both forms are accepted by --test-id.
+// TestRef identifies a single test by its 8-char hex hash ID (as reported by Hoot in the
+// metadata) or by its name, a substring of the full "/" joined name.
 type TestRef struct {
-	id   string // 8-char hex, set only when input was already an ID
-	name string // non-empty only when input was a name, not an ID
+	id   string
+	name string
 }
 
-// ParseTestRef parses a --test-id value. An 8-char lowercase/uppercase hex
-// string is treated as a raw ID; anything else is treated as a full name to
-// be resolved against metadata.
+// ParseTestRef treats an 8-char hex string as an ID and anything else as a name.
 func ParseTestRef(input string) TestRef {
 	if isHexID(input) {
 		return TestRef{id: input}
@@ -18,13 +17,10 @@ func ParseTestRef(input string) TestRef {
 	return TestRef{name: input}
 }
 
-// ID returns the 8-char hex hash ready to use in URLs and metadata lookups.
 func (ref TestRef) ID() string { return ref.id }
 
-// IsName reports whether the ref was given as a name rather than a raw hash.
 func (ref TestRef) IsName() bool { return ref.name != "" }
 
-// String returns the original input (name if given as name, hash otherwise).
 func (ref TestRef) String() string {
 	if ref.name != "" {
 		return ref.name
@@ -32,14 +28,12 @@ func (ref TestRef) String() string {
 	return ref.id
 }
 
-// isHexID returns true for exactly 8 hex characters.
 func isHexID(hexStr string) bool {
 	if len(hexStr) != 8 {
 		return false
 	}
-	for i := 0; i < len(hexStr); i++ {
-		char := hexStr[i]
-		if !((char >= '0' && char <= '9') || (char >= 'a' && char <= 'f') || (char >= 'A' && char <= 'F')) {
+	for _, char := range hexStr {
+		if !(char >= '0' && char <= '9' || char >= 'a' && char <= 'f' || char >= 'A' && char <= 'F') {
 			return false
 		}
 	}

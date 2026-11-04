@@ -1,3 +1,5 @@
+// Odoo JSON-RPC helpers: database discovery and session authentication.
+
 package auth
 
 import (
