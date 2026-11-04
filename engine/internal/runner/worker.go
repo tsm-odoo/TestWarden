@@ -112,6 +112,7 @@ type workerConfig struct {
 	failFast      bool
 	browserWsURL  string
 	debugTest     bool          // add &debugTest=true to worker URL (single test, visible mode)
+	debugLogs     bool          // run Hoot at its debug log level (visible or debug mode)
 	cpuThrottling int           // CPU throttling factor (0-100), applied via CDP
 	multiCount    int           // when > 0, repeat testIDs this many times in-page via Hoot's multi config instead of reloading
 	multiBail     bool          // when multiCount > 0, whether Hoot should stop at the first failed repetition instead of running them all
@@ -318,7 +319,7 @@ func execPage(
 	// batch (no point grinding through 200k more reps once one has failed) but left off for
 	// --flaky-check, which needs every repetition to run so the final ratio covers all of them.
 	bail := cfg.failFast || cfg.multiBail
-	workerURL := hoot.WorkerURL(cfg.serverURL, cfg.suitePath, testIDs, bail, cfg.debugTest)
+	workerURL := hoot.WorkerURL(cfg.serverURL, cfg.suitePath, testIDs, bail, cfg.debugTest, cfg.debugLogs)
 	if err := page.Navigate(workerURL); err != nil {
 		return fmt.Errorf("navigate: %w", err)
 	}

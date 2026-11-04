@@ -3,7 +3,11 @@ package browser
 import (
 	"encoding/base64"
 	"encoding/json"
+	"net"
+	"net/http"
+	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -24,34 +28,92 @@ type callKwBody struct {
 }
 
 var globalCache = &responseCache{
-	entries: make(map[string]cachedEntry),
+	entries: make(map[string]*cachedEntry),
+	byPath:  make(map[string]*cachedEntry),
 }
 
 type cachedEntry struct {
-	status     int
-	statusText string
-	headers    []*proto.FetchHeaderEntry
-	body       []byte
+	status  int
+	headers []*proto.FetchHeaderEntry
+	body    []byte
+	path    string // under which cacheServer serves it
 }
 
 type responseCache struct {
 	mu      sync.Mutex
-	entries map[string]cachedEntry
+	entries map[string]*cachedEntry
+	byPath  map[string]*cachedEntry
 }
 
-func (cache *responseCache) get(key string) (cachedEntry, bool) {
+func (cache *responseCache) get(key string) (*cachedEntry, bool) {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
 	entry, ok := cache.entries[key]
 	return entry, ok
 }
 
-func (cache *responseCache) setIfAbsent(key string, entry cachedEntry) {
+func (cache *responseCache) setIfAbsent(key string, entry *cachedEntry) {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
-	if _, exists := cache.entries[key]; !exists {
-		cache.entries[key] = entry
+	if _, exists := cache.entries[key]; exists {
+		return
 	}
+	entry.path = "/" + strconv.Itoa(len(cache.entries))
+	cache.entries[key] = entry
+	cache.byPath[entry.path] = entry
+}
+
+func (cache *responseCache) getByPath(path string) (*cachedEntry, bool) {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+	entry, ok := cache.byPath[path]
+	return entry, ok
+}
+
+// Serves the cached responses over plain HTTP on a loopback port. A cache hit is sent there
+// with Fetch.continueRequest's url override, so Chrome streams the body from this server
+// instead of receiving it inside a Fetch.fulfillRequest message: tens of MB per worker and
+// page load, base64 encoded into JSON on our side and decoded again on Chrome's.
+var cacheServer struct {
+	once sync.Once
+	url  string // "" if it could not start, hits are then fulfilled through CDP
+}
+
+func cacheServerURL() string {
+	cacheServer.once.Do(func() {
+		listener, err := net.Listen("tcp", "127.0.0.1:0")
+		if err != nil {
+			return
+		}
+		cacheServer.url = "http://" + listener.Addr().String()
+		go http.Serve(listener, http.HandlerFunc(serveCached))
+	})
+	return cacheServer.url
+}
+
+func serveCached(writer http.ResponseWriter, request *http.Request) {
+	entry, ok := globalCache.getByPath(request.URL.Path)
+	if !ok {
+		http.NotFound(writer, request)
+		return
+	}
+	for _, header := range entry.headers {
+		writer.Header().Add(header.Name, header.Value)
+	}
+	writer.WriteHeader(entry.status)
+	writer.Write(entry.body)
+}
+
+func isLoopback(serverURL string) bool {
+	parsed, err := url.Parse(serverURL)
+	if err != nil {
+		return false
+	}
+	if parsed.Hostname() == "localhost" {
+		return true
+	}
+	ip := net.ParseIP(parsed.Hostname())
+	return ip != nil && ip.IsLoopback()
 }
 
 // Force aggressive Cache-Control headers on all responses to speed up reloads.
@@ -61,8 +123,14 @@ func SetupPageCache(page *rod.Page, serverURL string) error {
 	if err := (proto.FetchEnable{}).Call(page); err != nil {
 		return err
 	}
+	// Sending a request for a remote server to a loopback address could be blocked by
+	// Chrome's local network access checks, so such hits are fulfilled through CDP.
+	serveURL := ""
+	if isLoopback(serverURL) {
+		serveURL = cacheServerURL()
+	}
 	go page.EachEvent(func(e *proto.FetchRequestPaused) bool {
-		go handleFetchPaused(page, e)
+		go handleFetchPaused(page, e, serveURL)
 		return false
 	})()
 	return nil
@@ -108,13 +176,17 @@ func cacheKey(e *proto.FetchRequestPaused) (key string) {
 	return ""
 }
 
-func handleFetchPaused(page *rod.Page, e *proto.FetchRequestPaused) {
+func handleFetchPaused(page *rod.Page, e *proto.FetchRequestPaused, serveURL string) {
 	key := cacheKey(e)
 
 	// Request stage: no response yet, serve from cache if possible.
 	if e.ResponseStatusCode == nil {
 		if key != "" {
 			if entry, hit := globalCache.get(key); hit {
+				if serveURL != "" {
+					_ = proto.FetchContinueRequest{RequestID: e.RequestID, URL: serveURL + entry.path}.Call(page)
+					return
+				}
 				_ = proto.FetchFulfillRequest{
 					RequestID:       e.RequestID,
 					ResponseCode:    entry.status,
@@ -142,11 +214,10 @@ func handleFetchPaused(page *rod.Page, e *proto.FetchRequestPaused) {
 			} else {
 				bodyBytes = []byte(result.Body)
 			}
-			globalCache.setIfAbsent(key, cachedEntry{
-				status:     status,
-				statusText: e.ResponseStatusText,
-				headers:    e.ResponseHeaders,
-				body:       bodyBytes,
+			globalCache.setIfAbsent(key, &cachedEntry{
+				status:  status,
+				headers: patchHeaders(stripEncodingHeaders(e.ResponseHeaders), "public, max-age=31536000"),
+				body:    bodyBytes,
 			})
 		}
 	}

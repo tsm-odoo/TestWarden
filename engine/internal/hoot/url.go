@@ -18,9 +18,16 @@ func MetaURL(serverURL, suitePath string) string {
 
 // Returns a URL for a worker to run a specific set of tests. bail=true adds &bail=1 to
 // stop on the first failure. debugTest=true adds &debugTest=true to pause the runner for
-// interactive debugging.
-func WorkerURL(serverURL, suitePath string, testIDs []string, bail, debugTest bool) string {
-	base := fmt.Sprintf("%s%s?debug=assets&timeout=15000&loglevel=3&showdetail=failed&manual=true", serverURL, suitePath)
+// interactive debugging. debugLogs=true raises Hoot's log level from "tests" (2: test starts,
+// suite ends and failures, all the engine reads) to "debug" (3), which also logs every
+// dispatched event and assertion: only worth its cost when someone reads the page's console,
+// as each line goes through CDP to the engine.
+func WorkerURL(serverURL, suitePath string, testIDs []string, bail, debugTest, debugLogs bool) string {
+	logLevel := 2
+	if debugLogs {
+		logLevel = 3
+	}
+	base := fmt.Sprintf("%s%s?debug=assets&timeout=15000&loglevel=%d&showdetail=failed&manual=true", serverURL, suitePath, logLevel)
 	if bail {
 		base += "&bail=1"
 	}

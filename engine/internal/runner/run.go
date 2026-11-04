@@ -136,6 +136,7 @@ func Run(ctx context.Context, cfg Config) int {
 		failFast:      cfg.FailFast,
 		browserWsURL:  wsURL,
 		debugTest:     cfg.Debug || (cfg.Visible && cfg.TestID != ""),
+		debugLogs:     cfg.Debug || cfg.Visible,
 		cpuThrottling: cfg.CPUThrottling,
 		multiCount:    multiCount,
 		multiBail:     multiBail,
