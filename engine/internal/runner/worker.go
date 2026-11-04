@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -23,6 +24,8 @@ const (
 	kindFailure eventKind = "failure"
 	kindDone    eventKind = "done"
 	kindError   eventKind = "error"
+	// What a worker got through before it failed, sent right ahead of its kindError.
+	kindPartial eventKind = "partial"
 )
 
 type event struct {
@@ -34,7 +37,71 @@ type event struct {
 	passed  int
 	failed  int
 	worker  int
-	warning bool // failure synthesized from a console.warn, so absent from Hoot's own tally
+	warning bool     // failure synthesized from a console.warn, so absent from Hoot's own tally
+	notRun  []string // kindPartial: ids of the worker's tests that never started
+}
+
+// What one worker has gone through so far, to still account for it when it dies before
+// Hoot's final summary. Filled by the console listener, read when execPage fails.
+type progress struct {
+	mu      sync.Mutex
+	started []string        // tests in the order they started
+	running bool            // the last started test may still be running (no suite end since)
+	failed  map[string]bool // tests with a failure reported by Hoot
+}
+
+func (p *progress) start(name string) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.started = append(p.started, name)
+	p.running = true
+}
+
+func (p *progress) suiteEnded() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.running = false
+}
+
+func (p *progress) fail(name string) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.failed[name] = true
+}
+
+// Tallies the tests that completed before the worker died: all the started ones but the last,
+// which is the one the worker died in unless its suite had already ended. Also returns the ids
+// of the tests that never started.
+func (p *progress) partial(workerID int, testIDs []string, meta *hoot.Metadata) event {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	completed := p.started
+	if p.running && len(completed) > 0 {
+		completed = completed[:len(completed)-1]
+	}
+	result := event{kind: kindPartial, worker: workerID}
+	seen := make(map[string]bool, len(p.started))
+	for _, name := range completed {
+		if seen[name] {
+			continue
+		}
+		seen[name] = true
+		if p.failed[name] {
+			result.failed++
+		} else {
+			result.passed++
+		}
+	}
+	startedIDs := make(map[string]bool, len(p.started))
+	for _, name := range p.started {
+		startedIDs[testIDByName(name, testIDs, meta)] = true
+	}
+	for _, id := range testIDs {
+		if !startedIDs[id] {
+			result.notRun = append(result.notRun, id)
+		}
+	}
+	return result
 }
 
 type workerConfig struct {
@@ -45,6 +112,7 @@ type workerConfig struct {
 	failFast      bool
 	browserWsURL  string
 	debugTest     bool          // add &debugTest=true to worker URL (single test, visible mode)
+	debugLogs     bool          // run Hoot at its debug log level (visible or debug mode)
 	cpuThrottling int           // CPU throttling factor (0-100), applied via CDP
 	multiCount    int           // when > 0, repeat testIDs this many times in-page via Hoot's multi config instead of reloading
 	multiBail     bool          // when multiCount > 0, whether Hoot should stop at the first failed repetition instead of running them all
@@ -126,7 +194,7 @@ func execPage(
 	testIDs []string,
 	cfg workerConfig,
 	out chan<- event,
-) error {
+) (execErr error) {
 	// Enable Runtime and register the exception/console listeners before navigating, so
 	// an error thrown or logged early can't be missed and hang execPage forever.
 	if err := (proto.RuntimeEnable{}.Call(page)); err != nil {
@@ -140,6 +208,14 @@ func execPage(
 		default:
 		}
 	}
+
+	// Repeated tests (multi) share their names, so only a plain run can be tallied by name.
+	tally := &progress{failed: map[string]bool{}}
+	defer func() {
+		if execErr != nil && cfg.multiCount == 0 && ctx.Err() == nil {
+			out <- tally.partial(workerID, testIDs, cfg.meta)
+		}
+	}()
 
 	// Last time the page reported test progress (a test starting or a suite ending), and the
 	// test running at that point, read by the stall watchdog below.
@@ -168,12 +244,14 @@ func execPage(
 			if name, ok := hoot.ParseRunning(text); ok {
 				currentTestName = name
 				lastTest.Store(name)
+				tally.start(name)
 				markProgress()
 				log.TestStarted(name)
 				matched = true
 			}
 			if suiteDone, ok := hoot.ParseSuiteDone(text); ok {
 				currentTestName = ""
+				tally.suiteEnded()
 				markProgress()
 				log.Info("suite_done", "worker", workerID, "suite", suiteDone.Suite, "passed", suiteDone.Passed, "failed", suiteDone.Failed, "ms", suiteDone.Ms)
 				matched = true
@@ -181,6 +259,7 @@ func execPage(
 			if name, stack, ok := hoot.ParseFailure(text); ok {
 				matched = true
 				if !hoot.IsAbortedFailure(stack) {
+					tally.fail(name)
 					id := testIDByName(name, testIDs, cfg.meta)
 					out <- event{
 						kind:   kindFailure,
@@ -212,7 +291,7 @@ func execPage(
 				return true
 			}
 			if cfg.console && !matched {
-				forwardConsole(consoleEvent, text, &groupDepth, workerID, currentTestName)
+				forwardConsole(consoleEvent, hoot.ArgsToPreviewText(consoleEvent.Args), &groupDepth, workerID, currentTestName)
 			}
 			// A console.error that Hoot's parser don't recognize means its runner caught
 			// (and logged) an error it can't recover from on its own. Treat it the same
@@ -240,7 +319,7 @@ func execPage(
 	// batch (no point grinding through 200k more reps once one has failed) but left off for
 	// --flaky-check, which needs every repetition to run so the final ratio covers all of them.
 	bail := cfg.failFast || cfg.multiBail
-	workerURL := hoot.WorkerURL(cfg.serverURL, cfg.suitePath, testIDs, bail, cfg.debugTest)
+	workerURL := hoot.WorkerURL(cfg.serverURL, cfg.suitePath, testIDs, bail, cfg.debugTest, cfg.debugLogs)
 	if err := page.Navigate(workerURL); err != nil {
 		return fmt.Errorf("navigate: %w", err)
 	}

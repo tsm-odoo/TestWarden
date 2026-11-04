@@ -118,6 +118,12 @@ func TestFail(worker int, id, test, url, stack string) {
 	emit(map[string]any{"type": "test_fail", "worker": worker, "id": id, "test": test, "url": url, "stack": stack})
 }
 
+// Lists the tests of a worker that died before reaching them, so they aren't mistaken for
+// passed ones.
+func TestsNotRun(worker int, ids []string) {
+	emit(map[string]any{"type": "tests_not_run", "worker": worker, "count": len(ids), "ids": ids})
+}
+
 // Forwards a browser console line Hoot didn't emit itself (--console). test is the test
 // running on that worker when the line was logged, empty outside of a test.
 func Console(worker int, test, level, text string) {

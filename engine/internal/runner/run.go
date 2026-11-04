@@ -136,6 +136,7 @@ func Run(ctx context.Context, cfg Config) int {
 		failFast:      cfg.FailFast,
 		browserWsURL:  wsURL,
 		debugTest:     cfg.Debug || (cfg.Visible && cfg.TestID != ""),
+		debugLogs:     cfg.Debug || cfg.Visible,
 		cpuThrottling: cfg.CPUThrottling,
 		multiCount:    multiCount,
 		multiBail:     multiBail,
@@ -383,6 +384,13 @@ func drain(out <-chan event, onFailure func()) (passed, failed int) {
 			failed += workerEvent.failed
 			if workerEvent.failed > 0 {
 				onFailure()
+			}
+
+		case kindPartial:
+			passed += workerEvent.passed
+			failed += workerEvent.failed
+			if len(workerEvent.notRun) > 0 {
+				log.TestsNotRun(workerEvent.worker, workerEvent.notRun)
 			}
 
 		case kindError:
