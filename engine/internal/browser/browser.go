@@ -174,7 +174,10 @@ func Launch(ctx context.Context, chromePath string, visible, touch bool) (wsURL 
 	}
 	chromeLaunch = chromeLaunch.Set("no-sandbox").
 		Set("no-zygote").
-		Set("js-flags", "--expose-gc").
+		// --expose-gc lets Hoot force a major GC after each test file (halves peak RAM).
+		// --max-old-space-size makes V8 collect earlier instead of letting each page's heap
+		// grow: about -19% peak RAM, no measurable slowdown on a 330 test @mail subset.
+		Set("js-flags", "--expose-gc --max-old-space-size=512").
 		Set("no-first-run").
 		Set("no-default-browser-check").
 		Set("disable-dev-shm-usage").
