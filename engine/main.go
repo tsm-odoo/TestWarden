@@ -1,3 +1,6 @@
+// Command-line entry point of the engine: parses flags and settings.json, optionally
+// re-executes itself under a systemd memory-capped scope, then hands over to the runner.
+
 package main
 
 import (
@@ -96,7 +99,6 @@ func reexecInCgroupScope(limit string) {
 	if err := cmd.Start(); err != nil {
 		return
 	}
-	// Relay termination signals to the scoped child.
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	go func() {

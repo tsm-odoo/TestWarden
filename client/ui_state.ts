@@ -1,3 +1,7 @@
+/**
+ * UI state and reducer: the actions the client dispatches and how they update the state.
+ */
+
 const OSC = "\x1b]";
 const BEL = "\x07";
 

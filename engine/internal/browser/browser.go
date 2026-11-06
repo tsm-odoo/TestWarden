@@ -1,8 +1,12 @@
+// Chrome lifecycle: locates or downloads chrome-headless-shell and launches it with the
+// flags the runner needs.
+
 package browser
 
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,8 +16,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
-
-	"context"
 
 	"github.com/go-rod/rod/lib/launcher"
 

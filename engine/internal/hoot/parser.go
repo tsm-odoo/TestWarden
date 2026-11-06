@@ -1,3 +1,6 @@
+// Parsers for the `[HOOT]` console lines (running, failure, suite end, completion) and
+// rendering of console arguments as text.
+
 package hoot
 
 import (

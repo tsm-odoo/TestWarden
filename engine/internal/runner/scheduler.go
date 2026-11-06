@@ -1,3 +1,5 @@
+// Test selection and scheduling: resolves the IDs to run and splits them across workers.
+
 package runner
 
 import (

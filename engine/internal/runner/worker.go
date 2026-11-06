@@ -1,3 +1,6 @@
+// Per-page worker: drives one browser page through a Hoot run, turns its console output
+// into events and watches it for stalls.
+
 package runner
 
 import (
@@ -121,7 +124,7 @@ type workerConfig struct {
 	workerTimeout time.Duration // fail the worker after this long without test progress; 0 disables
 }
 
-// Creates and configures a new browser page for a worker. Caller must close the page when done.
+// Creates a worker's page (cookie, cache, focus and viewport emulation). The caller closes it.
 func setupPage(
 	ctx context.Context,
 	browser *rod.Browser,

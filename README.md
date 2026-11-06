@@ -3,16 +3,16 @@
 Runs Odoo's Hoot tests in parallel headless Chrome tabs and shows live progress in the
 terminal.
 
-- **`engine/`** — a Go binary (`test-warden-engine`) that launches Chrome, talks to the Odoo server,
+- **`engine/`**: a Go binary (`test-warden-engine`) that launches Chrome, talks to the Odoo server,
   and drives the actual test runs.
-- **`client/`** — a small Node/TypeScript CLI that spawns `test-warden-engine`, parses its JSON
+- **`client/`**: a small Node/TypeScript CLI that spawns `test-warden-engine`, parses its JSON
   output, and renders the progress bar / logs.
 
-## Setup (should already be done)
+## Setup
 
 ```bash
 npm install
-npm run build      # compiles and bundles client into release/test-warden.mjs
+npm run build      # compiles and bundles client into `release/`
 
 cd engine
 make release
@@ -25,7 +25,7 @@ node release/test-warden.cjs --server-url http://localhost:8069 --suite hoot
 ```
 
 Run `node release/test-warden.cjs --help` at any time for the full, current list of flags,
-this doc only covers the most usefull ones.
+this doc only covers the most useful ones.
 
 | Flag | What it does |
 |---|---|

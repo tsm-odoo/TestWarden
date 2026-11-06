@@ -1,3 +1,6 @@
+// Top-level run: sets up the browser, auth and metadata, splits the tests in phases of
+// parallel chunks, and loops over runs until the exit condition is met.
+
 package runner
 
 import (
@@ -40,7 +43,7 @@ type Config struct {
 // in execPage) makes Hoot stop as soon as the test fails.
 const multiRunBatch = 200_000
 
-// Top-level entry point. Returns an exit code (0, 1, or 2).
+// Run returns the process exit code.
 func Run(ctx context.Context, cfg Config) int {
 	mobile := hoot.IsMobilePreset(cfg.SuitePath)
 	done := log.Step("chrome_launch")
@@ -290,7 +293,7 @@ func Run(ctx context.Context, cfg Config) int {
 		}
 		log.RunDone(runNum, passed, failed, passed+failed, cfg.RunUntilFail && failed == 0)
 		if cfg.FlakyRuns > 0 {
-			logFlakyResult(passed, failed)
+			log.FlakyResult(passed, failed, passed+failed)
 		}
 		if failed > 0 {
 			if cfg.PauseBeforeExit {
@@ -399,10 +402,4 @@ func drain(out <-chan event, onFailure func()) (passed, failed int) {
 		}
 	}
 	return passed, failed
-}
-
-// Reports the aggregate pass/fail ratio across every --flaky-check repetition of a single test, once
-// the whole batch has finished.
-func logFlakyResult(passed, failed int) {
-	log.FlakyResult(passed, failed, passed+failed)
 }

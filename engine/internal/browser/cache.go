@@ -1,3 +1,6 @@
+// Response cache shared by all pages: intercepts requests through the CDP Fetch domain and
+// serves repeated ones (bundles, test document, Hoot definitions) from memory.
+
 package browser
 
 import (
