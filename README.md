@@ -3,9 +3,9 @@
 Runs Odoo's Hoot tests in parallel headless Chrome tabs and shows live progress in the
 terminal.
 
-- **`engine/`**: a Go binary (`test-warden-engine`) that launches Chrome, talks to the Odoo server,
+- **`engine/`**: a Go binary (`engine/dist/engine-<os>-<arch>`) that launches Chrome, talks to the Odoo server,
   and drives the actual test runs.
-- **`client/`**: a small Node/TypeScript CLI that spawns `test-warden-engine`, parses its JSON
+- **`client/`**: a small Node/TypeScript CLI that spawns the engine binary for the current platform, parses its JSON
   output, and renders the progress bar / logs.
 
 ## Setup
