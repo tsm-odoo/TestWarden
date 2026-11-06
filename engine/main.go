@@ -63,6 +63,8 @@ func loadSettings(path string) (settings, error) {
 	return loaded, nil
 }
 
+const interruptGracePeriod = 5 * time.Second
+
 // Marks a process as already running inside the systemd-run scope created
 // by reexecInCgroupScope, so it doesn't try to pivot again.
 const inSystemdScopeEnv = "IN_SYSTEMD_SCOPE"
@@ -114,7 +116,7 @@ func reexecInCgroupScope(limit string) {
 	case waitErr == nil:
 		os.Exit(0)
 	case errors.As(waitErr, &exitErr):
-		os.Exit(exitErr.ExitCode())
+		os.Exit(childExitCode(exitErr))
 	default:
 		os.Exit(1)
 	}
@@ -210,12 +212,22 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	// Force-exit if Run doesn't return promptly after cancellation. Chrome is a child
-	// process so the OS reaps it when we die.
+	// Run normally returns soon after cancellation, once its deferred cleanup has closed
+	// the pages and killed Chrome. Only force the exit if that cleanup hangs.
 	go func() {
 		<-ctx.Done()
-		os.Exit(130)
+		time.Sleep(interruptGracePeriod)
+		os.Exit(runner.ExitInterrupted)
 	}()
 
 	os.Exit(runner.Run(ctx, cfg))
+}
+
+// childExitCode follows the shell convention of 128 + signal number for a child killed by
+// a signal, where ExitCode reports -1.
+func childExitCode(exitErr *exec.ExitError) int {
+	if status, ok := exitErr.Sys().(syscall.WaitStatus); ok && status.Signaled() {
+		return 128 + int(status.Signal())
+	}
+	return exitErr.ExitCode()
 }
