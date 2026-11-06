@@ -13,7 +13,7 @@ browser workers, and reports results as JSON lines on stdout. Run it from this d
 | `--suite-path` | _(empty)_ | Skip the map and give the URL path directly (e.g. `/web/tests`); wins over `--suite` when set. With `preset=mobile` in its query, Chrome runs at 375x667 with touch events, and the `mobile` tests run instead of the `desktop` ones, like Odoo's `MobileWebSuite` |
 | `--suite-names` | _(all)_ | Comma-separated suite names to filter (e.g. `web,mail`) |
 | `--test` | _(all)_ | Run a single test by full name or 8-char hex ID |
-| `--workers` | `4` (or `workers` in `settings.json`) | Number of parallel browser contexts. With `--test`, every worker runs the same test independently while with `--suite-names` every test of the suite is split accross workers. The `minLoad` based worker capping only applies to suites. Tests tagged `focus required` never run alongside another page: in a split run they go to a single worker once the others are done, and a single `--test` drops to one worker |
+| `--workers` | `4` (or `workers` in `settings.json`) | Number of parallel browser contexts. With `--test`, every worker runs the same test independently while with `--suite-names` every test of the suite is split across workers. The `minLoad` based worker capping only applies to suites. Tests tagged `focus required` never run alongside another page: in a split run they go to a single worker once the others are done, and a single `--test` drops to one worker |
 | `--fail-fast` | `false` | Stop on the first failure (`bail=1`) |
 | `--run-until-fail` | `false` | Run tests (reloading pages) until a failure is found |
 | `--flaky-check` | `0` | Repeat a single test N times total (split across `--workers`, rounded up) without stopping on failure, then report a pass/fail ratio (requires `--test`; incompatible with `--run-until-fail`, `--fail-fast`, `--debug`) |
@@ -79,7 +79,7 @@ Every line on stdout is one JSON object, tagged by `type`. Parse line by line.
 | `worker_error` | via `diagnostic`, `label, message` | Worker/browser crashed or stalled mid-run |
 | `tests_not_run` | `worker, count, ids` | A worker died (stalled, page error) before reaching these tests of its share; sent right before its `worker_error`. They are not in `run_done`'s `passed`/`failed`/`total`. Not sent with `--flaky-check`/`--run-until-fail` |
 | `console` | `worker, test, level, text` | Browser console line (`--console` only); `test` is empty outside of a test |
-| `run_done` | `run, passed, failed, total, willRerun` | End of run — always the last line of a run |
+| `run_done` | `run, passed, failed, total, willRerun` | End of run: always the last line of a run |
 | `run_wait_prompt` | _(none)_ | About to block on stdin (`--pause-before-exit` after a failure) |
 | `log` | `kind, text` | Free-form info line, e.g. `"ℹ N tests across M workers"` |
 
