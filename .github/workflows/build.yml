@@ -1,0 +1,49 @@
+name: Rebuild binaries
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "engine/**"
+      - "!engine/dist/**"
+      - "client/**"
+      - "package.json"
+      - "package-lock.json"
+      - "rollup.config.js"
+      - "tsconfig.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rebuild-binaries
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: engine/go.mod
+          cache-dependency-path: engine/go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: make -C engine release
+      - name: Commit and push if anything changed
+        run: |
+          git add -A engine/dist release
+          if git diff --cached --quiet; then
+            echo "Binaries already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "[IMP] build: rebuild binaries"
+          git pull --rebase
+          git push

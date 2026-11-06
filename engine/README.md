@@ -1,6 +1,6 @@
 # engine
 
-`test-warden-engine` is the Go binary that launches Chrome, drives Hoot tests in parallel
+`engine-<os>-<arch>` (in `dist/`) is the Go binary that launches Chrome, drives Hoot tests in parallel
 browser workers, and reports results as JSON lines on stdout. Run it from this directory
 (it reads `settings.json` from the cwd).
 
