@@ -238,6 +238,8 @@ async function runOnce(): Promise<number> {
                         continue;
                     }
                     case "debug": {
+                        // `type` is pulled out only so it stays out of `fields`.
+                        // eslint-disable-next-line no-unused-vars
                         const { type: _type, event, ms, ...fields } = msg;
                         let text: string;
                         if (ms !== undefined) {
