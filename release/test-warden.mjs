@@ -48192,6 +48192,9 @@ const useInput = (inputHandler, options = {}) => {
     }, [options.isActive, stdin, internal_exitOnCtrlC, inputHandler]);
 };
 
+/**
+ * UI state and reducer: the actions the client dispatches and how they update the state.
+ */
 const OSC = "\x1b]";
 const BEL = "\x07";
 function osc8(url, label) {
@@ -48440,20 +48443,22 @@ function StatusBar({ state }) {
 }
 // Keep enough significant digits that a run with failures never reports 0%.
 function formatFailureRate(failed, total) {
-    if (total <= 0 || failed <= 0)
+    if (total <= 0 || failed <= 0) {
         return "0";
+    }
     const rate = (failed / total) * 100;
-    if (rate >= 10)
+    if (rate >= 10) {
         return String(Math.round(rate));
+    }
     const digits = Math.min(6, Math.max(1, 1 - Math.floor(Math.log10(rate))));
     return rate
         .toFixed(digits)
         .replace(/(\.\d*?)0+$/, "$1")
         .replace(/\.$/, "");
 }
-function FlakyResultView({ result }) {
+function FlakyResultView({ result, }) {
     const rate = formatFailureRate(result.failed, result.total);
-    return (jsxRuntimeExports.jsx(Box, { marginTop: 1, children: jsxRuntimeExports.jsxs(Text, { children: ["Flaky check: ", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.passed }), "/", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.total }), " passed (", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.failed }), " ", "failed, ", jsxRuntimeExports.jsxs(Text, { color: "cyan", children: [rate, "%"] }), " failure rate)"] }) }));
+    return (jsxRuntimeExports.jsx(Box, { marginTop: 1, children: jsxRuntimeExports.jsxs(Text, { children: ["Flaky check: ", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.passed }), "/", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.total }), " passed (", jsxRuntimeExports.jsx(Text, { color: "cyan", children: result.failed }), " failed, ", jsxRuntimeExports.jsxs(Text, { color: "cyan", children: [rate, "%"] }), " ", "failure rate)"] }) }));
 }
 function QuitPrompt({ onQuit }) {
     useInput(() => {
@@ -48490,6 +48495,10 @@ function mountUi(actionEmitter, answerEmitter) {
     };
 }
 
+/**
+ * CLI entry point: parses the options, spawns the Go engine and feeds its JSON line output to
+ * the terminal UI.
+ */
 const __dirname$1 = path$1.dirname(fileURLToPath(import.meta.url));
 const ENGINE_DIR = path$1.resolve(__dirname$1, "../engine");
 const ARCH_MAP = { x64: "amd64", arm64: "arm64" };
@@ -48609,17 +48618,11 @@ async function runOnce() {
                 }
                 switch (msg.type) {
                     case "step_start":
+                    case "step_done":
                     case "run_start":
                     case "test_started":
                     case "log":
-                        dispatch(msg);
-                        continue;
-                    case "step_done":
-                        dispatch(msg);
-                        continue;
                     case "run_done":
-                        dispatch(msg);
-                        continue;
                     case "flaky_result":
                         dispatch(msg);
                         continue;
@@ -48681,6 +48684,8 @@ async function runOnce() {
                         continue;
                     }
                     case "debug": {
+                        // `type` is pulled out only so it stays out of `fields`.
+                        // eslint-disable-next-line no-unused-vars
                         const { type: _type, event, ms, ...fields } = msg;
                         let text;
                         if (ms !== undefined) {
