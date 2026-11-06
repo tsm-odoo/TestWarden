@@ -5,6 +5,7 @@ package runner
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"strings"
@@ -322,7 +323,12 @@ func execPage(
 	// batch (no point grinding through 200k more reps once one has failed) but left off for
 	// --flaky-check, which needs every repetition to run so the final ratio covers all of them.
 	bail := cfg.failFast || cfg.multiBail
-	workerURL := hoot.WorkerURL(cfg.serverURL, cfg.suitePath, testIDs, bail, cfg.debugTest, cfg.debugLogs)
+	workerURL := hoot.WorkerURL(cfg.serverURL, cfg.suitePath, nil, bail, cfg.debugTest, cfg.debugLogs)
+	removeIDs, err := injectTestIDs(page, testIDs)
+	if err != nil {
+		return fmt.Errorf("inject test ids: %w", err)
+	}
+	defer removeIDs()
 	if err := page.Navigate(workerURL); err != nil {
 		return fmt.Errorf("navigate: %w", err)
 	}
@@ -453,6 +459,35 @@ func configureMulti(ctx context.Context, page *rod.Page, testIDs []string, count
 		case <-time.After(25 * time.Millisecond):
 		}
 	}
+}
+
+// Adds the ids to the page URL before Hoot reads its filter from it, so the requested URL
+// stays short enough for proxies such as nginx (414 otherwise).
+const injectTestIDsJS = `(ids) => {
+	if (window !== window.top) return;
+	const url = new URL(location.href);
+	if (url.searchParams.has("id")) return;
+	for (const id of ids) url.searchParams.append("id", id);
+	history.replaceState(history.state, "", url);
+}`
+
+func injectTestIDs(page *rod.Page, testIDs []string) (remove func(), err error) {
+	if len(testIDs) == 0 {
+		return func() {}, nil
+	}
+	ids, err := json.Marshal(testIDs)
+	if err != nil {
+		return nil, err
+	}
+	res, err := proto.PageAddScriptToEvaluateOnNewDocument{
+		Source: fmt.Sprintf("(%s)(%s)", injectTestIDsJS, ids),
+	}.Call(page)
+	if err != nil {
+		return nil, err
+	}
+	return func() {
+		_ = proto.PageRemoveScriptToEvaluateOnNewDocument{Identifier: res.Identifier}.Call(page)
+	}, nil
 }
 
 // Best-effort request for Hoot to stop this page's run right away, the same way bail would.
