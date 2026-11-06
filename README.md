@@ -74,3 +74,9 @@ as soon as the server serves them.
 
 If you're scripting against the engine directly, see `engine/README.md` that documents the
 JSON event protocol warden emits on stdout.
+
+## Skill for coding agents
+
+`skills/test-warden/SKILL.md` tells an agent how to run the engine against a local Odoo
+server and what a result is worth. Copy or link the `skills/test-warden` folder into the
+skills folder of the agent (`.claude/skills/` for Claude Code, `.agents/skills/` for others).
