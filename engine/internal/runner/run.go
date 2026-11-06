@@ -104,7 +104,10 @@ func run(ctx context.Context, cfg Config) int {
 		}
 	}
 
-	meta, err := waitCacheWarm(warmCh)
+	meta, err := waitCacheWarm(ctx, warmCh)
+	if ctx.Err() != nil {
+		return ExitInterrupted
+	}
 	if err != nil {
 		log.Error("meta_fetch", "err", err)
 		return 2
@@ -382,11 +385,15 @@ func startCacheWarm(rodBrowser *rod.Browser, metaURL, serverURL string, cookie *
 }
 
 // Waits for the metadata fetch started by startCacheWarm, under a labeled step.
-func waitCacheWarm(warmCh <-chan metaFetchResult) (*hoot.Metadata, error) {
+func waitCacheWarm(ctx context.Context, warmCh <-chan metaFetchResult) (*hoot.Metadata, error) {
 	done := log.Step("meta_fetch")
-	result := <-warmCh
-	done()
-	return result.meta, result.err
+	defer done()
+	select {
+	case result := <-warmCh:
+		return result.meta, result.err
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
 }
 
 func drain(out <-chan event, onFailure func()) (passed, failed int) {
