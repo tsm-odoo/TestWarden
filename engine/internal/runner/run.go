@@ -43,8 +43,23 @@ type Config struct {
 // in execPage) makes Hoot stop as soon as the test fails.
 const multiRunBatch = 200_000
 
-// Run returns the process exit code.
+// ExitInterrupted is the exit code of a run stopped by SIGINT or SIGTERM.
+const ExitInterrupted = 130
+
+// Run returns the process exit code: ExitInterrupted whenever it stopped because ctx was
+// cancelled, whatever step it was at.
 func Run(ctx context.Context, cfg Config) int {
+	return exitCode(ctx, run(ctx, cfg))
+}
+
+func exitCode(ctx context.Context, code int) int {
+	if ctx.Err() != nil {
+		return ExitInterrupted
+	}
+	return code
+}
+
+func run(ctx context.Context, cfg Config) int {
 	mobile := hoot.IsMobilePreset(cfg.SuitePath)
 	done := log.Step("chrome_launch")
 	wsURL, killChrome, err := browser.Launch(ctx, cfg.ChromePath, cfg.Visible, mobile)
@@ -237,7 +252,7 @@ func Run(ctx context.Context, cfg Config) int {
 		case <-navReady:
 		case <-ctx.Done():
 			done()
-			return 0
+			return ExitInterrupted
 		}
 	}
 	done()
@@ -291,6 +306,9 @@ func Run(ctx context.Context, cfg Config) int {
 			passed += phasePassed
 			failed += phaseFailed
 		}
+		if ctx.Err() != nil {
+			return ExitInterrupted
+		}
 		log.RunDone(runNum, passed, failed, passed+failed, cfg.RunUntilFail && failed == 0)
 		if cfg.FlakyRuns > 0 {
 			log.FlakyResult(passed, failed, passed+failed)
@@ -319,7 +337,7 @@ func runPhase(ctx context.Context, chunks [][]string, pages []*rod.Page, wcfg wo
 		go func(id int, ids []string, page *rod.Page) {
 			defer runWg.Done()
 			err := execPage(ctx, page, id, ids, wcfg, out)
-			if err != nil {
+			if err != nil && ctx.Err() == nil {
 				out <- event{kind: kindError, worker: id, stack: err.Error()}
 			}
 		}(i, chunk, pages[i])
