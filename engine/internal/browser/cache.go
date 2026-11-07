@@ -253,9 +253,9 @@ func patchHeaders(headers []*proto.FetchHeaderEntry, cacheControl string) []*pro
 	for _, override := range overrides {
 		name, value := override[0], override[1]
 		found := false
-		for _, header := range out {
+		for i, header := range out {
 			if strings.EqualFold(header.Name, name) {
-				header.Value = value
+				out[i] = &proto.FetchHeaderEntry{Name: header.Name, Value: value}
 				found = true
 				break
 			}
