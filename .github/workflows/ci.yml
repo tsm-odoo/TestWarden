@@ -37,3 +37,78 @@ jobs:
       - run: npx tsc --noEmit -p tsconfig.json
       - run: npx eslint client/
       - run: npm test
+
+  odoo-bus:
+    name: Odoo @bus suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U odoo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      ODOO_DB_ARGS: --db_host=localhost --db_user=odoo --db_password=odoo
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read the pinned Odoo ref
+        id: odoo
+        run: echo "ref=$(tr -d '[:space:]' < .github/odoo-ref)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          repository: odoo/odoo
+          ref: ${{ steps.odoo.outputs.ref }}
+          path: odoo
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: odoo/requirements.txt
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: engine/go.mod
+          cache-dependency-path: engine/go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install system libraries
+        run: sudo apt-get update && sudo apt-get install -y libpq-dev libldap2-dev libsasl2-dev libnss3
+      - run: pip install -r odoo/requirements.txt
+      - name: Create the database (bus only)
+        run: python odoo/odoo-bin -d ci -i bus --without-demo=all --stop-after-init $ODOO_DB_ARGS
+      - name: Start Odoo
+        run: |
+          nohup python odoo/odoo-bin -d ci --db-filter='^ci$' --http-port=8069 $ODOO_DB_ARGS > odoo.log 2>&1 &
+          for _ in $(seq 60); do
+            curl -sf -o /dev/null http://localhost:8069/web/login && exit 0
+            sleep 1
+          done
+          echo "Odoo did not start" && tail -50 odoo.log && exit 1
+      - name: Build test-warden from this PR
+        run: |
+          npm ci
+          npm run build
+          make -C engine release
+      - name: Run the @bus suite
+        run: node release/test-warden.cjs -m @bus --once --workers 2 < /dev/null 2>&1 | tee warden.log; exit "${PIPESTATUS[0]}"
+        shell: bash
+      - name: Summary
+        if: always()
+        run: echo "@bus suite on Odoo \`${{ steps.odoo.outputs.ref }}\`" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: odoo-bus-logs
+          path: |
+            odoo.log
+            warden.log
