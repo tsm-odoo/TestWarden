@@ -69,6 +69,30 @@ func TestParseFailure(t *testing.T) {
 	}
 }
 
+var quotedNames = []struct{ literal, name string }{
+	{`"plain name"`, `plain name`},
+	{`'say "hi"'`, `say "hi"`},
+	{"`it's \"both\"`", `it's "both"`},
+}
+
+func TestParseRunningQuotes(t *testing.T) {
+	for _, tc := range quotedNames {
+		name, ok := ParseRunning("[HOOT] Running test " + tc.literal)
+		if !ok || name != tc.name {
+			t.Errorf("%s: got %q, %v", tc.literal, name, ok)
+		}
+	}
+}
+
+func TestParseFailureQuotes(t *testing.T) {
+	for _, tc := range quotedNames {
+		name, stack, ok := ParseFailure("[HOOT] Test " + tc.literal + " failed:\nboom")
+		if !ok || name != tc.name || stack != "boom" {
+			t.Errorf("%s: got %q, %q, %v", tc.literal, name, stack, ok)
+		}
+	}
+}
+
 func TestParseFailureStripsInlineCSS(t *testing.T) {
 	_, stack, ok := ParseFailure("[HOOT] Test \"a\" failed:\nline one color:#fff;font-weight:bold\nline two")
 	if !ok {
@@ -101,6 +125,22 @@ func TestParseSuiteDone(t *testing.T) {
 		"with failures": {
 			hootLine(`"web/form" ended`, "(passed:", 10, "/", "failed:", 2, "/", "time:", 512, "ms)"),
 			SuiteDoneResult{Suite: "web/form", Passed: 10, Failed: 2, Ms: 512},
+		},
+		"failed only": {
+			hootLine(`"web/form" ended`, "(failed:", 2, "/", "time:", 7, "ms)"),
+			SuiteDoneResult{Suite: "web/form", Failed: 2, Ms: 7},
+		},
+		"with skipped": {
+			hootLine(`"web/form" ended`, "(passed:", 3, "/", "skipped:", 1, "/", "time:", 9, "ms)"),
+			SuiteDoneResult{Suite: "web/form", Passed: 3, Ms: 9},
+		},
+		"skipped only": {
+			hootLine(`"web/form" ended`, "(skipped:", 1, "/", "time:", 9, "ms)"),
+			SuiteDoneResult{Suite: "web/form", Ms: 9},
+		},
+		"quoted name": {
+			hootLine(`'a "b"' ended`, "(failed:", 1, "/", "time:", 4, "ms)"),
+			SuiteDoneResult{Suite: `a "b"`, Failed: 1, Ms: 4},
 		},
 	}
 	for name, c := range cases {

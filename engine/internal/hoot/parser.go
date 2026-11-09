@@ -11,14 +11,29 @@ import (
 	"github.com/go-rod/rod/lib/proto"
 )
 
+// Hoot's stringify wraps a name in double quotes, or in single quotes (backticks when it has
+// both kinds) if it contains a double quote.
+const quoted = `(?:"(.+?)"|'(.+?)'|` + "`(.+?)`" + `)`
+
 var (
-	reFailure   = regexp.MustCompile(`(?s)\[HOOT\][^\n]*Test "(.+?)" failed:(.*)`)
+	reFailure   = regexp.MustCompile(`(?s)\[HOOT\][^\n]*Test ` + quoted + ` failed:(.*)`)
 	reDone      = regexp.MustCompile(`\[HOOT\] (Passed|Failed) (\d+) tests`)
 	rePassed    = regexp.MustCompile(`\((\d+) passed`)
 	reColor     = regexp.MustCompile(`\s*color:[^;]+;[^\n]*`)
-	reRunning   = regexp.MustCompile(`\[HOOT\] Running test "(.+)"`)
-	reSuiteDone = regexp.MustCompile(`\[HOOT\] "(.+)" ended\s+\(passed:\s*(\d+)(?:\s*/\s*failed:\s*(\d+))?\s*/?\s*time:\s*(\d+)\s*ms\)`)
+	reRunning   = regexp.MustCompile(`\[HOOT\] Running test ` + quoted + `\s*$`)
+	reSuiteDone = regexp.MustCompile(`\[HOOT\] ` + quoted + ` ended(?:\s+\((.*?)\s*time:\s*(\d+)\s*ms\))?`)
+	reCount     = regexp.MustCompile(`(passed|failed|skipped):\s*(\d+)`)
 )
+
+// firstGroup returns the first non-empty capture among the quote alternatives.
+func firstGroup(matches []string) string {
+	for _, group := range matches {
+		if group != "" {
+			return group
+		}
+	}
+	return ""
+}
 
 type DoneResult struct {
 	Passed int
@@ -36,8 +51,8 @@ func ParseFailure(text string) (name, stack string, ok bool) {
 	if matches == nil {
 		return "", "", false
 	}
-	name = matches[1]
-	stack = strings.TrimSpace(reColor.ReplaceAllString(matches[2], ""))
+	name = firstGroup(matches[1:4])
+	stack = strings.TrimSpace(reColor.ReplaceAllString(matches[4], ""))
 	return name, stack, true
 }
 
@@ -53,7 +68,7 @@ func ParseRunning(text string) (name string, ok bool) {
 	if matches == nil {
 		return "", false
 	}
-	return matches[1], true
+	return firstGroup(matches[1:4]), true
 }
 
 // SuiteDoneResult holds the counts from a [HOOT] "suite" ended (...) line.
@@ -64,20 +79,25 @@ type SuiteDoneResult struct {
 	Ms     int
 }
 
-// ParseSuiteDone parses a [HOOT] "suite" ended (passed: N / failed: N / time: X ms) line.
-// failed is 0 when the field is absent (all tests passed).
+// ParseSuiteDone parses a [HOOT] "suite" ended (passed: N / failed: N / skipped: N / time: X ms)
+// line. Hoot leaves out the counts that are 0, and the whole parenthesis when all are 0.
 func ParseSuiteDone(text string) (SuiteDoneResult, bool) {
 	matches := reSuiteDone.FindStringSubmatch(text)
 	if matches == nil {
 		return SuiteDoneResult{}, false
 	}
-	passed, _ := strconv.Atoi(matches[2])
-	failed := 0
-	if matches[3] != "" {
-		failed, _ = strconv.Atoi(matches[3])
+	result := SuiteDoneResult{Suite: firstGroup(matches[1:4])}
+	for _, count := range reCount.FindAllStringSubmatch(matches[4], -1) {
+		n, _ := strconv.Atoi(count[2])
+		switch count[1] {
+		case "passed":
+			result.Passed = n
+		case "failed":
+			result.Failed = n
+		}
 	}
-	ms, _ := strconv.Atoi(matches[4])
-	return SuiteDoneResult{Suite: matches[1], Passed: passed, Failed: failed, Ms: ms}, true
+	result.Ms, _ = strconv.Atoi(matches[5])
+	return result, true
 }
 
 // ParseDone detects the Hoot completion summary line and returns pass/fail counts.
