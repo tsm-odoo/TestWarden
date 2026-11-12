@@ -33,16 +33,67 @@ const (
 )
 
 type event struct {
-	kind    eventKind
-	id      string
-	name    string
-	stack   string // console trace (failure) or error message (error)
-	url     string
-	passed  int
-	failed  int
-	worker  int
-	warning bool     // failure synthesized from a console.warn, so absent from Hoot's own tally
-	notRun  []string // kindPartial: ids of the worker's tests that never started
+	kind   eventKind
+	id     string
+	name   string
+	stack  string // console trace (failure) or error message (error)
+	url    string
+	passed int
+	failed int
+	worker int
+	notRun []string // kindPartial: ids of the worker's tests that never started
+}
+
+// Test runs (one per "Running test" line, so each multi repetition on its own) that logged a
+// console.warn, and those Hoot failed itself. Hoot counts a run that only warned as passed.
+type warnings struct {
+	mu     sync.Mutex
+	run    int
+	name   string
+	warned map[int]bool
+	failed map[int]bool
+}
+
+func newWarnings() *warnings {
+	return &warnings{warned: map[int]bool{}, failed: map[int]bool{}}
+}
+
+func (w *warnings) start(name string) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.run++
+	w.name = name
+}
+
+func (w *warnings) warn() {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.warned[w.run] = true
+}
+
+func (w *warnings) hootFailed(name string) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if w.run > 0 && name == w.name {
+		w.failed[w.run] = true
+	}
+}
+
+// Moves the runs that warned without failing from Hoot's passed to failed, so a test counts
+// once however many warnings it logs.
+func (w *warnings) adjust(result hoot.DoneResult) hoot.DoneResult {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	moved := 0
+	for run := range w.warned {
+		if !w.failed[run] {
+			moved++
+		}
+	}
+	moved = min(moved, result.Passed)
+	result.Passed -= moved
+	result.Failed += moved
+	return result
 }
 
 // What one worker has gone through so far, to still account for it when it dies before
@@ -237,8 +288,10 @@ func execPage(
 		<-listenerDone
 	}()
 
-	// Track which test is currently executing so console.warn events can be attributed to it.
+	// Test a console.warn is attributed to. Hoot logs no per-test end line, so a warning
+	// logged after a test ended but before the next one starts (or its suite ends) goes to it.
 	var currentTestName string
+	warned := newWarnings()
 	// Nesting of console groups at the current point of the page's console (see --console).
 	groupDepth := 0
 	wait := page.Context(listenCtx).EachEvent(
@@ -249,6 +302,7 @@ func execPage(
 				currentTestName = name
 				lastTest.Store(name)
 				tally.start(name)
+				warned.start(name)
 				markProgress()
 				log.TestStarted(name)
 				matched = true
@@ -264,6 +318,7 @@ func execPage(
 				matched = true
 				if !hoot.IsAbortedFailure(stack) {
 					tally.fail(name)
+					warned.hootFailed(name)
 					id := testIDByName(name, testIDs, cfg.meta)
 					out <- event{
 						kind:   kindFailure,
@@ -277,15 +332,16 @@ func execPage(
 			}
 			// Treat console.warn during an active test as a test failure.
 			if !matched && consoleEvent.Type == proto.RuntimeConsoleAPICalledTypeWarning && currentTestName != "" {
+				tally.fail(currentTestName)
+				warned.warn()
 				id := testIDByName(currentTestName, testIDs, cfg.meta)
 				out <- event{
-					kind:    kindFailure,
-					id:      id,
-					name:    currentTestName,
-					stack:   fmt.Sprintf("Warning during test: %s", text),
-					url:     hoot.DebugURL(cfg.serverURL, cfg.suitePath, id),
-					worker:  workerID,
-					warning: true,
+					kind:   kindFailure,
+					id:     id,
+					name:   currentTestName,
+					stack:  fmt.Sprintf("Warning during test: %s", text),
+					url:    hoot.DebugURL(cfg.serverURL, cfg.suitePath, id),
+					worker: workerID,
 				}
 				matched = true
 			}
@@ -373,6 +429,7 @@ func execPage(
 			return fmt.Errorf("worker stalled: no test progress for %s (%s), page closed",
 				idle.Round(time.Second), at)
 		case result := <-done:
+			result = warned.adjust(result)
 			out <- event{kind: kindDone, passed: result.Passed, failed: result.Failed, worker: workerID}
 			return nil
 		case msg := <-pageErr:
