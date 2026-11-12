@@ -22,6 +22,7 @@ if (!arch || (process.platform !== "linux" && process.platform !== "darwin")) {
     process.exit(2);
 }
 const WARDEN_BIN = path.join(ENGINE_DIR, "dist", `engine-${process.platform}-${arch}`);
+const STDERR_TAIL_LINES = 50;
 
 let settings: Record<string, any> = {};
 try {
@@ -141,7 +142,7 @@ async function runOnce(): Promise<number> {
 
         const proc = spawn(WARDEN_BIN, wardenArgs, {
             cwd: ENGINE_DIR,
-            stdio: ["pipe", "pipe", "ignore"],
+            stdio: ["pipe", "pipe", "pipe"],
         });
 
         // The engine force-exits on a signal without emitting run_done, so grey out the UI
@@ -153,6 +154,9 @@ async function runOnce(): Promise<number> {
         process.once("SIGINT", onSignal);
         process.once("SIGTERM", onSignal);
 
+        const stderrTail: string[] = [];
+        let stderrBuf = "";
+        let runDone = false;
         let buf = "";
 
         proc.stdout!.on("data", (chunk: Buffer) => {
@@ -176,8 +180,11 @@ async function runOnce(): Promise<number> {
                     case "run_start":
                     case "test_started":
                     case "log":
-                    case "run_done":
                     case "flaky_result":
+                        dispatch(msg as UiAction);
+                        continue;
+                    case "run_done":
+                        runDone = true;
                         dispatch(msg as UiAction);
                         continue;
                     case "run_wait_prompt":
@@ -269,6 +276,13 @@ async function runOnce(): Promise<number> {
             }
         });
 
+        proc.stderr!.on("data", (chunk: Buffer) => {
+            const lines = (stderrBuf + chunk.toString()).split("\n");
+            stderrBuf = lines.pop()!;
+            stderrTail.push(...lines);
+            stderrTail.splice(0, stderrTail.length - STDERR_TAIL_LINES);
+        });
+
         proc.on("error", (err) => {
             process.off("SIGINT", onSignal);
             process.off("SIGTERM", onSignal);
@@ -279,7 +293,17 @@ async function runOnce(): Promise<number> {
             process.off("SIGINT", onSignal);
             process.off("SIGTERM", onSignal);
             ui.stop();
-            resolve(code ?? (signal ? 130 : 2));
+            const exitCode = code ?? (signal ? 130 : 2);
+            if (stderrBuf) {
+                stderrTail.push(stderrBuf);
+            }
+            if (exitCode !== 0 && exitCode !== 130 && !runDone && stderrTail.length) {
+                const lines = stderrTail.slice(-STDERR_TAIL_LINES);
+                process.stderr.write(
+                    `Engine stderr (last ${lines.length} lines):\n${lines.join("\n")}\n`,
+                );
+            }
+            resolve(exitCode);
         });
     });
 }

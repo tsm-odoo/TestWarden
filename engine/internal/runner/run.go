@@ -69,7 +69,14 @@ func run(ctx context.Context, cfg Config) int {
 	}
 	defer killChrome()
 	done()
-	rodBrowser := rod.New().ControlURL(wsURL).Context(ctx).MustConnect()
+	rodBrowser := rod.New().ControlURL(wsURL).Context(ctx)
+	if err := rodBrowser.Connect(); err != nil {
+		if ctx.Err() != nil {
+			return ExitInterrupted
+		}
+		log.Error("chrome_connect", "err", err)
+		return 2
+	}
 	defer rodBrowser.Close()
 
 	done = log.Step("db_fetch")
