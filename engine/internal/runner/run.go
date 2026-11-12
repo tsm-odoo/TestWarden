@@ -401,9 +401,6 @@ func drain(out <-chan event, onFailure func()) (passed, failed int) {
 		switch workerEvent.kind {
 		case kindFailure:
 			log.TestFail(workerEvent.worker, workerEvent.id, workerEvent.name, workerEvent.url, workerEvent.stack)
-			if workerEvent.warning {
-				failed++
-			}
 			onFailure()
 
 		case kindDone:

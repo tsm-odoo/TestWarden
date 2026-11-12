@@ -71,7 +71,7 @@ Every line on stdout is one JSON object, tagged by `type`. Parse line by line.
 | `diagnostic` | `level (warn\|error), label, message` | Warning or fatal error |
 | `run_start` | `run, total` | A run begins (`run` increments across `--run-until-fail` iterations) |
 | `test_started` | `test` | Test started (full name) |
-| `test_fail` | `worker, id, test, url, stack` | Test failed; `url` reproduces it with `debugTest=true` |
+| `test_fail` | `worker, id, test, url, stack` | Test failed; `url` reproduces it with `debugTest=true`. One per Hoot failure and one per `console.warn` during a test (stack `Warning during test: <text>`); a test with several of them still counts once in `run_done` |
 | `suite_done` | `worker, suite, passed, failed, ms` | A suite finished |
 | `worker_start` | `worker, devtools` | Worker's page is ready; `devtools` is an inspector URL |
 | `worker_run` | `worker` | Worker clicked Run |
