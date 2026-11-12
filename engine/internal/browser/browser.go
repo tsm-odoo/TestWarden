@@ -196,6 +196,7 @@ func Launch(ctx context.Context, chromePath string, visible, touch bool) (wsURL 
 		Set("disable-component-extensions-with-background-pages").
 		Set("disable-features", "PaintHolding,IsolateOrigins,site-per-process,MediaRouter,AudioServiceOutOfProcess,DestroyProfileOnBrowserClose").
 		Set("mute-audio").
+		Set("autoplay-policy", "no-user-gesture-required").
 		Set("remote-debugging-port", strconv.Itoa(port)).
 		Set("remote-allow-origins", "*").
 		Logger(io.Discard)
