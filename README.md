@@ -65,7 +65,7 @@ as soon as the server serves them.
 | Code | Meaning |
 |---|---|
 | `0` | All tests passed |
-| `1` | One or more tests failed, or a worker crashed or stalled |
+| `1` | One or more tests failed (a `console.warn` during a test fails it, counted once however many it logs), or a worker crashed or stalled |
 | `2` | Fatal startup error (Chrome, auth, server unreachable, ...) |
 | `3` | No tests matched the filters |
 | `130` | Interrupted (Ctrl+C) |

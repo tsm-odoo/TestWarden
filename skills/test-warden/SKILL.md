@@ -131,7 +131,9 @@ A green run is only worth something if it ran YOUR code and the tests you meant:
   before its `worker_error` diagnostic: the tests it finished still count in `run_done`. Run the
   missing ones again rather than the whole suite.
 - A `console.warn` while a test runs fails that test: its `test_fail` stack reads
-  `Warning during test: <text>`. A warning outside a test (suite setup, module load, after the
+  `Warning during test: <text>`. Each warning sends its own `test_fail`, but the test counts once in
+  `run_done.failed`. Hoot logs no end line per test, so a warning logged after a test ends but before
+  the next one starts goes to that test. A warning outside a test (suite setup, module load, after the
   last test) is not caught; Odoo's own runner, `odoo-bin --test-tags
   '/<module>:WebSuite.test_unit_desktop'`, fails on those too, as Odoo's CI does.
 - The `url` of a `test_fail` (`debugTest=true`) is for a person in a browser. A script runs the
