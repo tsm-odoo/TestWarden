@@ -68,7 +68,7 @@ Every line on stdout is one JSON object, tagged by `type`. Parse line by line.
 | `type` | Fields | Meaning |
 |---|---|---|
 | `step_start` / `step_done` | `key, label[, ms]` | A startup step (`chrome_launch`, `db_fetch`, `auth`, `meta_fetch`, `workers_launch`) starts/finishes |
-| `diagnostic` | `level (warn\|error), label, message` | Warning or fatal error |
+| `diagnostic` | `level (warn\|error), label, message` | Warning or fatal error. `chrome_connect`: Chrome started but the engine could not connect to its DevTools endpoint (exit 2) |
 | `run_start` | `run, total` | A run begins (`run` increments across `--run-until-fail` iterations) |
 | `test_started` | `test` | Test started (full name) |
 | `test_fail` | `worker, id, test, url, stack` | Test failed; `url` reproduces it with `debugTest=true` |
