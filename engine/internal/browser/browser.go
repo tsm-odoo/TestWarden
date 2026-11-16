@@ -194,6 +194,9 @@ func Launch(ctx context.Context, chromePath string, visible, touch bool) (wsURL 
 		Set("disable-component-extensions-with-background-pages").
 		Set("disable-features", "PaintHolding,IsolateOrigins,site-per-process,MediaRouter,AudioServiceOutOfProcess,DestroyProfileOnBrowserClose").
 		Set("mute-audio").
+		// Like Odoo's test runner: without a real user gesture, AudioContext.resume() and
+		// media play() never settle, which hangs the Discuss call tests.
+		Set("autoplay-policy", "no-user-gesture-required").
 		Set("remote-debugging-port", strconv.Itoa(port)).
 		Set("remote-allow-origins", "*").
 		Logger(io.Discard)
