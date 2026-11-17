@@ -48508,6 +48508,7 @@ if (!arch || (process.platform !== "linux" && process.platform !== "darwin")) {
     process.exit(2);
 }
 const WARDEN_BIN = path$1.join(ENGINE_DIR, "dist", `engine-${process.platform}-${arch}`);
+const STDERR_TAIL_LINES = 50;
 let settings = {};
 try {
     settings = JSON.parse(fs$2.readFileSync(path$1.join(ENGINE_DIR, "settings.json"), "utf8"));
@@ -48590,7 +48591,7 @@ async function runOnce() {
         }
         const proc = spawn(WARDEN_BIN, wardenArgs, {
             cwd: ENGINE_DIR,
-            stdio: ["pipe", "pipe", "ignore"],
+            stdio: ["pipe", "pipe", "pipe"],
         });
         // The engine force-exits on a signal without emitting run_done, so grey out the UI
         // here instead of waiting on a done event that will never come.
@@ -48600,6 +48601,9 @@ async function runOnce() {
         };
         process.once("SIGINT", onSignal);
         process.once("SIGTERM", onSignal);
+        const stderrTail = [];
+        let stderrBuf = "";
+        let runDone = false;
         let buf = "";
         proc.stdout.on("data", (chunk) => {
             buf += chunk.toString();
@@ -48622,8 +48626,11 @@ async function runOnce() {
                     case "run_start":
                     case "test_started":
                     case "log":
-                    case "run_done":
                     case "flaky_result":
+                        dispatch(msg);
+                        continue;
+                    case "run_done":
+                        runDone = true;
                         dispatch(msg);
                         continue;
                     case "run_wait_prompt":
@@ -48715,6 +48722,12 @@ async function runOnce() {
                 }
             }
         });
+        proc.stderr.on("data", (chunk) => {
+            const lines = (stderrBuf + chunk.toString()).split("\n");
+            stderrBuf = lines.pop();
+            stderrTail.push(...lines);
+            stderrTail.splice(0, stderrTail.length - STDERR_TAIL_LINES);
+        });
         proc.on("error", (err) => {
             process.off("SIGINT", onSignal);
             process.off("SIGTERM", onSignal);
@@ -48724,7 +48737,15 @@ async function runOnce() {
             process.off("SIGINT", onSignal);
             process.off("SIGTERM", onSignal);
             ui.stop();
-            resolve(code ?? (signal ? 130 : 2));
+            const exitCode = code ?? (signal ? 130 : 2);
+            if (stderrBuf) {
+                stderrTail.push(stderrBuf);
+            }
+            if (exitCode !== 0 && exitCode !== 130 && !runDone && stderrTail.length) {
+                const lines = stderrTail.slice(-STDERR_TAIL_LINES);
+                process.stderr.write(`Engine stderr (last ${lines.length} lines):\n${lines.join("\n")}\n`);
+            }
+            resolve(exitCode);
         });
     });
 }
